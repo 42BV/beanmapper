@@ -21,6 +21,8 @@ import io.beanmapper.testmodel.parentClass.Target;
 import io.beanmapper.testmodel.person.Person;
 import io.beanmapper.testmodel.person.PersonForm;
 import io.beanmapper.testmodel.person.PersonView;
+import io.beanmapper.testmodel.publicfields.SourceWithPublicFields;
+import io.beanmapper.testmodel.publicfields.TargetWithPublicFields;
 import io.beanmapper.testmodel.tostring.SourceWithNonString;
 import io.beanmapper.testmodel.tostring.TargetWithString;
 import org.junit.Before;
@@ -214,6 +216,18 @@ public class BeanMapperTest {
         assertEquals("name1", target.getName1());
         assertEquals("name2", target.getName2());
         assertEquals("name3", target.getName3());
+    }
+
+    @Test
+    public void publicFields() throws Exception {
+        SourceWithPublicFields source = new SourceWithPublicFields();
+        source.name = "Henk";
+        source.id = 42L;
+        source.date = LocalDate.of(2015, 5, 4);
+        TargetWithPublicFields target = beanMapper.map(source, TargetWithPublicFields.class);
+        assertEquals("Henk", target.name);
+        assertEquals(42L, (long)target.id);
+        assertEquals(LocalDate.of(2015, 5, 4), target.date);
     }
 
     public Person createPerson() {
