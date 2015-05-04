@@ -23,6 +23,9 @@ import io.beanmapper.testmodel.person.PersonForm;
 import io.beanmapper.testmodel.person.PersonView;
 import io.beanmapper.testmodel.publicfields.SourceWithPublicFields;
 import io.beanmapper.testmodel.publicfields.TargetWithPublicFields;
+import io.beanmapper.testmodel.similarsubclasses.DifferentSource;
+import io.beanmapper.testmodel.similarsubclasses.DifferentTarget;
+import io.beanmapper.testmodel.similarsubclasses.SimilarSubclass;
 import io.beanmapper.testmodel.tostring.SourceWithNonString;
 import io.beanmapper.testmodel.tostring.TargetWithString;
 import org.junit.Before;
@@ -49,6 +52,13 @@ public class BeanMapperTest {
         PersonView personView = beanMapper.map(person, PersonView.class);
         assertEquals("Henk", personView.name);
         assertEquals("Zoetermeer", personView.place);
+    }
+
+    @Test
+    public void emptySource() throws Exception {
+        Person source = new Person();
+        PersonView target = beanMapper.map(source, PersonView.class);
+        assertNull(target.name);
     }
 
     @Test
@@ -228,6 +238,16 @@ public class BeanMapperTest {
         assertEquals("Henk", target.name);
         assertEquals(42L, (long)target.id);
         assertEquals(LocalDate.of(2015, 5, 4), target.date);
+    }
+
+    @Test
+    public void similarSubclasses() throws Exception {
+        SimilarSubclass subclass = new SimilarSubclass();
+        subclass.name = "Henk";
+        DifferentSource source = new DifferentSource();
+        source.subclass = subclass;
+        DifferentTarget target = beanMapper.map(source, DifferentTarget.class);
+        assertEquals(source.subclass, target.subclass);
     }
 
     public Person createPerson() {

@@ -105,7 +105,7 @@ public class BeanMapper {
             return;
         }
 
-        if (isMappableClass(beanFieldMatch.getTargetClass())) {
+        if (!beanFieldMatch.hasSimilarClasses() && isMappableClass(beanFieldMatch.getTargetClass())) {
             dealWithMappableNestedClass(beanFieldMatch);
             return;
         }

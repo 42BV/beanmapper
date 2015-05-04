@@ -84,7 +84,8 @@ public class BeanField {
         else {
 
             // If target is a String and source is not, call toString on the value
-            if (    getCurrentField().getType().equals(String.class) &&
+            if (    source != null &&
+                    getCurrentField().getType().equals(String.class) &&
                     !source.getClass().equals(String.class)) {
                 source = source.toString();
             }

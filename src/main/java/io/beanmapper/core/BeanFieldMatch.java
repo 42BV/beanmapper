@@ -18,6 +18,9 @@ public class BeanFieldMatch<S,T> {
         this.targetBeanField = targetBeanField;
         this.targetFieldName = targetFieldName;
     }
+    public boolean hasSimilarClasses() {
+        return sourceBeanField.getField().getType().equals(targetBeanField.getField().getType());
+    }
     public T getTarget() { return target; }
     public String getTargetFieldName() { return targetFieldName; }
     public boolean hasMatchingSource() { return sourceBeanField != null; }
