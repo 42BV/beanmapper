@@ -8,6 +8,7 @@ import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.MappingException;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -50,6 +51,24 @@ public class BeanMapper {
      */
     public <S, T> T map(S source, Class<T> targetClass) throws Exception {
         return map(source, targetClass.getConstructor().newInstance());
+    }
+
+    /**
+     * Maps a list of source items to a list of target items with a specific class
+     * @param sourceItems the items to be mapped
+     * @param targetClass the class type of the items in the returned list
+     * @param <S> source
+     * @param <T> target
+     * @return the list of mapped items with class T
+     * @throws Exception
+     */
+    public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass) throws Exception {
+//    public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass) throws Exception {
+        Collection<T> targetItems = (Collection<T>)sourceItems.getClass().getConstructor().newInstance();
+        for (S source : sourceItems) {
+            targetItems.add(map(source, targetClass));
+        }
+        return targetItems;
     }
 
     /**

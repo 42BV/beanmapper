@@ -32,6 +32,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -52,6 +55,20 @@ public class BeanMapperTest {
         PersonView personView = beanMapper.map(person, PersonView.class);
         assertEquals("Henk", personView.name);
         assertEquals("Zoetermeer", personView.place);
+    }
+
+    @Test
+    public void mapCollection() throws Exception {
+        Collection<Person> sourceItems = new ArrayList<>();
+        sourceItems.add(createPerson("Jan"));
+        sourceItems.add(createPerson("Piet"));
+        sourceItems.add(createPerson("Joris"));
+        sourceItems.add(createPerson("Korneel"));
+        List<PersonView> targetItems = (List<PersonView>)beanMapper.map(sourceItems, PersonView.class);
+        assertEquals("Jan", targetItems.get(0).name);
+        assertEquals("Piet", targetItems.get(1).name);
+        assertEquals("Joris", targetItems.get(2).name);
+        assertEquals("Korneel", targetItems.get(3).name);
     }
 
     @Test
@@ -250,13 +267,17 @@ public class BeanMapperTest {
         assertEquals(source.subclass, target.subclass);
     }
 
-    public Person createPerson() {
+    public Person createPerson(String name) {
         Person person = new Person();
         person.setId(1984L);
-        person.setName("Henk");
+        person.setName(name);
         person.setPlace("Zoetermeer");
         person.setBankAccount("THX-1138-l33t-call");
         return person;
+    }
+
+    public Person createPerson() {
+        return createPerson("Henk");
     }
 
     public PersonForm createPersonForm() {
