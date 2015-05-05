@@ -3,6 +3,8 @@ package io.beanmapper.core;
 import io.beanmapper.annotations.BeanIgnore;
 import io.beanmapper.annotations.BeanProperty;
 import io.beanmapper.annotations.BeanUnwrap;
+import io.beanmapper.exceptions.BeanMissingPathException;
+import io.beanmapper.exceptions.BeanMappingException;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -12,7 +14,7 @@ public class BeanMatchStore {
 
     private Map<String, Map<String, BeanMatch>> store = new TreeMap<>();
 
-    public BeanMatch getBeanMatch(Class source, Class target) throws Exception {
+    public BeanMatch getBeanMatch(Class source, Class target) throws BeanMappingException {
         Map<String, BeanMatch> targetsForSource = getTargetsForSource(source);
         if (targetsForSource == null) {
             return addBeanMatch(determineBeanMatch(source, target));
@@ -46,12 +48,12 @@ public class BeanMatchStore {
         targetsForSource.put(target.getCanonicalName(), beanMatch);
     }
 
-    private BeanMatch determineBeanMatch(Class source, Class target) throws Exception {
+    private BeanMatch determineBeanMatch(Class source, Class target) throws BeanMappingException {
         return determineBeanMatch(source, target, new TreeMap<>(), new TreeMap<>());
     }
 
     private BeanMatch determineBeanMatch(Class source, Class target,
-                                         Map<String, BeanField> sourceNode, Map<String, BeanField> targetNode) throws Exception {
+                                         Map<String, BeanField> sourceNode, Map<String, BeanField> targetNode) throws BeanMappingException {
         return new BeanMatch(
                 source,
                 target,
@@ -60,7 +62,7 @@ public class BeanMatchStore {
     }
 
     private Map<String, BeanField> getAllFields(Map<String, BeanField> ourNodes, Map<String, BeanField> otherNodes,
-                                           Class ourType, Class otherType, BeanField prefixingBeanField) throws Exception {
+                                           Class ourType, Class otherType, BeanField prefixingBeanField) throws BeanMappingException {
         // Get field from super class
         if (ourType.getSuperclass() != null) {
             getAllFields(ourNodes, otherNodes, ourType.getSuperclass(), otherType, null);
@@ -78,7 +80,12 @@ public class BeanMatchStore {
             String name = dealWithBeanProperty(otherNodes, otherType, field);
 
             // Unwrap the fields which exist in the unwrap class
-            BeanField currentBeanField = BeanField.determineNodesForPath(ourType, field.getName(), prefixingBeanField);
+            BeanField currentBeanField = null;
+            try {
+                currentBeanField = BeanField.determineNodesForPath(ourType, field.getName(), prefixingBeanField);
+            } catch (NoSuchFieldException e) {
+                throw new BeanMissingPathException(ourType, field, e);
+            }
             if (field.isAnnotationPresent(BeanUnwrap.class)) {
                 ourNodes = getAllFields(ourNodes, otherNodes, field.getType(), otherType, currentBeanField);
             } else {

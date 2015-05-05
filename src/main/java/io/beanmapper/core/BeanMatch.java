@@ -13,7 +13,7 @@ public class BeanMatch {
 
     private Map<String, BeanField> targetNode = new TreeMap<>();
 
-    public BeanMatch(Class source, Class target, Map<String, BeanField> sourceNode, Map<String, BeanField> targetNode) throws Exception {
+    public BeanMatch(Class source, Class target, Map<String, BeanField> sourceNode, Map<String, BeanField> targetNode) {
         this.source = source;
         this.target = target;
         this.sourceNode = sourceNode;

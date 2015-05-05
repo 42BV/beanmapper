@@ -1,6 +1,8 @@
 package io.beanmapper.core;
 
 import io.beanmapper.annotations.BeanDefault;
+import io.beanmapper.exceptions.BeanGetFieldException;
+import io.beanmapper.exceptions.BeanMappingException;
 
 import java.lang.annotation.Annotation;
 
@@ -25,7 +27,9 @@ public class BeanFieldMatch<S,T> {
     public String getTargetFieldName() { return targetFieldName; }
     public boolean hasMatchingSource() { return sourceBeanField != null; }
     public Class getTargetClass() { return targetBeanField.getField().getType(); }
-    public Object getSourceValue() throws Exception { return sourceBeanField.getObject(source); }
+    public Object getSourceValue() throws BeanMappingException {
+        return sourceBeanField.getObject(source);
+    }
     public boolean targetHasAnnotation(Class<? extends Annotation> annotationClass) {
         return hasAnnotation(targetBeanField, annotationClass);
     }
@@ -44,16 +48,20 @@ public class BeanFieldMatch<S,T> {
     protected Object getDefaultValue(BeanField beanField) {
         return beanField.getField().getDeclaredAnnotation(BeanDefault.class).value();
     }
-    public void setTarget(Object value) throws IllegalAccessException {
-        targetBeanField.getField().set(target, value);
+    public void setTarget(Object value) throws BeanMappingException {
+        try {
+            targetBeanField.getField().set(target, value);
+        } catch (IllegalAccessException e) {
+            throw new BeanGetFieldException(target.getClass(), targetBeanField.getField(), e);
+        }
     }
-    public void writeObject(Object value) throws Exception {
+    public void writeObject(Object value) throws BeanMappingException {
         targetBeanField.writeObject(value, target);
     }
-    public Object getSourceObject() throws Exception {
+    public Object getSourceObject() throws BeanMappingException {
         return sourceBeanField.getObject(source);
     }
-    public Object getOrCreateTargetObject() throws Exception {
+    public Object getOrCreateTargetObject() throws BeanMappingException {
         return targetBeanField.getOrCreate(target);
     }
 }

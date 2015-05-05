@@ -5,7 +5,9 @@ import io.beanmapper.annotations.BeanProperty;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.BeanMatch;
 import io.beanmapper.core.BeanMatchStore;
-import io.beanmapper.core.MappingException;
+import io.beanmapper.exceptions.BeanFieldNoMatchException;
+import io.beanmapper.exceptions.BeanInstantiationException;
+import io.beanmapper.exceptions.BeanMappingException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,8 +51,12 @@ public class BeanMapper {
      * @return the target instance containing all applicable properties
      * @throws Exception
      */
-    public <S, T> T map(S source, Class<T> targetClass) throws Exception {
-        return map(source, targetClass.getConstructor().newInstance());
+    public <S, T> T map(S source, Class<T> targetClass) throws BeanMappingException {
+        try {
+            return map(source, targetClass.getConstructor().newInstance());
+        } catch (Exception e) {
+            throw new BeanInstantiationException(targetClass, e);
+        }
     }
 
     /**
@@ -62,9 +68,13 @@ public class BeanMapper {
      * @return the list of mapped items with class T
      * @throws Exception
      */
-    public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass) throws Exception {
-//    public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass) throws Exception {
-        Collection<T> targetItems = (Collection<T>)sourceItems.getClass().getConstructor().newInstance();
+    public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass) throws BeanMappingException {
+        Collection<T> targetItems = null;
+        try {
+            targetItems = (Collection<T>)sourceItems.getClass().getConstructor().newInstance();
+        } catch (Exception e) {
+            throw new BeanInstantiationException(sourceItems.getClass(), e);
+        }
         for (S source : sourceItems) {
             targetItems.add(map(source, targetClass));
         }
@@ -80,7 +90,7 @@ public class BeanMapper {
      * @return the original target instance containing all applicable properties
      * @throws Exception
      */
-    public <S, T> T map(S source, T target) throws Exception {
+    public <S, T> T map(S source, T target) throws BeanMappingException {
         return matchSourceToTarget(source, target);
     }
 
@@ -97,7 +107,7 @@ public class BeanMapper {
      * @return A filled target object.
      * @throws Exception
      */
-    private <S, T> T matchSourceToTarget (S source, T target) throws Exception {
+    private <S, T> T matchSourceToTarget (S source, T target) throws BeanMappingException {
 
         BeanMatch beanMatch = beanMatchStore.getBeanMatch(source.getClass(), target.getClass());
 
@@ -117,7 +127,7 @@ public class BeanMapper {
      * @param beanFieldMatch contains the fields belonging to the source/target field match
      * @throws Exception
      */
-    private void processField(BeanFieldMatch beanFieldMatch) throws Exception {
+    private void processField(BeanFieldMatch beanFieldMatch) throws BeanMappingException {
 
         if (!beanFieldMatch.hasMatchingSource()) {
             dealWithNonMatchingNode(beanFieldMatch);
@@ -137,14 +147,15 @@ public class BeanMapper {
      * could be that a default is set, or an exception is thrown when a BeanProperty has been set.
      * @param beanFieldMatch contains the fields belonging to the source/target field match
      * @throws IllegalAccessException
-     * @throws MappingException
+     * @throws BeanMappingException
      */
     private void dealWithNonMatchingNode(BeanFieldMatch beanFieldMatch)
-            throws IllegalAccessException, MappingException {
+            throws BeanMappingException {
         if (beanFieldMatch.targetHasAnnotation(BeanDefault.class)) {
             beanFieldMatch.setTarget(beanFieldMatch.getTargetDefaultValue());
         } else if (beanFieldMatch.targetHasAnnotation(BeanProperty.class)) {
-            throw new MappingException("No source field found while attempting to map to " + beanFieldMatch.getTargetFieldName());
+            throw new BeanFieldNoMatchException(
+                    "No source field found while attempting to map to " + beanFieldMatch.getTargetFieldName());
         }
     }
 
@@ -154,8 +165,7 @@ public class BeanMapper {
      * @param beanFieldMatch contains the fields belonging to the source/target field match
      * @throws Exception
      */
-    private void copySourceToTarget(BeanFieldMatch beanFieldMatch)
-            throws Exception {
+    private void copySourceToTarget(BeanFieldMatch beanFieldMatch) throws BeanMappingException {
         Object copyableSource = beanFieldMatch.getSourceValue();
 
         if (copyableSource == null) {
@@ -175,8 +185,7 @@ public class BeanMapper {
      * @param beanFieldMatch contains the fields belonging to the source/target field match
      * @throws Exception
      */
-    private void dealWithMappableNestedClass(BeanFieldMatch beanFieldMatch)
-            throws Exception {
+    private void dealWithMappableNestedClass(BeanFieldMatch beanFieldMatch) throws BeanMappingException {
 
         Object encapsulatedSource = beanFieldMatch.getSourceObject();
         if (encapsulatedSource != null) {

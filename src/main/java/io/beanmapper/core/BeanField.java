@@ -1,5 +1,7 @@
 package io.beanmapper.core;
 
+import io.beanmapper.exceptions.*;
+
 import java.lang.reflect.Field;
 import java.util.Stack;
 
@@ -56,28 +58,45 @@ public class BeanField {
         this.field.setAccessible(true);
     }
 
-    public Object getObject(Object object) throws Exception {
-        object = getCurrentField().get(object);
+    public Object getObject(Object object) throws BeanMappingException {
+        try {
+            object = getCurrentField().get(object);
+        } catch (IllegalAccessException e) {
+            throw new BeanGetFieldException(object.getClass(), getCurrentField(), e);
+        }
         if (hasNext()) {
             if (object == null) {
-                // @TODO nette exception voor de BeanMapper maken
-                throw new Exception("The path could not be resolved");
+                throw new BeanMissingPathException("The path could not be resolved");
             }
             return getNext().getObject(object);
         }
         return object;
     }
 
-    public Object getOrCreate(Object parent) throws Exception {
-        Object target = getCurrentField().get(parent);
+    public Object getOrCreate(Object parent) throws BeanMappingException {
+        Object target = null;
+        try {
+            target = getCurrentField().get(parent);
+        } catch (IllegalAccessException e) {
+            throw new BeanGetFieldException(parent.getClass(), getCurrentField(), e);
+        }
         if (target == null) {
-            target = getCurrentField().getType().getConstructor().newInstance();
-            getCurrentField().set(parent, target);
+
+            try {
+                target = getCurrentField().getType().getConstructor().newInstance();
+            } catch (Exception e) {
+                throw new BeanInstantiationException(getCurrentField().getType(), e);
+            }
+            try {
+                getCurrentField().set(parent, target);
+            } catch (IllegalAccessException e) {
+                throw new BeanSetFieldException(parent.getClass(), getCurrentField(), e);
+            }
         }
         return target;
     }
 
-    public Object writeObject(Object source, Object parent) throws Exception {
+    public Object writeObject(Object source, Object parent) throws BeanMappingException {
         if (hasNext()) {
             getNext().writeObject(source, getOrCreate(parent));
         }
@@ -90,21 +109,27 @@ public class BeanField {
                 source = source.toString();
             }
 
-            getCurrentField().set(parent, source);
+            try {
+                getCurrentField().set(parent, source);
+            } catch (IllegalAccessException e) {
+                throw new BeanSetFieldException(parent.getClass(), getCurrentField(), e);
+            }
         }
         return parent;
     }
 
-    public static BeanField determineNodesForNode(Class baseClass, String node) throws NoSuchFieldException {
+    public static BeanField determineNodesForNode(Class baseClass, String node)
+            throws NoSuchFieldException {
         return determineNodes(baseClass, new Route(node), new Stack<>());
     }
 
-    public static BeanField determineNodesForPath(Class baseClass, String path) throws NoSuchFieldException {
-        // @TODO Route algoritme omschrijven naar het niet verwijderen van de head
+    public static BeanField determineNodesForPath(Class baseClass, String path)
+            throws NoSuchFieldException {
         return determineNodes(baseClass, new Route(path), new Stack<>());
     }
 
-    public static BeanField determineNodesForPath(Class baseClass, String path, BeanField prefixingBeanField) throws NoSuchFieldException {
+    public static BeanField determineNodesForPath(Class baseClass, String path, BeanField prefixingBeanField)
+            throws NoSuchFieldException {
         return determineNodes(baseClass, new Route(path), copyNodes(prefixingBeanField));
     }
 
@@ -140,7 +165,7 @@ public class BeanField {
 
     private static boolean traversePath(Class baseClass, Route route, Stack<BeanField> beanFields) throws NoSuchFieldException {
         for (String node : route.getRoute()) {
-            Field field = baseClass.getDeclaredField(node);
+            final Field field = baseClass.getDeclaredField(node);
             if (field == null) {
                 return false;
             }
