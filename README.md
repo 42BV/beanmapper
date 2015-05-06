@@ -51,3 +51,23 @@ source.name = "Henk";
 source.date = LocalDate.of(2015, 4, 1));
 TargetClass target = beanMapper.map(source, TargetClass.class);
 ```
+
+## What's more?
+
+The library can help you with the following situations:
+* nested dissimilar classes
+* ignoring parts
+* mapping to fields with other names, even if nested
+* settings defaults if no value is found
+* unwrapping class layers in order to flatten the structure
+* works directly on the bean, no getters/setters required
+* supports a combination of automated and manual processing
+
+## What Beanmapper is not for
+
+Beanmapper is *not* a library for deep-copying classes. Whenever Beanmapper can get away with a shallow
+copy, it will do so. Deep-copying is reserved for dissimilar classes.
+
+## Want to know more?
+
+Find the rest of the documentation on [beanmapper.io!](http://beanmapper.io).
