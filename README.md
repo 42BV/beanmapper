@@ -70,4 +70,4 @@ copy, it will do so. Deep-copying is reserved for dissimilar classes.
 
 ## Want to know more?
 
-Find the rest of the documentation on [beanmapper.io!](http://beanmapper.io).
+Find the rest of the documentation on [beanmapper.io](http://beanmapper.io).
