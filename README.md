@@ -3,10 +3,11 @@
 Beanmapper is a Java library for mapping dissimilar Java classes with similar names. The use
 cases for Beanmapper are the following:
 * mapping from forms to entities, because:
-** you want to accept a limited number of fields as input
+  * for security reasons you want to accept only a limited number of fields as input
+  * the form fields are simplified to support frontend processing
 * mapping from entities to results, because:
-** you want to simplify the result for frontend processing
-** you want to expose a limited number of fields for security reasons
+  * you want to simplify the result for frontend processing
+  * you want to expose a limited number of fields for security reasons
 
 ## Maven dependency
 
