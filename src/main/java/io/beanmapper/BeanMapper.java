@@ -49,7 +49,7 @@ public class BeanMapper {
      * @param <S> The instance from which the properties get copied
      * @param <T> the instance to which the properties get copied
      * @return the target instance containing all applicable properties
-     * @throws Exception
+     * @throws BeanMappingException
      */
     public <S, T> T map(S source, Class<T> targetClass) throws BeanMappingException {
         try {
@@ -66,7 +66,7 @@ public class BeanMapper {
      * @param <S> source
      * @param <T> target
      * @return the list of mapped items with class T
-     * @throws Exception
+     * @throws BeanMappingException
      */
     public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass) throws BeanMappingException {
         Collection<T> targetItems = null;
@@ -88,7 +88,7 @@ public class BeanMapper {
      * @param <S> The instance from which the properties get copied.
      * @param <T> the instance to which the properties get copied
      * @return the original target instance containing all applicable properties
-     * @throws Exception
+     * @throws BeanMappingException
      */
     public <S, T> T map(S source, T target) throws BeanMappingException {
         return matchSourceToTarget(source, target);
@@ -105,7 +105,7 @@ public class BeanMapper {
      * @param <S>    The source type
      * @param <T>    The target type
      * @return A filled target object.
-     * @throws Exception
+     * @throws BeanMappingException
      */
     private <S, T> T matchSourceToTarget (S source, T target) throws BeanMappingException {
 
@@ -125,7 +125,7 @@ public class BeanMapper {
     /**
      * Process a single combination of a source and a target field.
      * @param beanFieldMatch contains the fields belonging to the source/target field match
-     * @throws Exception
+     * @throws BeanMappingException
      */
     private void processField(BeanFieldMatch beanFieldMatch) throws BeanMappingException {
 
@@ -163,7 +163,7 @@ public class BeanMapper {
      * The copy action puts the source's value to the target. When @BeanDefault has been set and the
      * value to copy is empty, it will use the default.
      * @param beanFieldMatch contains the fields belonging to the source/target field match
-     * @throws Exception
+     * @throws BeanMappingException
      */
     private void copySourceToTarget(BeanFieldMatch beanFieldMatch) throws BeanMappingException {
         Object copyableSource = beanFieldMatch.getSourceValue();
@@ -183,7 +183,7 @@ public class BeanMapper {
      * If the field is a class which can itself be mapped to another class, it must be treated
      * as such. The matching process is called recursively to deal with this pair.
      * @param beanFieldMatch contains the fields belonging to the source/target field match
-     * @throws Exception
+     * @throws BeanMappingException
      */
     private void dealWithMappableNestedClass(BeanFieldMatch beanFieldMatch) throws BeanMappingException {
 
