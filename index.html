@@ -90,6 +90,7 @@ source<span class="pl-k">.</span>date <span class="pl-k">=</span> <span class="p
 
         <ul>
           <li><a href="#user-content-beanproperty">@BeanProperty | Referencing properties</a></li>
+          <li><a href="#user-content-beanignore">@BeanIgnore | Explicitly not mapping fields</a></li>
         </ul>
 
         <h2>
@@ -106,6 +107,23 @@ source<span class="pl-k">.</span>date <span class="pl-k">=</span> <span class="p
         <div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">TargetClass</span> {
    <span class="pl-k">@BeanProperty</span>(<span class="pl-c1">name</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>)
    <span class="pl-k">public</span> <span class="pl-smi">String</span> otherName;
+}</pre></div>
+
+        <h2>
+          <a id="user-content-beanignore" class="anchor" href="#beanignore" aria-hidden="true"><span class="octicon octicon-link"></span></a>@BeanIgnore</h2>
+
+        <p>Sometimes it is useful not to map a field, for example when you wish to perform your own operations on it instead of relying on the Beanmapper. In this case a field on either side could be annotated with the @BeanIgnore property to instruct the Beanmapper to skip the field.</p>
+
+        <p><a href="images/03-bean-ignore.png" target="_blank"><img src="images/03-bean-ignore.png" alt="@BeanIgnore annotation for fields" style="max-width:100%;"></a></p>
+
+        <div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">SourceClass</span> {
+   <span class="pl-k">public</span> <span class="pl-smi">String</span> name;
+   <span class="pl-k">public</span> <span class="pl-smi">String</span> surname;
+}</pre></div>
+
+        <div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">TargetClass</span> {
+   <span class="pl-k">@BeanIgnore</span>
+   <span class="pl-k">public</span> <span class="pl-smi">String</span> name;
 }</pre></div>
 
         <h2>
