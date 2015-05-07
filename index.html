@@ -88,6 +88,26 @@ source<span class="pl-k">.</span>name <span class="pl-k">=</span> <span class="p
 source<span class="pl-k">.</span>date <span class="pl-k">=</span> <span class="pl-smi">LocalDate</span><span class="pl-k">.</span>of(<span class="pl-c1">2015</span>, <span class="pl-c1">4</span>, <span class="pl-c1">1</span>));
 <span class="pl-smi">TargetClass</span> target <span class="pl-k">=</span> beanMapper<span class="pl-k">.</span>map(source, <span class="pl-smi">TargetClass</span><span class="pl-k">.</span>class);</pre></div>
 
+        <ul>
+          <li><a href="#user-content-beanproperty">@BeanProperty | Referencing properties</a></li>
+        </ul>
+
+        <h2>
+          <a id="user-content-beanproperty" class="anchor" href="#beanproperty" aria-hidden="true"><span class="octicon octicon-link"></span></a>@BeanProperty</h2>
+
+        <p>Beanmapper can be instructed to look for properties with different names. Either property can be annotated with the @BeanProperty annotation. Within the annotation the name value references the other property. </p>
+
+        <p><a href="images/02-bean-property.png" target="_blank"><img src="images/02-bean-property.png" alt="@BeanProperty annotation for fields" style="max-width:100%;"></a></p>
+
+        <div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">SourceClass</span> {
+   <span class="pl-k">public</span> <span class="pl-smi">String</span> name;
+}</pre></div>
+
+        <div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">TargetClass</span> {
+   <span class="pl-k">@BeanProperty</span>(<span class="pl-c1">name</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>)
+   <span class="pl-k">public</span> <span class="pl-smi">String</span> otherName;
+}</pre></div>
+
         <h2>
           <a id="user-content-whats-more" class="anchor" href="#whats-more" aria-hidden="true"><span class="octicon octicon-link"></span></a>What's more?</h2>
 
