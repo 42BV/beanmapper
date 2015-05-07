@@ -89,9 +89,10 @@ source<span class="pl-k">.</span>date <span class="pl-k">=</span> <span class="p
 <span class="pl-smi">TargetClass</span> target <span class="pl-k">=</span> beanMapper<span class="pl-k">.</span>map(source, <span class="pl-smi">TargetClass</span><span class="pl-k">.</span>class);</pre></div>
 
         <ul>
-          <li><a href="#user-content-beanproperty">@BeanProperty | Referencing properties</a></li>
-          <li><a href="#user-content-beanignore">@BeanIgnore | Explicitly not mapping fields</a></li>
-          <li><a href="#user-content-beandefault">@BeanDefault | Default values when the source value is null</a></li>
+          <li><a href="#user-content-beanproperty">@BeanProperty</a> | Referencing properties</li>
+          <li><a href="#user-content-beanignore">@BeanIgnore</a> | Explicitly not mapping fields</li>
+          <li><a href="#user-content-beandefault">@BeanDefault</a> | Default values when the source value is null</li>
+          <li><a href="#user-content-beanunwrap">@BeanUnwrap</a> | Flattening class hierarchies</li>
         </ul>
 
         <h2>
@@ -141,6 +142,28 @@ source<span class="pl-k">.</span>date <span class="pl-k">=</span> <span class="p
         <div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">TargetClass</span> {
    <span class="pl-k">@BeanDefault(value="-- empty --")</span>
    <span class="pl-k">public</span> <span class="pl-smi">String</span> name;
+}</pre></div>
+
+        <h2>
+          <a id="user-content-beanunwrap" class="anchor" href="#beanunwrap" aria-hidden="true"><span class="octicon octicon-link"></span></a>@BeanUnwrap</h2>
+
+        <p>During the process of mapping it may be desirable to flatten structures. In this case, a field can be annotated with @BeanUnwrap. When the Beanmapper encounters this annotation, it will treat all the fields within that class as if they were on the same level as the class itself resides in. @BeanUnwrap effectively flattens layers this way.</p>
+
+        <p><a href="images/05-bean-unwrap.png" target="_blank"><img src="images/05-bean-unwrap.png" alt="@BeanDefault annotation for fields" style="max-width:100%;"></a></p>
+
+        <div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">SourceParent</span> {
+   <span class="pl-k">public</span> <span class="pl-smi">String</span> parentName;
+   <span class="pl-k">@BeanUnwrap</span>
+   <span class="pl-k">public</span> <span class="pl-smi">SourceChild</span> child;
+}</pre></div>
+
+        <div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">SourceChild</span> {
+   <span class="pl-k">public</span> <span class="pl-smi">String</span> childName;
+}</pre></div>
+
+        <div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">TargetParent</span> {
+   <span class="pl-k">public</span> <span class="pl-smi">String</span> parentName;
+   <span class="pl-k">public</span> <span class="pl-smi">String</span> childName;
 }</pre></div>
 
         <h2>
