@@ -1,19 +1,19 @@
 package io.beanmapper;
 
 import io.beanmapper.exceptions.BeanMappingException;
-import io.beanmapper.testmodel.encapsulate.*;
-import io.beanmapper.testmodel.encapsulate.sourceAnnotated.CarDriver;
-import io.beanmapper.testmodel.multipleunwrap.LayerA;
-import io.beanmapper.testmodel.nestedclasses.Layer1;
 import io.beanmapper.testmodel.defaults.SourceWithDefaults;
 import io.beanmapper.testmodel.defaults.TargetWithDefaults;
+import io.beanmapper.testmodel.encapsulate.*;
 import io.beanmapper.testmodel.encapsulate.sourceAnnotated.Car;
+import io.beanmapper.testmodel.encapsulate.sourceAnnotated.CarDriver;
 import io.beanmapper.testmodel.encapsulate.sourceAnnotated.Driver;
 import io.beanmapper.testmodel.ignore.IgnoreSource;
 import io.beanmapper.testmodel.ignore.IgnoreTarget;
 import io.beanmapper.testmodel.initiallyunmatchedsource.SourceWithUnmatchedField;
 import io.beanmapper.testmodel.initiallyunmatchedsource.TargetWithoutUnmatchedField;
 import io.beanmapper.testmodel.multipleunwrap.AllTogether;
+import io.beanmapper.testmodel.multipleunwrap.LayerA;
+import io.beanmapper.testmodel.nestedclasses.Layer1;
 import io.beanmapper.testmodel.nestedclasses.Layer1Result;
 import io.beanmapper.testmodel.othername.SourceWithOtherName;
 import io.beanmapper.testmodel.othername.TargetWithOtherName;
@@ -244,6 +244,19 @@ public class BeanMapperTest {
         assertEquals("name1", target.getName1());
         assertEquals("name2", target.getName2());
         assertEquals("name3", target.getName3());
+    }
+
+    @Test
+    public void multipleUnwrapReversed() throws BeanMappingException {
+        AllTogether source = new AllTogether();
+        source.setName1("name1");
+        source.setName2("name2");
+        source.setName3("name3");
+
+        LayerA target = beanMapper.map(source, LayerA.class);
+        assertEquals("name1", target.getName1());
+        assertEquals("name2", target.getLayerB().getName2());
+        assertEquals("name3", target.getLayerB().getLayerC().getName3());
     }
 
     @Test
