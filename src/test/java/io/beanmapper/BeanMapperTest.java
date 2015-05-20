@@ -17,6 +17,7 @@ import io.beanmapper.testmodel.nestedclasses.Layer1;
 import io.beanmapper.testmodel.nestedclasses.Layer1Result;
 import io.beanmapper.testmodel.othername.SourceWithOtherName;
 import io.beanmapper.testmodel.othername.TargetWithOtherName;
+import io.beanmapper.testmodel.parentClass.Project;
 import io.beanmapper.testmodel.parentClass.Source;
 import io.beanmapper.testmodel.parentClass.Target;
 import io.beanmapper.testmodel.person.Person;
@@ -146,6 +147,10 @@ public class BeanMapperTest {
     @Test
     public void testParentClass() throws BeanMappingException {
         Source entity = new Source();
+        Project project = new Project();
+        project.setProjectName("projectName");
+        project.setId(42L);
+        entity.setProject(project);
         entity.setId(1L);
         entity.setName("abstractName");
         entity.setStreet("street");
@@ -156,11 +161,13 @@ public class BeanMapperTest {
         assertEquals("abstractName", target.getName());
         assertEquals("street", target.getStreet());
         assertEquals(42, target.getHouseNumber(), 0);
+        assertEquals(42, target.getProjectId(), 0);
     }
 
     @Test
     public void testParentClassReversed() throws BeanMappingException {
         Target target = new Target();
+        target.setProjectId(42L);
         target.setId(1L);
         target.setName("abstractName");
         target.setStreet("street");
@@ -171,6 +178,7 @@ public class BeanMapperTest {
         assertEquals("abstractName", source.getName());
         assertEquals("street", source.getStreet());
         assertEquals(42, source.getHouseNumber(), 0);
+        assertEquals(42, source.getProject().getId(), 0);
     }
 
     @Test

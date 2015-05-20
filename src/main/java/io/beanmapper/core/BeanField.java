@@ -165,7 +165,7 @@ public class BeanField {
 
     private static boolean traversePath(Class baseClass, Route route, Stack<BeanField> beanFields) throws NoSuchFieldException {
         for (String node : route.getRoute()) {
-            final Field field = baseClass.getDeclaredField(node);
+            final Field field = getField(baseClass, node);
             if (field == null) {
                 return false;
             }
@@ -174,6 +174,21 @@ public class BeanField {
             baseClass = currentBeanField.getCurrentField().getType();
         }
         return true;
+    }
+
+    private static Field getField(Class clazz, String fieldName) throws NoSuchFieldException{
+        Field field;
+        try {
+            field = clazz.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException e) {
+            // Search in parent class
+            if(clazz.getSuperclass() != null) {
+                field = getField(clazz.getSuperclass(), fieldName);
+            } else {
+                throw new NoSuchFieldException();
+            }
+        }
+        return field;
     }
 
 }

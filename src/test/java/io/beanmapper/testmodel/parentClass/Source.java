@@ -4,6 +4,7 @@ public class Source extends AbstractSource {
 
     private String street;
     private int houseNumber;
+    private Project project;
 
     public String getStreet() {
         return street;
@@ -19,5 +20,13 @@ public class Source extends AbstractSource {
 
     public void setHouseNumber(int houseNumber) {
         this.houseNumber = houseNumber;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 }
