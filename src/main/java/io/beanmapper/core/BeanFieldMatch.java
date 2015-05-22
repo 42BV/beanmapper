@@ -26,6 +26,9 @@ public class BeanFieldMatch<S,T> {
     public T getTarget() { return target; }
     public String getTargetFieldName() { return targetFieldName; }
     public boolean hasMatchingSource() { return sourceBeanField != null; }
+    public Class getSourceClass() {
+        return sourceBeanField.getField().getType();
+    }
     public Class getTargetClass() { return targetBeanField.getField().getType(); }
     public Object getSourceValue() throws BeanMappingException {
         return sourceBeanField.getObject(source);

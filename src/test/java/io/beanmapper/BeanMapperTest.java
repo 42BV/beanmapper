@@ -1,6 +1,10 @@
 package io.beanmapper;
 
+import io.beanmapper.core.BeanConverter;
+import io.beanmapper.core.BeanConverterTest;
 import io.beanmapper.exceptions.BeanMappingException;
+import io.beanmapper.testmodel.converter.SourceWithDate;
+import io.beanmapper.testmodel.converter.TargetWithDateTime;
 import io.beanmapper.testmodel.defaults.SourceWithDefaults;
 import io.beanmapper.testmodel.defaults.TargetWithDefaults;
 import io.beanmapper.testmodel.encapsulate.*;
@@ -34,6 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -49,6 +54,7 @@ public class BeanMapperTest {
     public void prepareBeanMapper() {
         beanMapper = new BeanMapper();
         beanMapper.addPackagePrefix(BeanMapper.class);
+        beanMapper.addConverter(new BeanConverterTest());
     }
     
     @Test
@@ -287,6 +293,28 @@ public class BeanMapperTest {
         source.subclass = subclass;
         DifferentTarget target = beanMapper.map(source, DifferentTarget.class);
         assertEquals(source.subclass, target.subclass);
+    }
+
+    @Test
+    public void converterDateToDateTime() throws BeanMappingException {
+        SourceWithDate source = new SourceWithDate();
+        source.setDiffType(LocalDate.of(2015, 1, 1));
+        source.setSameType(LocalDate.of(2000, 1, 1));
+
+        TargetWithDateTime target = beanMapper.map(source, TargetWithDateTime.class);
+        assertEquals(target.getDiffType(), LocalDateTime.of(2015, 1, 1, 0, 0));
+        assertEquals(target.getSameType(), LocalDate.of(2000, 1, 1));
+    }
+
+    @Test
+    public void converterDateTimeToDate() throws BeanMappingException {
+        TargetWithDateTime source = new TargetWithDateTime();
+        source.setDiffType(LocalDateTime.of(2015, 1, 1, 0, 0));
+        source.setSameType(LocalDate.of(2000, 1, 1));
+
+        SourceWithDate target = beanMapper.map(source, SourceWithDate.class);
+        assertEquals(target.getDiffType(), LocalDate.of(2015, 1, 1));
+        assertEquals(target.getSameType(), LocalDate.of(2000, 1, 1));
     }
 
     public Person createPerson(String name) {

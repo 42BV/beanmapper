@@ -62,6 +62,7 @@ The library can help you with the following situations:
 * unwrapping class layers in order to flatten the structure
 * works directly on the bean, no getters/setters required
 * supports a combination of automated and manual processing
+* adding conversion modules for data types
 
 ## What Beanmapper is not for
 

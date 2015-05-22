@@ -2,6 +2,7 @@ package io.beanmapper;
 
 import io.beanmapper.annotations.BeanDefault;
 import io.beanmapper.annotations.BeanProperty;
+import io.beanmapper.core.BeanConverter;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.BeanMatch;
 import io.beanmapper.core.BeanMatchStore;
@@ -9,6 +10,8 @@ import io.beanmapper.exceptions.BeanFieldNoMatchException;
 import io.beanmapper.exceptions.BeanInstantiationException;
 import io.beanmapper.exceptions.BeanMappingException;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -32,6 +35,11 @@ public class BeanMapper {
     private List<Package> packagePrefixesForMappableClasses = new ArrayList<>();
 
     /**
+     * the list of converters that should be checked for conversions.
+     */
+    private List<BeanConverter> beanConverters = new ArrayList<>();
+
+    /**
      * Adds a package on the basis of a class. All classes in that package and sub-packages are
      * eligible for mapping. The root source and target do not need to be set as such, because
      * the verification is only run against nested classes which should be mapped implicity as
@@ -40,6 +48,17 @@ public class BeanMapper {
      */
     public void addPackagePrefix(Class clazz) {
         packagePrefixesForMappableClasses.add(clazz.getPackage());
+    }
+
+    /**
+     * Add a converter class (must inherit from abstract BeanConverter class) to the beanMapper.
+     * On mapping, the beanMapper will check for a suitable converter and use its from and
+     * to methods to convert the value of the fields to the correct new data type.
+     * @param converter an instance of the class that contains the conversion method implementations and inherits
+     *                  from the abstract BeanConverter class.
+     */
+    public void addConverter(BeanConverter converter) {
+        beanConverters.add(converter);
     }
 
     /**
@@ -146,8 +165,6 @@ public class BeanMapper {
      * This method is run when there is no matching source field for a target field. The result
      * could be that a default is set, or an exception is thrown when a BeanProperty has been set.
      * @param beanFieldMatch contains the fields belonging to the source/target field match
-     * @throws IllegalAccessException
-     * @throws BeanMappingException
      */
     private void dealWithNonMatchingNode(BeanFieldMatch beanFieldMatch)
             throws BeanMappingException {
@@ -173,6 +190,22 @@ public class BeanMapper {
                 copyableSource = beanFieldMatch.getTargetDefaultValue();
             } else if (beanFieldMatch.sourceHasAnnotation(BeanDefault.class)) {
                 copyableSource = beanFieldMatch.getSourceDefaultValue();
+            }
+        }else{
+            //If the source is not null, try if a possible BeanConverter is found
+            BeanConverter converter = getConverter(copyableSource.getClass(), beanFieldMatch.getTargetClass());
+            if(converter != null){
+                //Use the from or to method (depending on the targetclass) from the converter to convert the source data
+                Method[] methods = converter.getClass().getMethods();
+                for(Method method : methods){
+                    if(method.getReturnType() == beanFieldMatch.getTargetClass()){
+                        if(method.getName().equals("to")){
+                            copyableSource = converter.to(copyableSource);
+                        }else if(method.getName().equals("from")){
+                            copyableSource = converter.from(copyableSource);
+                        }
+                    }
+                }
             }
         }
 
@@ -210,4 +243,35 @@ public class BeanMapper {
         return false;
     }
 
+
+    /**
+     * Verifies whether a beanConverter is available to apply for conversion
+     * @param sourceClass the source class of the conversion
+     * @param targetClass the target class of the conversion
+     * @return the beanConverter to do the conversion with
+     */
+    private BeanConverter getConverter(Class sourceClass, Class targetClass) {
+        for(BeanConverter converter : beanConverters){
+            Class fromClass = null;
+            Class toClass = null;
+
+            //Check if return types of the methods From and To in the beanconverter match source and target class both ways
+            Method[] methods = converter.getClass().getMethods();
+            for(Method method : methods){
+                if(method.getName().equals("from") && (method.getReturnType() == sourceClass || method.getReturnType() == targetClass)){
+                    fromClass = method.getReturnType();
+                }else if(method.getName().equals("to") && (method.getReturnType() == targetClass || method.getReturnType() == sourceClass)){
+                    toClass = method.getReturnType();
+                }
+            }
+
+            //If match is found, return the converter.
+            if(fromClass == sourceClass && toClass == targetClass){
+                return converter;
+            }else if(fromClass == targetClass && toClass == sourceClass){
+                return converter;
+            }
+        }
+        return null;
+    }
 }
