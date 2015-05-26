@@ -194,18 +194,8 @@ public class BeanMapper {
         }else{
             //If the source is not null, try if a possible BeanConverter is found
             BeanConverter converter = getConverter(copyableSource.getClass(), beanFieldMatch.getTargetClass());
-            if(converter != null){
-                //Use the from or to method (depending on the targetclass) from the converter to convert the source data
-                Method[] methods = converter.getClass().getMethods();
-                for(Method method : methods){
-                    if(method.getReturnType() == beanFieldMatch.getTargetClass()){
-                        if(method.getName().equals("to")){
-                            copyableSource = converter.to(copyableSource);
-                        }else if(method.getName().equals("from")){
-                            copyableSource = converter.from(copyableSource);
-                        }
-                    }
-                }
+            if (converter != null) {
+                copyableSource = converter.convert(copyableSource);
             }
         }
 
@@ -252,23 +242,7 @@ public class BeanMapper {
      */
     private BeanConverter getConverter(Class sourceClass, Class targetClass) {
         for(BeanConverter converter : beanConverters){
-            Class fromClass = null;
-            Class toClass = null;
-
-            //Check if return types of the methods From and To in the beanconverter match source and target class both ways
-            Method[] methods = converter.getClass().getMethods();
-            for(Method method : methods){
-                if(method.getName().equals("from") && (method.getReturnType() == sourceClass || method.getReturnType() == targetClass)){
-                    fromClass = method.getReturnType();
-                }else if(method.getName().equals("to") && (method.getReturnType() == targetClass || method.getReturnType() == sourceClass)){
-                    toClass = method.getReturnType();
-                }
-            }
-
-            //If match is found, return the converter.
-            if(fromClass == sourceClass && toClass == targetClass){
-                return converter;
-            }else if(fromClass == targetClass && toClass == sourceClass){
+            if (converter.match(sourceClass, targetClass)) {
                 return converter;
             }
         }

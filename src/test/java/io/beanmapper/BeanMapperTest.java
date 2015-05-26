@@ -1,7 +1,7 @@
 package io.beanmapper;
 
-import io.beanmapper.core.BeanConverter;
-import io.beanmapper.core.BeanConverterTest;
+import io.beanmapper.core.LocalDateTimeToLocalDate;
+import io.beanmapper.core.LocalDateToLocalDateTime;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.testmodel.converter.SourceWithDate;
 import io.beanmapper.testmodel.converter.TargetWithDateTime;
@@ -54,7 +54,8 @@ public class BeanMapperTest {
     public void prepareBeanMapper() {
         beanMapper = new BeanMapper();
         beanMapper.addPackagePrefix(BeanMapper.class);
-        beanMapper.addConverter(new BeanConverterTest());
+        beanMapper.addConverter(new LocalDateTimeToLocalDate());
+        beanMapper.addConverter(new LocalDateToLocalDateTime());
     }
     
     @Test
