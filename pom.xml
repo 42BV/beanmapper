@@ -3,7 +3,7 @@
 
     <groupId>io.beanmapper</groupId>
     <artifactId>beanmapper</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>0.2.2</version>
     <packaging>jar</packaging>
     <name>42 Bean Mapper</name>
     <description>Easy-to-use bean mapper for conversion from form to object to view</description>
