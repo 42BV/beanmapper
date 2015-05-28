@@ -29,6 +29,9 @@ import io.beanmapper.testmodel.person.PersonForm;
 import io.beanmapper.testmodel.person.PersonView;
 import io.beanmapper.testmodel.publicfields.SourceWithPublicFields;
 import io.beanmapper.testmodel.publicfields.TargetWithPublicFields;
+import io.beanmapper.testmodel.samesourcediffresults.FirstResult;
+import io.beanmapper.testmodel.samesourcediffresults.SecondResult;
+import io.beanmapper.testmodel.samesourcediffresults.SourceEntity;
 import io.beanmapper.testmodel.similarsubclasses.DifferentSource;
 import io.beanmapper.testmodel.similarsubclasses.DifferentTarget;
 import io.beanmapper.testmodel.similarsubclasses.SimilarSubclass;
@@ -317,6 +320,22 @@ public class BeanMapperTest {
         SourceWithDate target = beanMapper.map(source, SourceWithDate.class);
         assertEquals(target.getDiffType(), LocalDate.of(2015, 1, 1));
         assertEquals(target.getSameType(), LocalDate.of(2000, 1, 1));
+    }
+
+    @Test
+    public void sameSourceTwoDiffResults() throws BeanMappingException {
+        SourceEntity sourceEntity = new SourceEntity();
+        sourceEntity.setId(1L);
+        sourceEntity.setName("name");
+        sourceEntity.setDescription("description");
+
+        FirstResult firstResult = beanMapper.map(sourceEntity, FirstResult.class);
+        SecondResult secondResult = beanMapper.map(sourceEntity, SecondResult.class);
+
+        assertEquals(1L, firstResult.getId(), 0);
+        assertEquals("name", firstResult.getName());
+        assertEquals(1L, secondResult.getId(), 0);
+        assertEquals("description", secondResult.getDescription());
     }
 
     public Person createPerson(String name) {

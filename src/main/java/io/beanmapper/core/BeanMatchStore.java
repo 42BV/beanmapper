@@ -7,6 +7,7 @@ import io.beanmapper.exceptions.BeanMissingPathException;
 import io.beanmapper.exceptions.BeanMappingException;
 
 import java.lang.reflect.Field;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -16,7 +17,7 @@ public class BeanMatchStore {
 
     public BeanMatch getBeanMatch(Class source, Class target) throws BeanMappingException {
         Map<String, BeanMatch> targetsForSource = getTargetsForSource(source);
-        if (targetsForSource == null) {
+        if (targetsForSource == null || !targetsForSource.containsKey(target.getCanonicalName())) {
             return addBeanMatch(determineBeanMatch(source, target));
         }
         return getTarget(targetsForSource, target);
