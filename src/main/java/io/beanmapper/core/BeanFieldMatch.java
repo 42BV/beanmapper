@@ -30,9 +30,6 @@ public class BeanFieldMatch<S,T> {
         return sourceBeanField.getField().getType();
     }
     public Class getTargetClass() { return targetBeanField.getField().getType(); }
-    public Object getSourceValue() throws BeanMappingException {
-        return sourceBeanField.getObject(source);
-    }
     public boolean targetHasAnnotation(Class<? extends Annotation> annotationClass) {
         return hasAnnotation(targetBeanField, annotationClass);
     }

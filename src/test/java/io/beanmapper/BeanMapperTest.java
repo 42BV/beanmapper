@@ -250,6 +250,7 @@ public class BeanMapperTest {
         assertEquals("layer1", result.getName1());
         assertEquals("layer2", result.getLayer2().getName2());
         assertEquals("name3", result.getLayer2().getLayer3().getName3());
+        assertEquals(null, result.getLayer2().getLayer3().getId4());
     }
 
     @Test

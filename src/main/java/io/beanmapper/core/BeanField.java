@@ -65,10 +65,9 @@ public class BeanField {
             throw new BeanGetFieldException(object.getClass(), getCurrentField(), e);
         }
         if (hasNext()) {
-            if (object == null) {
-                throw new BeanMissingPathException("The path could not be resolved");
+            if (object != null) {
+                return getNext().getObject(object);
             }
-            return getNext().getObject(object);
         }
         return object;
     }

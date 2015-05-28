@@ -183,7 +183,7 @@ public class BeanMapper {
      * @throws BeanMappingException
      */
     private void copySourceToTarget(BeanFieldMatch beanFieldMatch) throws BeanMappingException {
-        Object copyableSource = beanFieldMatch.getSourceValue();
+        Object copyableSource = beanFieldMatch.getSourceObject();
 
         if (copyableSource == null) {
             if (beanFieldMatch.targetHasAnnotation(BeanDefault.class)) {
