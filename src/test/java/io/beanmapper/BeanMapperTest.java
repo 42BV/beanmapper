@@ -29,9 +29,9 @@ import io.beanmapper.testmodel.person.PersonForm;
 import io.beanmapper.testmodel.person.PersonView;
 import io.beanmapper.testmodel.publicfields.SourceWithPublicFields;
 import io.beanmapper.testmodel.publicfields.TargetWithPublicFields;
-import io.beanmapper.testmodel.samesourcediffresults.FirstResult;
-import io.beanmapper.testmodel.samesourcediffresults.SecondResult;
-import io.beanmapper.testmodel.samesourcediffresults.SourceEntity;
+import io.beanmapper.testmodel.samesourcediffresults.ResultOne;
+import io.beanmapper.testmodel.samesourcediffresults.ResultTwo;
+import io.beanmapper.testmodel.samesourcediffresults.Entity;
 import io.beanmapper.testmodel.similarsubclasses.DifferentSource;
 import io.beanmapper.testmodel.similarsubclasses.DifferentTarget;
 import io.beanmapper.testmodel.similarsubclasses.SimilarSubclass;
@@ -324,18 +324,18 @@ public class BeanMapperTest {
 
     @Test
     public void sameSourceTwoDiffResults() throws BeanMappingException {
-        SourceEntity sourceEntity = new SourceEntity();
-        sourceEntity.setId(1L);
-        sourceEntity.setName("name");
-        sourceEntity.setDescription("description");
+        Entity entity = new Entity();
+        entity.setId(1L);
+        entity.setName("name");
+        entity.setDescription("description");
 
-        FirstResult firstResult = beanMapper.map(sourceEntity, FirstResult.class);
-        SecondResult secondResult = beanMapper.map(sourceEntity, SecondResult.class);
+        ResultOne resultOne = beanMapper.map(entity, ResultOne.class);
+        ResultTwo resultTwo = beanMapper.map(entity, ResultTwo.class);
 
-        assertEquals(1L, firstResult.getId(), 0);
-        assertEquals("name", firstResult.getName());
-        assertEquals(1L, secondResult.getId(), 0);
-        assertEquals("description", secondResult.getDescription());
+        assertEquals(1L, resultOne.getId(), 0);
+        assertEquals("name", resultOne.getName());
+        assertEquals(1L, resultTwo.getId(), 0);
+        assertEquals("description", resultTwo.getDescription());
     }
 
     public Person createPerson(String name) {
