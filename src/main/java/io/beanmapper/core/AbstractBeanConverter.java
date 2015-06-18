@@ -35,7 +35,7 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
      * @param sourceClass the source class
      * @param targetClass the target class
      */
-    public AbstractBeanConverter(Class<S> sourceClass, Class<T> targetClass) {
+    public AbstractBeanConverter(Class<?> sourceClass, Class<?> targetClass) {
         this.sourceClass = sourceClass;
         this.targetClass = targetClass;
     }
@@ -63,7 +63,7 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
      * @param source the source instance
      * @return the converted source instance
      */
-    protected abstract <R extends T> R doConvert(S source, Class<R> targetClass);
+    protected abstract Object doConvert(S source, Class<? extends T> targetClass);
 
     /**
      * {@inheritDoc}

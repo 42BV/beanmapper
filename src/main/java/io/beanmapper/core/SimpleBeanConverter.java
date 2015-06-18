@@ -25,7 +25,7 @@ public abstract class SimpleBeanConverter<S, T> extends AbstractBeanConverter<S,
      * @param sourceClass the source class
      * @param targetClass the target class
      */
-    public SimpleBeanConverter(Class<S> sourceClass, Class<T> targetClass) {
+    public SimpleBeanConverter(Class<?> sourceClass, Class<?> targetClass) {
         super(sourceClass, targetClass);
     }
     
@@ -34,8 +34,8 @@ public abstract class SimpleBeanConverter<S, T> extends AbstractBeanConverter<S,
      */
     @Override
     @SuppressWarnings("unchecked")
-    protected final <R extends T> R doConvert(S source, Class<R> targetClass) {
-        return (R) doConvert(source); // No need to provide the target class
+    protected final Object doConvert(S source, Class<? extends T> targetClass) {
+        return doConvert(source); // No need to provide the target class
     }
     
     /**
