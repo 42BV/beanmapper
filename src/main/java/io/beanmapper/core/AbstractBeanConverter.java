@@ -32,7 +32,6 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
 
     /**
      * Construct a new bean converter, manually declaring the source and target class.
-     * 
      * @param sourceClass the source class
      * @param targetClass the target class
      */
@@ -46,17 +45,17 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public final <R> R convert(Object source, Class<R> targetClass) {
+    public final Object convert(Object source, Class<?> targetClass) {
         if (source == null) {
             return null;
         }
-        if (!source.getClass().equals(sourceClass)) {
+        if (!sourceClass.isAssignableFrom(source.getClass())) {
             throw new IllegalArgumentException("Expected an instance of: " + sourceClass.getName());
         }
-        if (!this.targetClass.equals(targetClass)) {
+        if (!this.targetClass.isAssignableFrom(targetClass)) {
             throw new IllegalArgumentException("Cannot only convert to: " + targetClass.getName());
         }
-        return (R) convert((S) source);
+        return doConvert((S) source, (Class<T>) targetClass);
     }
     
     /**
@@ -64,14 +63,14 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
      * @param source the source instance
      * @return the converted source instance
      */
-    public abstract T convert(S source);
+    protected abstract <R extends T> R doConvert(S source, Class<R> targetClass);
 
     /**
      * {@inheritDoc}
      */
     @Override
     public final boolean match(Class<?> sourceClass, Class<?> targetClass) {
-        return sourceClass.equals(this.sourceClass) && targetClass.equals(this.targetClass);
+        return this.sourceClass.isAssignableFrom(sourceClass) && this.targetClass.isAssignableFrom(targetClass);
     }
     
 }

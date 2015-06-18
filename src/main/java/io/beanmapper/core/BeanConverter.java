@@ -14,7 +14,7 @@ public interface BeanConverter {
      * @param targetClass the desired target type
      * @return the converted source instance
      */
-    <T> T convert(Object source, Class<T> targetClass);
+    Object convert(Object source, Class<?> targetClass);
 
     /**
      * Determines if the conversion of our source type to a 

@@ -31,7 +31,7 @@ public class SpringBeanConverter implements BeanConverter {
      * {@inheritDoc}
      */
     @Override
-    public <T> T convert(Object source, Class<T> targetClass) {
+    public Object convert(Object source, Class<?> targetClass) {
         return conversionService.convert(source, targetClass);
     }
     
