@@ -10,8 +10,6 @@ import io.beanmapper.exceptions.BeanFieldNoMatchException;
 import io.beanmapper.exceptions.BeanInstantiationException;
 import io.beanmapper.exceptions.BeanMappingException;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -195,7 +193,7 @@ public class BeanMapper {
             //If the source is not null, try if a possible BeanConverter is found
             BeanConverter converter = getConverter(copyableSource.getClass(), beanFieldMatch.getTargetClass());
             if (converter != null) {
-                copyableSource = converter.convert(copyableSource);
+                copyableSource = converter.convert(copyableSource, beanFieldMatch.getTargetClass());
             }
         }
 

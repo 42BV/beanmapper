@@ -6,14 +6,23 @@ package io.beanmapper.core;
  * After instantiation of the beanMapper, you can add the converter module by
  * calling the addConverter() method.
  */
-public interface BeanConverter<S, T> {
+public interface BeanConverter {
 
-    T convert(S source);
+    /**
+     * Converts the source instance into the desired target type.
+     * @param source the source instance
+     * @param targetClass the desired target type
+     * @return the converted source instance
+     */
+    <T> T convert(Object source, Class<T> targetClass);
 
-    Class<S> getSourceClass();
-
-    Class<T> getTargetClass();
-
-    boolean match(Class sourceClass, Class targetClass);
+    /**
+     * Determines if the conversion of our source type to a 
+     * target type is supported by this converter.
+     * @param sourceClass the source class
+     * @param targetClass the target class
+     * @return {@code true} if the conversion is supported, else {@code false}
+     */
+    boolean match(Class<?> sourceClass, Class<?> targetClass);
 
 }
