@@ -1,5 +1,7 @@
 package io.beanmapper;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import io.beanmapper.core.LocalDateTimeToLocalDate;
 import io.beanmapper.core.LocalDateToLocalDateTime;
 import io.beanmapper.exceptions.BeanMappingException;
@@ -7,7 +9,12 @@ import io.beanmapper.testmodel.converter.SourceWithDate;
 import io.beanmapper.testmodel.converter.TargetWithDateTime;
 import io.beanmapper.testmodel.defaults.SourceWithDefaults;
 import io.beanmapper.testmodel.defaults.TargetWithDefaults;
-import io.beanmapper.testmodel.encapsulate.*;
+import io.beanmapper.testmodel.encapsulate.Address;
+import io.beanmapper.testmodel.encapsulate.Country;
+import io.beanmapper.testmodel.encapsulate.House;
+import io.beanmapper.testmodel.encapsulate.ResultManyToMany;
+import io.beanmapper.testmodel.encapsulate.ResultManyToOne;
+import io.beanmapper.testmodel.encapsulate.ResultOneToMany;
 import io.beanmapper.testmodel.encapsulate.sourceAnnotated.Car;
 import io.beanmapper.testmodel.encapsulate.sourceAnnotated.CarDriver;
 import io.beanmapper.testmodel.encapsulate.sourceAnnotated.Driver;
@@ -25,20 +32,19 @@ import io.beanmapper.testmodel.parentClass.Project;
 import io.beanmapper.testmodel.parentClass.Source;
 import io.beanmapper.testmodel.parentClass.Target;
 import io.beanmapper.testmodel.person.Person;
+import io.beanmapper.testmodel.person.PersonAo;
 import io.beanmapper.testmodel.person.PersonForm;
 import io.beanmapper.testmodel.person.PersonView;
 import io.beanmapper.testmodel.publicfields.SourceWithPublicFields;
 import io.beanmapper.testmodel.publicfields.TargetWithPublicFields;
+import io.beanmapper.testmodel.samesourcediffresults.Entity;
 import io.beanmapper.testmodel.samesourcediffresults.ResultOne;
 import io.beanmapper.testmodel.samesourcediffresults.ResultTwo;
-import io.beanmapper.testmodel.samesourcediffresults.Entity;
 import io.beanmapper.testmodel.similarsubclasses.DifferentSource;
 import io.beanmapper.testmodel.similarsubclasses.DifferentTarget;
 import io.beanmapper.testmodel.similarsubclasses.SimilarSubclass;
 import io.beanmapper.testmodel.tostring.SourceWithNonString;
 import io.beanmapper.testmodel.tostring.TargetWithString;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -46,8 +52,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.Verifications;
+
+import org.junit.Before;
+import org.junit.Test;
 
 public class BeanMapperTest {
 
@@ -59,6 +69,39 @@ public class BeanMapperTest {
         beanMapper.addPackagePrefix(BeanMapper.class);
         beanMapper.addConverter(new LocalDateTimeToLocalDate());
         beanMapper.addConverter(new LocalDateToLocalDateTime());
+    }
+    
+    @Test
+    public void mapFromInterface(@Mocked PersonAo source) throws BeanMappingException {
+        new Expectations() {
+            {
+                source.getId();
+                result = Long.valueOf(42);
+                
+                source.getName();
+                result = "Jan";
+            }
+        };
+        
+        Person person = beanMapper.map(source, Person.class);
+        assertEquals(Long.valueOf(42), person.getId());
+        assertEquals("Jan", person.getName());
+        assertNull(person.getPlace());
+        assertNull(person.getBankAccount());
+    }
+    
+    @Test
+    public void mapToInterface(@Mocked PersonAo target) throws BeanMappingException {
+        Person person = new Person();
+        person.setId(Long.valueOf(42));
+        person.setName("Jan");
+        
+        new Verifications() {
+            {
+                target.setId(Long.valueOf(42));
+                target.setName("Jan");
+            }
+        };
     }
     
     @Test

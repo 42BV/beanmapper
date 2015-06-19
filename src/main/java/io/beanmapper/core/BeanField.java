@@ -1,6 +1,9 @@
 package io.beanmapper.core;
 
-import io.beanmapper.exceptions.*;
+import io.beanmapper.exceptions.BeanGetFieldException;
+import io.beanmapper.exceptions.BeanInstantiationException;
+import io.beanmapper.exceptions.BeanMappingException;
+import io.beanmapper.exceptions.BeanSetFieldException;
 
 import java.lang.reflect.Field;
 import java.util.Stack;
@@ -14,8 +17,9 @@ public class BeanField {
     private BeanField next;
 
     public BeanField(String name, Field field) {
-        setName(name);
-        setField(field);
+        this.name = name;
+        this.field = field;
+        this.field.setAccessible(true);
     }
 
     public String getName() {
@@ -27,10 +31,6 @@ public class BeanField {
             return getNext().getName(prefix + name + ".");
         }
         return prefix + name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public boolean hasNext() {
@@ -45,17 +45,13 @@ public class BeanField {
         this.next = beanField;
     }
 
+
     protected Field getCurrentField() {
         return field;
     }
 
-    public Field getField() {
+    private Field getField() {
         return hasNext() ? getNext().getField() : getCurrentField();
-    }
-
-    public void setField(Field field) {
-        this.field = field;
-        this.field.setAccessible(true);
     }
 
     public Object getObject(Object object) throws BeanMappingException {
@@ -115,11 +111,6 @@ public class BeanField {
             }
         }
         return parent;
-    }
-
-    public static BeanField determineNodesForNode(Class baseClass, String node)
-            throws NoSuchFieldException {
-        return determineNodes(baseClass, new Route(node), new Stack<>());
     }
 
     public static BeanField determineNodesForPath(Class baseClass, String path)
