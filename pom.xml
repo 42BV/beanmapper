@@ -3,7 +3,7 @@
 
     <groupId>io.beanmapper</groupId>
     <artifactId>beanmapper</artifactId>
-    <version>0.2.2</version>
+    <version>0.2.5-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>42 Bean Mapper</name>
     <description>Easy-to-use bean mapper for conversion from form to object to view</description>
@@ -44,6 +44,7 @@
     <properties>
         <junit.version>4.10</junit.version>
         <slf4j.version>1.7.2</slf4j.version>
+        <spring.version>4.1.6.RELEASE</spring.version>
         <!-- Reporting -->
         <maven.cobertura.version>2.5.2</maven.cobertura.version>
         <maven.javadoc.version>2.8</maven.javadoc.version>
@@ -52,6 +53,14 @@
     </properties>
 
     <dependencies>
+
+        <!-- Spring integration -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- Used for unit testing -->
         <dependency>

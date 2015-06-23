@@ -3,21 +3,18 @@ package io.beanmapper.core;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class LocalDateToLocalDateTime extends AbstractBeanConverter<LocalDate, LocalDateTime> {
+public class LocalDateToLocalDateTime extends SimpleBeanConverter<LocalDate, LocalDateTime> {
 
+    public LocalDateToLocalDateTime() {
+        super(LocalDate.class, LocalDateTime.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public LocalDateTime convert(LocalDate source) {
+    public LocalDateTime doConvert(LocalDate source) {
         return LocalDateTime.of(source.getYear(), source.getMonth(), source.getDayOfMonth(), 0, 0);
-    }
-
-    @Override
-    public Class<LocalDate> getSourceClass() {
-        return LocalDate.class;
-    }
-
-    @Override
-    public Class<LocalDateTime> getTargetClass() {
-        return LocalDateTime.class;
     }
 
 }
