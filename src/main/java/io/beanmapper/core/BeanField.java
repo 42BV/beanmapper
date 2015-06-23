@@ -1,11 +1,10 @@
 package io.beanmapper.core;
 
 import io.beanmapper.core.constructor.NoArgConstructorBeanInitializer;
-import io.beanmapper.core.inspector.FieldPropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessor;
+import io.beanmapper.core.inspector.PropertyAccessors;
 import io.beanmapper.exceptions.BeanMappingException;
 
-import java.lang.reflect.Field;
 import java.util.Stack;
 
 public class BeanField {
@@ -130,29 +129,14 @@ public class BeanField {
 
     private static boolean traversePath(Class<?> baseClass, Route route, Stack<BeanField> beanFields) throws NoSuchFieldException {
         for (String node : route.getRoute()) {
-            final Field field = getField(baseClass, node);
-            if (field == null) {
+            final PropertyAccessor property = PropertyAccessors.getProperty(baseClass, node);
+            if (property == null) {
                 return false;
             }
-            BeanField currentBeanField = new BeanField(node, new FieldPropertyAccessor(field));
-            beanFields.push(currentBeanField);
-            baseClass = currentBeanField.getCurrentField().getType();
+            beanFields.push(new BeanField(node, property));
+            baseClass = property.getType();
         }
         return true;
-    }
-
-    private static Field getField(Class<?> clazz, String fieldName) throws NoSuchFieldException {
-        Field field;
-        try {
-            field = clazz.getDeclaredField(fieldName);
-        } catch (NoSuchFieldException e) {
-            if(clazz.getSuperclass() != null) {
-                field = getField(clazz.getSuperclass(), fieldName);
-            } else {
-                throw new NoSuchFieldException();
-            }
-        }
-        return field;
     }
 
 }

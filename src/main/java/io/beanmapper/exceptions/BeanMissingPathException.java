@@ -1,6 +1,5 @@
 package io.beanmapper.exceptions;
 
-import java.lang.reflect.Field;
 
 public class BeanMissingPathException extends BeanMappingException {
 
@@ -10,8 +9,8 @@ public class BeanMissingPathException extends BeanMappingException {
         super(error);
     }
 
-    public BeanMissingPathException(Class clazz, Field field, Throwable rootCause) {
-        super(String.format(ERROR, clazz.getName(), field.getName()), rootCause);
+    public BeanMissingPathException(Class<?> clazz, String name, Throwable rootCause) {
+        super(String.format(ERROR, clazz.getName(), name), rootCause);
     }
 
 }

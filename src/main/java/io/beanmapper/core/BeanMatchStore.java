@@ -3,11 +3,12 @@ package io.beanmapper.core;
 import io.beanmapper.annotations.BeanIgnore;
 import io.beanmapper.annotations.BeanProperty;
 import io.beanmapper.annotations.BeanUnwrap;
-import io.beanmapper.exceptions.BeanMissingPathException;
+import io.beanmapper.core.inspector.PropertyAccessor;
+import io.beanmapper.core.inspector.PropertyAccessors;
 import io.beanmapper.exceptions.BeanMappingException;
+import io.beanmapper.exceptions.BeanMissingPathException;
 
-import java.lang.reflect.Field;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -68,27 +69,29 @@ public class BeanMatchStore {
         if (ourType.getSuperclass() != null) {
             getAllFields(ourNodes, otherNodes, ourType.getSuperclass(), otherType, null);
         }
-
-        for (Field field : ourType.getDeclaredFields()) {
+        
+        List<PropertyAccessor> accessors = PropertyAccessors.getAll(ourType);
+        for (PropertyAccessor accessor : accessors) {
 
             // Ignore fields
-            if (field.isAnnotationPresent(BeanIgnore.class)) {
+            if (accessor.findAnnotation(BeanIgnore.class) != null) {
                 continue;
             }
 
             // BeanProperty allows the field to match with a field from the other side with a different name
             // and even a different nesting level.
-            String name = dealWithBeanProperty(otherNodes, otherType, field);
+            String name = dealWithBeanProperty(otherNodes, otherType, accessor);
 
             // Unwrap the fields which exist in the unwrap class
             BeanField currentBeanField = null;
             try {
-                currentBeanField = BeanField.determineNodesForPath(ourType, field.getName(), prefixingBeanField);
+                currentBeanField = BeanField.determineNodesForPath(ourType, accessor.getName(), prefixingBeanField);
             } catch (NoSuchFieldException e) {
-                throw new BeanMissingPathException(ourType, field, e);
+                throw new BeanMissingPathException(ourType, accessor.getName(), e);
             }
-            if (field.isAnnotationPresent(BeanUnwrap.class)) {
-                ourNodes = getAllFields(ourNodes, otherNodes, field.getType(), otherType, currentBeanField);
+            
+            if (accessor.findAnnotation(BeanUnwrap.class) != null) {
+                ourNodes = getAllFields(ourNodes, otherNodes, accessor.getType(), otherType, currentBeanField);
             } else {
                 ourNodes.put(name, currentBeanField);
             }
@@ -96,10 +99,10 @@ public class BeanMatchStore {
         return ourNodes;
     }
 
-    private String dealWithBeanProperty(Map<String, BeanField> otherNodes, Class otherType, Field field) {
-        String name = field.getName();
-        if (field.isAnnotationPresent(BeanProperty.class)) {
-            name = field.getAnnotation(BeanProperty.class).name();
+    private String dealWithBeanProperty(Map<String, BeanField> otherNodes, Class<?> otherType, PropertyAccessor accessor) {
+        String name = accessor.getName();
+        if (accessor.findAnnotation(BeanProperty.class) != null) {
+            name = accessor.findAnnotation(BeanProperty.class).name();
             // Get the other field from the location that is specified in the beanProperty annotation.
             // If the field is referred to by a path, store the custom field in the other map
             try {
