@@ -78,15 +78,10 @@ public class BeanField {
     public Object writeObject(Object source, Object parent) throws BeanMappingException {
         if (hasNext()) {
             getNext().writeObject(source, getOrCreate(parent));
-        }
-        else {
-            // If target is a String and source is not, call toString on the value
-            if (    source != null &&
-                    getCurrentField().getType().equals(String.class) &&
-                    !source.getClass().equals(String.class)) {
+        } else {
+            if (source != null && getCurrentField().getType().equals(String.class) && !source.getClass().equals(String.class)) {
                 source = source.toString();
             }
-
             getCurrentField().setValue(parent, source);
         }
         return parent;

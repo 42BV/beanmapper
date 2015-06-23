@@ -4,10 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import io.beanmapper.testmodel.nestedclasses.Layer1;
 import io.beanmapper.testmodel.nestedclasses.Layer1Result;
-import io.beanmapper.testmodel.tostring.SourceWithNonString;
-import io.beanmapper.testmodel.tostring.TargetWithString;
-
-import java.time.LocalDate;
 
 import org.junit.Test;
 
@@ -51,17 +47,6 @@ public class BeanFieldTest {
         BeanField beanFieldForTarget = BeanField.determineNodesForPath(Layer1Result.class, "layer2.layer3.name3");
         Layer1Result target = (Layer1Result) beanFieldForTarget.writeObject(source, existingTarget);
         assertEquals("name3", target.getLayer2().getLayer3().getName3());
-    }
-
-    @Test
-    public void nonStringToString() throws Exception {
-        SourceWithNonString source = new SourceWithNonString();
-        source.setDate(LocalDate.of(2015, 4, 1));
-        BeanField beanFieldForSource = BeanField.determineNodesForPath(SourceWithNonString.class, "date");
-        BeanField beanFieldForTarget = BeanField.determineNodesForPath(TargetWithString.class, "date");
-        TargetWithString target = (TargetWithString)
-                beanFieldForTarget.writeObject(beanFieldForSource.getObject(source), new TargetWithString());
-        assertEquals("2015-04-01", target.getDate());
     }
 
     @Test
