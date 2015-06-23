@@ -1,7 +1,7 @@
 package io.beanmapper;
 
-import io.beanmapper.core.LocalDateTimeToLocalDate;
-import io.beanmapper.core.LocalDateToLocalDateTime;
+import io.beanmapper.core.converter.LocalDateTimeToLocalDate;
+import io.beanmapper.core.converter.LocalDateToLocalDateTime;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.testmodel.converter.SourceWithDate;
 import io.beanmapper.testmodel.converter.TargetWithDateTime;
@@ -37,6 +37,7 @@ import io.beanmapper.testmodel.similarsubclasses.DifferentTarget;
 import io.beanmapper.testmodel.similarsubclasses.SimilarSubclass;
 import io.beanmapper.testmodel.tostring.SourceWithNonString;
 import io.beanmapper.testmodel.tostring.TargetWithString;
+
 import org.junit.Before;
 import org.junit.Test;
 

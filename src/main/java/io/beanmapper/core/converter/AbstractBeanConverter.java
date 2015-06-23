@@ -1,7 +1,7 @@
 /*
  * (C) 2014 42 bv (www.42.nl). All rights reserved.
  */
-package io.beanmapper.core;
+package io.beanmapper.core.converter;
 
 /**
  * Template implementation of a single type converter.

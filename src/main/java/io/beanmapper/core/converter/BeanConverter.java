@@ -1,4 +1,4 @@
-package io.beanmapper.core;
+package io.beanmapper.core.converter;
 
 /**
  * This class can be inherited if you want to add your own converter to the beanMapper.

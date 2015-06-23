@@ -1,7 +1,9 @@
 /*
  * (C) 2014 42 bv (www.42.nl). All rights reserved.
  */
-package io.beanmapper.core;
+package io.beanmapper.core.converter;
+
+import io.beanmapper.core.converter.SpringBeanConverter;
 
 import org.junit.Assert;
 import org.junit.Before;

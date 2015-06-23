@@ -2,12 +2,13 @@ package io.beanmapper;
 
 import io.beanmapper.annotations.BeanDefault;
 import io.beanmapper.annotations.BeanProperty;
-import io.beanmapper.core.BeanConverter;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.BeanMatch;
 import io.beanmapper.core.BeanMatchStore;
+import io.beanmapper.core.constructor.BeanInitializer;
+import io.beanmapper.core.constructor.NoArgConstructorBeanInitializer;
+import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.exceptions.BeanFieldNoMatchException;
-import io.beanmapper.exceptions.BeanInstantiationException;
 import io.beanmapper.exceptions.BeanMappingException;
 
 import java.util.ArrayList;
@@ -22,18 +23,23 @@ import java.util.List;
 public class BeanMapper {
 
     /**
-     * contains a store of matches for source and target class pairs. A pair is created only
+     * Initializes the beans.
+     */
+    private BeanInitializer beanInitializer = new NoArgConstructorBeanInitializer();
+
+    /**
+     * Contains a store of matches for source and target class pairs. A pair is created only
      * once and reused every time thereafter.
      */
     private BeanMatchStore beanMatchStore = new BeanMatchStore();
 
     /**
-     * the list of packages (and subpackages) containing classes which are eligible for mapping.
+     * The list of packages (and subpackages) containing classes which are eligible for mapping.
      */
     private List<Package> packagePrefixesForMappableClasses = new ArrayList<>();
 
     /**
-     * the list of converters that should be checked for conversions.
+     * The list of converters that should be checked for conversions.
      */
     private List<BeanConverter> beanConverters = new ArrayList<>();
 
@@ -44,7 +50,7 @@ public class BeanMapper {
      * well
      * @param clazz the class which sets the package prefix for all mappable classes
      */
-    public void addPackagePrefix(Class clazz) {
+    public void addPackagePrefix(Class<?> clazz) {
         packagePrefixesForMappableClasses.add(clazz.getPackage());
     }
 
@@ -58,7 +64,7 @@ public class BeanMapper {
     public void addConverter(BeanConverter converter) {
         beanConverters.add(converter);
     }
-
+    
     /**
      * Copies the values from the source object to a newly constructed target instance
      * @param source source instance of the properties
@@ -69,11 +75,22 @@ public class BeanMapper {
      * @throws BeanMappingException
      */
     public <S, T> T map(S source, Class<T> targetClass) throws BeanMappingException {
-        try {
-            return map(source, targetClass.getConstructor().newInstance());
-        } catch (Exception e) {
-            throw new BeanInstantiationException(targetClass, e);
-        }
+        return map(source, targetClass, beanInitializer);
+    }
+
+    /**
+     * Copies the values from the source object to a newly constructed target instance
+     * @param source source instance of the properties
+     * @param targetClass class of the target, needs to be constructed as the target instance
+     * @param beanInitializer initializes the beans
+     * @param <S> The instance from which the properties get copied
+     * @param <T> the instance to which the properties get copied
+     * @return the target instance containing all applicable properties
+     * @throws BeanMappingException
+     */
+    public <S, T> T map(S source, Class<T> targetClass, BeanInitializer beanInitializer) throws BeanMappingException {
+        T target = beanInitializer.instantiate(targetClass);
+        return map(source, target);
     }
 
     /**
@@ -85,13 +102,9 @@ public class BeanMapper {
      * @return the list of mapped items with class T
      * @throws BeanMappingException
      */
+    @SuppressWarnings("unchecked")
     public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass) throws BeanMappingException {
-        Collection<T> targetItems = null;
-        try {
-            targetItems = (Collection<T>)sourceItems.getClass().getConstructor().newInstance();
-        } catch (Exception e) {
-            throw new BeanInstantiationException(sourceItems.getClass(), e);
-        }
+        Collection<T> targetItems = (Collection<T>) beanInitializer.instantiate(sourceItems.getClass());
         for (S source : sourceItems) {
             targetItems.add(map(source, targetClass));
         }
@@ -189,8 +202,8 @@ public class BeanMapper {
             } else if (beanFieldMatch.sourceHasAnnotation(BeanDefault.class)) {
                 copyableSource = beanFieldMatch.getSourceDefaultValue();
             }
-        }else{
-            //If the source is not null, try if a possible BeanConverter is found
+        } else {
+            // If the source is not null, try if a possible BeanConverter is found
             BeanConverter converter = getConverter(copyableSource.getClass(), beanFieldMatch.getTargetClass());
             if (converter != null) {
                 copyableSource = converter.convert(copyableSource, beanFieldMatch.getTargetClass());

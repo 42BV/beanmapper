@@ -1,4 +1,6 @@
-package io.beanmapper.core;
+package io.beanmapper.core.converter;
+
+import io.beanmapper.core.converter.SimpleBeanConverter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
