@@ -1,6 +1,9 @@
 package io.beanmapper.core;
 
-import io.beanmapper.exceptions.*;
+import io.beanmapper.core.constructor.NoArgConstructorBeanInitializer;
+import io.beanmapper.core.inspector.FieldPropertyAccessor;
+import io.beanmapper.core.inspector.PropertyAccessor;
+import io.beanmapper.exceptions.BeanMappingException;
 
 import java.lang.reflect.Field;
 import java.util.Stack;
@@ -9,13 +12,13 @@ public class BeanField {
 
     private String name;
 
-    private Field field;
+    private PropertyAccessor accessor;
 
     private BeanField next;
 
-    public BeanField(String name, Field field) {
-        setName(name);
-        setField(field);
+    public BeanField(String name, PropertyAccessor accessor) {
+        this.name = name;
+        this.accessor = accessor;
     }
 
     public String getName() {
@@ -41,29 +44,20 @@ public class BeanField {
         return next;
     }
 
-    public void setNext(BeanField beanField) {
-        this.next = beanField;
+    public void setNext(BeanField next) {
+        this.next = next;
     }
 
-    protected Field getCurrentField() {
-        return field;
+    protected PropertyAccessor getCurrentField() {
+        return accessor;
     }
 
-    public Field getField() {
-        return hasNext() ? getNext().getField() : getCurrentField();
-    }
-
-    public void setField(Field field) {
-        this.field = field;
-        this.field.setAccessible(true);
+    public PropertyAccessor getPropertyAccessor() {
+        return hasNext() ? getNext().getPropertyAccessor() : getCurrentField();
     }
 
     public Object getObject(Object object) throws BeanMappingException {
-        try {
-            object = getCurrentField().get(object);
-        } catch (IllegalAccessException e) {
-            throw new BeanGetFieldException(object.getClass(), getCurrentField(), e);
-        }
+        object = getCurrentField().getValue(object);
         if (hasNext()) {
             if (object != null) {
                 return getNext().getObject(object);
@@ -73,24 +67,11 @@ public class BeanField {
     }
 
     public Object getOrCreate(Object parent) throws BeanMappingException {
-        Object target = null;
-        try {
-            target = getCurrentField().get(parent);
-        } catch (IllegalAccessException e) {
-            throw new BeanGetFieldException(parent.getClass(), getCurrentField(), e);
-        }
+        Object target = getCurrentField().getValue(parent);
         if (target == null) {
-
-            try {
-                target = getCurrentField().getType().getConstructor().newInstance();
-            } catch (Exception e) {
-                throw new BeanInstantiationException(getCurrentField().getType(), e);
-            }
-            try {
-                getCurrentField().set(parent, target);
-            } catch (IllegalAccessException e) {
-                throw new BeanSetFieldException(parent.getClass(), getCurrentField(), e);
-            }
+            Class<?> type = getCurrentField().getType();
+            target = new NoArgConstructorBeanInitializer().instantiate(type);
+            getCurrentField().setValue(parent, target);
         }
         return target;
     }
@@ -100,7 +81,6 @@ public class BeanField {
             getNext().writeObject(source, getOrCreate(parent));
         }
         else {
-
             // If target is a String and source is not, call toString on the value
             if (    source != null &&
                     getCurrentField().getType().equals(String.class) &&
@@ -108,27 +88,16 @@ public class BeanField {
                 source = source.toString();
             }
 
-            try {
-                getCurrentField().set(parent, source);
-            } catch (IllegalAccessException e) {
-                throw new BeanSetFieldException(parent.getClass(), getCurrentField(), e);
-            }
+            getCurrentField().setValue(parent, source);
         }
         return parent;
     }
 
-    public static BeanField determineNodesForNode(Class baseClass, String node)
-            throws NoSuchFieldException {
-        return determineNodes(baseClass, new Route(node), new Stack<>());
-    }
-
-    public static BeanField determineNodesForPath(Class baseClass, String path)
-            throws NoSuchFieldException {
+    public static BeanField determineNodesForPath(Class<?> baseClass, String path) throws NoSuchFieldException {
         return determineNodes(baseClass, new Route(path), new Stack<>());
     }
 
-    public static BeanField determineNodesForPath(Class baseClass, String path, BeanField prefixingBeanField)
-            throws NoSuchFieldException {
+    public static BeanField determineNodesForPath(Class<?> baseClass, String path, BeanField prefixingBeanField) throws NoSuchFieldException {
         return determineNodes(baseClass, new Route(path), copyNodes(prefixingBeanField));
     }
 
@@ -141,10 +110,8 @@ public class BeanField {
         return beanFields;
     }
 
-    private static BeanField determineNodes(Class baseClass, Route route, Stack<BeanField> beanFields) throws NoSuchFieldException {
-
+    private static BeanField determineNodes(Class<?> baseClass, Route route, Stack<BeanField> beanFields) throws NoSuchFieldException {
         if (!traversePath(baseClass, route, beanFields)) return null;
-
         return getFirstBeanField(beanFields);
     }
 
@@ -158,29 +125,27 @@ public class BeanField {
             }
             previousBeanField = currentBeanField;
         }
-
         return currentBeanField;
     }
 
-    private static boolean traversePath(Class baseClass, Route route, Stack<BeanField> beanFields) throws NoSuchFieldException {
+    private static boolean traversePath(Class<?> baseClass, Route route, Stack<BeanField> beanFields) throws NoSuchFieldException {
         for (String node : route.getRoute()) {
             final Field field = getField(baseClass, node);
             if (field == null) {
                 return false;
             }
-            BeanField currentBeanField = new BeanField(node, field);
+            BeanField currentBeanField = new BeanField(node, new FieldPropertyAccessor(field));
             beanFields.push(currentBeanField);
             baseClass = currentBeanField.getCurrentField().getType();
         }
         return true;
     }
 
-    private static Field getField(Class clazz, String fieldName) throws NoSuchFieldException{
+    private static Field getField(Class<?> clazz, String fieldName) throws NoSuchFieldException {
         Field field;
         try {
             field = clazz.getDeclaredField(fieldName);
         } catch (NoSuchFieldException e) {
-            // Search in parent class
             if(clazz.getSuperclass() != null) {
                 field = getField(clazz.getSuperclass(), fieldName);
             } else {

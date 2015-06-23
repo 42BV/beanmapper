@@ -1,7 +1,6 @@
 package io.beanmapper.core;
 
 import io.beanmapper.annotations.BeanDefault;
-import io.beanmapper.exceptions.BeanGetFieldException;
 import io.beanmapper.exceptions.BeanMappingException;
 
 import java.lang.annotation.Annotation;
@@ -21,15 +20,15 @@ public class BeanFieldMatch<S,T> {
         this.targetFieldName = targetFieldName;
     }
     public boolean hasSimilarClasses() {
-        return sourceBeanField.getField().getType().equals(targetBeanField.getField().getType());
+        return sourceBeanField.getPropertyAccessor().getType().equals(targetBeanField.getPropertyAccessor().getType());
     }
     public T getTarget() { return target; }
     public String getTargetFieldName() { return targetFieldName; }
     public boolean hasMatchingSource() { return sourceBeanField != null; }
-    public Class getSourceClass() {
-        return sourceBeanField.getField().getType();
+    public Class<?> getSourceClass() {
+        return sourceBeanField.getPropertyAccessor().getType();
     }
-    public Class getTargetClass() { return targetBeanField.getField().getType(); }
+    public Class<?> getTargetClass() { return targetBeanField.getPropertyAccessor().getType(); }
     public boolean targetHasAnnotation(Class<? extends Annotation> annotationClass) {
         return hasAnnotation(targetBeanField, annotationClass);
     }
@@ -37,7 +36,7 @@ public class BeanFieldMatch<S,T> {
         return hasAnnotation(sourceBeanField, annotationClass);
     }
     protected boolean hasAnnotation(BeanField beanField, Class<? extends Annotation> annotationClass) {
-        return beanField.getField().isAnnotationPresent(annotationClass);
+        return beanField.getPropertyAccessor().findAnnotation(annotationClass) != null;
     }
     public Object getSourceDefaultValue() {
         return getDefaultValue(sourceBeanField);
@@ -46,14 +45,10 @@ public class BeanFieldMatch<S,T> {
         return getDefaultValue(targetBeanField);
     }
     protected Object getDefaultValue(BeanField beanField) {
-        return beanField.getField().getDeclaredAnnotation(BeanDefault.class).value();
+        return beanField.getPropertyAccessor().findAnnotation(BeanDefault.class).value();
     }
     public void setTarget(Object value) throws BeanMappingException {
-        try {
-            targetBeanField.getField().set(target, value);
-        } catch (IllegalAccessException e) {
-            throw new BeanGetFieldException(target.getClass(), targetBeanField.getField(), e);
-        }
+        targetBeanField.getPropertyAccessor().setValue(target, value);
     }
     public void writeObject(Object value) throws BeanMappingException {
         targetBeanField.writeObject(value, target);

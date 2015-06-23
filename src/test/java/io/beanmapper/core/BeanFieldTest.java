@@ -1,15 +1,15 @@
 package io.beanmapper.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import io.beanmapper.testmodel.nestedclasses.Layer1;
 import io.beanmapper.testmodel.nestedclasses.Layer1Result;
 import io.beanmapper.testmodel.tostring.SourceWithNonString;
 import io.beanmapper.testmodel.tostring.TargetWithString;
-import org.junit.Test;
 
 import java.time.LocalDate;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import org.junit.Test;
 
 public class BeanFieldTest {
 
@@ -57,8 +57,8 @@ public class BeanFieldTest {
     public void nonStringToString() throws Exception {
         SourceWithNonString source = new SourceWithNonString();
         source.setDate(LocalDate.of(2015, 4, 1));
-        BeanField beanFieldForSource = BeanField.determineNodesForNode(SourceWithNonString.class, "date");
-        BeanField beanFieldForTarget = BeanField.determineNodesForNode(TargetWithString.class, "date");
+        BeanField beanFieldForSource = BeanField.determineNodesForPath(SourceWithNonString.class, "date");
+        BeanField beanFieldForTarget = BeanField.determineNodesForPath(TargetWithString.class, "date");
         TargetWithString target = (TargetWithString)
                 beanFieldForTarget.writeObject(beanFieldForSource.getObject(source), new TargetWithString());
         assertEquals("2015-04-01", target.getDate());
