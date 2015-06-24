@@ -9,6 +9,8 @@ import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.constructor.NoArgConstructorBeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.converter.ToStringConverter;
+import io.beanmapper.core.unproxy.BeanUnproxy;
+import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
 import io.beanmapper.exceptions.BeanFieldNoMatchException;
 import io.beanmapper.exceptions.BeanMappingException;
 
@@ -28,6 +30,11 @@ public class BeanMapper {
      */
     private BeanInitializer beanInitializer = new NoArgConstructorBeanInitializer();
 
+    /**
+     * Removes any potential proxies of beans.
+     */
+    private BeanUnproxy beanUnproxy = new DefaultBeanUnproxy();
+    
     /**
      * Contains a store of matches for source and target class pairs. A pair is created only
      * once and reused every time thereafter.
@@ -50,29 +57,7 @@ public class BeanMapper {
     public BeanMapper() {
         addConverter(new ToStringConverter());
     }
-    
-    /**
-     * Adds a package on the basis of a class. All classes in that package and sub-packages are
-     * eligible for mapping. The root source and target do not need to be set as such, because
-     * the verification is only run against nested classes which should be mapped implicity as
-     * well
-     * @param clazz the class which sets the package prefix for all mappable classes
-     */
-    public final void addPackagePrefix(Class<?> clazz) {
-        packagePrefixesForMappableClasses.add(clazz.getPackage());
-    }
 
-    /**
-     * Add a converter class (must inherit from abstract BeanConverter class) to the beanMapper.
-     * On mapping, the beanMapper will check for a suitable converter and use its from and
-     * to methods to convert the value of the fields to the correct new data type.
-     * @param converter an instance of the class that contains the conversion method implementations and inherits
-     *                  from the abstract BeanConverter class.
-     */
-    public final void addConverter(BeanConverter converter) {
-        beanConverters.add(converter);
-    }
-    
     /**
      * Copies the values from the source object to a newly constructed target instance
      * @param source source instance of the properties
@@ -146,7 +131,7 @@ public class BeanMapper {
      * @throws BeanMappingException
      */
     private <S, T> T matchSourceToTarget(S source, T target) {
-        BeanMatch beanMatch = beanMatchStore.getBeanMatch(source.getClass(), target.getClass());
+        BeanMatch beanMatch = getBeanMatch(source, target);
         for (String targetFieldName : beanMatch.getTargetNode().keySet()) {
             processField(new BeanFieldMatch(
                     source,
@@ -156,6 +141,12 @@ public class BeanMapper {
                     targetFieldName));
         }
         return target;
+    }
+
+    private <T, S> BeanMatch getBeanMatch(S source, T target) {
+        Class<?> sourceClass = beanUnproxy.unproxy(source.getClass());
+        Class<?> targetClass = beanUnproxy.unproxy(target.getClass());
+        return beanMatchStore.getBeanMatch(sourceClass, targetClass);
     }
 
     /**
@@ -272,4 +263,37 @@ public class BeanMapper {
         }
         return null;
     }
+    
+    // Configurations
+    
+    /**
+     * Adds a package on the basis of a class. All classes in that package and sub-packages are
+     * eligible for mapping. The root source and target do not need to be set as such, because
+     * the verification is only run against nested classes which should be mapped implicity as
+     * well
+     * @param clazz the class which sets the package prefix for all mappable classes
+     */
+    public final void addPackagePrefix(Class<?> clazz) {
+        packagePrefixesForMappableClasses.add(clazz.getPackage());
+    }
+    
+    /**
+     * Add a converter class (must inherit from abstract BeanConverter class) to the beanMapper.
+     * On mapping, the beanMapper will check for a suitable converter and use its from and
+     * to methods to convert the value of the fields to the correct new data type.
+     * @param converter an instance of the class that contains the conversion method implementations and inherits
+     *                  from the abstract BeanConverter class.
+     */
+    public final void addConverter(BeanConverter converter) {
+        beanConverters.add(converter);
+    }
+    
+    public final void setBeanInitializer(BeanInitializer beanInitializer) {
+        this.beanInitializer = beanInitializer;
+    }
+    
+    public final void setBeanUnproxy(BeanUnproxy beanUnproxy) {
+        this.beanUnproxy = beanUnproxy;
+    }
+
 }

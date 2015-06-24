@@ -12,9 +12,9 @@ package io.beanmapper.core.constructor;
 public interface BeanInitializer {
     
     /**
-     * 
-     * @param beanClass
-     * @return
+     * Initialize a new bean.
+     * @param beanClass the bean class
+     * @return the initialized bean
      */
     <T> T instantiate(Class<T> beanClass);
 

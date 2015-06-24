@@ -16,12 +16,12 @@ public class BeanMatchStore {
 
     private Map<String, Map<String, BeanMatch>> store = new TreeMap<>();
 
-    public BeanMatch getBeanMatch(Class<?> source, Class<?> target) {
-        Map<String, BeanMatch> targetsForSource = getTargetsForSource(source);
-        if (targetsForSource == null || !targetsForSource.containsKey(target.getCanonicalName())) {
-            return addBeanMatch(determineBeanMatch(source, target));
+    public BeanMatch getBeanMatch(Class<?> sourceClass, Class<?> targetClass) {
+        Map<String, BeanMatch> targetsForSource = getTargetsForSource(sourceClass);
+        if (targetsForSource == null || !targetsForSource.containsKey(targetClass.getCanonicalName())) {
+            return addBeanMatch(determineBeanMatch(sourceClass, targetClass));
         }
-        return getTarget(targetsForSource, target);
+        return getTarget(targetsForSource, targetClass);
     }
 
     public BeanMatch addBeanMatch(BeanMatch beanMatch) {

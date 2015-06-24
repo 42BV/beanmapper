@@ -32,10 +32,6 @@ public class BeanField {
         return prefix + name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public boolean hasNext() {
         return next != null;
     }
