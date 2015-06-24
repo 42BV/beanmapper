@@ -220,7 +220,6 @@ public class BeanMapper {
      */
     private void copySourceToTarget(BeanFieldMatch beanFieldMatch) {
         Object copyableSource = beanFieldMatch.getSourceObject();
-
         if (copyableSource == null) {
             if (beanFieldMatch.targetHasAnnotation(BeanDefault.class)) {
                 copyableSource = beanFieldMatch.getTargetDefaultValue();
@@ -228,7 +227,6 @@ public class BeanMapper {
                 copyableSource = beanFieldMatch.getSourceDefaultValue();
             }
         }
-
         Object convertedValue = convert(copyableSource, beanFieldMatch.getTargetClass());
         beanFieldMatch.writeObject(convertedValue);
     }
