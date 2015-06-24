@@ -1,4 +1,4 @@
-package io.beanmapper.core.converter;
+package io.beanmapper.core.converter.impl;
 
 import io.beanmapper.core.converter.SimpleBeanConverter;
 
