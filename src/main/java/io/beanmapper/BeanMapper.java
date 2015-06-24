@@ -52,9 +52,26 @@ public class BeanMapper {
     private List<BeanConverter> beanConverters = new ArrayList<BeanConverter>();
 
     /**
-     * Construct a new bean mapper.
+     * Construct a new bean mapper, with default converters.
      */
     public BeanMapper() {
+        this(true);
+    }
+    
+    /**
+     * Construct a new bean mapper.
+     * @param includeDefaultConverters wether default converters should be registered
+     */
+    public BeanMapper(boolean includeDefaultConverters) {
+        if (includeDefaultConverters) {
+            addDefaultConverters();
+        }
+    }
+
+    /**
+     * Add all default converters.
+     */
+    private final void addDefaultConverters() {
         addConverter(new ToStringConverter());
     }
 
