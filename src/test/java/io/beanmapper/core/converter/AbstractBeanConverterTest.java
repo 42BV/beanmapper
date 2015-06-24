@@ -3,6 +3,8 @@
  */
 package io.beanmapper.core.converter;
 
+import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 

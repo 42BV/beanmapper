@@ -3,6 +3,7 @@
  */
 package io.beanmapper.core.converter;
 
+import io.beanmapper.utils.Check;
 import io.beanmapper.utils.Classes;
 
 /**
@@ -43,14 +44,11 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
     @SuppressWarnings("unchecked")
     public final Object convert(Object source, Class<?> targetClass) {
         if (source == null) {
+            Check.argument(!targetClass.isPrimitive(), "Cannot convert null into primitive.");
             return null;
         }
-        if (!sourceClass.isAssignableFrom(source.getClass())) {
-            throw new IllegalArgumentException("Expected an instance of: " + sourceClass.getName());
-        }
-        if (!this.targetClass.isAssignableFrom(targetClass)) {
-            throw new IllegalArgumentException("Cannot only convert to: " + targetClass.getName());
-        }
+        Check.argument(isMatchingSource(source.getClass()), "Unsupported source class.");
+        Check.argument(isMatchingTarget(targetClass), "Unsupported target class.");
         return doConvert((S) source, (Class<T>) targetClass);
     }
     
@@ -66,7 +64,15 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
      */
     @Override
     public final boolean match(Class<?> sourceClass, Class<?> targetClass) {
-        return this.sourceClass.isAssignableFrom(sourceClass) && this.targetClass.isAssignableFrom(targetClass);
+        return isMatchingSource(sourceClass) && isMatchingTarget(targetClass);
+    }
+    
+    protected boolean isMatchingSource(Class<?> sourceClass) {
+        return this.sourceClass.isAssignableFrom(sourceClass);
+    }
+    
+    protected boolean isMatchingTarget(Class<?> targetClass) {
+        return this.targetClass.isAssignableFrom(targetClass);
     }
     
 }

@@ -8,9 +8,12 @@ import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.constructor.NoArgConstructorBeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
-import io.beanmapper.core.converter.PrimitiveConverter;
-import io.beanmapper.core.converter.StringToEnumConverter;
-import io.beanmapper.core.converter.ToStringConverter;
+import io.beanmapper.core.converter.impl.ObjectToStringConverter;
+import io.beanmapper.core.converter.impl.PrimitiveConverter;
+import io.beanmapper.core.converter.impl.StringToBooleanConverter;
+import io.beanmapper.core.converter.impl.StringToEnumConverter;
+import io.beanmapper.core.converter.impl.StringToIntegerConverter;
+import io.beanmapper.core.converter.impl.StringToLongConverter;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
 import io.beanmapper.exceptions.BeanConversionException;
@@ -75,9 +78,12 @@ public class BeanMapper {
      * Add all default converters.
      */
     private final void addDefaultConverters() {
-        addConverter(new ToStringConverter());
-        addConverter(new StringToEnumConverter());
         addConverter(new PrimitiveConverter());
+        addConverter(new StringToBooleanConverter());
+        addConverter(new StringToIntegerConverter());
+        addConverter(new StringToLongConverter());
+        addConverter(new StringToEnumConverter());
+        addConverter(new ObjectToStringConverter());
     }
 
     /**

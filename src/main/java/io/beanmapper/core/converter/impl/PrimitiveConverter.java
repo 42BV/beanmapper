@@ -1,7 +1,10 @@
 /*
  * (C) 2014 42 bv (www.42.nl). All rights reserved.
  */
-package io.beanmapper.core.converter;
+package io.beanmapper.core.converter.impl;
+
+import io.beanmapper.core.converter.BeanConverter;
+import io.beanmapper.utils.Check;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,10 +39,8 @@ public class PrimitiveConverter implements BeanConverter {
      */
     @Override
     public Object convert(Object source, Class<?> targetClass) {
-        if (source == null) {
-            throw new NullPointerException("Could not convert null into primitive");
-        }
-        return source; // Auto (un)box
+        Check.argument(source != null, "Cannot convert null into primitive value.");
+        return source; // Value will automatically be boxed or unboxed
     }
     
     /**

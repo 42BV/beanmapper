@@ -2,8 +2,8 @@ package io.beanmapper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import io.beanmapper.core.converter.LocalDateTimeToLocalDate;
-import io.beanmapper.core.converter.LocalDateToLocalDateTime;
+import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
+import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.testmodel.converter.SourceWithDate;
 import io.beanmapper.testmodel.converter.TargetWithDateTime;
