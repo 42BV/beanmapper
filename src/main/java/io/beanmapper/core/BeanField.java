@@ -79,9 +79,6 @@ public class BeanField {
         if (hasNext()) {
             getNext().writeObject(source, getOrCreate(parent));
         } else {
-            if (source != null && getCurrentField().getType().equals(String.class) && !source.getClass().equals(String.class)) {
-                source = source.toString();
-            }
             getCurrentField().setValue(parent, source);
         }
         return parent;

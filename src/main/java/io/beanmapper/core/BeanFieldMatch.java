@@ -5,14 +5,15 @@ import io.beanmapper.exceptions.BeanMappingException;
 
 import java.lang.annotation.Annotation;
 
-public class BeanFieldMatch<S,T> {
-    private S source;
-    private T target;
+public class BeanFieldMatch {
+    
+    private Object source;
+    private Object target;
     private BeanField sourceBeanField;
     private BeanField targetBeanField;
     private String targetFieldName;
 
-    public BeanFieldMatch(S source, T target, BeanField sourceBeanField, BeanField targetBeanField, String targetFieldName) {
+    public BeanFieldMatch(Object source, Object target, BeanField sourceBeanField, BeanField targetBeanField, String targetFieldName) {
         this.source = source;
         this.target = target;
         this.sourceBeanField = sourceBeanField;
@@ -22,7 +23,7 @@ public class BeanFieldMatch<S,T> {
     public boolean hasSimilarClasses() {
         return sourceBeanField.getPropertyAccessor().getType().equals(targetBeanField.getPropertyAccessor().getType());
     }
-    public T getTarget() { return target; }
+    public Object getTarget() { return target; }
     public String getTargetFieldName() { return targetFieldName; }
     public boolean hasMatchingSource() { return sourceBeanField != null; }
     public Class<?> getSourceClass() {

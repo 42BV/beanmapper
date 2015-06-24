@@ -8,6 +8,7 @@ import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.constructor.NoArgConstructorBeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
+import io.beanmapper.core.converter.ToStringConverter;
 import io.beanmapper.exceptions.BeanFieldNoMatchException;
 import io.beanmapper.exceptions.BeanMappingException;
 
@@ -44,13 +45,20 @@ public class BeanMapper {
     private List<BeanConverter> beanConverters = new ArrayList<>();
 
     /**
+     * Construct a new bean mapper.
+     */
+    public BeanMapper() {
+        addConverter(new ToStringConverter());
+    }
+    
+    /**
      * Adds a package on the basis of a class. All classes in that package and sub-packages are
      * eligible for mapping. The root source and target do not need to be set as such, because
      * the verification is only run against nested classes which should be mapped implicity as
      * well
      * @param clazz the class which sets the package prefix for all mappable classes
      */
-    public void addPackagePrefix(Class<?> clazz) {
+    public final void addPackagePrefix(Class<?> clazz) {
         packagePrefixesForMappableClasses.add(clazz.getPackage());
     }
 
@@ -61,7 +69,7 @@ public class BeanMapper {
      * @param converter an instance of the class that contains the conversion method implementations and inherits
      *                  from the abstract BeanConverter class.
      */
-    public void addConverter(BeanConverter converter) {
+    public final void addConverter(BeanConverter converter) {
         beanConverters.add(converter);
     }
     
@@ -74,7 +82,7 @@ public class BeanMapper {
      * @return the target instance containing all applicable properties
      * @throws BeanMappingException
      */
-    public <S, T> T map(S source, Class<T> targetClass) throws BeanMappingException {
+    public <S, T> T map(S source, Class<T> targetClass) {
         return map(source, targetClass, beanInitializer);
     }
 
@@ -88,7 +96,7 @@ public class BeanMapper {
      * @return the target instance containing all applicable properties
      * @throws BeanMappingException
      */
-    public <S, T> T map(S source, Class<T> targetClass, BeanInitializer beanInitializer) throws BeanMappingException {
+    public <S, T> T map(S source, Class<T> targetClass, BeanInitializer beanInitializer) {
         T target = beanInitializer.instantiate(targetClass);
         return map(source, target);
     }
@@ -103,7 +111,7 @@ public class BeanMapper {
      * @throws BeanMappingException
      */
     @SuppressWarnings("unchecked")
-    public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass) throws BeanMappingException {
+    public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass) {
         Collection<T> targetItems = (Collection<T>) beanInitializer.instantiate(sourceItems.getClass());
         for (S source : sourceItems) {
             targetItems.add(map(source, targetClass));
@@ -120,7 +128,7 @@ public class BeanMapper {
      * @return the original target instance containing all applicable properties
      * @throws BeanMappingException
      */
-    public <S, T> T map(S source, T target) throws BeanMappingException {
+    public <S, T> T map(S source, T target) {
         return matchSourceToTarget(source, target);
     }
 
@@ -137,12 +145,10 @@ public class BeanMapper {
      * @return A filled target object.
      * @throws BeanMappingException
      */
-    private <S, T> T matchSourceToTarget (S source, T target) throws BeanMappingException {
-
+    private <S, T> T matchSourceToTarget(S source, T target) {
         BeanMatch beanMatch = beanMatchStore.getBeanMatch(source.getClass(), target.getClass());
-
         for (String targetFieldName : beanMatch.getTargetNode().keySet()) {
-            processField(new BeanFieldMatch<>(
+            processField(new BeanFieldMatch(
                     source,
                     target,
                     beanMatch.getSourceNode().get(targetFieldName),
@@ -157,18 +163,15 @@ public class BeanMapper {
      * @param beanFieldMatch contains the fields belonging to the source/target field match
      * @throws BeanMappingException
      */
-    private void processField(BeanFieldMatch beanFieldMatch) throws BeanMappingException {
-
+    private void processField(BeanFieldMatch beanFieldMatch) {
         if (!beanFieldMatch.hasMatchingSource()) {
             dealWithNonMatchingNode(beanFieldMatch);
             return;
         }
-
         if (!beanFieldMatch.hasSimilarClasses() && isMappableClass(beanFieldMatch.getTargetClass())) {
             dealWithMappableNestedClass(beanFieldMatch);
             return;
         }
-
         copySourceToTarget(beanFieldMatch);
     }
 
@@ -177,8 +180,7 @@ public class BeanMapper {
      * could be that a default is set, or an exception is thrown when a BeanProperty has been set.
      * @param beanFieldMatch contains the fields belonging to the source/target field match
      */
-    private void dealWithNonMatchingNode(BeanFieldMatch beanFieldMatch)
-            throws BeanMappingException {
+    private void dealWithNonMatchingNode(BeanFieldMatch beanFieldMatch) {
         if (beanFieldMatch.targetHasAnnotation(BeanDefault.class)) {
             beanFieldMatch.setTarget(beanFieldMatch.getTargetDefaultValue());
         } else if (beanFieldMatch.targetHasAnnotation(BeanProperty.class)) {
@@ -193,7 +195,7 @@ public class BeanMapper {
      * @param beanFieldMatch contains the fields belonging to the source/target field match
      * @throws BeanMappingException
      */
-    private void copySourceToTarget(BeanFieldMatch beanFieldMatch) throws BeanMappingException {
+    private void copySourceToTarget(BeanFieldMatch beanFieldMatch) {
         Object copyableSource = beanFieldMatch.getSourceObject();
 
         if (copyableSource == null) {
@@ -202,15 +204,10 @@ public class BeanMapper {
             } else if (beanFieldMatch.sourceHasAnnotation(BeanDefault.class)) {
                 copyableSource = beanFieldMatch.getSourceDefaultValue();
             }
-        } else {
-            // If the source is not null, try if a possible BeanConverter is found
-            BeanConverter converter = getConverter(copyableSource.getClass(), beanFieldMatch.getTargetClass());
-            if (converter != null) {
-                copyableSource = converter.convert(copyableSource, beanFieldMatch.getTargetClass());
-            }
         }
 
-        beanFieldMatch.writeObject(copyableSource);
+        Object convertedValue = convert(copyableSource, beanFieldMatch.getTargetClass());
+        beanFieldMatch.writeObject(convertedValue);
     }
 
     /**
@@ -219,8 +216,7 @@ public class BeanMapper {
      * @param beanFieldMatch contains the fields belonging to the source/target field match
      * @throws BeanMappingException
      */
-    private void dealWithMappableNestedClass(BeanFieldMatch beanFieldMatch) throws BeanMappingException {
-
+    private void dealWithMappableNestedClass(BeanFieldMatch beanFieldMatch) {
         Object encapsulatedSource = beanFieldMatch.getSourceObject();
         if (encapsulatedSource != null) {
             Object encapsulatedTarget = beanFieldMatch.getOrCreateTargetObject();
@@ -235,7 +231,7 @@ public class BeanMapper {
      * @param clazz the class to be verified against the allowed packages
      * @return true if the class may be mapped, false if it may not
      */
-    private boolean isMappableClass(Class clazz) {
+    private boolean isMappableClass(Class<?> clazz) {
         for (Package packagePrefix : packagePrefixesForMappableClasses) {
             if (clazz.getPackage() != null && clazz.getPackage().toString().startsWith(packagePrefix.toString())) {
                 return true;
@@ -244,6 +240,23 @@ public class BeanMapper {
         return false;
     }
 
+    /**
+     * Converts a value into the target class.
+     * @param value the value to convert
+     * @param targetClass the target class
+     * @return the converted value
+     */
+    private Object convert(Object value, Class<?> targetClass) {
+        if (value == null) {
+            return null;
+        }
+        BeanConverter converter = getConverter(value.getClass(), targetClass);
+        if (converter != null) {
+            return converter.convert(value, targetClass);
+        }
+        // TODO: Throw exception when no converter found, first need to write a converter for primitives <-> object
+        return value;
+    }
 
     /**
      * Verifies whether a beanConverter is available to apply for conversion
@@ -251,8 +264,8 @@ public class BeanMapper {
      * @param targetClass the target class of the conversion
      * @return the beanConverter to do the conversion with
      */
-    private BeanConverter getConverter(Class sourceClass, Class targetClass) {
-        for(BeanConverter converter : beanConverters){
+    private BeanConverter getConverter(Class<?> sourceClass, Class<?> targetClass) {
+        for (BeanConverter converter : beanConverters) {
             if (converter.match(sourceClass, targetClass)) {
                 return converter;
             }
