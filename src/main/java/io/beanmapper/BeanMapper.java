@@ -265,9 +265,6 @@ public class BeanMapper {
             return value;
         }
         BeanConverter converter = getConverter(valueClass, targetClass);
-        if (converter == null) {
-            throw new BeanConversionException(valueClass, targetClass);
-        }
         return converter.convert(value, targetClass);
     }
     
@@ -288,7 +285,7 @@ public class BeanMapper {
                 return converter;
             }
         }
-        return null;
+        throw new BeanConversionException(sourceClass, targetClass);
     }
     
     // Configurations
@@ -318,7 +315,7 @@ public class BeanMapper {
     /**
      * Add all default converters.
      */
-    private final void addDefaultConverters() {
+    private void addDefaultConverters() {
         shouldAddDefaultConverters = false;
 
         addConverter(new PrimitiveConverter());
