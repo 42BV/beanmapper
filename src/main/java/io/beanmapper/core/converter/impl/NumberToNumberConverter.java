@@ -6,6 +6,9 @@ package io.beanmapper.core.converter.impl;
 import io.beanmapper.BeanMapper;
 import io.beanmapper.core.converter.BeanConverter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Converts any number to another number type.
  *
@@ -14,6 +17,17 @@ import io.beanmapper.core.converter.BeanConverter;
  */
 public class NumberToNumberConverter implements BeanConverter {
     
+    private static final Set<Class<?>> PRIMITIVES = new HashSet<Class<?>>();
+    
+    static {
+        PRIMITIVES.add(byte.class);
+        PRIMITIVES.add(short.class);
+        PRIMITIVES.add(int.class);
+        PRIMITIVES.add(long.class);
+        PRIMITIVES.add(float.class);
+        PRIMITIVES.add(double.class);
+    }
+
     /**
      * Bean mapper, used to delegate conversions.
      */
@@ -44,8 +58,11 @@ public class NumberToNumberConverter implements BeanConverter {
      */
     @Override
     public boolean match(Class<?> sourceClass, Class<?> targetClass) {
-        return Number.class.isAssignableFrom(sourceClass) && 
-               Number.class.isAssignableFrom(targetClass);
+        return isNumber(sourceClass) && isNumber(targetClass);
+    }
+
+    private boolean isNumber(Class<?> clazz) {
+        return Number.class.isAssignableFrom(clazz) || PRIMITIVES.contains(clazz);
     }
     
 }

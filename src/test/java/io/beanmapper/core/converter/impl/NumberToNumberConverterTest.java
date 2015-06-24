@@ -26,16 +26,19 @@ public class NumberToNumberConverterTest {
     
     @Test
     public void testIntegerToLong() {
+        Assert.assertTrue(converter.match(Integer.class, Long.class));
         Assert.assertEquals(Long.valueOf(42), converter.convert(Integer.valueOf(42), Long.class));
     }
     
     @Test
-    public void testLongToInteger() {
-        Assert.assertEquals(Integer.valueOf(42), converter.convert(Long.valueOf(42), Integer.class));
+    public void testLongToPrimitiveInteger() {
+        Assert.assertTrue(converter.match(Long.class, int.class));
+        Assert.assertEquals(Integer.valueOf(42), converter.convert(Long.valueOf(42), int.class));
     }
     
     @Test
     public void testDoubleToBigDecimal() {
+        Assert.assertTrue(converter.match(double.class, BigDecimal.class));
         Assert.assertEquals("42.24", converter.convert(42.24D, BigDecimal.class).toString());
     }
 

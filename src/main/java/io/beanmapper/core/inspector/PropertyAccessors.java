@@ -55,9 +55,18 @@ public class PropertyAccessors {
                 result.put(descriptor.getName(), descriptor);
             }
             result.remove(CLASS_PROPERTY);
+            if (clazz.isInterface()) {
+                addParentInterfaceProperties(clazz, result);
+            }
             return result;
         } catch (IntrospectionException e) {
             throw new IllegalStateException("Could not introspect bean: " + clazz.getSimpleName());
+        }
+    }
+
+    private static void addParentInterfaceProperties(Class<?> clazz, Map<String, PropertyDescriptor> result) {
+        for (Class<?> parent : clazz.getInterfaces()) {
+            result.putAll(findPropertyDescriptors(parent));
         }
     }
 

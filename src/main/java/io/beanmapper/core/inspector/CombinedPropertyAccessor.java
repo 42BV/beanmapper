@@ -69,9 +69,10 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
     public Object getValue(Object instance) {
         if (descriptor != null && descriptor.isReadable()) {
             return descriptor.getValue(instance);
-        } else {
+        } else if (field != null) {
             return field.getValue(instance);
         }
+        return null;
     }
     
     /**
@@ -81,7 +82,7 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
     public void setValue(Object instance, Object value) {
         if (descriptor != null && descriptor.isWritable()) {
             descriptor.setValue(instance, value);
-        } else {
+        } else if (field != null) {
             field.setValue(instance, value);
         }
     }

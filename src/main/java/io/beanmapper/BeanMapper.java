@@ -60,6 +60,11 @@ public class BeanMapper {
     private List<BeanConverter> beanConverters = new ArrayList<BeanConverter>();
     
     /**
+     * Determines if the default converters must be added during the next conversion.
+     */
+    private boolean shouldAddDefaultConverters;
+
+    /**
      * Construct a new bean mapper, with default converters.
      */
     public BeanMapper() {
@@ -71,23 +76,7 @@ public class BeanMapper {
      * @param includeDefaultConverters wether default converters should be registered
      */
     public BeanMapper(boolean includeDefaultConverters) {
-        if (includeDefaultConverters) {
-            addDefaultConverters();
-        }
-    }
-
-    /**
-     * Add all default converters.
-     */
-    private final void addDefaultConverters() {
-        addConverter(new PrimitiveConverter());
-        addConverter(new StringToBooleanConverter());
-        addConverter(new StringToIntegerConverter());
-        addConverter(new StringToLongConverter());
-        addConverter(new StringToBigDecimalConverter());
-        addConverter(new StringToEnumConverter());
-        addConverter(new NumberToNumberConverter(this));
-        addConverter(new ObjectToStringConverter());
+        shouldAddDefaultConverters = includeDefaultConverters;
     }
 
     /**
@@ -289,6 +278,11 @@ public class BeanMapper {
      * @return the beanConverter to do the conversion with
      */
     private BeanConverter getConverter(Class<?> sourceClass, Class<?> targetClass) {
+        // Register the default converters last so that custom converters are placed before
+        if (shouldAddDefaultConverters) {
+            addDefaultConverters();
+        }
+        // Retrieve the first supported converter
         for (BeanConverter converter : beanConverters) {
             if (converter.match(sourceClass, targetClass)) {
                 return converter;
@@ -320,7 +314,23 @@ public class BeanMapper {
     public final void addConverter(BeanConverter converter) {
         beanConverters.add(converter);
     }
-    
+
+    /**
+     * Add all default converters.
+     */
+    private final void addDefaultConverters() {
+        shouldAddDefaultConverters = false;
+
+        addConverter(new PrimitiveConverter());
+        addConverter(new StringToBooleanConverter());
+        addConverter(new StringToIntegerConverter());
+        addConverter(new StringToLongConverter());
+        addConverter(new StringToBigDecimalConverter());
+        addConverter(new StringToEnumConverter());
+        addConverter(new NumberToNumberConverter(this));
+        addConverter(new ObjectToStringConverter());
+    }
+
     public final void setBeanInitializer(BeanInitializer beanInitializer) {
         this.beanInitializer = beanInitializer;
     }
