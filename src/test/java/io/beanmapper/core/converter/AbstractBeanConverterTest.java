@@ -20,6 +20,12 @@ public class AbstractBeanConverterTest {
     private LocalDateTimeToLocalDate converter = new LocalDateTimeToLocalDate();
     
     @Test
+    public void testConvert() {
+        LocalDateTime time = LocalDateTime.now();
+        Assert.assertEquals(time.toLocalDate(), converter.convert(time, LocalDate.class));
+    }
+    
+    @Test
     public void testNullSource() {
         Assert.assertNull(converter.convert(null, LocalDate.class));
     }

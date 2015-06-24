@@ -3,6 +3,8 @@
  */
 package io.beanmapper.core.converter;
 
+import io.beanmapper.utils.Classes;
+
 /**
  * Template implementation of a single type converter.
  *
@@ -17,15 +19,9 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
 
     /**
      * Construct a new bean converter, dynamically resolving the source and target class. 
-     * <br>
-     * <b>This constructor requires a dependency to Spring.</b>
      */
     public AbstractBeanConverter() {
-        /*
-         * We only declare the full package inside the constructor to allow class loading without
-         * including Spring on the classpath. But then you need to use the other constructor.
-         */
-        Class<?>[] types = org.springframework.core.GenericTypeResolver.resolveTypeArguments(getClass(), AbstractBeanConverter.class);
+        Class<?>[] types = Classes.getParameteredTypes(getClass());
         this.sourceClass = types[0];
         this.targetClass = types[1];
     }
