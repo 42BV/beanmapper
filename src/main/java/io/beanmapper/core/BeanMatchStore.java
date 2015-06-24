@@ -6,6 +6,7 @@ import io.beanmapper.annotations.BeanUnwrap;
 import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessors;
 import io.beanmapper.exceptions.BeanMissingPathException;
+import io.beanmapper.exceptions.NoSuchPropertyException;
 
 import java.util.List;
 import java.util.Map;
@@ -63,11 +64,6 @@ public class BeanMatchStore {
     }
 
     private Map<String, BeanField> getAllFields(Map<String, BeanField> ourNodes, Map<String, BeanField> otherNodes, Class<?> ourType, Class<?> otherType, BeanField prefixingBeanField) {
-        // Get field from super class
-        if (ourType.getSuperclass() != null) {
-            getAllFields(ourNodes, otherNodes, ourType.getSuperclass(), otherType, null);
-        }
-        
         List<PropertyAccessor> accessors = PropertyAccessors.getAll(ourType);
         for (PropertyAccessor accessor : accessors) {
 
@@ -84,7 +80,7 @@ public class BeanMatchStore {
             BeanField currentBeanField = null;
             try {
                 currentBeanField = BeanField.determineNodesForPath(ourType, accessor.getName(), prefixingBeanField);
-            } catch (NoSuchFieldException e) {
+            } catch (NoSuchPropertyException e) {
                 throw new BeanMissingPathException(ourType, accessor.getName(), e);
             }
             
@@ -105,7 +101,7 @@ public class BeanMatchStore {
             // If the field is referred to by a path, store the custom field in the other map
             try {
                 otherNodes.put(name, BeanField.determineNodesForPath(otherType, name, null));
-            } catch (NoSuchFieldException err) {
+            } catch (NoSuchPropertyException err) {
                 // Acceptable, might have been tagged as @BeanProperty as well
             }
         }

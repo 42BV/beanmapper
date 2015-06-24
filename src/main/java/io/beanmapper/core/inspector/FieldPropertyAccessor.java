@@ -56,7 +56,7 @@ public class FieldPropertyAccessor implements PropertyAccessor {
         try {
             return field.get(instance);
         } catch (IllegalAccessException e) {
-            throw new BeanGetFieldException(instance.getClass(), field, e);
+            throw new BeanGetFieldException(instance.getClass(), field.getName(), e);
         }
     }
     
@@ -68,7 +68,7 @@ public class FieldPropertyAccessor implements PropertyAccessor {
         try {
             field.set(instance, value);
         } catch (IllegalAccessException e) {
-            throw new BeanSetFieldException(instance.getClass(), field, e);
+            throw new BeanSetFieldException(instance.getClass(), field.getName(), e);
         }
     }
     

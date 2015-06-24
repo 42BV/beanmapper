@@ -4,6 +4,7 @@ import io.beanmapper.core.constructor.NoArgConstructorBeanInitializer;
 import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessors;
 import io.beanmapper.exceptions.BeanMappingException;
+import io.beanmapper.exceptions.NoSuchPropertyException;
 
 import java.util.Stack;
 
@@ -84,11 +85,11 @@ public class BeanField {
         return parent;
     }
 
-    public static BeanField determineNodesForPath(Class<?> baseClass, String path) throws NoSuchFieldException {
+    public static BeanField determineNodesForPath(Class<?> baseClass, String path) {
         return determineNodes(baseClass, new Route(path), new Stack<>());
     }
 
-    public static BeanField determineNodesForPath(Class<?> baseClass, String path, BeanField prefixingBeanField) throws NoSuchFieldException {
+    public static BeanField determineNodesForPath(Class<?> baseClass, String path, BeanField prefixingBeanField) {
         return determineNodes(baseClass, new Route(path), copyNodes(prefixingBeanField));
     }
 
@@ -101,8 +102,8 @@ public class BeanField {
         return beanFields;
     }
 
-    private static BeanField determineNodes(Class<?> baseClass, Route route, Stack<BeanField> beanFields) throws NoSuchFieldException {
-        if (!traversePath(baseClass, route, beanFields)) return null;
+    private static BeanField determineNodes(Class<?> baseClass, Route route, Stack<BeanField> beanFields) {
+        traversePath(baseClass, route, beanFields);
         return getFirstBeanField(beanFields);
     }
 
@@ -119,16 +120,15 @@ public class BeanField {
         return currentBeanField;
     }
 
-    private static boolean traversePath(Class<?> baseClass, Route route, Stack<BeanField> beanFields) throws NoSuchFieldException {
+    private static void traversePath(Class<?> baseClass, Route route, Stack<BeanField> beanFields) {
         for (String node : route.getRoute()) {
-            final PropertyAccessor property = PropertyAccessors.getProperty(baseClass, node);
+            final PropertyAccessor property = PropertyAccessors.findProperty(baseClass, node);
             if (property == null) {
-                return false;
+                throw new NoSuchPropertyException("Property '" + node + "' does not exist in: " + baseClass.getSimpleName());
             }
             beanFields.push(new BeanField(node, property));
             baseClass = property.getType();
         }
-        return true;
     }
 
 }
