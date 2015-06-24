@@ -8,8 +8,10 @@ import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.constructor.NoArgConstructorBeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
+import io.beanmapper.core.converter.impl.NumberToNumberConverter;
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
 import io.beanmapper.core.converter.impl.PrimitiveConverter;
+import io.beanmapper.core.converter.impl.StringToBigDecimalConverter;
 import io.beanmapper.core.converter.impl.StringToBooleanConverter;
 import io.beanmapper.core.converter.impl.StringToEnumConverter;
 import io.beanmapper.core.converter.impl.StringToIntegerConverter;
@@ -56,7 +58,7 @@ public class BeanMapper {
      * The list of converters that should be checked for conversions.
      */
     private List<BeanConverter> beanConverters = new ArrayList<BeanConverter>();
-
+    
     /**
      * Construct a new bean mapper, with default converters.
      */
@@ -82,7 +84,9 @@ public class BeanMapper {
         addConverter(new StringToBooleanConverter());
         addConverter(new StringToIntegerConverter());
         addConverter(new StringToLongConverter());
+        addConverter(new StringToBigDecimalConverter());
         addConverter(new StringToEnumConverter());
+        addConverter(new NumberToNumberConverter(this));
         addConverter(new ObjectToStringConverter());
     }
 
@@ -258,14 +262,14 @@ public class BeanMapper {
         }
         return false;
     }
-
+    
     /**
      * Converts a value into the target class.
      * @param value the value to convert
      * @param targetClass the target class
      * @return the converted value
      */
-    private Object convert(Object value, Class<?> targetClass) {
+    public Object convert(Object value, Class<?> targetClass) {
         if (value == null) {
             return null;
         }
@@ -279,7 +283,7 @@ public class BeanMapper {
         }
         return converter.convert(value, targetClass);
     }
-
+    
     /**
      * Verifies whether a beanConverter is available to apply for conversion
      * @param sourceClass the source class of the conversion
