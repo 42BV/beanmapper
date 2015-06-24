@@ -8,10 +8,12 @@ import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.constructor.NoArgConstructorBeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
+import io.beanmapper.core.converter.PrimitiveConverter;
 import io.beanmapper.core.converter.StringToEnumConverter;
 import io.beanmapper.core.converter.ToStringConverter;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
+import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanFieldNoMatchException;
 import io.beanmapper.exceptions.BeanMappingException;
 
@@ -75,6 +77,7 @@ public class BeanMapper {
     private final void addDefaultConverters() {
         addConverter(new ToStringConverter());
         addConverter(new StringToEnumConverter());
+        addConverter(new PrimitiveConverter());
     }
 
     /**
@@ -260,12 +263,15 @@ public class BeanMapper {
         if (value == null) {
             return null;
         }
-        BeanConverter converter = getConverter(value.getClass(), targetClass);
-        if (converter != null) {
-            return converter.convert(value, targetClass);
+        Class<?> valueClass = beanUnproxy.unproxy(value.getClass());
+        if (targetClass.isAssignableFrom(valueClass)) {
+            return value;
         }
-        // TODO: Throw exception when no converter found, first need to write a converter for primitives <-> object
-        return value;
+        BeanConverter converter = getConverter(valueClass, targetClass);
+        if (converter == null) {
+            throw new BeanConversionException(valueClass, targetClass);
+        }
+        return converter.convert(value, targetClass);
     }
 
     /**

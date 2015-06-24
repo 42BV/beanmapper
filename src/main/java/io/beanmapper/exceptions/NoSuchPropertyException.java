@@ -4,7 +4,7 @@
 package io.beanmapper.exceptions;
 
 /**
- * 
+ * Exception thrown when a property could not be found.
  *
  * @author Jeroen van Schagen
  * @since Jun 24, 2015
