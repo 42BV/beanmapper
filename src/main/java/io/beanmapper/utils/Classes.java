@@ -38,7 +38,12 @@ public class Classes {
         Type[] types = superClass.getActualTypeArguments();
         Class<?>[] classes = new Class<?>[types.length];
         for (int index = 0; index < types.length; index++) {
-            classes[index] = Classes.forName(types[index].getTypeName());
+            String typeName = types[index].getTypeName();
+            int genericIndex = typeName.indexOf("<");
+            if (genericIndex != -1) {
+                typeName = typeName.substring(0, genericIndex);
+            }
+            classes[index] = Classes.forName(typeName);
         }
         return classes;
     }
