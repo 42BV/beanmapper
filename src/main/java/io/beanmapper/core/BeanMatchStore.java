@@ -14,7 +14,7 @@ import java.util.TreeMap;
 
 public class BeanMatchStore {
 
-    private Map<String, Map<String, BeanMatch>> store = new TreeMap<>();
+    private Map<String, Map<String, BeanMatch>> store = new TreeMap<String, Map<String, BeanMatch>>();
 
     public BeanMatch getBeanMatch(Class<?> sourceClass, Class<?> targetClass) {
         Map<String, BeanMatch> targetsForSource = getTargetsForSource(sourceClass);
@@ -25,12 +25,12 @@ public class BeanMatchStore {
     }
 
     public BeanMatch addBeanMatch(BeanMatch beanMatch) {
-        Map<String, BeanMatch> targetsForSource = getTargetsForSource(beanMatch.getSource());
+        Map<String, BeanMatch> targetsForSource = getTargetsForSource(beanMatch.getSourceClass());
         if (targetsForSource == null) {
-            targetsForSource = new TreeMap<>();
-            storeTargetsForSource(beanMatch.getSource(), targetsForSource);
+            targetsForSource = new TreeMap<String, BeanMatch>();
+            storeTargetsForSource(beanMatch.getSourceClass(), targetsForSource);
         }
-        storeTarget(targetsForSource, beanMatch.getTarget(), beanMatch);
+        storeTarget(targetsForSource, beanMatch.getTargetClass(), beanMatch);
         return beanMatch;
     }
 
@@ -51,7 +51,7 @@ public class BeanMatchStore {
     }
 
     private BeanMatch determineBeanMatch(Class<?> source, Class<?> target) {
-        return determineBeanMatch(source, target, new TreeMap<>(), new TreeMap<>());
+        return determineBeanMatch(source, target, new TreeMap<String, BeanField>(), new TreeMap<String, BeanField>());
     }
 
     private BeanMatch determineBeanMatch(Class<?> source, Class<?> target,

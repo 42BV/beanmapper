@@ -1,31 +1,30 @@
 package io.beanmapper.core;
 
 import java.util.Map;
-import java.util.TreeMap;
 
 public class BeanMatch {
 
-    private Class<?> source;
+    private final Class<?> sourceClass;
 
-    private Class<?> target;
+    private final Class<?> targetClass;
 
-    private Map<String, BeanField> sourceNode = new TreeMap<>();
+    private final Map<String, BeanField> sourceNode;
 
-    private Map<String, BeanField> targetNode = new TreeMap<>();
+    private final Map<String, BeanField> targetNode;
 
-    public BeanMatch(Class<?> source, Class<?> target, Map<String, BeanField> sourceNode, Map<String, BeanField> targetNode) {
-        this.source = source;
-        this.target = target;
+    public BeanMatch(Class<?> sourceClass, Class<?> targetClass, Map<String, BeanField> sourceNode, Map<String, BeanField> targetNode) {
+        this.sourceClass = sourceClass;
+        this.targetClass = targetClass;
         this.sourceNode = sourceNode;
         this.targetNode = targetNode;
     }
 
-    public Class<?> getSource() {
-        return source;
+    public Class<?> getSourceClass() {
+        return sourceClass;
     }
 
-    public Class<?> getTarget() {
-        return target;
+    public Class<?> getTargetClass() {
+        return targetClass;
     }
 
     public Map<String, BeanField> getSourceNode() {

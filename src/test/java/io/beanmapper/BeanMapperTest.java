@@ -72,7 +72,7 @@ public class BeanMapperTest {
     }
     
     @Test
-    public void mapFromInterface(@Mocked PersonAo source) throws BeanMappingException {
+    public void mapFromInterface(@Mocked final PersonAo source) throws BeanMappingException {
         new Expectations() {
             {
                 source.getId();
@@ -91,7 +91,7 @@ public class BeanMapperTest {
     }
     
     @Test
-    public void mapToInterface(@Mocked PersonAo target) throws BeanMappingException {
+    public void mapToInterface(@Mocked final PersonAo target) throws BeanMappingException {
         Person person = new Person();
         person.setId(Long.valueOf(42));
         person.setName("Jan");
@@ -116,7 +116,7 @@ public class BeanMapperTest {
 
     @Test
     public void mapCollection() throws BeanMappingException {
-        Collection<Person> sourceItems = new ArrayList<>();
+        Collection<Person> sourceItems = new ArrayList<Person>();
         sourceItems.add(createPerson("Jan"));
         sourceItems.add(createPerson("Piet"));
         sourceItems.add(createPerson("Joris"));

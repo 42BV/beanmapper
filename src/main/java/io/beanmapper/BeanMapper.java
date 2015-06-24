@@ -44,12 +44,12 @@ public class BeanMapper {
     /**
      * The list of packages (and subpackages) containing classes which are eligible for mapping.
      */
-    private List<Package> packagePrefixesForMappableClasses = new ArrayList<>();
+    private List<Package> packagePrefixesForMappableClasses = new ArrayList<Package>();
 
     /**
      * The list of converters that should be checked for conversions.
      */
-    private List<BeanConverter> beanConverters = new ArrayList<>();
+    private List<BeanConverter> beanConverters = new ArrayList<BeanConverter>();
 
     /**
      * Construct a new bean mapper.

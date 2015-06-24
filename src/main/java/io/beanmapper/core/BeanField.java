@@ -82,7 +82,7 @@ public class BeanField {
     }
 
     public static BeanField determineNodesForPath(Class<?> baseClass, String path) {
-        return determineNodes(baseClass, new Route(path), new Stack<>());
+        return determineNodes(baseClass, new Route(path), new Stack<BeanField>());
     }
 
     public static BeanField determineNodesForPath(Class<?> baseClass, String path, BeanField prefixingBeanField) {
@@ -90,7 +90,7 @@ public class BeanField {
     }
 
     private static Stack<BeanField> copyNodes(BeanField prefixingBeanField) {
-        Stack<BeanField> beanFields = new Stack<>();
+        Stack<BeanField> beanFields = new Stack<BeanField>();
         while (prefixingBeanField != null) {
             beanFields.push(new BeanField(prefixingBeanField.getName(), prefixingBeanField.getCurrentField()));
             prefixingBeanField = prefixingBeanField.getNext();
