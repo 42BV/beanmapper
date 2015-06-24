@@ -8,6 +8,7 @@ import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.constructor.NoArgConstructorBeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
+import io.beanmapper.core.converter.StringToEnumConverter;
 import io.beanmapper.core.converter.ToStringConverter;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
@@ -73,6 +74,7 @@ public class BeanMapper {
      */
     private final void addDefaultConverters() {
         addConverter(new ToStringConverter());
+        addConverter(new StringToEnumConverter());
     }
 
     /**
