@@ -3,6 +3,7 @@ package io.beanmapper;
 import io.beanmapper.core.converter.impl.EnumToStringConverter;
 import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
 import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
+import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.testmodel.converter.SourceWithDate;
 import io.beanmapper.testmodel.converter.TargetWithDateTime;
 import io.beanmapper.testmodel.defaults.SourceWithDefaults;
