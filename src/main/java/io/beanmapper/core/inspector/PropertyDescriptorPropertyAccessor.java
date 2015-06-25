@@ -65,9 +65,9 @@ public class PropertyDescriptorPropertyAccessor implements PropertyAccessor {
     }
     
     /**
-     * Determine if the property is readable.
-     * @return {@code true} if readable, else {@code false}
+     * {@inheritDoc}
      */
+    @Override
     public boolean isReadable() {
         return descriptor.getReadMethod() != null;
     }
@@ -91,9 +91,9 @@ public class PropertyDescriptorPropertyAccessor implements PropertyAccessor {
     }
     
     /**
-     * Determine if the property is readable.
-     * @return {@code true} if readable, else {@code false}
+     * {@inheritDoc}
      */
+    @Override
     public boolean isWritable() {
         return descriptor.getWriteMethod() != null;
     }

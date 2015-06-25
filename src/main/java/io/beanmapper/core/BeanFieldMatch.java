@@ -21,15 +21,18 @@ public class BeanFieldMatch {
         this.targetFieldName = targetFieldName;
     }
     public boolean hasSimilarClasses() {
-        return sourceBeanField.getPropertyAccessor().getType().equals(targetBeanField.getPropertyAccessor().getType());
+        return sourceBeanField.getProperty().getType().equals(targetBeanField.getProperty().getType());
     }
     public Object getTarget() { return target; }
     public String getTargetFieldName() { return targetFieldName; }
     public boolean hasMatchingSource() { return sourceBeanField != null; }
-    public Class<?> getSourceClass() {
-        return sourceBeanField.getPropertyAccessor().getType();
+    public boolean isMappable() {
+        return sourceBeanField.getProperty().isReadable() && targetBeanField.getProperty().isWritable();
     }
-    public Class<?> getTargetClass() { return targetBeanField.getPropertyAccessor().getType(); }
+    public Class<?> getSourceClass() {
+        return sourceBeanField.getProperty().getType();
+    }
+    public Class<?> getTargetClass() { return targetBeanField.getProperty().getType(); }
     public boolean targetHasAnnotation(Class<? extends Annotation> annotationClass) {
         return hasAnnotation(targetBeanField, annotationClass);
     }
@@ -37,7 +40,7 @@ public class BeanFieldMatch {
         return hasAnnotation(sourceBeanField, annotationClass);
     }
     protected boolean hasAnnotation(BeanField beanField, Class<? extends Annotation> annotationClass) {
-        return beanField.getPropertyAccessor().findAnnotation(annotationClass) != null;
+        return beanField.getProperty().findAnnotation(annotationClass) != null;
     }
     public Object getSourceDefaultValue() {
         return getDefaultValue(sourceBeanField);
@@ -46,10 +49,10 @@ public class BeanFieldMatch {
         return getDefaultValue(targetBeanField);
     }
     protected Object getDefaultValue(BeanField beanField) {
-        return beanField.getPropertyAccessor().findAnnotation(BeanDefault.class).value();
+        return beanField.getProperty().findAnnotation(BeanDefault.class).value();
     }
     public void setTarget(Object value) throws BeanMappingException {
-        targetBeanField.getPropertyAccessor().setValue(target, value);
+        targetBeanField.getProperty().setValue(target, value);
     }
     public void writeObject(Object value) throws BeanMappingException {
         targetBeanField.writeObject(value, target);

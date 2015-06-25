@@ -50,9 +50,8 @@ public class PropertyAccessorTest {
         Assert.assertNull(bean.myPropertyWithGetter);
         Assert.assertEquals("null getter", accessor.getValue(bean));
         
-        accessor.setValue(bean, "test");
+        bean.myPropertyWithGetter = "test";
         
-        Assert.assertEquals("test", bean.myPropertyWithGetter);
         Assert.assertEquals("test getter", accessor.getValue(bean));
     }
     
@@ -117,7 +116,7 @@ public class PropertyAccessorTest {
     static class BeanWithProperties {
         
         @BeanProperty(name = "a")
-        private String myField;
+        public String myField;
         
         @BeanProperty(name = "b")
         private String myPropertyWithGetter;
