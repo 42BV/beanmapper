@@ -67,9 +67,9 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
      */
     @Override
     public Object getValue(Object instance) {
-        if (descriptor != null && descriptor.isReadable()) {
+        if (isReadable(descriptor)) {
             return descriptor.getValue(instance);
-        } else if (field != null) {
+        } else if (isReadable(field)) {
             return field.getValue(instance);
         }
         return null;
@@ -79,12 +79,36 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
      * {@inheritDoc}
      */
     @Override
+    public boolean isReadable() {
+        return isReadable(descriptor) || isReadable(field);
+    }
+
+    private boolean isReadable(PropertyAccessor accessor) {
+        return accessor != null && accessor.isReadable();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setValue(Object instance, Object value) {
-        if (descriptor != null && descriptor.isWritable()) {
+        if (isWritable(descriptor)) {
             descriptor.setValue(instance, value);
-        } else if (field != null) {
+        } else if (isWritable(field)) {
             field.setValue(instance, value);
         }
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isWritable() {
+        return isWritable(descriptor) || isWritable(field);
+    }
+
+    private boolean isWritable(PropertyAccessor accessor) {
+        return accessor != null && accessor.isWritable();
+    }
+
 }

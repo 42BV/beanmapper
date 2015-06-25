@@ -48,8 +48,8 @@ public class BeanField {
         return accessor;
     }
 
-    public PropertyAccessor getPropertyAccessor() {
-        return hasNext() ? getNext().getPropertyAccessor() : getCurrentField();
+    public PropertyAccessor getProperty() {
+        return hasNext() ? getNext().getProperty() : getCurrentField();
     }
 
     public Object getObject(Object object) throws BeanMappingException {

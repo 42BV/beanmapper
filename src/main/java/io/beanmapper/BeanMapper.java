@@ -2,6 +2,7 @@ package io.beanmapper;
 
 import io.beanmapper.annotations.BeanDefault;
 import io.beanmapper.annotations.BeanProperty;
+import io.beanmapper.core.BeanField;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.BeanMatch;
 import io.beanmapper.core.BeanMatchStore;
@@ -158,13 +159,10 @@ public class BeanMapper {
      */
     private <S, T> T matchSourceToTarget(S source, T target) {
         BeanMatch beanMatch = getBeanMatch(source, target);
-        for (String targetFieldName : beanMatch.getTargetNode().keySet()) {
-            processField(new BeanFieldMatch(
-                    source,
-                    target,
-                    beanMatch.getSourceNode().get(targetFieldName),
-                    beanMatch.getTargetNode().get(targetFieldName),
-                    targetFieldName));
+        for (String fieldName : beanMatch.getTargetNode().keySet()) {
+            BeanField sourceField = beanMatch.getSourceNode().get(fieldName);
+            BeanField targetField = beanMatch.getTargetNode().get(fieldName);
+            processField(new BeanFieldMatch(source, target, sourceField, targetField, fieldName));
         }
         return target;
     }
@@ -189,7 +187,9 @@ public class BeanMapper {
             dealWithMappableNestedClass(beanFieldMatch);
             return;
         }
-        copySourceToTarget(beanFieldMatch);
+        if (beanFieldMatch.isMappable()) {
+            copySourceToTarget(beanFieldMatch);
+        }
     }
 
     /**

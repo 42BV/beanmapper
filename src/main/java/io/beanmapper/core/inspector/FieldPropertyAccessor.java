@@ -8,6 +8,7 @@ import io.beanmapper.exceptions.BeanSetFieldException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 /**
  * 
@@ -52,12 +53,28 @@ public class FieldPropertyAccessor implements PropertyAccessor {
      * {@inheritDoc}
      */
     @Override
+    public boolean isReadable() {
+        return true;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Object getValue(Object instance) {
         try {
             return field.get(instance);
         } catch (IllegalAccessException e) {
             throw new BeanGetFieldException(instance.getClass(), field.getName(), e);
         }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isWritable() {
+        return Modifier.isPublic(field.getModifiers()) && !Modifier.isFinal(field.getModifiers());
     }
     
     /**

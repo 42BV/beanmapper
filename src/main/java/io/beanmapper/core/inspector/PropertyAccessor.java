@@ -33,11 +33,23 @@ public interface PropertyAccessor {
     <A extends Annotation> A findAnnotation(Class<A> annotationClass);
     
     /**
+     * Determine if the property is readable.
+     * @return {@code true} when readable, else {@code false}
+     */
+    boolean isReadable();
+    
+    /**
      * Retrieve the property value.
      * @param instance bean that contains the property
      * @return the property value
      */
     Object getValue(Object instance);
+    
+    /**
+     * Determine if the property is writable.
+     * @return {@code true} when writable, else {@code false}
+     */
+    boolean isWritable();
     
     /**
      * Modify the property value.

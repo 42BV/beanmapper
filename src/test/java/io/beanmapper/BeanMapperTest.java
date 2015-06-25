@@ -3,7 +3,6 @@ package io.beanmapper;
 import io.beanmapper.core.converter.impl.EnumToStringConverter;
 import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
 import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
-import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.testmodel.converter.SourceWithDate;
 import io.beanmapper.testmodel.converter.TargetWithDateTime;
 import io.beanmapper.testmodel.defaults.SourceWithDefaults;
@@ -32,6 +31,8 @@ import io.beanmapper.testmodel.person.Person;
 import io.beanmapper.testmodel.person.PersonAo;
 import io.beanmapper.testmodel.person.PersonForm;
 import io.beanmapper.testmodel.person.PersonView;
+import io.beanmapper.testmodel.project.CodeProject;
+import io.beanmapper.testmodel.project.CodeProjectResult;
 import io.beanmapper.testmodel.publicfields.SourceWithPublicFields;
 import io.beanmapper.testmodel.publicfields.TargetWithPublicFields;
 import io.beanmapper.testmodel.samesourcediffresults.Entity;
@@ -88,7 +89,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void mapFromInterface(@Mocked final PersonAo source) throws BeanMappingException {
+    public void mapFromInterface(@Mocked final PersonAo source) {
         new Expectations() {
             {
                 source.getId();
@@ -107,7 +108,7 @@ public class BeanMapperTest {
     }
     
     @Test
-    public void mapToInterface(@Mocked final PersonAo target) throws BeanMappingException {
+    public void mapToInterface(@Mocked final PersonAo target) {
         Person person = new Person();
         person.setId(Long.valueOf(42));
         person.setName("Jan");
@@ -123,7 +124,7 @@ public class BeanMapperTest {
     }
     
     @Test
-    public void copyToNewTargetInstance() throws BeanMappingException {
+    public void copyToNewTargetInstance() {
         Person person = createPerson();
         PersonView personView = beanMapper.map(person, PersonView.class);
         assertEquals("Henk", personView.name);
@@ -131,7 +132,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void mapCollection() throws BeanMappingException {
+    public void mapCollection() {
         Collection<Person> sourceItems = new ArrayList<Person>();
         sourceItems.add(createPerson("Jan"));
         sourceItems.add(createPerson("Piet"));
@@ -145,14 +146,14 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void emptySource() throws BeanMappingException {
+    public void emptySource() {
         Person source = new Person();
         PersonView target = beanMapper.map(source, PersonView.class);
         assertNull(target.name);
     }
 
     @Test
-    public void copyToExistingTargetInstance() throws BeanMappingException {
+    public void copyToExistingTargetInstance() {
         Person person = createPerson();
         PersonForm form = createPersonForm();
         person = beanMapper.map(form, person);
@@ -163,7 +164,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void beanIgnore() throws BeanMappingException {
+    public void beanIgnore() {
         IgnoreSource ignoreSource = new IgnoreSource();
         ignoreSource.setBothIgnore("bothIgnore");
         ignoreSource.setSourceIgnore("sourceIgnore");
@@ -178,7 +179,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void mappingToOtherNames() throws BeanMappingException {
+    public void mappingToOtherNames() {
         SourceWithOtherName source = new SourceWithOtherName();
         source.setBothOtherName1("bothOtherName");
         source.setSourceOtherName1("sourceOtherName");
@@ -193,7 +194,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void nonStringToString() throws BeanMappingException {
+    public void nonStringToString() {
         SourceWithNonString obj = new SourceWithNonString();
         obj.setDate(LocalDate.of(2015, 4, 1));
         TargetWithString view = beanMapper.map(obj, TargetWithString.class);
@@ -201,7 +202,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void beanDefault() throws BeanMappingException {
+    public void beanDefault() {
         SourceWithDefaults source = new SourceWithDefaults();
         source.setNoDefault("value1");
         source.setTargetDefaultWithValue("value2");
@@ -216,7 +217,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void testParentClass() throws BeanMappingException {
+    public void testParentClass() {
         Source entity = new Source();
         Project project = new Project();
         project.setProjectName("projectName");
@@ -236,7 +237,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void testParentClassReversed() throws BeanMappingException {
+    public void testParentClassReversed() {
         Target target = new Target();
         target.setProjectId(42L);
         target.setId(1L);
@@ -253,7 +254,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void EncapsulateManyToMany() throws BeanMappingException {
+    public void EncapsulateManyToMany() {
         House house = createHouse();
 
         ResultManyToMany result = beanMapper.map(house, ResultManyToMany.class);
@@ -264,7 +265,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void EncapsulateManyToOne() throws BeanMappingException {
+    public void EncapsulateManyToOne() {
         House house = createHouse();
 
         ResultManyToOne result = beanMapper.map(house, ResultManyToOne.class);
@@ -275,7 +276,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void EncapsulateOneToMany() throws BeanMappingException {
+    public void EncapsulateOneToMany() {
         Country country = new Country("Nederland");
 
         ResultOneToMany result = beanMapper.map(country, ResultOneToMany.class);
@@ -283,7 +284,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void sourceAnnotated() throws BeanMappingException {
+    public void sourceAnnotated() {
         // One to Many & Many to One
         Driver driver = new Driver("driverName");
         Car car = new Car("Opel", 4);
@@ -298,7 +299,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void initiallyUnmatchedSourceMustBeUsed() throws BeanMappingException {
+    public void initiallyUnmatchedSourceMustBeUsed() {
         SourceWithUnmatchedField swuf = new SourceWithUnmatchedField();
         swuf.setName("Henk");
         swuf.setCountry("NL");
@@ -308,7 +309,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void nestedClasses() throws BeanMappingException {
+    public void nestedClasses() {
         Layer1 layer1 = Layer1.createNestedClassObject();
         Layer1Result result = beanMapper.map(layer1, Layer1Result.class);
         assertEquals("layer1", result.getName1());
@@ -318,7 +319,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void multipleUnwrap() throws BeanMappingException {
+    public void multipleUnwrap() {
         LayerA source = LayerA.create();
         AllTogether target = beanMapper.map(source, AllTogether.class);
         assertEquals("name1", target.getName1());
@@ -327,7 +328,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void multipleUnwrapReversed() throws BeanMappingException {
+    public void multipleUnwrapReversed() {
         AllTogether source = new AllTogether();
         source.setName1("name1");
         source.setName2("name2");
@@ -340,7 +341,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void publicFields() throws BeanMappingException {
+    public void publicFields() {
         SourceWithPublicFields source = new SourceWithPublicFields();
         source.name = "Henk";
         source.id = 42L;
@@ -352,7 +353,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void similarSubclasses() throws BeanMappingException {
+    public void similarSubclasses() {
         SimilarSubclass subclass = new SimilarSubclass();
         subclass.name = "Henk";
         DifferentSource source = new DifferentSource();
@@ -362,7 +363,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void converterDateToDateTime() throws BeanMappingException {
+    public void converterDateToDateTime() {
         SourceWithDate source = new SourceWithDate();
         source.setDiffType(LocalDate.of(2015, 1, 1));
         source.setSameType(LocalDate.of(2000, 1, 1));
@@ -373,7 +374,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void converterDateTimeToDate() throws BeanMappingException {
+    public void converterDateTimeToDate() {
         TargetWithDateTime source = new TargetWithDateTime();
         source.setDiffType(LocalDateTime.of(2015, 1, 1, 0, 0));
         source.setSameType(LocalDate.of(2000, 1, 1));
@@ -384,7 +385,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void sameSourceTwoDiffResults() throws BeanMappingException {
+    public void sameSourceTwoDiffResults() {
         Entity entity = new Entity();
         entity.setId(1L);
         entity.setName("name");
@@ -397,6 +398,28 @@ public class BeanMapperTest {
         assertEquals("name", resultOne.getName());
         assertEquals(1L, resultTwo.getId(), 0);
         assertEquals("description", resultTwo.getDescription());
+    }
+
+    @Test
+    public void testIgnoreWhenNotWritable() {
+        CodeProject project = new CodeProject();
+        CodeProject master = new CodeProject();
+        
+        master.id = 42L;
+        master.name = "master";
+        
+        project.id = 24L;
+        project.name = "project";
+        project.master = master;
+        
+        CodeProjectResult result = beanMapper.map(project, CodeProjectResult.class);
+        
+        assertEquals(Long.valueOf(24), result.id);
+        assertEquals(Long.valueOf(42), result.masterId);
+        
+        assertNull(result.name); // Ignored because final field and no setter
+        assertNull(result.getMasterName()); // Ignored because private field and no setter
+        // Ignored isMaster() because no setter
     }
 
     public Person createPerson(String name) {
