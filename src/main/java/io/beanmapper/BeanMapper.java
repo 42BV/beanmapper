@@ -59,7 +59,12 @@ public class BeanMapper {
      * The list of converters that should be checked for conversions.
      */
     private List<BeanConverter> beanConverters = new ArrayList<BeanConverter>();
-    
+
+    /**
+     * The list of classes to skip when unproxying.
+     */
+    private List<Class> proxyClassesToSkip = new ArrayList<Class>();
+
     /**
      * Determines if the default converters must be added during the next conversion.
      */
@@ -74,7 +79,7 @@ public class BeanMapper {
     
     /**
      * Construct a new bean mapper.
-     * @param includeDefaultConverters wether default converters should be registered
+     * @param includeDefaultConverters whether default converters should be registered
      */
     public BeanMapper(boolean includeDefaultConverters) {
         shouldAddDefaultConverters = includeDefaultConverters;
@@ -196,8 +201,7 @@ public class BeanMapper {
         if (beanFieldMatch.targetHasAnnotation(BeanDefault.class)) {
             beanFieldMatch.setTarget(beanFieldMatch.getTargetDefaultValue());
         } else if (beanFieldMatch.targetHasAnnotation(BeanProperty.class)) {
-            throw new BeanFieldNoMatchException(
-                    "No source field found while attempting to map to " + beanFieldMatch.getTargetFieldName());
+            throw new BeanFieldNoMatchException("No source field found while attempting to map to " + beanFieldMatch.getTargetFieldName());
         }
     }
 
@@ -260,14 +264,38 @@ public class BeanMapper {
         if (value == null) {
             return null;
         }
-        Class<?> valueClass = beanUnproxy.unproxy(value.getClass());
+
+        Class<?> valueClass = null;
+        if(!isSkippedProxyClass(value.getClass())){
+            valueClass = beanUnproxy.unproxy(value.getClass());
+        }else{
+            valueClass = value.getClass();
+        }
+
         if (targetClass.isAssignableFrom(valueClass)) {
             return value;
         }
         BeanConverter converter = getConverter(valueClass, targetClass);
         return converter.convert(value, targetClass);
     }
-    
+
+    /**
+     * This method checks whether the class or its superclasses are in the list
+     * of skipped classes for unproxying.
+     * @param clazz the class to check
+     * @return boolean true if class (or superclass) is in the list, else returns false
+     */
+    private boolean isSkippedProxyClass(Class clazz){
+        for(Class skipClazz : proxyClassesToSkip){
+            if(skipClazz.equals(clazz)){
+                return true;
+            }else if(clazz.getSuperclass() != null){
+                return isSkippedProxyClass(clazz.getSuperclass());
+            }
+        }
+        return false;
+    }
+
     /**
      * Verifies whether a beanConverter is available to apply for conversion
      * @param sourceClass the source class of the conversion
@@ -310,6 +338,15 @@ public class BeanMapper {
      */
     public final void addConverter(BeanConverter converter) {
         beanConverters.add(converter);
+    }
+
+    /**
+     * Add classes to skip while unproxying to prevent failing of the BeanMapper while mapping
+     * proxy classes or classes containing synthetic fields (Like ENUM types).
+     * @param clazz the class that is added to the list of skipped classes
+     */
+    public final void addProxySkipClass(Class clazz){
+        proxyClassesToSkip.add(clazz);
     }
 
     /**
