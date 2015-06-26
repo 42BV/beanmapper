@@ -63,7 +63,7 @@ public class BeanMapper {
     /**
      * The list of classes to skip when unproxying.
      */
-    private List<Class> proxyClassesToSkip = new ArrayList<Class>();
+    private List<Class<?>> proxyClassesToSkip = new ArrayList<Class<?>>();
 
     /**
      * Determines if the default converters must be added during the next conversion.
@@ -265,18 +265,20 @@ public class BeanMapper {
             return null;
         }
 
-        Class<?> valueClass = null;
-        if(!isSkippedProxyClass(value.getClass())){
-            valueClass = beanUnproxy.unproxy(value.getClass());
-        }else{
-            valueClass = value.getClass();
-        }
-
+        Class<?> valueClass = getUnproxiedClass(value);
         if (targetClass.isAssignableFrom(valueClass)) {
             return value;
         }
         BeanConverter converter = getConverter(valueClass, targetClass);
         return converter.convert(value, targetClass);
+    }
+
+    private Class<?> getUnproxiedClass(Object value) {
+        if (!isSkippedProxyClass(value.getClass())) {
+            return beanUnproxy.unproxy(value.getClass());
+        } else {
+            return value.getClass();
+        }
     }
 
     /**
@@ -285,11 +287,11 @@ public class BeanMapper {
      * @param clazz the class to check
      * @return boolean true if class (or superclass) is in the list, else returns false
      */
-    private boolean isSkippedProxyClass(Class clazz){
-        for(Class skipClazz : proxyClassesToSkip){
-            if(skipClazz.equals(clazz)){
+    private boolean isSkippedProxyClass(Class<?> clazz) {
+        for (Class<?> skipClazz : proxyClassesToSkip) {
+            if (skipClazz.equals(clazz)) {
                 return true;
-            }else if(clazz.getSuperclass() != null){
+            } else if (clazz.getSuperclass() != null) {
                 return isSkippedProxyClass(clazz.getSuperclass());
             }
         }
@@ -345,7 +347,7 @@ public class BeanMapper {
      * proxy classes or classes containing synthetic fields (Like ENUM types).
      * @param clazz the class that is added to the list of skipped classes
      */
-    public final void addProxySkipClass(Class clazz){
+    public final void addProxySkipClass(Class<?> clazz) {
         proxyClassesToSkip.add(clazz);
     }
 

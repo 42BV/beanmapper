@@ -3,7 +3,7 @@
  */
 package io.beanmapper.core.converter.impl;
 
-import io.beanmapper.core.converter.AbstractBeanConverter;
+import io.beanmapper.core.converter.SimpleBeanConverter;
 
 /**
  * Converts a string into a long.
@@ -11,13 +11,17 @@ import io.beanmapper.core.converter.AbstractBeanConverter;
  * @author Jeroen van Schagen
  * @since Jun 24, 2015
  */
-public class StringToLongConverter extends AbstractBeanConverter<String, Long> {
+public class StringToLongConverter extends SimpleBeanConverter<String, Long> {
+
+    public StringToLongConverter() {
+        super(String.class, Long.class);
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected Long doConvert(String source, Class<? extends Long> targetClass) {
+    protected Long doConvert(String source) {
         return Long.parseLong(source);
     }
     

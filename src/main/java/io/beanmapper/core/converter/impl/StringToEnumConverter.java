@@ -13,21 +13,37 @@ import io.beanmapper.core.converter.AbstractBeanConverter;
  */
 public class StringToEnumConverter extends AbstractBeanConverter<String, Enum<?>> {
 
+    public StringToEnumConverter() {
+        super(String.class, Enum.class);
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
-    protected Object doConvert(String source, Class<? extends Enum<?>> targetClass) {
-        return toEnum(targetClass, source);
+    protected Object doConvert(String name, Class<? extends Enum<?>> targetClass) {
+        Object result = null;
+        if (isNotEmpty(name)) {
+            result = valueOf(targetClass, name);
+        }
+        return result;
     }
     
-    @SuppressWarnings("unchecked")
-    private static <T extends Enum<T>> T toEnum(Class<? extends Enum<?>> targetClass, String name) {
-        return isNotEmpty(name) ? Enum.valueOf((Class<T>) targetClass, name) : null;
-    }
-
     private static boolean isNotEmpty(String name) {
         return name.trim().length() > 0;
+    }
+    
+    /**
+     * Retrieve the enumeration from a specific type and name.
+     * <br>
+     * <b>This is placed in a seperate method to due to the {@code Enum<T>} generic restriction.</b>
+     * @param enumClass the enumeration type
+     * @param name the name of the enumeration constant
+     * @return the enumeration, if any
+     */
+    @SuppressWarnings("unchecked")
+    private static <T extends Enum<T>> T valueOf(Class<? extends Enum<?>> enumClass, String name) {
+        return Enum.valueOf((Class<T>) enumClass, name);
     }
 
 }

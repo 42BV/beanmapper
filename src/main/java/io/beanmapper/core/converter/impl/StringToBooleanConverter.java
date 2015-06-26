@@ -3,7 +3,7 @@
  */
 package io.beanmapper.core.converter.impl;
 
-import io.beanmapper.core.converter.AbstractBeanConverter;
+import io.beanmapper.core.converter.SimpleBeanConverter;
 
 /**
  * Converts a string into a boolean.
@@ -11,13 +11,17 @@ import io.beanmapper.core.converter.AbstractBeanConverter;
  * @author Jeroen van Schagen
  * @since Jun 24, 2015
  */
-public class StringToBooleanConverter extends AbstractBeanConverter<String, Boolean> {
+public class StringToBooleanConverter extends SimpleBeanConverter<String, Boolean> {
+
+    public StringToBooleanConverter() {
+        super(String.class, Boolean.class);
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected Boolean doConvert(String source, Class<? extends Boolean> targetClass) {
+    protected Boolean doConvert(String source) {
         return Boolean.parseBoolean(source);
     }
     

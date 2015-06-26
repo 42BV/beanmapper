@@ -1,14 +1,21 @@
 package io.beanmapper;
 
-import io.beanmapper.core.converter.impl.EnumToStringConverter;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
 import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
+import io.beanmapper.core.converter.impl.ObjectToStringConverter;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.testmodel.converter.SourceWithDate;
 import io.beanmapper.testmodel.converter.TargetWithDateTime;
 import io.beanmapper.testmodel.defaults.SourceWithDefaults;
 import io.beanmapper.testmodel.defaults.TargetWithDefaults;
-import io.beanmapper.testmodel.encapsulate.*;
+import io.beanmapper.testmodel.encapsulate.Address;
+import io.beanmapper.testmodel.encapsulate.Country;
+import io.beanmapper.testmodel.encapsulate.House;
+import io.beanmapper.testmodel.encapsulate.ResultManyToMany;
+import io.beanmapper.testmodel.encapsulate.ResultManyToOne;
+import io.beanmapper.testmodel.encapsulate.ResultOneToMany;
 import io.beanmapper.testmodel.encapsulate.sourceAnnotated.Car;
 import io.beanmapper.testmodel.encapsulate.sourceAnnotated.CarDriver;
 import io.beanmapper.testmodel.encapsulate.sourceAnnotated.Driver;
@@ -44,11 +51,6 @@ import io.beanmapper.testmodel.similarsubclasses.DifferentTarget;
 import io.beanmapper.testmodel.similarsubclasses.SimilarSubclass;
 import io.beanmapper.testmodel.tostring.SourceWithNonString;
 import io.beanmapper.testmodel.tostring.TargetWithString;
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.Verifications;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -56,8 +58,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.Verifications;
+
+import org.junit.Before;
+import org.junit.Test;
 
 public class BeanMapperTest {
 
@@ -69,7 +75,7 @@ public class BeanMapperTest {
         beanMapper.addPackagePrefix(BeanMapper.class);
         beanMapper.addConverter(new LocalDateTimeToLocalDate());
         beanMapper.addConverter(new LocalDateToLocalDateTime());
-        beanMapper.addConverter(new EnumToStringConverter());
+        beanMapper.addConverter(new ObjectToStringConverter());
         beanMapper.addProxySkipClass(Enum.class);
     }
 

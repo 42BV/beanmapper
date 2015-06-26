@@ -3,7 +3,7 @@
  */
 package io.beanmapper.core.converter.impl;
 
-import io.beanmapper.core.converter.AbstractBeanConverter;
+import io.beanmapper.core.converter.SimpleBeanConverter;
 
 import java.math.BigDecimal;
 
@@ -13,13 +13,17 @@ import java.math.BigDecimal;
  * @author Jeroen van Schagen
  * @since Jun 24, 2015
  */
-public class StringToBigDecimalConverter extends AbstractBeanConverter<String, BigDecimal> {
+public class StringToBigDecimalConverter extends SimpleBeanConverter<String, BigDecimal> {
+
+    public StringToBigDecimalConverter() {
+        super(String.class, BigDecimal.class);
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected BigDecimal doConvert(String source, Class<? extends BigDecimal> targetClass) {
+    protected BigDecimal doConvert(String source) {
         return new BigDecimal(source);
     }
 

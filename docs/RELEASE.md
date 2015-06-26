@@ -1,5 +1,9 @@
 # Release notes
 
+## 0.2.7
+
+ - Fixed converter bug in Type.getTypeName() for JDKs below 1.8
+
 ## 0.2.6
 
  - Can now only map between fields when they are public.

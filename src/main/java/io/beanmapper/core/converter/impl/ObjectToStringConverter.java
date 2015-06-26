@@ -3,7 +3,7 @@
  */
 package io.beanmapper.core.converter.impl;
 
-import io.beanmapper.core.converter.AbstractBeanConverter;
+import io.beanmapper.core.converter.SimpleBeanConverter;
 
 /**
  * Converts objects into strings.
@@ -11,13 +11,17 @@ import io.beanmapper.core.converter.AbstractBeanConverter;
  * @author Jeroen van Schagen
  * @since Jun 24, 2015
  */
-public class ObjectToStringConverter extends AbstractBeanConverter<Object, String> {
+public class ObjectToStringConverter extends SimpleBeanConverter<Object, String> {
     
+    public ObjectToStringConverter() {
+        super(Object.class, String.class);
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
-    protected Object doConvert(Object source, Class<? extends String> targetClass) {
+    protected String doConvert(Object source) {
         return source.toString();
     }
     

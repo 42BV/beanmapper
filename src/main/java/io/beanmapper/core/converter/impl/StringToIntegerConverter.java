@@ -3,7 +3,7 @@
  */
 package io.beanmapper.core.converter.impl;
 
-import io.beanmapper.core.converter.AbstractBeanConverter;
+import io.beanmapper.core.converter.SimpleBeanConverter;
 
 /**
  * Converts a string into an integer.
@@ -11,13 +11,17 @@ import io.beanmapper.core.converter.AbstractBeanConverter;
  * @author Jeroen van Schagen
  * @since Jun 24, 2015
  */
-public class StringToIntegerConverter extends AbstractBeanConverter<String, Integer> {
+public class StringToIntegerConverter extends SimpleBeanConverter<String, Integer> {
+
+    public StringToIntegerConverter() {
+        super(String.class, Integer.class);
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected Integer doConvert(String source, Class<? extends Integer> targetClass) {
+    protected Integer doConvert(String source) {
         return Integer.parseInt(source);
     }
     
