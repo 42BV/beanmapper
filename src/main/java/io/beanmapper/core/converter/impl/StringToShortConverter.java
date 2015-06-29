@@ -1,0 +1,36 @@
+/*
+ * (C) 2014 42 bv (www.42.nl). All rights reserved.
+ */
+package io.beanmapper.core.converter.impl;
+
+import io.beanmapper.core.converter.SimpleBeanConverter;
+
+/**
+ * Converts a string into a short.
+ *
+ * @author Jeroen van Schagen
+ * @since Jun 24, 2015
+ */
+public class StringToShortConverter extends SimpleBeanConverter<String, Short> {
+
+    public StringToShortConverter() {
+        super(String.class, Short.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Short doConvert(String source) {
+        return Short.parseShort(source);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected boolean isMatchingTarget(Class<?> targetClass) {
+        return super.isMatchingTarget(targetClass) || short.class.equals(targetClass);
+    }
+
+}

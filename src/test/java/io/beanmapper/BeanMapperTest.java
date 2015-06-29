@@ -76,7 +76,6 @@ public class BeanMapperTest {
         beanMapper.addConverter(new LocalDateTimeToLocalDate());
         beanMapper.addConverter(new LocalDateToLocalDateTime());
         beanMapper.addConverter(new ObjectToStringConverter());
-        beanMapper.addProxySkipClass(Enum.class);
     }
 
     @Test
