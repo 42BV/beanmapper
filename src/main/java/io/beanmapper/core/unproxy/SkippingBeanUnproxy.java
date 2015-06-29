@@ -7,19 +7,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 
+ * Unproxy that allows you to configure classes to skip.
  *
  * @author Jeroen van Schagen
  * @since Jun 29, 2015
  */
 public class SkippingBeanUnproxy implements BeanUnproxy {
-    
-    private final BeanUnproxy delegate;
-    
+
     /**
      * The classes to skip when unproxying.
      */
     private final Set<Class<?>> proxyClassesToSkip = new HashSet<Class<?>>();
+
+    private BeanUnproxy delegate;
 
     public SkippingBeanUnproxy(BeanUnproxy delegate) {
         this.delegate = delegate;
@@ -63,6 +63,14 @@ public class SkippingBeanUnproxy implements BeanUnproxy {
     public final SkippingBeanUnproxy skip(Class<?> clazz) {
         proxyClassesToSkip.add(clazz);
         return this;
+    }
+    
+    /**
+     * Change the underlying delegate bean unproxy.
+     * @param delegate the delegate to set
+     */
+    public final void setDelegate(BeanUnproxy delegate) {
+        this.delegate = delegate;
     }
 
 }

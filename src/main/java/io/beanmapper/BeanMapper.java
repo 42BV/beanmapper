@@ -43,7 +43,7 @@ public class BeanMapper {
     /**
      * Removes any potential proxies of beans.
      */
-    private BeanUnproxy beanUnproxy;
+    private SkippingBeanUnproxy beanUnproxy = new SkippingBeanUnproxy(new DefaultBeanUnproxy());
     
     /**
      * Contains a store of matches for source and target class pairs. A pair is created only
@@ -79,7 +79,6 @@ public class BeanMapper {
      */
     public BeanMapper(boolean includeDefaultConverters) {
         shouldAddDefaultConverters = includeDefaultConverters;
-        this.beanUnproxy = new SkippingBeanUnproxy(new DefaultBeanUnproxy()).skip(Enum.class);
     }
 
     /**
@@ -313,7 +312,16 @@ public class BeanMapper {
     public final void addConverter(BeanConverter converter) {
         beanConverters.add(converter);
     }
-
+    
+    /**
+     * Add classes to skip while unproxying to prevent failing of the BeanMapper while mapping
+     * proxy classes or classes containing synthetic fields (Like ENUM types).
+     * @param clazz the class that is added to the list of skipped classes
+     */
+    public final void addProxySkipClass(Class<?> clazz) {
+        beanUnproxy.skip(clazz);
+    }
+    
     /**
      * Add all default converters.
      */
@@ -335,7 +343,7 @@ public class BeanMapper {
     }
     
     public final void setBeanUnproxy(BeanUnproxy beanUnproxy) {
-        this.beanUnproxy = beanUnproxy;
+        this.beanUnproxy.setDelegate(beanUnproxy);
     }
 
 }
