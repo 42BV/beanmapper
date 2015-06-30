@@ -1,21 +1,16 @@
 package io.beanmapper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
 import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
 import io.beanmapper.exceptions.BeanMappingException;
+import io.beanmapper.testmodel.EmptyObject.EmptySource;
+import io.beanmapper.testmodel.EmptyObject.EmptyTarget;
 import io.beanmapper.testmodel.converter.SourceWithDate;
 import io.beanmapper.testmodel.converter.TargetWithDateTime;
 import io.beanmapper.testmodel.defaults.SourceWithDefaults;
 import io.beanmapper.testmodel.defaults.TargetWithDefaults;
-import io.beanmapper.testmodel.encapsulate.Address;
-import io.beanmapper.testmodel.encapsulate.Country;
-import io.beanmapper.testmodel.encapsulate.House;
-import io.beanmapper.testmodel.encapsulate.ResultManyToMany;
-import io.beanmapper.testmodel.encapsulate.ResultManyToOne;
-import io.beanmapper.testmodel.encapsulate.ResultOneToMany;
+import io.beanmapper.testmodel.encapsulate.*;
 import io.beanmapper.testmodel.encapsulate.sourceAnnotated.Car;
 import io.beanmapper.testmodel.encapsulate.sourceAnnotated.CarDriver;
 import io.beanmapper.testmodel.encapsulate.sourceAnnotated.Driver;
@@ -51,6 +46,11 @@ import io.beanmapper.testmodel.similarsubclasses.DifferentTarget;
 import io.beanmapper.testmodel.similarsubclasses.SimilarSubclass;
 import io.beanmapper.testmodel.tostring.SourceWithNonString;
 import io.beanmapper.testmodel.tostring.TargetWithString;
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.Verifications;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -58,12 +58,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.Verifications;
-
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class BeanMapperTest {
 
@@ -154,9 +150,21 @@ public class BeanMapperTest {
 
     @Test
     public void emptySource() {
-        Person source = new Person();
-        PersonView target = beanMapper.map(source, PersonView.class);
-        assertNull(target.name);
+        // Test of correctly mapping
+        EmptySource source = new EmptySource();
+        source.id = 42;
+        source.name = "sourceName";
+        source.emptyName = "notEmpty";
+        EmptyTarget target = beanMapper.map(source, EmptyTarget.class);
+        assertEquals(source.id, target.id, 0);
+        assertEquals(source.name, target.name);
+        assertEquals(source.emptyName, target.nestedEmptyClass.name);
+        // Test with empty source
+        EmptySource emptySource = new EmptySource();
+        EmptyTarget emptyTarget = beanMapper.map(emptySource, EmptyTarget.class);
+        assertNull(emptyTarget.id);
+        assertNull(emptyTarget.name);
+        assertNull(emptyTarget.nestedEmptyClass);
     }
 
     @Test

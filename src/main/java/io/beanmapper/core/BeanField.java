@@ -73,10 +73,12 @@ public class BeanField {
     }
 
     public Object writeObject(Object source, Object parent) throws BeanMappingException {
-        if (hasNext()) {
-            getNext().writeObject(source, getOrCreate(parent));
-        } else {
-            getCurrentField().setValue(parent, source);
+        if(source != null) {
+            if (hasNext()) {
+                getNext().writeObject(source, getOrCreate(parent));
+            } else {
+                getCurrentField().setValue(parent, source);
+            }
         }
         return parent;
     }
