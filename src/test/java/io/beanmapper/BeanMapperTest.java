@@ -2,12 +2,17 @@ package io.beanmapper;
 
 import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
 import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
+import io.beanmapper.core.converter.impl.NestedSourceClassToNestedTargetClassConverter;
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.testmodel.EmptyObject.EmptySource;
 import io.beanmapper.testmodel.EmptyObject.EmptyTarget;
 import io.beanmapper.testmodel.converter.SourceWithDate;
 import io.beanmapper.testmodel.converter.TargetWithDateTime;
+import io.beanmapper.testmodel.converterBetweenNestedClasses.NestedSourceClass;
+import io.beanmapper.testmodel.converterBetweenNestedClasses.NestedTargetClass;
+import io.beanmapper.testmodel.converterBetweenNestedClasses.SourceWithNestedClass;
+import io.beanmapper.testmodel.converterBetweenNestedClasses.TargetWithNestedClass;
 import io.beanmapper.testmodel.defaults.SourceWithDefaults;
 import io.beanmapper.testmodel.defaults.TargetWithDefaults;
 import io.beanmapper.testmodel.encapsulate.*;
@@ -72,6 +77,7 @@ public class BeanMapperTest {
         beanMapper.addConverter(new LocalDateTimeToLocalDate());
         beanMapper.addConverter(new LocalDateToLocalDateTime());
         beanMapper.addConverter(new ObjectToStringConverter());
+        beanMapper.addConverter(new NestedSourceClassToNestedTargetClassConverter(beanMapper));
         beanMapper.addProxySkipClass(Enum.class);
     }
 
@@ -397,6 +403,21 @@ public class BeanMapperTest {
         SourceWithDate target = beanMapper.map(source, SourceWithDate.class);
         assertEquals(target.getDiffType(), LocalDate.of(2015, 1, 1));
         assertEquals(target.getSameType(), LocalDate.of(2000, 1, 1));
+    }
+
+    @Test
+    public void converterBetweenClasses() {
+        SourceWithNestedClass source = new SourceWithNestedClass();
+        source.number = 42;
+        NestedSourceClass nestedSourceClass = new NestedSourceClass();
+        nestedSourceClass.name = "42BV";
+        nestedSourceClass.laptopNumber = "765GR";
+        source.nestedClass = nestedSourceClass;
+
+        TargetWithNestedClass target = beanMapper.map(source, TargetWithNestedClass.class);
+        assertEquals(source.number, target.number, 0);
+        assertEquals(source.nestedClass.name, target.nestedClass.name);
+        assertEquals(source.nestedClass.laptopNumber, ((NestedTargetClass)target.nestedClass).laptopNumber);
     }
 
     @Test

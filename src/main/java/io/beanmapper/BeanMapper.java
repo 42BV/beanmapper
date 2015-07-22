@@ -9,14 +9,7 @@ import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.constructor.NoArgConstructorBeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
-import io.beanmapper.core.converter.impl.NumberToNumberConverter;
-import io.beanmapper.core.converter.impl.ObjectToStringConverter;
-import io.beanmapper.core.converter.impl.PrimitiveConverter;
-import io.beanmapper.core.converter.impl.StringToBigDecimalConverter;
-import io.beanmapper.core.converter.impl.StringToBooleanConverter;
-import io.beanmapper.core.converter.impl.StringToEnumConverter;
-import io.beanmapper.core.converter.impl.StringToIntegerConverter;
-import io.beanmapper.core.converter.impl.StringToLongConverter;
+import io.beanmapper.core.converter.impl.*;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
@@ -179,7 +172,7 @@ public class BeanMapper {
             dealWithNonMatchingNode(beanFieldMatch);
             return;
         }
-        if (!beanFieldMatch.hasSimilarClasses() && isMappableClass(beanFieldMatch.getTargetClass())) {
+        if (!isConverterFor(beanFieldMatch.getSourceClass(), beanFieldMatch.getTargetClass()) && !beanFieldMatch.hasSimilarClasses() && isMappableClass(beanFieldMatch.getTargetClass())) {
             dealWithMappableNestedClass(beanFieldMatch);
             return;
         }
@@ -287,6 +280,15 @@ public class BeanMapper {
             }
         }
         throw new BeanConversionException(sourceClass, targetClass);
+    }
+
+    private boolean isConverterFor(Class<?> sourceClass, Class<?> targetClass) {
+        try {
+            getConverter(sourceClass, targetClass);
+            return true;
+        } catch (BeanConversionException e) {
+            return false;
+        }
     }
     
     // Configurations
