@@ -3,8 +3,8 @@
  */
 package io.beanmapper.core.converter.impl;
 
+import io.beanmapper.BeanMapper;
 import io.beanmapper.core.converter.BeanConverter;
-
 import org.springframework.core.convert.ConversionService;
 
 /**
@@ -44,5 +44,9 @@ public class SpringBeanConverter implements BeanConverter {
     public boolean match(Class<?> sourceClass, Class<?> targetClass) {
         return conversionService.canConvert(sourceClass, targetClass);
     }
-    
+
+    @Override
+    public void setBeanMapper(BeanMapper beanMapper) {
+    }
+
 }

@@ -4,24 +4,20 @@
 package io.beanmapper.core.converter.impl;
 
 import io.beanmapper.BeanMapper;
-
-import java.math.BigDecimal;
-
 import junit.framework.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 
+import java.math.BigDecimal;
+
 public class NumberToNumberConverterTest {
-    
-    private BeanMapper beanMapper;
-    
+
     private NumberToNumberConverter converter;
     
     @Before
     public void setUp() {
-        beanMapper = new BeanMapper();
-        converter = new NumberToNumberConverter(beanMapper);
+        converter = new NumberToNumberConverter();
+        converter.setBeanMapper(new BeanMapper());
     }
     
     @Test

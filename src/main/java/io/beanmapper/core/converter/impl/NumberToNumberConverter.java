@@ -31,13 +31,9 @@ public class NumberToNumberConverter implements BeanConverter {
     /**
      * Bean mapper, used to delegate conversions.
      */
-    private final BeanMapper beanMapper;
-    
-    /**
-     * Convert a new number to number converter.
-     * @param beanMapper the bean mapper
-     */
-    public NumberToNumberConverter(BeanMapper beanMapper) {
+    private BeanMapper beanMapper;
+
+    public void setBeanMapper(BeanMapper beanMapper) {
         this.beanMapper = beanMapper;
     }
 

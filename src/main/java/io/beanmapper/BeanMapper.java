@@ -312,6 +312,7 @@ public class BeanMapper {
      *                  from the abstract BeanConverter class.
      */
     public final void addConverter(BeanConverter converter) {
+        converter.setBeanMapper(this);
         beanConverters.add(converter);
     }
     
@@ -336,7 +337,7 @@ public class BeanMapper {
         addConverter(new StringToLongConverter());
         addConverter(new StringToBigDecimalConverter());
         addConverter(new StringToEnumConverter());
-        addConverter(new NumberToNumberConverter(this));
+        addConverter(new NumberToNumberConverter());
         addConverter(new ObjectToStringConverter());
     }
 
