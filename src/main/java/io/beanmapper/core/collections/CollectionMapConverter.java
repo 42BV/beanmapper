@@ -30,14 +30,13 @@ public class CollectionMapConverter extends AbstractCollectionConverter<Map> {
         return Map.class;
     }
 
-    protected Map getTargetCollection(BeanFieldMatch beanFieldMatch) {
-        return beanFieldMatch.getTargetObject() != null ?
-                (Map)beanFieldMatch.getTargetObject() :
-                createCollection();
-    }
-
     protected Map createCollection() {
         return new TreeMap();
+    }
+
+    @Override
+    protected void clear(Map targetCollection) {
+        targetCollection.clear();
     }
 
 }

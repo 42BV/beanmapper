@@ -30,14 +30,13 @@ public class CollectionListConverter extends AbstractCollectionConverter<List> {
         return List.class;
     }
 
-    protected List getTargetCollection(BeanFieldMatch beanFieldMatch) {
-        return beanFieldMatch.getTargetObject() != null ?
-                (List)beanFieldMatch.getTargetObject() :
-                createCollection();
-    }
-
     protected List createCollection() {
         return new ArrayList();
+    }
+
+    @Override
+    protected void clear(List targetCollection) {
+        targetCollection.clear();
     }
 
 }

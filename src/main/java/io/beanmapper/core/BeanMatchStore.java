@@ -103,6 +103,7 @@ public class BeanMatchStore {
         }
         BeanCollectionInstructions collectionInstructions = new BeanCollectionInstructions();
         collectionInstructions.setCollectionMapsTo(beanCollection.elementType());
+        collectionInstructions.setBeanCollectionUsage(beanCollection.beanCollectionUsage());
         beanField.setCollectionInstructions(collectionInstructions);
     }
 

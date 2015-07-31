@@ -175,6 +175,27 @@ public class BeanMapperTest {
     }
 
     @Test
+    public void mapListCollectionInContainerAndClearTheContainer() {
+        CollectionListSource source = new CollectionListSource();
+        source.items.add(createPerson("Jan"));
+        source.items.add(createPerson("Piet"));
+        source.items.add(createPerson("Joris"));
+        source.items.add(createPerson("Korneel"));
+
+        CollectionListTargetClear target = new CollectionListTargetClear();
+        List expectedTargetList = target.items;
+        target.items.add(new PersonView()); // This entry must be cleared
+
+        target = beanMapper.map(source, target);
+        assertEquals("The target ArrayList must have been cleared, not re-constructed", expectedTargetList, target.items);
+        assertEquals("The number of entries must be 4, not 5, because the list has been cleared", 4, target.items.size());
+        assertEquals("Jan", target.items.get(0).name);
+        assertEquals("Piet", target.items.get(1).name);
+        assertEquals("Joris", target.items.get(2).name);
+        assertEquals("Korneel", target.items.get(3).name);
+    }
+
+    @Test
     public void mapSetCollectionInContainer() {
         CollectionSetSource source = new CollectionSetSource();
         source.items = new TreeSet<String>();

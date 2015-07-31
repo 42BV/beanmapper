@@ -31,14 +31,13 @@ public class CollectionSetConverter extends AbstractCollectionConverter<Set> {
         return Set.class;
     }
 
-    protected Set getTargetCollection(BeanFieldMatch beanFieldMatch) {
-        return beanFieldMatch.getTargetObject() != null ?
-                (Set)beanFieldMatch.getTargetObject() :
-                createCollection();
-    }
-
     protected Set createCollection() {
         return new TreeSet();
+    }
+
+    @Override
+    protected void clear(Set targetCollection) {
+        targetCollection.clear();
     }
 
 }
