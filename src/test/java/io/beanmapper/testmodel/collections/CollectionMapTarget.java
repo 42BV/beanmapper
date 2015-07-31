@@ -3,11 +3,11 @@ package io.beanmapper.testmodel.collections;
 import io.beanmapper.annotations.BeanCollection;
 import io.beanmapper.testmodel.person.PersonView;
 
-import java.util.List;
+import java.util.Map;
 
-public class CollectionListTarget {
+public class CollectionMapTarget {
 
     @BeanCollection(elementType = PersonView.class)
-    public List<PersonView> items;
+    public Map<String, PersonView> items;
 
 }

@@ -5,10 +5,7 @@ import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
 import io.beanmapper.core.converter.impl.NestedSourceClassToNestedTargetClassConverter;
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
 import io.beanmapper.exceptions.BeanMappingException;
-import io.beanmapper.testmodel.collections.CollectionListSource;
-import io.beanmapper.testmodel.collections.CollectionListTarget;
-import io.beanmapper.testmodel.collections.CollectionSetSource;
-import io.beanmapper.testmodel.collections.CollectionSetTarget;
+import io.beanmapper.testmodel.collections.*;
 import io.beanmapper.testmodel.emptyobject.EmptySource;
 import io.beanmapper.testmodel.emptyobject.EmptyTarget;
 import io.beanmapper.testmodel.converter.SourceWithDate;
@@ -147,6 +144,21 @@ public class BeanMapperTest {
     }
 
     @Test
+    public void mapMapCollectionInContainer() {
+        CollectionMapSource source = new CollectionMapSource();
+        source.items.put("Jan", createPerson("Jan"));
+        source.items.put("Piet", createPerson("Piet"));
+        source.items.put("Joris", createPerson("Joris"));
+        source.items.put("Korneel", createPerson("Korneel"));
+
+        CollectionMapTarget target = beanMapper.map(source, CollectionMapTarget.class);
+        assertEquals("Jan", target.items.get("Jan").name);
+        assertEquals("Piet", target.items.get("Piet").name);
+        assertEquals("Joris", target.items.get("Joris").name);
+        assertEquals("Korneel", target.items.get("Korneel").name);
+    }
+
+    @Test
     public void mapListCollectionInContainer() {
         CollectionListSource source = new CollectionListSource();
         source.items = new ArrayList<Person>();
@@ -163,7 +175,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void mapCollectionInContainer() {
+    public void mapSetCollectionInContainer() {
         CollectionSetSource source = new CollectionSetSource();
         source.items = new TreeSet<String>();
         source.items.add("13");

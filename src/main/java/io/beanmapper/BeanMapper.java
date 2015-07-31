@@ -305,13 +305,20 @@ public class BeanMapper {
             collectionType.isAssignableFrom(targetClass);
     }
 
+    @SuppressWarnings("unchecked")
     private boolean treatAsCollection(Object value, BeanFieldMatch beanFieldMatch) {
-        if (value == null) {
+        if (    value == null ||
+                beanFieldMatch.getCollectionInstructions() == null) {
             return false;
         }
 
         Class<?> valueClass = beanUnproxy.unproxy(value.getClass());
-        return Collection.class.isAssignableFrom(valueClass) && beanFieldMatch.getCollectionInstructions() != null;
+        for (CollectionConverter collectionConverter : collectionConverters.values()) {
+            if (collectionConverter.getCollectionClass().isAssignableFrom(valueClass)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -320,6 +327,7 @@ public class BeanMapper {
      * @param targetClass the target class
      * @return the converted value
      */
+    @SuppressWarnings("unchecked")
     public Object convert(Object value, Class targetClass) {
 
         if (value == null) {
