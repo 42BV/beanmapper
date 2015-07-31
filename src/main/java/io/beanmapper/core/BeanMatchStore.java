@@ -1,8 +1,10 @@
 package io.beanmapper.core;
 
+import io.beanmapper.annotations.BeanCollection;
 import io.beanmapper.annotations.BeanIgnore;
 import io.beanmapper.annotations.BeanProperty;
 import io.beanmapper.annotations.BeanUnwrap;
+import io.beanmapper.core.collections.BeanCollectionInstructions;
 import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessors;
 import io.beanmapper.exceptions.BeanMissingPathException;
@@ -83,7 +85,9 @@ public class BeanMatchStore {
             } catch (NoSuchPropertyException e) {
                 throw new BeanMissingPathException(ourType, accessor.getName(), e);
             }
-            
+
+            handleBeanCollectionAnnotation(accessor.findAnnotation(BeanCollection.class), currentBeanField);
+
             if (accessor.findAnnotation(BeanUnwrap.class) != null) {
                 ourNodes = getAllFields(ourNodes, otherNodes, accessor.getType(), otherType, currentBeanField);
             } else {
@@ -91,6 +95,15 @@ public class BeanMatchStore {
             }
         }
         return ourNodes;
+    }
+
+    private void handleBeanCollectionAnnotation(BeanCollection beanCollection, BeanField beanField) {
+        if (beanCollection == null) {
+            return;
+        }
+        BeanCollectionInstructions collectionInstructions = new BeanCollectionInstructions();
+        collectionInstructions.setCollectionMapsTo(beanCollection.elementType());
+        beanField.setCollectionInstructions(collectionInstructions);
     }
 
     private String dealWithBeanProperty(Map<String, BeanField> otherNodes, Class<?> otherType, PropertyAccessor accessor) {

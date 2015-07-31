@@ -1,5 +1,6 @@
 package io.beanmapper.core;
 
+import io.beanmapper.core.collections.BeanCollectionInstructions;
 import io.beanmapper.core.constructor.NoArgConstructorBeanInitializer;
 import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessors;
@@ -16,6 +17,8 @@ public class BeanField {
 
     private BeanField next;
 
+    private BeanCollectionInstructions collectionInstructions;
+
     public BeanField(String name, PropertyAccessor accessor) {
         this.name = name;
         this.accessor = accessor;
@@ -30,6 +33,14 @@ public class BeanField {
             return getNext().getName(prefix + name + ".");
         }
         return prefix + name;
+    }
+
+    public BeanCollectionInstructions getCollectionInstructions() {
+        return collectionInstructions;
+    }
+
+    public void setCollectionInstructions(BeanCollectionInstructions collectionInstructions) {
+        this.collectionInstructions = collectionInstructions;
     }
 
     public boolean hasNext() {

@@ -5,8 +5,12 @@ import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
 import io.beanmapper.core.converter.impl.NestedSourceClassToNestedTargetClassConverter;
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
 import io.beanmapper.exceptions.BeanMappingException;
-import io.beanmapper.testmodel.EmptyObject.EmptySource;
-import io.beanmapper.testmodel.EmptyObject.EmptyTarget;
+import io.beanmapper.testmodel.collections.CollectionListSource;
+import io.beanmapper.testmodel.collections.CollectionListTarget;
+import io.beanmapper.testmodel.collections.CollectionSetSource;
+import io.beanmapper.testmodel.collections.CollectionSetTarget;
+import io.beanmapper.testmodel.emptyobject.EmptySource;
+import io.beanmapper.testmodel.emptyobject.EmptyTarget;
 import io.beanmapper.testmodel.converter.SourceWithDate;
 import io.beanmapper.testmodel.converter.TargetWithDateTime;
 import io.beanmapper.testmodel.converterBetweenNestedClasses.NestedSourceClass;
@@ -62,9 +66,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class BeanMapperTest {
 
@@ -138,6 +144,36 @@ public class BeanMapperTest {
         PersonView personView = beanMapper.map(person, PersonView.class);
         assertEquals("Henk", personView.name);
         assertEquals("Zoetermeer", personView.place);
+    }
+
+    @Test
+    public void mapListCollectionInContainer() {
+        CollectionListSource source = new CollectionListSource();
+        source.items = new ArrayList<Person>();
+        source.items.add(createPerson("Jan"));
+        source.items.add(createPerson("Piet"));
+        source.items.add(createPerson("Joris"));
+        source.items.add(createPerson("Korneel"));
+
+        CollectionListTarget target = beanMapper.map(source, CollectionListTarget.class);
+        assertEquals("Jan", target.items.get(0).name);
+        assertEquals("Piet", target.items.get(1).name);
+        assertEquals("Joris", target.items.get(2).name);
+        assertEquals("Korneel", target.items.get(3).name);
+    }
+
+    @Test
+    public void mapCollectionInContainer() {
+        CollectionSetSource source = new CollectionSetSource();
+        source.items = new TreeSet<String>();
+        source.items.add("13");
+        source.items.add("29");
+        source.items.add("43");
+
+        CollectionSetTarget target = beanMapper.map(source, CollectionSetTarget.class);
+        assertTrue("Must contain 13", target.items.contains(13L));
+        assertTrue("Must contain 29", target.items.contains(29L));
+        assertTrue("Must contain 43", target.items.contains(43L));
     }
 
     @Test
