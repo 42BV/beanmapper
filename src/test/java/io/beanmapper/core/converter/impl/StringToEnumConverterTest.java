@@ -3,8 +3,6 @@
  */
 package io.beanmapper.core.converter.impl;
 
-import io.beanmapper.core.converter.impl.StringToEnumConverter;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,17 +18,17 @@ public class StringToEnumConverterTest {
     
     @Test
     public void testWithName() {
-        Assert.assertEquals(TestEnum.B, converter.convert("B", TestEnum.class));
+        Assert.assertEquals(TestEnum.B, converter.convert("B", TestEnum.class, null));
     }
     
     @Test
     public void testWithEmptyName() {
-        Assert.assertNull(converter.convert("   ", TestEnum.class));
+        Assert.assertNull(converter.convert("   ", TestEnum.class, null));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void testWithUnknownName() {
-        converter.convert("?", TestEnum.class);
+        converter.convert("?", TestEnum.class, null);
     }
     
     public enum TestEnum {

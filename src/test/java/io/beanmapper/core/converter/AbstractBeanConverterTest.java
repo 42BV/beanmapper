@@ -4,12 +4,11 @@
 package io.beanmapper.core.converter;
 
 import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
-import org.junit.Assert;
-import org.junit.Test;
 
 /**
  * 
@@ -24,22 +23,22 @@ public class AbstractBeanConverterTest {
     @Test
     public void testConvert() {
         LocalDateTime time = LocalDateTime.now();
-        Assert.assertEquals(time.toLocalDate(), converter.convert(time, LocalDate.class));
+        Assert.assertEquals(time.toLocalDate(), converter.convert(time, LocalDate.class, null));
     }
     
     @Test
     public void testNullSource() {
-        Assert.assertNull(converter.convert(null, LocalDate.class));
+        Assert.assertNull(converter.convert(null, LocalDate.class, null));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidSource() {
-        converter.convert("Test", LocalDate.class);
+        converter.convert("Test", LocalDate.class, null);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidTarget() {
-        converter.convert(LocalDateTime.now(), String.class);
+        converter.convert(LocalDateTime.now(), String.class, null);
     }
 
 }

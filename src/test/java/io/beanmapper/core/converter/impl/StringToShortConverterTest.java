@@ -19,13 +19,13 @@ public class StringToShortConverterTest {
     @Test
     public void testConvertBoxed() {
         Assert.assertTrue(converter.match(String.class, Short.class));
-        Assert.assertEquals(Short.valueOf((short) 42), converter.convert("42", Short.class));
+        Assert.assertEquals(Short.valueOf((short) 42), converter.convert("42", Short.class, null));
     }
     
     @Test
     public void testConvertPrimitive() {
         Assert.assertTrue(converter.match(String.class, short.class));
-        Assert.assertEquals(Short.valueOf((short) 42), converter.convert("42", short.class));
+        Assert.assertEquals(Short.valueOf((short) 42), converter.convert("42", short.class, null));
     }
 
 }

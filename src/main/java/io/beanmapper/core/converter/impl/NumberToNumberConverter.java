@@ -4,6 +4,7 @@
 package io.beanmapper.core.converter.impl;
 
 import io.beanmapper.BeanMapper;
+import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.converter.BeanConverter;
 
 import java.util.HashSet;
@@ -44,9 +45,9 @@ public class NumberToNumberConverter implements BeanConverter {
      * then converting that string back into the target number.
      */
     @Override
-    public Object convert(Object source, Class<?> targetClass) {
-        Object sourceAsString = beanMapper.convert(source, String.class);
-        return beanMapper.convert(sourceAsString, targetClass);
+    public Object convert(Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
+        Object sourceAsString = beanMapper.convert(source, String.class, beanFieldMatch);
+        return beanMapper.convert(sourceAsString, targetClass, beanFieldMatch);
     }
     
     /**

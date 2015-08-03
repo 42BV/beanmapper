@@ -19,13 +19,13 @@ public class StringToBooleanConverterTest {
     @Test
     public void testConvertBoxed() {
         Assert.assertTrue(converter.match(String.class, Boolean.class));
-        Assert.assertEquals(Boolean.TRUE, converter.convert("true", Boolean.class));
+        Assert.assertEquals(Boolean.TRUE, converter.convert("true", Boolean.class, null));
     }
     
     @Test
     public void testConvertPrimitive() {
         Assert.assertTrue(converter.match(String.class, boolean.class));
-        Assert.assertEquals(Boolean.TRUE, converter.convert("true", boolean.class));
+        Assert.assertEquals(Boolean.TRUE, converter.convert("true", boolean.class, null));
     }
 
 }

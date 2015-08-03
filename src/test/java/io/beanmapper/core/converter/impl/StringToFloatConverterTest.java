@@ -19,13 +19,13 @@ public class StringToFloatConverterTest {
     @Test
     public void testConvertBoxed() {
         Assert.assertTrue(converter.match(String.class, Float.class));
-        Assert.assertEquals(Float.valueOf((float) 42), converter.convert("42", Float.class));
+        Assert.assertEquals(Float.valueOf((float) 42), converter.convert("42", Float.class, null));
     }
     
     @Test
     public void testConvertPrimitive() {
         Assert.assertTrue(converter.match(String.class, float.class));
-        Assert.assertEquals(Float.valueOf((float) 42), converter.convert("42", float.class));
+        Assert.assertEquals(Float.valueOf((float) 42), converter.convert("42", float.class, null));
     }
 
 }

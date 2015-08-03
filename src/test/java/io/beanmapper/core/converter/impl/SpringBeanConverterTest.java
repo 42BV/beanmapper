@@ -3,8 +3,6 @@
  */
 package io.beanmapper.core.converter.impl;
 
-import io.beanmapper.core.converter.impl.SpringBeanConverter;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +34,7 @@ public class SpringBeanConverterTest {
     
     @Test
     public void testConvert() {
-        Assert.assertEquals(Long.valueOf(1), beanConverter.convert("1", Long.class));
+        Assert.assertEquals(Long.valueOf(1), beanConverter.convert("1", Long.class, null));
     }
 
 }

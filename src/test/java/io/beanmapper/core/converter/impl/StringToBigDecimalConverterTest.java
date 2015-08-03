@@ -3,11 +3,11 @@
  */
 package io.beanmapper.core.converter.impl;
 
-import java.math.BigDecimal;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.math.BigDecimal;
 
 public class StringToBigDecimalConverterTest {
     
@@ -20,7 +20,7 @@ public class StringToBigDecimalConverterTest {
     
     @Test
     public void testConvert() {
-        Assert.assertEquals("42.24", converter.convert("42.24", BigDecimal.class).toString());
+        Assert.assertEquals("42.24", converter.convert("42.24", BigDecimal.class, null).toString());
     }
 
 }

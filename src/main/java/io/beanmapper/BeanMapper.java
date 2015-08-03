@@ -6,7 +6,6 @@ import io.beanmapper.core.BeanField;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.BeanMatch;
 import io.beanmapper.core.BeanMatchStore;
-import io.beanmapper.core.collections.CollectionConverter;
 import io.beanmapper.core.collections.CollectionListConverter;
 import io.beanmapper.core.collections.CollectionMapConverter;
 import io.beanmapper.core.collections.CollectionSetConverter;
@@ -17,12 +16,13 @@ import io.beanmapper.core.converter.impl.*;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
-import io.beanmapper.exceptions.BeanCollectionNotSupportedException;
 import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanFieldNoMatchException;
 import io.beanmapper.exceptions.BeanMappingException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Class that is responsible first for understanding the semantics of the source and target
@@ -63,11 +63,6 @@ public class BeanMapper {
     private boolean shouldAddDefaultConverters;
 
     /**
-     * Contains the set of converters for Collections (eg, List to List, or Set to Set)
-     */
-    private Map<String, CollectionConverter> collectionConverters = new TreeMap<String, CollectionConverter>();
-
-    /**
      * Construct a new bean mapper, with default converters.
      */
     public BeanMapper() {
@@ -80,13 +75,6 @@ public class BeanMapper {
      */
     public BeanMapper(boolean includeDefaultConverters) {
         shouldAddDefaultConverters = includeDefaultConverters;
-        registerCollectionConverters();
-    }
-
-    private void registerCollectionConverters() {
-        this.collectionConverters.put(List.class.getSimpleName(), new CollectionListConverter(this));
-        this.collectionConverters.put(Set.class.getSimpleName(), new CollectionSetConverter(this));
-        this.collectionConverters.put(Map.class.getSimpleName(), new CollectionMapConverter(this));
     }
 
     /**
@@ -118,7 +106,7 @@ public class BeanMapper {
             Class<?> valueClass = beanUnproxy.unproxy(source.getClass());
             BeanConverter converter = getConverterOptional(valueClass, targetClass);
             if (converter != null) {
-                return (T) converter.convert(source, targetClass);
+                return (T) converter.convert(source, targetClass, null);
             }
         }
 
@@ -127,7 +115,6 @@ public class BeanMapper {
     }
 
     public <S, T> T mapForListElement(S source, Class<T> targetClass) {
-
         return map(source, targetClass, beanInitializer, true);
     }
 
@@ -239,7 +226,7 @@ public class BeanMapper {
             }
         }
 
-        Object convertedValue = convert(copyableSource, beanFieldMatch);
+        Object convertedValue = convert(copyableSource, beanFieldMatch.getTargetClass(), beanFieldMatch);
         beanFieldMatch.writeObject(convertedValue);
     }
 
@@ -273,54 +260,6 @@ public class BeanMapper {
         return false;
     }
 
-    public Object convert(Object value, BeanFieldMatch beanFieldMatch) {
-
-        if (treatAsCollection(value, beanFieldMatch)) {
-            return convertCollection(value, beanFieldMatch);
-        } else {
-            return convert(value, beanFieldMatch.getTargetClass());
-        }
-    }
-
-    private Object convertCollection(Object value, BeanFieldMatch beanFieldMatch) {
-        Class<?> sourceClass = beanUnproxy.unproxy(value.getClass());
-        Class targetClass = beanFieldMatch.getTargetClass();
-
-        CollectionConverter collectionConverter = getCollectionConverter(sourceClass, targetClass);
-        return collectionConverter.convert(beanFieldMatch);
-    }
-
-    private CollectionConverter getCollectionConverter(Class sourceClass, Class targetClass) {
-        for (CollectionConverter collectionConverter : collectionConverters.values()) {
-            if (extendsCollectionType(collectionConverter.getCollectionClass(), sourceClass, targetClass)) {
-                return collectionConverter;
-            }
-        }
-        throw new BeanCollectionNotSupportedException(sourceClass, targetClass);
-    }
-
-    private boolean extendsCollectionType(Class<?> collectionType, Class sourceClass, Class targetClass) {
-        return
-            collectionType.isAssignableFrom(sourceClass) &&
-            collectionType.isAssignableFrom(targetClass);
-    }
-
-    @SuppressWarnings("unchecked")
-    private boolean treatAsCollection(Object value, BeanFieldMatch beanFieldMatch) {
-        if (    value == null ||
-                beanFieldMatch.getCollectionInstructions() == null) {
-            return false;
-        }
-
-        Class<?> valueClass = beanUnproxy.unproxy(value.getClass());
-        for (CollectionConverter collectionConverter : collectionConverters.values()) {
-            if (collectionConverter.getCollectionClass().isAssignableFrom(valueClass)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
      * Converts a value into the target class.
      * @param value the value to convert
@@ -328,35 +267,23 @@ public class BeanMapper {
      * @return the converted value
      */
     @SuppressWarnings("unchecked")
-    public Object convert(Object value, Class targetClass) {
-
+    public Object convert(Object value, Class targetClass, BeanFieldMatch beanFieldMatch) {
         if (value == null) {
             return null;
         }
-
         Class<?> valueClass = beanUnproxy.unproxy(value.getClass());
+
+        BeanConverter converter = getConverterOptional(valueClass, targetClass);
+        if (converter != null) {
+            return converter.convert(value, targetClass, beanFieldMatch);
+        }
 
         // BeanMapper will try to get away with a shallow copy if it can
         if (targetClass.isAssignableFrom(valueClass)) {
             return value;
         }
 
-        BeanConverter converter = getConverterMandatory(valueClass, targetClass);
-        return converter.convert(value, targetClass);
-    }
-
-    /**
-     * Verifies whether a beanConverter is available to apply for conversion
-     * @param sourceClass the source class of the conversion
-     * @param targetClass the target class of the conversion
-     * @return the beanConverter to do the conversion with
-     */
-    private BeanConverter getConverterMandatory(Class<?> sourceClass, Class<?> targetClass) {
-        BeanConverter converter = getConverterOptional(sourceClass, targetClass);
-        if (converter == null) {
-            throw new BeanConversionException(sourceClass, targetClass);
-        }
-        return converter;
+        throw new BeanConversionException(beanFieldMatch.getSourceClass(), targetClass);
     }
 
     private BeanConverter getConverterOptional(Class<?> sourceClass, Class<?> targetClass) {
@@ -374,12 +301,7 @@ public class BeanMapper {
     }
 
     private boolean isConverterFor(Class<?> sourceClass, Class<?> targetClass) {
-        try {
-            getConverterMandatory(sourceClass, targetClass);
-            return true;
-        } catch (BeanConversionException e) {
-            return false;
-        }
+        return getConverterOptional(sourceClass, targetClass) != null;
     }
     
     // Configurations
@@ -430,6 +352,10 @@ public class BeanMapper {
         addConverter(new StringToEnumConverter());
         addConverter(new NumberToNumberConverter());
         addConverter(new ObjectToStringConverter());
+
+        addConverter(new CollectionListConverter());
+        addConverter(new CollectionSetConverter());
+        addConverter(new CollectionMapConverter());
     }
 
     public final void setBeanInitializer(BeanInitializer beanInitializer) {

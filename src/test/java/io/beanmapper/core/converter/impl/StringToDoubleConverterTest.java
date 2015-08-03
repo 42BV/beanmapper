@@ -19,13 +19,13 @@ public class StringToDoubleConverterTest {
     @Test
     public void testConvertBoxed() {
         Assert.assertTrue(converter.match(String.class, Double.class));
-        Assert.assertEquals(Double.valueOf((double) 42), converter.convert("42", Double.class));
+        Assert.assertEquals(Double.valueOf((double) 42), converter.convert("42", Double.class, null));
     }
     
     @Test
     public void testConvertPrimitive() {
         Assert.assertTrue(converter.match(String.class, double.class));
-        Assert.assertEquals(Double.valueOf((double) 42), converter.convert("42", double.class));
+        Assert.assertEquals(Double.valueOf((double) 42), converter.convert("42", double.class, null));
     }
 
 }
