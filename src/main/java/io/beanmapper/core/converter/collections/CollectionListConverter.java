@@ -1,4 +1,4 @@
-package io.beanmapper.core.collections;
+package io.beanmapper.core.converter.collections;
 
 import java.util.ArrayList;
 import java.util.List;

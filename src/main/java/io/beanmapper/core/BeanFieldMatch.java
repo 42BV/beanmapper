@@ -1,7 +1,7 @@
 package io.beanmapper.core;
 
 import io.beanmapper.annotations.BeanDefault;
-import io.beanmapper.core.collections.BeanCollectionInstructions;
+import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
 import io.beanmapper.exceptions.BeanMappingException;
 
 import java.lang.annotation.Annotation;

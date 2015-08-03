@@ -1,4 +1,4 @@
-package io.beanmapper.core.collections;
+package io.beanmapper.core.converter.collections;
 
 import io.beanmapper.annotations.BeanCollectionUsage;
 

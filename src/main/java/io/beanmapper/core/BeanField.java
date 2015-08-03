@@ -1,7 +1,7 @@
 package io.beanmapper.core;
 
-import io.beanmapper.core.collections.BeanCollectionInstructions;
 import io.beanmapper.core.constructor.NoArgConstructorBeanInitializer;
+import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
 import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessors;
 import io.beanmapper.exceptions.BeanMappingException;

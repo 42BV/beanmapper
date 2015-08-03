@@ -1,4 +1,4 @@
-package io.beanmapper.core.collections;
+package io.beanmapper.core.converter.collections;
 
 import java.util.Map;
 import java.util.TreeMap;
