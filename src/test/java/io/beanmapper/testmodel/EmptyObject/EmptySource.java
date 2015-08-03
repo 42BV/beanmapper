@@ -1,4 +1,4 @@
-package io.beanmapper.testmodel.emptyobject;
+package io.beanmapper.testmodel.EmptyObject;
 
 import io.beanmapper.annotations.BeanProperty;
 

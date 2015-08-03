@@ -5,9 +5,9 @@ import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
 import io.beanmapper.core.converter.impl.NestedSourceClassToNestedTargetClassConverter;
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
 import io.beanmapper.exceptions.BeanMappingException;
+import io.beanmapper.testmodel.EmptyObject.EmptySource;
+import io.beanmapper.testmodel.EmptyObject.EmptyTarget;
 import io.beanmapper.testmodel.collections.*;
-import io.beanmapper.testmodel.emptyobject.EmptySource;
-import io.beanmapper.testmodel.emptyobject.EmptyTarget;
 import io.beanmapper.testmodel.converter.SourceWithDate;
 import io.beanmapper.testmodel.converter.TargetWithDateTime;
 import io.beanmapper.testmodel.converterBetweenNestedClasses.NestedSourceClass;
@@ -65,9 +65,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.TreeSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class BeanMapperTest {
 
@@ -80,7 +78,7 @@ public class BeanMapperTest {
         beanMapper.addConverter(new LocalDateTimeToLocalDate());
         beanMapper.addConverter(new LocalDateToLocalDateTime());
         beanMapper.addConverter(new ObjectToStringConverter());
-        beanMapper.addConverter(new NestedSourceClassToNestedTargetClassConverter(beanMapper));
+        beanMapper.addConverter(new NestedSourceClassToNestedTargetClassConverter());
         beanMapper.addProxySkipClass(Enum.class);
     }
 
