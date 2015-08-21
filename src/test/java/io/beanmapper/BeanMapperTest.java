@@ -5,8 +5,6 @@ import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
 import io.beanmapper.core.converter.impl.NestedSourceClassToNestedTargetClassConverter;
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
 import io.beanmapper.exceptions.BeanMappingException;
-import io.beanmapper.testmodel.EmptyObject.EmptySource;
-import io.beanmapper.testmodel.EmptyObject.EmptyTarget;
 import io.beanmapper.testmodel.collections.*;
 import io.beanmapper.testmodel.converter.SourceWithDate;
 import io.beanmapper.testmodel.converter.TargetWithDateTime;
@@ -16,6 +14,8 @@ import io.beanmapper.testmodel.converterBetweenNestedClasses.SourceWithNestedCla
 import io.beanmapper.testmodel.converterBetweenNestedClasses.TargetWithNestedClass;
 import io.beanmapper.testmodel.defaults.SourceWithDefaults;
 import io.beanmapper.testmodel.defaults.TargetWithDefaults;
+import io.beanmapper.testmodel.emptyobject.EmptySource;
+import io.beanmapper.testmodel.emptyobject.EmptyTarget;
 import io.beanmapper.testmodel.encapsulate.*;
 import io.beanmapper.testmodel.encapsulate.sourceAnnotated.Car;
 import io.beanmapper.testmodel.encapsulate.sourceAnnotated.CarDriver;
@@ -523,6 +523,17 @@ public class BeanMapperTest {
         assertNull(result.name); // Ignored because final field and no setter
         assertNull(result.getMasterName()); // Ignored because private field and no setter
         // Ignored isMaster() because no setter
+    }
+
+    @Test
+    public void convertGetterListToPublicFieldList() {
+        SourceWithListGetter source = new SourceWithListGetter();
+        source.lines.add("alpha");
+        source.lines.add("beta");
+        source.lines.add("gamma");
+
+        TargetWithListPublicField target = beanMapper.map(source, TargetWithListPublicField.class);
+        assertEquals(3, target.lines.size());
     }
 
     public Person createPerson(String name) {

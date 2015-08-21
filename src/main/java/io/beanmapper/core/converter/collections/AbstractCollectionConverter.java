@@ -23,6 +23,11 @@ public abstract class AbstractCollectionConverter<T> implements BeanConverter {
     @Override
     public T convert(Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
         T sourceCollection = (T) source;
+
+        if (beanFieldMatch.getCollectionInstructions() == null) {
+            return sourceCollection;
+        }
+
         T targetCollection = getTargetCollection(beanFieldMatch);
 
         if(targetCollection instanceof Map) {
@@ -39,6 +44,7 @@ public abstract class AbstractCollectionConverter<T> implements BeanConverter {
     }
 
     private T getTargetCollection(BeanFieldMatch beanFieldMatch) {
+
         BeanCollectionUsage beanCollectionUsage = beanFieldMatch.getCollectionInstructions().getBeanCollectionUsage();
 
         T targetCollection =
