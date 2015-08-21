@@ -1,4 +1,4 @@
-package io.beanmapper.testmodel.EmptyObject;
+package io.beanmapper.testmodel.emptyobject;
 
 public class NestedEmptyTarget {
 
