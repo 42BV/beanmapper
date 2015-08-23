@@ -14,6 +14,10 @@ import io.beanmapper.testmodel.converterBetweenNestedClasses.SourceWithNestedCla
 import io.beanmapper.testmodel.converterBetweenNestedClasses.TargetWithNestedClass;
 import io.beanmapper.testmodel.defaults.SourceWithDefaults;
 import io.beanmapper.testmodel.defaults.TargetWithDefaults;
+import io.beanmapper.testmodel.numbers.ClassWithInteger;
+import io.beanmapper.testmodel.numbers.ClassWithLong;
+import io.beanmapper.testmodel.numbers.SourceWithDouble;
+import io.beanmapper.testmodel.numbers.TargetWithDouble;
 import io.beanmapper.testmodel.emptyobject.EmptySource;
 import io.beanmapper.testmodel.emptyobject.EmptyTarget;
 import io.beanmapper.testmodel.encapsulate.*;
@@ -250,6 +254,35 @@ public class BeanMapperTest {
         assertEquals("XHT-8311-t33l-llac", person.getBankAccount());
         assertEquals("Den Haag", person.getPlace());
     }
+
+    @Test
+    public void mapDouble() {
+        SourceWithDouble source = new SourceWithDouble();
+        source.number = 13.5;
+        TargetWithDouble target = beanMapper.map(source, TargetWithDouble.class);
+        assertEquals((Double)13.5, target.number);
+    }
+
+    @Test
+    public void mapLongToInteger() {
+        ClassWithLong source = new ClassWithLong();
+        source.number = 42L;
+        ClassWithInteger target = beanMapper.map(source, ClassWithInteger.class);
+        assertEquals((Integer)42, target.number);
+    }
+
+    @Test
+    public void mapIntegerToLong() {
+        ClassWithInteger source = new ClassWithInteger();
+        source.number = 42;
+        ClassWithLong target = beanMapper.map(source, ClassWithLong.class);
+        assertEquals((Long)42L, target.number);
+    }
+
+    /*
+            Assert.assertTrue(converter.match(Integer.class, Long.class));
+        Assert.assertEquals(Long.valueOf(42), converter.convert(Integer.valueOf(42), Long.class, null));
+     */
 
     @Test
     public void beanIgnore() {
