@@ -8,10 +8,10 @@ import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.testmodel.collections.*;
 import io.beanmapper.testmodel.converter.SourceWithDate;
 import io.beanmapper.testmodel.converter.TargetWithDateTime;
-import io.beanmapper.testmodel.converterBetweenNestedClasses.NestedSourceClass;
-import io.beanmapper.testmodel.converterBetweenNestedClasses.NestedTargetClass;
-import io.beanmapper.testmodel.converterBetweenNestedClasses.SourceWithNestedClass;
-import io.beanmapper.testmodel.converterBetweenNestedClasses.TargetWithNestedClass;
+import io.beanmapper.testmodel.converterbetweennestedclasses.NestedSourceClass;
+import io.beanmapper.testmodel.converterbetweennestedclasses.NestedTargetClass;
+import io.beanmapper.testmodel.converterbetweennestedclasses.SourceWithNestedClass;
+import io.beanmapper.testmodel.converterbetweennestedclasses.TargetWithNestedClass;
 import io.beanmapper.testmodel.defaults.SourceWithDefaults;
 import io.beanmapper.testmodel.defaults.TargetWithDefaults;
 import io.beanmapper.testmodel.numbers.ClassWithInteger;
@@ -59,6 +59,7 @@ import io.beanmapper.testmodel.tostring.TargetWithString;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
+
 import org.junit.Before;
 import org.junit.Test;
 

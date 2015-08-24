@@ -1,4 +1,4 @@
-package io.beanmapper.testmodel.converterBetweenNestedClasses;
+package io.beanmapper.testmodel.converterbetweennestedclasses;
 
 public class NestedTargetClass extends NestedTargetAbstractClass {
 
