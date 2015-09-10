@@ -46,7 +46,7 @@ public class NumberToNumberConverter implements BeanConverter {
      */
     @Override
     public Object convert(Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
-        if (source == null || beanFieldMatch.getSourceClass().equals(targetClass)) {
+        if (source == null || source.getClass().equals(targetClass) || (beanFieldMatch != null && beanFieldMatch.getSourceClass().equals(targetClass))) {
             return source;
         }
         Object sourceAsString = beanMapper.convert(source, String.class, beanFieldMatch);
