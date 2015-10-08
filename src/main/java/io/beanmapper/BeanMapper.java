@@ -12,7 +12,14 @@ import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.converter.collections.CollectionListConverter;
 import io.beanmapper.core.converter.collections.CollectionMapConverter;
 import io.beanmapper.core.converter.collections.CollectionSetConverter;
-import io.beanmapper.core.converter.impl.*;
+import io.beanmapper.core.converter.impl.NumberToNumberConverter;
+import io.beanmapper.core.converter.impl.ObjectToStringConverter;
+import io.beanmapper.core.converter.impl.PrimitiveConverter;
+import io.beanmapper.core.converter.impl.StringToBigDecimalConverter;
+import io.beanmapper.core.converter.impl.StringToBooleanConverter;
+import io.beanmapper.core.converter.impl.StringToEnumConverter;
+import io.beanmapper.core.converter.impl.StringToIntegerConverter;
+import io.beanmapper.core.converter.impl.StringToLongConverter;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
@@ -23,6 +30,7 @@ import io.beanmapper.exceptions.BeanMappingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Class that is responsible first for understanding the semantics of the source and target
@@ -60,7 +68,7 @@ public class BeanMapper {
     /**
      * Determines if the default converters must be added during the next conversion.
      */
-    private boolean shouldAddDefaultConverters;
+    private AtomicBoolean shouldAddDefaultConverters = new AtomicBoolean(true);
 
     /**
      * Construct a new bean mapper, with default converters.
@@ -74,7 +82,7 @@ public class BeanMapper {
      * @param includeDefaultConverters whether default converters should be registered
      */
     public BeanMapper(boolean includeDefaultConverters) {
-        shouldAddDefaultConverters = includeDefaultConverters;
+        shouldAddDefaultConverters.set(includeDefaultConverters);
     }
 
     /**
@@ -100,8 +108,8 @@ public class BeanMapper {
      * @return the target instance containing all applicable properties
      * @throws BeanMappingException
      */
+    @SuppressWarnings("unchecked")
     public <S, T> T map(S source, Class<T> targetClass, BeanInitializer beanInitializer, boolean converterChoosable) {
-
         if (converterChoosable) {
             Class<?> valueClass = beanUnproxy.unproxy(source.getClass());
             BeanConverter converter = getConverterOptional(valueClass, targetClass);
@@ -267,18 +275,18 @@ public class BeanMapper {
      * @return the converted value
      */
     @SuppressWarnings("unchecked")
-    public Object convert(Object value, Class targetClass, BeanFieldMatch beanFieldMatch) {
+    public Object convert(Object value, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
         if (value == null) {
             return null;
         }
+
         Class<?> valueClass = beanUnproxy.unproxy(value.getClass());
 
         BeanConverter converter = getConverterOptional(valueClass, targetClass);
         if (converter != null) {
             return converter.convert(value, targetClass, beanFieldMatch);
         }
-
-        // BeanMapper will try to get away with a shallow copy if it can
+        
         if (targetClass.isAssignableFrom(valueClass)) {
             return value;
         }
@@ -288,15 +296,19 @@ public class BeanMapper {
 
     private BeanConverter getConverterOptional(Class<?> sourceClass, Class<?> targetClass) {
         // Register the default converters last so that custom converters are placed before
-        if (shouldAddDefaultConverters) {
-            addDefaultConverters();
-        }
-        // Retrieve the first supported converter
-        for (BeanConverter converter : beanConverters) {
-            if (converter.match(sourceClass, targetClass)) {
-                return converter;
+        synchronized (this) {
+            if (shouldAddDefaultConverters.get()) {
+                addDefaultConverters();
             }
         }
+
+        // Retrieve the first supported converter
+        for (BeanConverter beanConverter : beanConverters) {
+            if (beanConverter != null && beanConverter.match(sourceClass, targetClass)) {
+                return beanConverter;
+            }
+        }
+
         return null;
     }
 
@@ -342,8 +354,6 @@ public class BeanMapper {
      * Add all default converters.
      */
     private void addDefaultConverters() {
-        shouldAddDefaultConverters = false;
-
         addConverter(new PrimitiveConverter());
         addConverter(new StringToBooleanConverter());
         addConverter(new StringToIntegerConverter());
@@ -356,6 +366,8 @@ public class BeanMapper {
         addConverter(new CollectionListConverter());
         addConverter(new CollectionSetConverter());
         addConverter(new CollectionMapConverter());
+        
+        shouldAddDefaultConverters.set(false);
     }
 
     public final void setBeanInitializer(BeanInitializer beanInitializer) {
