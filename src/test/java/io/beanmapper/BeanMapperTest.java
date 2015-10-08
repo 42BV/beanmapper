@@ -14,12 +14,9 @@ import io.beanmapper.testmodel.converterbetweennestedclasses.SourceWithNestedCla
 import io.beanmapper.testmodel.converterbetweennestedclasses.TargetWithNestedClass;
 import io.beanmapper.testmodel.defaults.SourceWithDefaults;
 import io.beanmapper.testmodel.defaults.TargetWithDefaults;
-import io.beanmapper.testmodel.numbers.ClassWithInteger;
-import io.beanmapper.testmodel.numbers.ClassWithLong;
-import io.beanmapper.testmodel.numbers.SourceWithDouble;
-import io.beanmapper.testmodel.numbers.TargetWithDouble;
 import io.beanmapper.testmodel.emptyobject.EmptySource;
 import io.beanmapper.testmodel.emptyobject.EmptyTarget;
+import io.beanmapper.testmodel.emptyobject.NestedEmptyTarget;
 import io.beanmapper.testmodel.encapsulate.*;
 import io.beanmapper.testmodel.encapsulate.sourceAnnotated.Car;
 import io.beanmapper.testmodel.encapsulate.sourceAnnotated.CarDriver;
@@ -35,6 +32,10 @@ import io.beanmapper.testmodel.multipleunwrap.AllTogether;
 import io.beanmapper.testmodel.multipleunwrap.LayerA;
 import io.beanmapper.testmodel.nestedclasses.Layer1;
 import io.beanmapper.testmodel.nestedclasses.Layer1Result;
+import io.beanmapper.testmodel.numbers.ClassWithInteger;
+import io.beanmapper.testmodel.numbers.ClassWithLong;
+import io.beanmapper.testmodel.numbers.SourceWithDouble;
+import io.beanmapper.testmodel.numbers.TargetWithDouble;
 import io.beanmapper.testmodel.othername.SourceWithOtherName;
 import io.beanmapper.testmodel.othername.TargetWithOtherName;
 import io.beanmapper.testmodel.parentClass.Project;
@@ -59,7 +60,6 @@ import io.beanmapper.testmodel.tostring.TargetWithString;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -243,6 +243,25 @@ public class BeanMapperTest {
         assertNull(emptyTarget.id);
         assertNull(emptyTarget.name);
         assertNull(emptyTarget.nestedEmptyClass);
+    }
+
+    @Test
+    public void emptySourceToExistingTarget() {
+        EmptySource source = new EmptySource();
+
+        EmptyTarget existingTarget = new EmptyTarget();
+        existingTarget.id = 42;
+        existingTarget.name = "ExistingTargetName";
+        existingTarget.nestedEmptyClass = new NestedEmptyTarget();
+        existingTarget.nestedEmptyClass.name = "Hallo";
+        existingTarget.nestedEmpty = new NestedEmptyTarget();
+        existingTarget.nestedEmpty.name = "existingNestedTarget";
+
+        EmptyTarget mappedTarget = beanMapper.map(source, existingTarget);
+        assertNull(mappedTarget.id);
+        assertNull(mappedTarget.name);
+        assertNull(mappedTarget.nestedEmptyClass.name);
+        assertNull(mappedTarget.nestedEmpty);
     }
 
     @Test

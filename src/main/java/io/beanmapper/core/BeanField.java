@@ -84,12 +84,15 @@ public class BeanField {
     }
 
     public Object writeObject(Object source, Object parent) throws BeanMappingException {
-        if(source != null) {
-            if (hasNext()) {
+        if (hasNext()) {
+            if(source != null) {
                 getNext().writeObject(source, getOrCreate(parent));
-            } else {
-                getCurrentField().setValue(parent, source);
+            } else if (getCurrentField().getValue(parent) != null) {
+                // If source is null and target object is filled. The nested target object should be overridden with null.
+                getNext().writeObject(null, getCurrentField().getValue(parent));
             }
+        } else {
+            getCurrentField().setValue(parent, source);
         }
         return parent;
     }

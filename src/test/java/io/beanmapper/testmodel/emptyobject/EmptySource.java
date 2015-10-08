@@ -8,4 +8,5 @@ public class EmptySource {
     public String name;
     @BeanProperty(name = "nestedEmptyClass.name")
     public String emptyName;
+    public NestedEmptySource nestedEmpty;
 }

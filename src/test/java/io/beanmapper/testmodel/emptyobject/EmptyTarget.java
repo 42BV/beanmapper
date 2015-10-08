@@ -5,4 +5,5 @@ public class EmptyTarget {
     public Integer id;
     public String name;
     public NestedEmptyTarget nestedEmptyClass;
+    public NestedEmptyTarget nestedEmpty;
 }
