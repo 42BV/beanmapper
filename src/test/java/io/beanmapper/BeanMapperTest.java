@@ -233,16 +233,20 @@ public class BeanMapperTest {
         source.id = 42;
         source.name = "sourceName";
         source.emptyName = "notEmpty";
+        source.bool = true;
         EmptyTarget target = beanMapper.map(source, EmptyTarget.class);
         assertEquals(source.id, target.id, 0);
         assertEquals(source.name, target.name);
         assertEquals(source.emptyName, target.nestedEmptyClass.name);
+        assertEquals(source.bool, target.bool);
         // Test with empty source
         EmptySource emptySource = new EmptySource();
         EmptyTarget emptyTarget = beanMapper.map(emptySource, EmptyTarget.class);
-        assertNull(emptyTarget.id);
+        assertEquals(0, emptyTarget.id, 0); // Default for primitive int is 0
         assertNull(emptyTarget.name);
         assertNull(emptyTarget.nestedEmptyClass);
+        assertNull(emptyTarget.nestedEmpty);
+        assertEquals(false, emptyTarget.bool); // Default for primitive boolean is false
     }
 
     @Test
@@ -252,14 +256,16 @@ public class BeanMapperTest {
         EmptyTarget existingTarget = new EmptyTarget();
         existingTarget.id = 42;
         existingTarget.name = "ExistingTargetName";
+        existingTarget.bool = true;
         existingTarget.nestedEmptyClass = new NestedEmptyTarget();
         existingTarget.nestedEmptyClass.name = "Hallo";
         existingTarget.nestedEmpty = new NestedEmptyTarget();
         existingTarget.nestedEmpty.name = "existingNestedTarget";
 
         EmptyTarget mappedTarget = beanMapper.map(source, existingTarget);
-        assertNull(mappedTarget.id);
+        assertEquals(0, mappedTarget.id, 0);// Default for primitive int is 0
         assertNull(mappedTarget.name);
+        assertEquals(false, mappedTarget.bool);// Default for primitive boolean is false
         assertNull(mappedTarget.nestedEmptyClass.name);
         assertNull(mappedTarget.nestedEmpty);
     }

@@ -6,6 +6,7 @@ import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessors;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.exceptions.NoSuchPropertyException;
+import io.beanmapper.utils.DefaultValues;
 
 import java.util.Stack;
 
@@ -92,6 +93,10 @@ public class BeanField {
                 getNext().writeObject(null, getCurrentField().getValue(parent));
             }
         } else {
+            if(source == null && getCurrentField().getType().isPrimitive()) {
+                // Primitives types can't be null.
+                source = DefaultValues.defaultValueFor(getCurrentField().getType());
+            }
             getCurrentField().setValue(parent, source);
         }
         return parent;
