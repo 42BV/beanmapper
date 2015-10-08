@@ -68,7 +68,7 @@ public class BeanMapper {
     /**
      * Determines if the default converters must be added during the next conversion.
      */
-    private AtomicBoolean shouldAddDefaultConverters = new AtomicBoolean(true);
+    private final AtomicBoolean shouldAddDefaultConverters;
 
     /**
      * Construct a new bean mapper, with default converters.
@@ -82,7 +82,7 @@ public class BeanMapper {
      * @param includeDefaultConverters whether default converters should be registered
      */
     public BeanMapper(boolean includeDefaultConverters) {
-        shouldAddDefaultConverters.set(includeDefaultConverters);
+        shouldAddDefaultConverters = new AtomicBoolean(includeDefaultConverters);
     }
 
     /**
