@@ -1,5 +1,6 @@
 package io.beanmapper;
 
+import io.beanmapper.annotations.BeanConstruct;
 import io.beanmapper.annotations.BeanDefault;
 import io.beanmapper.annotations.BeanProperty;
 import io.beanmapper.core.BeanField;
@@ -7,7 +8,7 @@ import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.BeanMatch;
 import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.constructor.BeanInitializer;
-import io.beanmapper.core.constructor.NoArgConstructorBeanInitializer;
+import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.converter.collections.CollectionListConverter;
 import io.beanmapper.core.converter.collections.CollectionMapConverter;
@@ -18,6 +19,7 @@ import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
 import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanFieldNoMatchException;
+import io.beanmapper.exceptions.BeanInstantiationException;
 import io.beanmapper.exceptions.BeanMappingException;
 
 import java.util.ArrayList;
@@ -35,7 +37,7 @@ public class BeanMapper {
     /**
      * Initializes the beans.
      */
-    private BeanInitializer beanInitializer = new NoArgConstructorBeanInitializer();
+    private BeanInitializer beanInitializer = new DefaultBeanInitializer();
 
     /**
      * Removes any potential proxies of beans.
@@ -111,8 +113,10 @@ public class BeanMapper {
             }
         }
 
-        T target = beanInitializer.instantiate(targetClass);
-        return map(source, target);
+        BeanMatch beanMatch = getBeanMatch(source.getClass(), targetClass);
+        T target = beanInitializer.instantiate(targetClass, getConstructValues(source, beanMatch));
+
+        return processFields(source, target, beanMatch);
     }
 
     public <S, T> T mapForListElement(S source, Class<T> targetClass) {
@@ -147,7 +151,35 @@ public class BeanMapper {
      * @throws BeanMappingException
      */
     public <S, T> T map(S source, T target) {
-        return matchSourceToTarget(source, target);
+        BeanMatch beanMatch = getBeanMatch(source.getClass(), target.getClass());
+        return processFields(source, target, beanMatch);
+    }
+
+    private <S> Object[] getConstructValues(S source, BeanMatch beanMatch) {
+        BeanConstruct beanConstruct = beanMatch.getTargetClass().getAnnotation(BeanConstruct.class);
+        String[] constructArgs;
+        Object[] constructValues = null;
+
+        if(beanConstruct != null){
+            constructArgs = beanConstruct.value();
+            constructValues = new Object[constructArgs.length];
+
+            for(int i=0; i<constructArgs.length; i++){
+                if(beanMatch.getSourceNode().containsKey(constructArgs[i])){
+                    BeanField constructField = beanMatch.getSourceNode().get(constructArgs[i]);
+                    constructValues[i] = constructField.getObject(source);
+                }else{
+                    throw new BeanInstantiationException(beanMatch.getTargetClass(), new IllegalArgumentException("No source field found with name " + constructArgs[i]));
+                }
+            }
+        }
+        return constructValues;
+    }
+
+    private <T, S> BeanMatch getBeanMatch(Class<S> sourceClazz, Class<T> targetClazz) {
+        Class<?> sourceClass = beanUnproxy.unproxy(sourceClazz);
+        Class<?> targetClass = beanUnproxy.unproxy(targetClazz);
+        return beanMatchStore.getBeanMatch(sourceClass, targetClass);
     }
 
     /**
@@ -163,20 +195,13 @@ public class BeanMapper {
      * @return A filled target object.
      * @throws BeanMappingException
      */
-    private <S, T> T matchSourceToTarget(S source, T target) {
-        BeanMatch beanMatch = getBeanMatch(source, target);
+    private <S, T> T processFields(S source, T target, BeanMatch beanMatch) {
         for (String fieldName : beanMatch.getTargetNode().keySet()) {
             BeanField sourceField = beanMatch.getSourceNode().get(fieldName);
             BeanField targetField = beanMatch.getTargetNode().get(fieldName);
             processField(new BeanFieldMatch(source, target, sourceField, targetField, fieldName));
         }
         return target;
-    }
-
-    private <T, S> BeanMatch getBeanMatch(S source, T target) {
-        Class<?> sourceClass = beanUnproxy.unproxy(source.getClass());
-        Class<?> targetClass = beanUnproxy.unproxy(target.getClass());
-        return beanMatchStore.getBeanMatch(sourceClass, targetClass);
     }
 
     /**
@@ -243,9 +268,14 @@ public class BeanMapper {
      */
     private void dealWithMappableNestedClass(BeanFieldMatch beanFieldMatch) {
         Object encapsulatedSource = beanFieldMatch.getSourceObject();
+        Object target;
         if (encapsulatedSource != null) {
-            Object encapsulatedTarget = beanFieldMatch.getOrCreateTargetObject();
-            matchSourceToTarget(encapsulatedSource, encapsulatedTarget);
+            if(beanFieldMatch.getTargetObject() == null){
+                target = map(encapsulatedSource, beanFieldMatch.getTargetClass());
+            }else {
+                target = map(encapsulatedSource, beanFieldMatch.getTarget());
+            }
+            beanFieldMatch.writeObject(target);
         }
     }
 

@@ -14,8 +14,9 @@ public interface BeanInitializer {
     /**
      * Initialize a new bean.
      * @param beanClass the bean class
+     * @param beanMatch the beanmatch containing information for bean construction
      * @return the initialized bean
      */
-    <T> T instantiate(Class<T> beanClass);
+    <T> T instantiate(Class<T> beanClass, Object... beanMatch);
 
 }

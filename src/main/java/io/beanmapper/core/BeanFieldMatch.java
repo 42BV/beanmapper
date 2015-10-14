@@ -64,9 +64,6 @@ public class BeanFieldMatch {
     public Object getTargetObject() throws BeanMappingException {
         return targetBeanField.getObject(target);
     }
-    public Object getOrCreateTargetObject() throws BeanMappingException {
-        return targetBeanField.getOrCreate(target);
-    }
     public BeanCollectionInstructions getCollectionInstructions() {
         return targetBeanField.getCollectionInstructions() != null ?
                 targetBeanField.getCollectionInstructions() :

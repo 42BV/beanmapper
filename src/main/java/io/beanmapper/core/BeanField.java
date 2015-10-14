@@ -1,6 +1,6 @@
 package io.beanmapper.core;
 
-import io.beanmapper.core.constructor.NoArgConstructorBeanInitializer;
+import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
 import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessors;
@@ -78,7 +78,7 @@ public class BeanField {
         Object target = getCurrentField().getValue(parent);
         if (target == null) {
             Class<?> type = getCurrentField().getType();
-            target = new NoArgConstructorBeanInitializer().instantiate(type);
+            target = new DefaultBeanInitializer().instantiate(type);
             getCurrentField().setValue(parent, target);
         }
         return target;
