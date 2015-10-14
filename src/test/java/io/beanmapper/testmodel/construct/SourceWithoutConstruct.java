@@ -6,5 +6,6 @@ public class SourceWithoutConstruct {
     public String firstName;
     public String infix;
     public String lastName;
+    public NestedSourceWithoutConstruct nestedClass;
 
 }

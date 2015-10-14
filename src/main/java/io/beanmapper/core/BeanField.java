@@ -78,7 +78,7 @@ public class BeanField {
         Object target = getCurrentField().getValue(parent);
         if (target == null) {
             Class<?> type = getCurrentField().getType();
-            target = new DefaultBeanInitializer().instantiate(type);
+            target = new DefaultBeanInitializer().instantiate(type, null);
             getCurrentField().setValue(parent, target);
         }
         return target;

@@ -3,7 +3,9 @@
  */
 package io.beanmapper.core.constructor;
 
+import io.beanmapper.exceptions.BeanConstructException;
 import io.beanmapper.exceptions.BeanInstantiationException;
+import io.beanmapper.utils.ConstructorArguments;
 
 public class DefaultBeanInitializer implements BeanInitializer {
     
@@ -11,17 +13,15 @@ public class DefaultBeanInitializer implements BeanInitializer {
      * {@inheritDoc}
      */
     @Override
-    public <T> T instantiate(Class<T> beanClass, Object... constructValues) {
+    public <T> T instantiate(Class<T> beanClass, ConstructorArguments arguments) {
         try {
-            if(constructValues == null){
+            if (arguments == null) {
                 return beanClass.getConstructor().newInstance();
-            }else {
-                Class[] constructTypes = new Class[constructValues.length];
-                for(int i=0; i < constructTypes.length; i++){
-                    constructTypes[i] = constructValues[i].getClass();
-                }
-                return (T)beanClass.getConstructor(constructTypes).newInstance(constructValues);
+            } else {
+                return (T) beanClass.getConstructor(arguments.types).newInstance(arguments.values);
             }
+        } catch (NoSuchMethodException e){
+            throw new BeanConstructException(beanClass, e);
         } catch (Exception e) {
             throw new BeanInstantiationException(beanClass, e);
         }

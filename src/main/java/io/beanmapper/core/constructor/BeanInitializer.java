@@ -3,6 +3,8 @@
  */
 package io.beanmapper.core.constructor;
 
+import io.beanmapper.utils.ConstructorArguments;
+
 /**
  * Abstraction that initializes beans.
  *
@@ -14,9 +16,9 @@ public interface BeanInitializer {
     /**
      * Initialize a new bean.
      * @param beanClass the bean class
-     * @param beanMatch the beanmatch containing information for bean construction
+     * @param arguments object containing types and values necessary for constructing using bean construct
      * @return the initialized bean
      */
-    <T> T instantiate(Class<T> beanClass, Object... beanMatch);
+    <T> T instantiate(Class<T> beanClass, ConstructorArguments arguments);
 
 }

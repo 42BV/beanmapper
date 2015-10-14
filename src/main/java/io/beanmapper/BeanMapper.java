@@ -21,10 +21,9 @@ import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanFieldNoMatchException;
 import io.beanmapper.exceptions.BeanInstantiationException;
 import io.beanmapper.exceptions.BeanMappingException;
+import io.beanmapper.utils.ConstructorArguments;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -114,7 +113,7 @@ public class BeanMapper {
         }
 
         BeanMatch beanMatch = getBeanMatch(source.getClass(), targetClass);
-        T target = beanInitializer.instantiate(targetClass, getConstructValues(source, beanMatch));
+        T target = beanInitializer.instantiate(targetClass, getConstructorArguments(source, beanMatch));
 
         return processFields(source, target, beanMatch);
     }
@@ -134,7 +133,7 @@ public class BeanMapper {
      */
     @SuppressWarnings("unchecked")
     public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass) {
-        Collection<T> targetItems = (Collection<T>) beanInitializer.instantiate(sourceItems.getClass());
+        Collection<T> targetItems = (Collection<T>) beanInitializer.instantiate(sourceItems.getClass(), null);
         for (S source : sourceItems) {
             targetItems.add(map(source, targetClass));
         }
@@ -155,25 +154,30 @@ public class BeanMapper {
         return processFields(source, target, beanMatch);
     }
 
-    private <S> Object[] getConstructValues(S source, BeanMatch beanMatch) {
+    private <S> ConstructorArguments getConstructorArguments(S source, BeanMatch beanMatch) {
         BeanConstruct beanConstruct = beanMatch.getTargetClass().getAnnotation(BeanConstruct.class);
+        if(beanConstruct == null){
+            beanConstruct = beanMatch.getSourceClass().getAnnotation(BeanConstruct.class);
+        }
+
         String[] constructArgs;
-        Object[] constructValues = null;
+        ConstructorArguments arguments = null;
 
         if(beanConstruct != null){
             constructArgs = beanConstruct.value();
-            constructValues = new Object[constructArgs.length];
+            arguments = new ConstructorArguments(constructArgs.length);
 
-            for(int i=0; i<constructArgs.length; i++){
-                if(beanMatch.getSourceNode().containsKey(constructArgs[i])){
+            for(int i=0; i<constructArgs.length; i++) {
+                if (beanMatch.getSourceNode().containsKey(constructArgs[i])) {
                     BeanField constructField = beanMatch.getSourceNode().get(constructArgs[i]);
-                    constructValues[i] = constructField.getObject(source);
-                }else{
+                    arguments.types[i] = constructField.getProperty().getType();
+                    arguments.values[i] = constructField.getObject(source);
+                } else {
                     throw new BeanInstantiationException(beanMatch.getTargetClass(), new IllegalArgumentException("No source field found with name " + constructArgs[i]));
                 }
             }
         }
-        return constructValues;
+        return arguments;
     }
 
     private <T, S> BeanMatch getBeanMatch(Class<S> sourceClazz, Class<T> targetClazz) {

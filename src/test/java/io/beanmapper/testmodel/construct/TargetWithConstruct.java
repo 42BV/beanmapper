@@ -7,6 +7,7 @@ public class TargetWithConstruct {
 
     public Long id;
     private String fullName;
+    public NestedTargetWithConstruct nestedClass;
 
     public TargetWithConstruct(String firstName, String infix, String lastName){
         this.fullName = firstName + " " + infix + " " + lastName;

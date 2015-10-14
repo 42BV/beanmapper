@@ -6,6 +6,7 @@ import io.beanmapper.core.converter.impl.NestedSourceClassToNestedTargetClassCon
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.testmodel.collections.*;
+import io.beanmapper.testmodel.construct.NestedSourceWithoutConstruct;
 import io.beanmapper.testmodel.construct.SourceWithoutConstruct;
 import io.beanmapper.testmodel.construct.TargetWithConstruct;
 import io.beanmapper.testmodel.converter.SourceWithDate;
@@ -604,10 +605,15 @@ public class BeanMapperTest {
         source.firstName = "Rick";
         source.infix = "van der";
         source.lastName = "Waal";
+        NestedSourceWithoutConstruct nestedClass = new NestedSourceWithoutConstruct();
+        nestedClass.street = "boomweg";
+        nestedClass.number = 42;
+        source.nestedClass = nestedClass;
 
         TargetWithConstruct target = beanMapper.map(source, TargetWithConstruct.class);
         assertEquals(source.id, target.id, 0);
         assertEquals(source.firstName + " " + source.infix + " " + source.lastName, target.getFullName());
+        assertEquals(source.nestedClass.street+source.nestedClass.number, target.nestedClass.streetWithNumber);
     }
 
     public Person createPerson(String name) {
