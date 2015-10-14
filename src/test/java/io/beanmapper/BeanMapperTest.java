@@ -6,9 +6,8 @@ import io.beanmapper.core.converter.impl.NestedSourceClassToNestedTargetClassCon
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.testmodel.collections.*;
-import io.beanmapper.testmodel.construct.NestedSourceWithoutConstruct;
-import io.beanmapper.testmodel.construct.SourceWithoutConstruct;
-import io.beanmapper.testmodel.construct.TargetWithConstruct;
+import io.beanmapper.testmodel.construct.*;
+import io.beanmapper.testmodel.constructunmatching.*;
 import io.beanmapper.testmodel.converter.SourceWithDate;
 import io.beanmapper.testmodel.converter.TargetWithDateTime;
 import io.beanmapper.testmodel.converterbetweennestedclasses.NestedSourceClass;
@@ -599,8 +598,8 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void constructAtTargetSide() {
-        SourceWithoutConstruct source = new SourceWithoutConstruct();
+    public void constructAtSourceSide() {
+        SourceWithConstruct source = new SourceWithConstruct();
         source.id = 238L;
         source.firstName = "Rick";
         source.infix = "van der";
@@ -610,10 +609,26 @@ public class BeanMapperTest {
         nestedClass.number = 42;
         source.nestedClass = nestedClass;
 
-        TargetWithConstruct target = beanMapper.map(source, TargetWithConstruct.class);
+        TargetWithoutConstruct target = beanMapper.map(source, TargetWithoutConstruct.class);
         assertEquals(source.id, target.id, 0);
         assertEquals(source.firstName + " " + source.infix + " " + source.lastName, target.getFullName());
         assertEquals(source.nestedClass.street+source.nestedClass.number, target.nestedClass.streetWithNumber);
+    }
+
+    @Test
+    public void nestedConstructorAtTargetSide() {
+        SourceClassWithoutConstruct source = new SourceClassWithoutConstruct();
+        source.id = 2901L;
+        source.city = "Zoetermeer";
+        source.country = "Nederland";
+        source.street = "boomweg";
+
+        TargetClassWithConstruct target = beanMapper.map(source, TargetClassWithConstruct.class);
+        assertEquals(source.id, target.id, 0);
+        assertEquals(source.street, target.street);
+        assertEquals(source.city, target.nestedClass.city);
+        assertEquals(source.country, target.nestedClass.country);
+        assertEquals(source.city + source.country, target.nestedClass.getCityCountry());
     }
 
     public Person createPerson(String name) {

@@ -1,11 +1,13 @@
 package io.beanmapper.core;
 
+import io.beanmapper.annotations.BeanConstruct;
 import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
 import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessors;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.exceptions.NoSuchPropertyException;
+import io.beanmapper.utils.ConstructorArguments;
 import io.beanmapper.utils.DefaultValues;
 
 import java.util.Stack;
@@ -74,23 +76,43 @@ public class BeanField {
         return object;
     }
 
-    public Object getOrCreate(Object parent) throws BeanMappingException {
+    public Object getOrCreate(Object parent, Object source, BeanMatch beanMatch) throws BeanMappingException {
         Object target = getCurrentField().getValue(parent);
         if (target == null) {
             Class<?> type = getCurrentField().getType();
-            target = new DefaultBeanInitializer().instantiate(type, null);
+            BeanConstruct beanConstruct = type.getAnnotation(BeanConstruct.class);
+
+            if(beanConstruct == null) {
+                beanConstruct = source.getClass().getAnnotation(BeanConstruct.class);
+            }
+
+            if(beanConstruct == null){
+                target = new DefaultBeanInitializer().instantiate(type, null);
+            }else{
+                String[] constructArgs = beanConstruct.value();
+                ConstructorArguments arguments = new ConstructorArguments(constructArgs.length);
+
+                for(int i=0; i<constructArgs.length; i++){
+                    BeanField constructField = beanMatch.getSourceNode().get(constructArgs[i]);
+                    arguments.types[i] = constructField.getProperty().getType();
+                    arguments.values[i] = constructField.getObject(source);
+                }
+
+                target = new DefaultBeanInitializer().instantiate(type, arguments);
+            }
+
             getCurrentField().setValue(parent, target);
         }
         return target;
     }
 
-    public Object writeObject(Object source, Object parent) throws BeanMappingException {
+    public Object writeObject(Object source, Object parent, BeanMatch beanMatch) throws BeanMappingException {
         if (hasNext()) {
             if(source != null) {
-                getNext().writeObject(source, getOrCreate(parent));
+                getNext().writeObject(source, getOrCreate(parent, source, beanMatch), beanMatch);
             } else if (getCurrentField().getValue(parent) != null) {
                 // If source is null and target object is filled. The nested target object should be overridden with null.
-                getNext().writeObject(null, getCurrentField().getValue(parent));
+                getNext().writeObject(null, getCurrentField().getValue(parent), beanMatch);
             }
         } else {
             if(source == null && getCurrentField().getType().isPrimitive()) {

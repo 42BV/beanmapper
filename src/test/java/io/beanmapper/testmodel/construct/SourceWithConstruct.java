@@ -1,6 +1,9 @@
 package io.beanmapper.testmodel.construct;
 
-public class SourceWithoutConstruct {
+import io.beanmapper.annotations.BeanConstruct;
+
+@BeanConstruct({ "firstName", "infix", "lastName" })
+public class SourceWithConstruct {
 
     public Long id;
     public String firstName;

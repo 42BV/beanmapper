@@ -156,6 +156,7 @@ public class BeanMapper {
 
     private <S> ConstructorArguments getConstructorArguments(S source, BeanMatch beanMatch) {
         BeanConstruct beanConstruct = beanMatch.getTargetClass().getAnnotation(BeanConstruct.class);
+
         if(beanConstruct == null){
             beanConstruct = beanMatch.getSourceClass().getAnnotation(BeanConstruct.class);
         }
@@ -173,7 +174,7 @@ public class BeanMapper {
                     arguments.types[i] = constructField.getProperty().getType();
                     arguments.values[i] = constructField.getObject(source);
                 } else {
-                    throw new BeanInstantiationException(beanMatch.getTargetClass(), new IllegalArgumentException("No source field found with name " + constructArgs[i]));
+                    throw new BeanInstantiationException(beanMatch.getTargetClass(), null);
                 }
             }
         }
@@ -203,7 +204,7 @@ public class BeanMapper {
         for (String fieldName : beanMatch.getTargetNode().keySet()) {
             BeanField sourceField = beanMatch.getSourceNode().get(fieldName);
             BeanField targetField = beanMatch.getTargetNode().get(fieldName);
-            processField(new BeanFieldMatch(source, target, sourceField, targetField, fieldName));
+            processField(new BeanFieldMatch(source, target, sourceField, targetField, fieldName, beanMatch));
         }
         return target;
     }
