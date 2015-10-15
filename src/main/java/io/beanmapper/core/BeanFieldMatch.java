@@ -58,7 +58,7 @@ public class BeanFieldMatch {
         targetBeanField.getProperty().setValue(target, value);
     }
     public void writeObject(Object value) throws BeanMappingException {
-        targetBeanField.writeObject(value, target, beanMatch);
+        targetBeanField.writeObject(value, target, source, beanMatch);
     }
     public Object getSourceObject() throws BeanMappingException {
         return sourceBeanField.getObject(source);

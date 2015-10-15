@@ -82,10 +82,6 @@ public class BeanField {
             Class<?> type = getCurrentField().getType();
             BeanConstruct beanConstruct = type.getAnnotation(BeanConstruct.class);
 
-            if(beanConstruct == null) {
-                beanConstruct = source.getClass().getAnnotation(BeanConstruct.class);
-            }
-
             if(beanConstruct == null){
                 target = new DefaultBeanInitializer().instantiate(type, null);
             }else{
@@ -93,9 +89,11 @@ public class BeanField {
                 ConstructorArguments arguments = new ConstructorArguments(constructArgs.length);
 
                 for(int i=0; i<constructArgs.length; i++){
-                    BeanField constructField = beanMatch.getSourceNode().get(constructArgs[i]);
-                    arguments.types[i] = constructField.getProperty().getType();
-                    arguments.values[i] = constructField.getObject(source);
+                    if(beanMatch.getSourceNode().containsKey(constructArgs[i])){
+                        BeanField constructField = beanMatch.getSourceNode().get(constructArgs[i]);
+                        arguments.types[i] = constructField.getProperty().getType();
+                        arguments.values[i] = constructField.getObject(source);
+                    }
                 }
 
                 target = new DefaultBeanInitializer().instantiate(type, arguments);
@@ -106,20 +104,20 @@ public class BeanField {
         return target;
     }
 
-    public Object writeObject(Object source, Object parent, BeanMatch beanMatch) throws BeanMappingException {
+    public Object writeObject(Object value, Object parent, Object source, BeanMatch beanMatch) throws BeanMappingException {
         if (hasNext()) {
-            if(source != null) {
-                getNext().writeObject(source, getOrCreate(parent, source, beanMatch), beanMatch);
+            if(value != null) {
+                getNext().writeObject(value, getOrCreate(parent, source, beanMatch), source, beanMatch);
             } else if (getCurrentField().getValue(parent) != null) {
                 // If source is null and target object is filled. The nested target object should be overridden with null.
-                getNext().writeObject(null, getCurrentField().getValue(parent), beanMatch);
+                getNext().writeObject(null, getCurrentField().getValue(parent), source, beanMatch);
             }
         } else {
-            if(source == null && getCurrentField().getType().isPrimitive()) {
+            if(value == null && getCurrentField().getType().isPrimitive()) {
                 // Primitives types can't be null.
-                source = DefaultValues.defaultValueFor(getCurrentField().getType());
+                value = DefaultValues.defaultValueFor(getCurrentField().getType());
             }
-            getCurrentField().setValue(parent, source);
+            getCurrentField().setValue(parent, value);
         }
         return parent;
     }

@@ -628,7 +628,7 @@ public class BeanMapperTest {
         assertEquals(source.street, target.street);
         assertEquals(source.city, target.nestedClass.city);
         assertEquals(source.country, target.nestedClass.country);
-        assertEquals(source.city + source.country, target.nestedClass.getCityCountry());
+        assertEquals(source.city + " " + source.country, target.nestedClass.getCityCountry());
     }
 
     public Person createPerson(String name) {

@@ -2,7 +2,7 @@ package io.beanmapper.testmodel.constructunmatching;
 
 import io.beanmapper.annotations.BeanConstruct;
 
-@BeanConstruct({ "city", "country" })
+@BeanConstruct({ "nestedClass.city", "nestedClass.country" })
 public class UnmatchingTargetWithConstruct {
 
     public String city;
@@ -10,7 +10,7 @@ public class UnmatchingTargetWithConstruct {
     private String cityCountry;
 
     public UnmatchingTargetWithConstruct(String city, String country){
-        cityCountry = city + " " + " " + country;
+        cityCountry = city + " " + country;
     }
 
     public String getCityCountry() {
