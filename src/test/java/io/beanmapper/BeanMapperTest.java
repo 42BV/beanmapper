@@ -5,6 +5,9 @@ import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
 import io.beanmapper.core.converter.impl.NestedSourceClassToNestedTargetClassConverter;
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
 import io.beanmapper.exceptions.BeanMappingException;
+import io.beanmapper.testmodel.beanAlias.NestedSourceWithAlias;
+import io.beanmapper.testmodel.beanAlias.SourceWithAlias;
+import io.beanmapper.testmodel.beanAlias.TargetWithAlias;
 import io.beanmapper.testmodel.collections.*;
 import io.beanmapper.testmodel.construct.*;
 import io.beanmapper.testmodel.constructunmatching.*;
@@ -595,6 +598,26 @@ public class BeanMapperTest {
 
         TargetWithListPublicField target = beanMapper.map(source, TargetWithListPublicField.class);
         assertEquals(3, target.lines.size());
+    }
+
+    @Test
+    public void beanAliasTest() {
+        SourceWithAlias source = new SourceWithAlias();
+        source.id = 42;
+        source.sourceName = "name";
+        // Nested class variables
+        NestedSourceWithAlias nested = new NestedSourceWithAlias();
+        nested.x = "100";
+        nested.y = 200;
+        nested.property = "Property";
+        source.nestedWithAlias = nested;
+
+        TargetWithAlias target = beanMapper.map(source, TargetWithAlias.class);
+        assertEquals(source.id, target.aliasId, 0);
+        assertEquals(source.sourceName, target.targetName);
+        assertEquals(source.nestedWithAlias.x, target.nestedWithAlias.nestedString);
+        assertEquals(source.nestedWithAlias.y, target.nestedWithAlias.nestedInt, 0);
+        assertEquals(source.nestedWithAlias.property, target.nestedWithAlias.property);
     }
 
     @Test

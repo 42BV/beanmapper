@@ -12,11 +12,14 @@ public class BeanMatch {
 
     private final Map<String, BeanField> targetNode;
 
-    public BeanMatch(Class<?> sourceClass, Class<?> targetClass, Map<String, BeanField> sourceNode, Map<String, BeanField> targetNode) {
+    private final Map<String, BeanField> aliases;
+
+    public BeanMatch(Class<?> sourceClass, Class<?> targetClass, Map<String, BeanField> sourceNode, Map<String, BeanField> targetNode, Map<String, BeanField> aliases) {
         this.sourceClass = sourceClass;
         this.targetClass = targetClass;
         this.sourceNode = sourceNode;
         this.targetNode = targetNode;
+        this.aliases = aliases;
     }
 
     public Class<?> getSourceClass() {
@@ -35,4 +38,7 @@ public class BeanMatch {
         return targetNode;
     }
 
+    public Map<String, BeanField> getAliases() {
+        return aliases;
+    }
 }

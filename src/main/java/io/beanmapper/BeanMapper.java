@@ -203,7 +203,15 @@ public class BeanMapper {
     private <S, T> T processFields(S source, T target, BeanMatch beanMatch) {
         for (String fieldName : beanMatch.getTargetNode().keySet()) {
             BeanField sourceField = beanMatch.getSourceNode().get(fieldName);
+            if(sourceField == null) {
+                // No source field found -> check for alias
+                sourceField = beanMatch.getAliases().get(fieldName);
+            }
             BeanField targetField = beanMatch.getTargetNode().get(fieldName);
+            if(targetField == null) {
+                // No target field found -> check for alias
+                targetField = beanMatch.getAliases().get(fieldName);
+            }
             processField(new BeanFieldMatch(source, target, sourceField, targetField, fieldName, beanMatch));
         }
         return target;
