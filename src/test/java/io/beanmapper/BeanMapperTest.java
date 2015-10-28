@@ -9,8 +9,13 @@ import io.beanmapper.testmodel.beanAlias.NestedSourceWithAlias;
 import io.beanmapper.testmodel.beanAlias.SourceWithAlias;
 import io.beanmapper.testmodel.beanAlias.TargetWithAlias;
 import io.beanmapper.testmodel.collections.*;
-import io.beanmapper.testmodel.construct.*;
-import io.beanmapper.testmodel.constructunmatching.*;
+import io.beanmapper.testmodel.construct.NestedSourceWithoutConstruct;
+import io.beanmapper.testmodel.construct.SourceWithConstruct;
+import io.beanmapper.testmodel.construct.TargetWithoutConstruct;
+import io.beanmapper.testmodel.constructNotMatching.BigConstructTarget;
+import io.beanmapper.testmodel.constructNotMatching.BigConstructTarget2;
+import io.beanmapper.testmodel.constructNotMatching.FlatConstructSource;
+import io.beanmapper.testmodel.constructNotMatching.FlatConstructSource2;
 import io.beanmapper.testmodel.converter.SourceWithDate;
 import io.beanmapper.testmodel.converter.TargetWithDateTime;
 import io.beanmapper.testmodel.converterbetweennestedclasses.NestedSourceClass;
@@ -621,12 +626,12 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void constructAtSourceSide() {
+    public void beanConstructTest() {
         SourceWithConstruct source = new SourceWithConstruct();
         source.id = 238L;
-        source.firstName = "Rick";
-        source.infix = "van der";
-        source.lastName = "Waal";
+        source.firstName = "Piet";
+        source.infix = "van";
+        source.lastName = "Straten";
         NestedSourceWithoutConstruct nestedClass = new NestedSourceWithoutConstruct();
         nestedClass.street = "boomweg";
         nestedClass.number = 42;
@@ -634,19 +639,35 @@ public class BeanMapperTest {
 
         TargetWithoutConstruct target = beanMapper.map(source, TargetWithoutConstruct.class);
         assertEquals(source.id, target.id, 0);
-        assertEquals(source.firstName + " " + source.infix + " " + source.lastName, target.getFullName());
+        assertEquals(source.firstName + source.infix + source.lastName, target.getFullName());
         assertEquals(source.nestedClass.street+source.nestedClass.number, target.nestedClass.streetWithNumber);
     }
 
     @Test
-    public void nestedConstructorAtTargetSide() {
-        SourceClassWithoutConstruct source = new SourceClassWithoutConstruct();
+    public void nestedConstructorAtTargetSideWithBeanUnwrap() {
+        FlatConstructSource source = new FlatConstructSource();
         source.id = 2901L;
+        source.street = "boomweg";
         source.city = "Zoetermeer";
         source.country = "Nederland";
-        source.street = "boomweg";
 
-        TargetClassWithConstruct target = beanMapper.map(source, TargetClassWithConstruct.class);
+        BigConstructTarget target = beanMapper.map(source, BigConstructTarget.class);
+        assertEquals(source.id, target.id, 0);
+        assertEquals(source.street, target.street);
+        assertEquals(source.city, target.nestedClass.city);
+        assertEquals(source.country, target.nestedClass.country);
+        assertEquals(source.city + " " + source.country, target.nestedClass.getCityCountry());
+    }
+
+    @Test
+    public void nestedConstructorAtTargetSideWithBeanProperty() {
+        FlatConstructSource2 source = new FlatConstructSource2();
+        source.id = 2901L;
+        source.street = "boomweg";
+        source.city = "Zoetermeer";
+        source.country = "Nederland";
+
+        BigConstructTarget2 target = beanMapper.map(source, BigConstructTarget2.class);
         assertEquals(source.id, target.id, 0);
         assertEquals(source.street, target.street);
         assertEquals(source.city, target.nestedClass.city);

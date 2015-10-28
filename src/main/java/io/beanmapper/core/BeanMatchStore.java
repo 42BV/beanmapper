@@ -88,6 +88,9 @@ public class BeanMatchStore {
 
             if(accessor.findAnnotation(BeanAlias.class) != null) {
                 BeanAlias beanAlias = accessor.findAnnotation(BeanAlias.class);
+                if(aliases.containsKey(beanAlias.value())) {
+                    throw new IllegalArgumentException("There is already a BeanAlias with key " + beanAlias.value());
+                }
                 aliases.put(beanAlias.value(), currentBeanField);
             }
 

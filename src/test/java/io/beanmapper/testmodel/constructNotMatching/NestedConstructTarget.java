@@ -1,15 +1,15 @@
-package io.beanmapper.testmodel.constructunmatching;
+package io.beanmapper.testmodel.constructNotMatching;
 
 import io.beanmapper.annotations.BeanConstruct;
 
-@BeanConstruct({ "nestedClass.city", "nestedClass.country" })
-public class UnmatchingTargetWithConstruct {
+@BeanConstruct({ "city", "country" })
+public class NestedConstructTarget {
 
     public String city;
     public String country;
     private String cityCountry;
 
-    public UnmatchingTargetWithConstruct(String city, String country){
+    public NestedConstructTarget(String city, String country){
         cityCountry = city + " " + country;
     }
 

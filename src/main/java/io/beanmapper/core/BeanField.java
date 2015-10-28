@@ -5,6 +5,7 @@ import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
 import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessors;
+import io.beanmapper.exceptions.BeanInstantiationException;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.exceptions.NoSuchPropertyException;
 import io.beanmapper.utils.ConstructorArguments;
@@ -84,15 +85,20 @@ public class BeanField {
 
             if(beanConstruct == null){
                 target = new DefaultBeanInitializer().instantiate(type, null);
-            }else{
+            }else {
                 String[] constructArgs = beanConstruct.value();
-                ConstructorArguments arguments = new ConstructorArguments(constructArgs.length);
+                ConstructorArguments arguments = new ConstructorArguments(constructArgs.length);;
 
-                for(int i=0; i<constructArgs.length; i++){
-                    if(beanMatch.getSourceNode().containsKey(constructArgs[i])){
+                for(int i=0; i<constructArgs.length; i++) {
+                    if (beanMatch.getSourceNode().containsKey(constructArgs[i]) || beanMatch.getAliases().containsKey(constructArgs[i])) {
                         BeanField constructField = beanMatch.getSourceNode().get(constructArgs[i]);
+                        if(constructField == null) {
+                            constructField = beanMatch.getAliases().get(constructArgs[i]);
+                        }
                         arguments.types[i] = constructField.getProperty().getType();
                         arguments.values[i] = constructField.getObject(source);
+                    } else {
+                        throw new BeanInstantiationException(beanMatch.getTargetClass(), null);
                     }
                 }
 

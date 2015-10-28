@@ -23,7 +23,9 @@ import io.beanmapper.exceptions.BeanInstantiationException;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.utils.ConstructorArguments;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -169,8 +171,11 @@ public class BeanMapper {
             arguments = new ConstructorArguments(constructArgs.length);
 
             for(int i=0; i<constructArgs.length; i++) {
-                if (beanMatch.getSourceNode().containsKey(constructArgs[i])) {
+                if (beanMatch.getSourceNode().containsKey(constructArgs[i]) || beanMatch.getAliases().containsKey(constructArgs[i])) {
                     BeanField constructField = beanMatch.getSourceNode().get(constructArgs[i]);
+                    if(constructField == null) {
+                        constructField = beanMatch.getAliases().get(constructArgs[i]);
+                    }
                     arguments.types[i] = constructField.getProperty().getType();
                     arguments.values[i] = constructField.getObject(source);
                 } else {
