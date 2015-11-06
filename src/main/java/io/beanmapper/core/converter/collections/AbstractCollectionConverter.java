@@ -63,7 +63,7 @@ public abstract class AbstractCollectionConverter<T> implements BeanConverter {
     }
 
     private Object convertElement(Object source, BeanFieldMatch beanFieldMatch) {
-        return beanMapper.mapForListElement(source, beanFieldMatch.getCollectionInstructions().getCollectionMapsTo());
+        return beanMapper.map(source, beanFieldMatch.getCollectionInstructions().getCollectionMapsTo(), true);
     }
 
     @Override

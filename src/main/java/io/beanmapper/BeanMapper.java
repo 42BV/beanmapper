@@ -12,7 +12,16 @@ import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.converter.collections.CollectionListConverter;
 import io.beanmapper.core.converter.collections.CollectionMapConverter;
 import io.beanmapper.core.converter.collections.CollectionSetConverter;
-import io.beanmapper.core.converter.impl.*;
+import io.beanmapper.core.converter.impl.NumberToNumberConverter;
+import io.beanmapper.core.converter.impl.ObjectToStringConverter;
+import io.beanmapper.core.converter.impl.PrimitiveConverter;
+import io.beanmapper.core.converter.impl.StringToBigDecimalConverter;
+import io.beanmapper.core.converter.impl.StringToBooleanConverter;
+import io.beanmapper.core.converter.impl.StringToEnumConverter;
+import io.beanmapper.core.converter.impl.StringToIntegerConverter;
+import io.beanmapper.core.converter.impl.StringToLongConverter;
+import io.beanmapper.core.rule.BeanMapperRule;
+import io.beanmapper.core.rule.ConstantMapperRule;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
@@ -95,7 +104,23 @@ public class BeanMapper {
      * Copies the values from the source object to a newly constructed target instance
      * @param source source instance of the properties
      * @param targetClass class of the target, needs to be constructed as the target instance
+     * @param converterChoosable when {@code true} a plain conversion is checked before mapping
+     * @param <S> The instance from which the properties get copied
+     * @param <T> the instance to which the properties get copied
+     * @return the target instance containing all applicable properties
+     * @throws BeanMappingException
+     */
+    @SuppressWarnings("unchecked")
+    public <S, T> T map(S source, Class<T> targetClass, boolean converterChoosable) {
+        return map(source, targetClass, beanInitializer, converterChoosable);
+    }
+    
+    /**
+     * Copies the values from the source object to a newly constructed target instance
+     * @param source source instance of the properties
+     * @param targetClass class of the target, needs to be constructed as the target instance
      * @param beanInitializer initializes the beans
+     * @param converterChoosable when {@code true} a plain conversion is checked before mapping
      * @param <S> The instance from which the properties get copied
      * @param <T> the instance to which the properties get copied
      * @return the target instance containing all applicable properties
@@ -115,22 +140,33 @@ public class BeanMapper {
         return map(source, target);
     }
 
-    public <S, T> T mapForListElement(S source, Class<T> targetClass) {
-        return map(source, targetClass, beanInitializer, true);
-    }
-
     /**
      * Maps a list of source items to a list of target items with a specific class
      * @param sourceItems the items to be mapped
      * @param targetClass the class type of the items in the returned list
-     * @param <S> source
-     * @param <T> target
+     * @param <S> the instance from which the properties get copied.
+     * @param <T> the instance to which the properties get copied
      * @return the list of mapped items with class T
      * @throws BeanMappingException
      */
     @SuppressWarnings("unchecked")
     public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass) {
-        Collection<T> targetItems = (Collection<T>) beanInitializer.instantiate(sourceItems.getClass());
+        return map(sourceItems, targetClass, sourceItems.getClass());
+    }
+    
+    /**
+     * Maps a list of source items to a list of target items with a specific class
+     * @param sourceItems the items to be mapped
+     * @param targetClass the class type of the items in the returned list
+     * @param collectionClass the collection class
+     * @param <S> the instance from which the properties get copied.
+     * @param <T> the instance to which the properties get copied
+     * @return the list of mapped items with class T
+     * @throws BeanMappingException
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass, Class<? extends Collection> collectionClass) {
+        Collection<T> targetItems = (Collection<T>) beanInitializer.instantiate(collectionClass);
         for (S source : sourceItems) {
             targetItems.add(map(source, targetClass));
         }
@@ -141,13 +177,27 @@ public class BeanMapper {
      * Copies the values from the source object to an existing target instance
      * @param source source instance of the properties
      * @param target target instance for the properties
-     * @param <S> The instance from which the properties get copied.
+     * @param <S> the instance from which the properties get copied.
      * @param <T> the instance to which the properties get copied
      * @return the original target instance containing all applicable properties
      * @throws BeanMappingException
      */
     public <S, T> T map(S source, T target) {
-        return matchSourceToTarget(source, target);
+        return map(source, target, new ConstantMapperRule(true));
+    }
+    
+    /**
+     * Copies the values from the source object to an existing target instance
+     * @param source source instance of the properties
+     * @param target target instance for the properties
+     * @param rule the matching rule
+     * @param <S> the instance from which the properties get copied.
+     * @param <T> the instance to which the properties get copied
+     * @return the original target instance containing all applicable properties
+     * @throws BeanMappingException
+     */
+    public <S, T> T map(S source, T target, BeanMapperRule rule) {
+        return matchSourceToTarget(source, target, rule);
     }
 
     /**
@@ -163,12 +213,14 @@ public class BeanMapper {
      * @return A filled target object.
      * @throws BeanMappingException
      */
-    private <S, T> T matchSourceToTarget(S source, T target) {
+    private <S, T> T matchSourceToTarget(S source, T target, BeanMapperRule rule) {
         BeanMatch beanMatch = getBeanMatch(source, target);
         for (String fieldName : beanMatch.getTargetNode().keySet()) {
             BeanField sourceField = beanMatch.getSourceNode().get(fieldName);
             BeanField targetField = beanMatch.getTargetNode().get(fieldName);
-            processField(new BeanFieldMatch(source, target, sourceField, targetField, fieldName));
+            if (rule.isAllowed(sourceField, targetField)) {
+                processField(new BeanFieldMatch(source, target, sourceField, targetField, fieldName), rule);
+            }
         }
         return target;
     }
@@ -184,7 +236,7 @@ public class BeanMapper {
      * @param beanFieldMatch contains the fields belonging to the source/target field match
      * @throws BeanMappingException
      */
-    private void processField(BeanFieldMatch beanFieldMatch) {
+    private void processField(BeanFieldMatch beanFieldMatch, BeanMapperRule rule) {
         if (!beanFieldMatch.hasMatchingSource()) {
             dealWithNonMatchingNode(beanFieldMatch);
             return;
@@ -194,7 +246,7 @@ public class BeanMapper {
                                 isMappableClass(beanFieldMatch.getTargetClass()) &&
                                 beanFieldMatch.getSourceObject() != null) {
 
-            dealWithMappableNestedClass(beanFieldMatch);
+            dealWithMappableNestedClass(beanFieldMatch, rule);
             return;
         }
         if (beanFieldMatch.isMappable()) {
@@ -239,13 +291,14 @@ public class BeanMapper {
      * If the field is a class which can itself be mapped to another class, it must be treated
      * as such. The matching process is called recursively to deal with this pair.
      * @param beanFieldMatch contains the fields belonging to the source/target field match
+     * @param rule the matching rule
      * @throws BeanMappingException
      */
-    private void dealWithMappableNestedClass(BeanFieldMatch beanFieldMatch) {
+    private void dealWithMappableNestedClass(BeanFieldMatch beanFieldMatch, BeanMapperRule rule) {
         Object encapsulatedSource = beanFieldMatch.getSourceObject();
         if (encapsulatedSource != null) {
             Object encapsulatedTarget = beanFieldMatch.getOrCreateTargetObject();
-            matchSourceToTarget(encapsulatedSource, encapsulatedTarget);
+            matchSourceToTarget(encapsulatedSource, encapsulatedTarget, rule);
         }
     }
 
