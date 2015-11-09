@@ -13,14 +13,7 @@ import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.converter.collections.CollectionListConverter;
 import io.beanmapper.core.converter.collections.CollectionMapConverter;
 import io.beanmapper.core.converter.collections.CollectionSetConverter;
-import io.beanmapper.core.converter.impl.NumberToNumberConverter;
-import io.beanmapper.core.converter.impl.ObjectToStringConverter;
-import io.beanmapper.core.converter.impl.PrimitiveConverter;
-import io.beanmapper.core.converter.impl.StringToBigDecimalConverter;
-import io.beanmapper.core.converter.impl.StringToBooleanConverter;
-import io.beanmapper.core.converter.impl.StringToEnumConverter;
-import io.beanmapper.core.converter.impl.StringToIntegerConverter;
-import io.beanmapper.core.converter.impl.StringToLongConverter;
+import io.beanmapper.core.converter.impl.*;
 import io.beanmapper.core.rule.BeanMapperRule;
 import io.beanmapper.core.rule.ConstantMapperRule;
 import io.beanmapper.core.unproxy.BeanUnproxy;
@@ -142,7 +135,7 @@ public class BeanMapper {
         BeanMatch beanMatch = getBeanMatch(source.getClass(), targetClass);
         T target = beanInitializer.instantiate(targetClass, getConstructorArguments(source, beanMatch));
 
-        return processFields(source, target, beanMatch);
+        return processFields(source, target, beanMatch, new ConstantMapperRule(true));
     }
 
     /**
@@ -203,7 +196,8 @@ public class BeanMapper {
      * @throws BeanMappingException
      */
     public <S, T> T map(S source, T target, BeanMapperRule rule) {
-        return matchSourceToTarget(source, target, rule);
+        BeanMatch beanMatch = getBeanMatch(source.getClass(), target.getClass());
+        return processFields(source, target, beanMatch, rule);
     }
 
     private <S> ConstructorArguments getConstructorArguments(S source, BeanMatch beanMatch) {
@@ -256,7 +250,6 @@ public class BeanMapper {
      * @throws BeanMappingException
      */
     private <S, T> T processFields(S source, T target, BeanMatch beanMatch, BeanMapperRule rule) {
-        BeanMatch beanMatch = getBeanMatch(source, target);
         for (String fieldName : beanMatch.getTargetNode().keySet()) {
             BeanField sourceField = beanMatch.getSourceNode().get(fieldName);
             if(sourceField == null) {
@@ -341,7 +334,7 @@ public class BeanMapper {
         Object target;
         if (encapsulatedSource != null) {
             if(beanFieldMatch.getTargetObject() == null){
-                target = map(encapsulatedSource, beanFieldMatch.getTargetClass(), rule);
+                target = map(encapsulatedSource, beanFieldMatch.getTargetClass());
             }else {
                 target = map(encapsulatedSource, beanFieldMatch.getTarget(), rule);
             }
