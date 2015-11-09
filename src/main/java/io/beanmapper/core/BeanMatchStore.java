@@ -1,9 +1,6 @@
 package io.beanmapper.core;
 
-import io.beanmapper.annotations.BeanCollection;
-import io.beanmapper.annotations.BeanIgnore;
-import io.beanmapper.annotations.BeanProperty;
-import io.beanmapper.annotations.BeanUnwrap;
+import io.beanmapper.annotations.*;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
 import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessors;
@@ -53,19 +50,20 @@ public class BeanMatchStore {
     }
 
     private BeanMatch determineBeanMatch(Class<?> source, Class<?> target) {
-        return determineBeanMatch(source, target, new TreeMap<String, BeanField>(), new TreeMap<String, BeanField>());
+        return determineBeanMatch(source, target, new TreeMap<String, BeanField>(), new TreeMap<String, BeanField>(), new TreeMap<String, BeanField>());
     }
 
     private BeanMatch determineBeanMatch(Class<?> source, Class<?> target,
-                                         Map<String, BeanField> sourceNode, Map<String, BeanField> targetNode) {
+                                         Map<String, BeanField> sourceNode, Map<String, BeanField> targetNode, Map<String, BeanField> aliases) {
         return new BeanMatch(
                 source,
                 target,
-                getAllFields(sourceNode, targetNode, source, target, null),
-                getAllFields(targetNode, sourceNode, target, source, null));
+                getAllFields(sourceNode, targetNode, aliases, source, target, null),
+                getAllFields(targetNode, sourceNode, aliases, target, source, null),
+                aliases);
     }
 
-    private Map<String, BeanField> getAllFields(Map<String, BeanField> ourNodes, Map<String, BeanField> otherNodes, Class<?> ourType, Class<?> otherType, BeanField prefixingBeanField) {
+    private Map<String, BeanField> getAllFields(Map<String, BeanField> ourNodes, Map<String, BeanField> otherNodes, Map<String, BeanField> aliases, Class<?> ourType, Class<?> otherType, BeanField prefixingBeanField) {
         List<PropertyAccessor> accessors = PropertyAccessors.getAll(ourType);
         for (PropertyAccessor accessor : accessors) {
 
@@ -88,8 +86,16 @@ public class BeanMatchStore {
 
             handleBeanCollectionAnnotation(accessor.findAnnotation(BeanCollection.class), currentBeanField);
 
+            if(accessor.findAnnotation(BeanAlias.class) != null) {
+                BeanAlias beanAlias = accessor.findAnnotation(BeanAlias.class);
+                if(aliases.containsKey(beanAlias.value())) {
+                    throw new IllegalArgumentException("There is already a BeanAlias with key " + beanAlias.value());
+                }
+                aliases.put(beanAlias.value(), currentBeanField);
+            }
+
             if (accessor.findAnnotation(BeanUnwrap.class) != null) {
-                ourNodes = getAllFields(ourNodes, otherNodes, accessor.getType(), otherType, currentBeanField);
+                ourNodes = getAllFields(ourNodes, otherNodes, aliases, accessor.getType(), otherType, currentBeanField);
             } else {
                 ourNodes.put(name, currentBeanField);
             }

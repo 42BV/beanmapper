@@ -1,5 +1,6 @@
 package io.beanmapper;
 
+import io.beanmapper.annotations.BeanConstruct;
 import io.beanmapper.annotations.BeanDefault;
 import io.beanmapper.annotations.BeanProperty;
 import io.beanmapper.core.BeanField;
@@ -7,19 +8,12 @@ import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.BeanMatch;
 import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.constructor.BeanInitializer;
-import io.beanmapper.core.constructor.NoArgConstructorBeanInitializer;
+import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.converter.collections.CollectionListConverter;
 import io.beanmapper.core.converter.collections.CollectionMapConverter;
 import io.beanmapper.core.converter.collections.CollectionSetConverter;
-import io.beanmapper.core.converter.impl.NumberToNumberConverter;
-import io.beanmapper.core.converter.impl.ObjectToStringConverter;
-import io.beanmapper.core.converter.impl.PrimitiveConverter;
-import io.beanmapper.core.converter.impl.StringToBigDecimalConverter;
-import io.beanmapper.core.converter.impl.StringToBooleanConverter;
-import io.beanmapper.core.converter.impl.StringToEnumConverter;
-import io.beanmapper.core.converter.impl.StringToIntegerConverter;
-import io.beanmapper.core.converter.impl.StringToLongConverter;
+import io.beanmapper.core.converter.impl.*;
 import io.beanmapper.core.rule.BeanMapperRule;
 import io.beanmapper.core.rule.ConstantMapperRule;
 import io.beanmapper.core.unproxy.BeanUnproxy;
@@ -27,7 +21,9 @@ import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
 import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanFieldNoMatchException;
+import io.beanmapper.exceptions.BeanInstantiationException;
 import io.beanmapper.exceptions.BeanMappingException;
+import io.beanmapper.utils.ConstructorArguments;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,7 +40,7 @@ public class BeanMapper {
     /**
      * Initializes the beans.
      */
-    private BeanInitializer beanInitializer = new NoArgConstructorBeanInitializer();
+    private BeanInitializer beanInitializer = new DefaultBeanInitializer();
 
     /**
      * Removes any potential proxies of beans.
@@ -136,8 +132,10 @@ public class BeanMapper {
             }
         }
 
-        T target = beanInitializer.instantiate(targetClass);
-        return map(source, target);
+        BeanMatch beanMatch = getBeanMatch(source.getClass(), targetClass);
+        T target = beanInitializer.instantiate(targetClass, getConstructorArguments(source, beanMatch));
+
+        return processFields(source, target, beanMatch, new ConstantMapperRule(true));
     }
 
     /**
@@ -166,7 +164,7 @@ public class BeanMapper {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass, Class<? extends Collection> collectionClass) {
-        Collection<T> targetItems = (Collection<T>) beanInitializer.instantiate(collectionClass);
+        Collection<T> targetItems = (Collection<T>) beanInitializer.instantiate(collectionClass, null);
         for (S source : sourceItems) {
             targetItems.add(map(source, targetClass));
         }
@@ -183,7 +181,8 @@ public class BeanMapper {
      * @throws BeanMappingException
      */
     public <S, T> T map(S source, T target) {
-        return map(source, target, new ConstantMapperRule(true));
+        BeanMatch beanMatch = getBeanMatch(source.getClass(), target.getClass());
+        return processFields(source, target, beanMatch, new ConstantMapperRule(true));
     }
     
     /**
@@ -197,7 +196,44 @@ public class BeanMapper {
      * @throws BeanMappingException
      */
     public <S, T> T map(S source, T target, BeanMapperRule rule) {
-        return matchSourceToTarget(source, target, rule);
+        BeanMatch beanMatch = getBeanMatch(source.getClass(), target.getClass());
+        return processFields(source, target, beanMatch, rule);
+    }
+
+    private <S> ConstructorArguments getConstructorArguments(S source, BeanMatch beanMatch) {
+        BeanConstruct beanConstruct = beanMatch.getTargetClass().getAnnotation(BeanConstruct.class);
+
+        if(beanConstruct == null){
+            beanConstruct = beanMatch.getSourceClass().getAnnotation(BeanConstruct.class);
+        }
+
+        String[] constructArgs;
+        ConstructorArguments arguments = null;
+
+        if(beanConstruct != null){
+            constructArgs = beanConstruct.value();
+            arguments = new ConstructorArguments(constructArgs.length);
+
+            for(int i=0; i<constructArgs.length; i++) {
+                if (beanMatch.getSourceNode().containsKey(constructArgs[i]) || beanMatch.getAliases().containsKey(constructArgs[i])) {
+                    BeanField constructField = beanMatch.getSourceNode().get(constructArgs[i]);
+                    if(constructField == null) {
+                        constructField = beanMatch.getAliases().get(constructArgs[i]);
+                    }
+                    arguments.types[i] = constructField.getProperty().getType();
+                    arguments.values[i] = constructField.getObject(source);
+                } else {
+                    throw new BeanInstantiationException(beanMatch.getTargetClass(), null);
+                }
+            }
+        }
+        return arguments;
+    }
+
+    private <T, S> BeanMatch getBeanMatch(Class<S> sourceClazz, Class<T> targetClazz) {
+        Class<?> sourceClass = beanUnproxy.unproxy(sourceClazz);
+        Class<?> targetClass = beanUnproxy.unproxy(targetClazz);
+        return beanMatchStore.getBeanMatch(sourceClass, targetClass);
     }
 
     /**
@@ -213,22 +249,21 @@ public class BeanMapper {
      * @return A filled target object.
      * @throws BeanMappingException
      */
-    private <S, T> T matchSourceToTarget(S source, T target, BeanMapperRule rule) {
-        BeanMatch beanMatch = getBeanMatch(source, target);
+    private <S, T> T processFields(S source, T target, BeanMatch beanMatch, BeanMapperRule rule) {
         for (String fieldName : beanMatch.getTargetNode().keySet()) {
             BeanField sourceField = beanMatch.getSourceNode().get(fieldName);
-            BeanField targetField = beanMatch.getTargetNode().get(fieldName);
-            if (rule.isAllowed(sourceField, targetField)) {
-                processField(new BeanFieldMatch(source, target, sourceField, targetField, fieldName), rule);
+            if(sourceField == null) {
+                // No source field found -> check for alias
+                sourceField = beanMatch.getAliases().get(fieldName);
             }
+            BeanField targetField = beanMatch.getTargetNode().get(fieldName);
+            if(targetField == null) {
+                // No target field found -> check for alias
+                targetField = beanMatch.getAliases().get(fieldName);
+            }
+            processField(new BeanFieldMatch(source, target, sourceField, targetField, fieldName, beanMatch), rule);
         }
         return target;
-    }
-
-    private <T, S> BeanMatch getBeanMatch(S source, T target) {
-        Class<?> sourceClass = beanUnproxy.unproxy(source.getClass());
-        Class<?> targetClass = beanUnproxy.unproxy(target.getClass());
-        return beanMatchStore.getBeanMatch(sourceClass, targetClass);
     }
 
     /**
@@ -296,9 +331,14 @@ public class BeanMapper {
      */
     private void dealWithMappableNestedClass(BeanFieldMatch beanFieldMatch, BeanMapperRule rule) {
         Object encapsulatedSource = beanFieldMatch.getSourceObject();
+        Object target;
         if (encapsulatedSource != null) {
-            Object encapsulatedTarget = beanFieldMatch.getOrCreateTargetObject();
-            matchSourceToTarget(encapsulatedSource, encapsulatedTarget, rule);
+            if(beanFieldMatch.getTargetObject() == null){
+                target = map(encapsulatedSource, beanFieldMatch.getTargetClass());
+            }else {
+                target = map(encapsulatedSource, beanFieldMatch.getTarget(), rule);
+            }
+            beanFieldMatch.writeObject(target);
         }
     }
 

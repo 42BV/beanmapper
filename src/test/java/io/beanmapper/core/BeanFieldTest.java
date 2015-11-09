@@ -1,11 +1,11 @@
 package io.beanmapper.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import io.beanmapper.testmodel.nestedclasses.Layer1;
 import io.beanmapper.testmodel.nestedclasses.Layer1Result;
-
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class BeanFieldTest {
 
@@ -34,7 +34,7 @@ public class BeanFieldTest {
         BeanField beanFieldForSource = BeanField.determineNodesForPath(Layer1.class, "layer2.layer3.name3");
         Object source = beanFieldForSource.getObject(layer1);
         BeanField beanFieldForTarget = BeanField.determineNodesForPath(Layer1Result.class, "layer2.layer3.name3");
-        Layer1Result target = (Layer1Result) beanFieldForTarget.writeObject(source, new Layer1Result());
+        Layer1Result target = (Layer1Result) beanFieldForTarget.writeObject(source, new Layer1Result(), null, null);
         assertEquals("name3", target.getLayer2().getLayer3().getName3());
     }
 
@@ -45,7 +45,7 @@ public class BeanFieldTest {
         BeanField beanFieldForSource = BeanField.determineNodesForPath(Layer1.class, "layer2.layer3.name3");
         Object source = beanFieldForSource.getObject(layer1);
         BeanField beanFieldForTarget = BeanField.determineNodesForPath(Layer1Result.class, "layer2.layer3.name3");
-        Layer1Result target = (Layer1Result) beanFieldForTarget.writeObject(source, existingTarget);
+        Layer1Result target = (Layer1Result) beanFieldForTarget.writeObject(source, existingTarget, null, null);
         assertEquals("name3", target.getLayer2().getLayer3().getName3());
     }
 

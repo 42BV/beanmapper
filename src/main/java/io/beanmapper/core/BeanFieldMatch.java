@@ -7,19 +7,21 @@ import io.beanmapper.exceptions.BeanMappingException;
 import java.lang.annotation.Annotation;
 
 public class BeanFieldMatch {
-    
+
+    private BeanMatch beanMatch;
     private Object source;
     private Object target;
     private BeanField sourceBeanField;
     private BeanField targetBeanField;
     private String targetFieldName;
 
-    public BeanFieldMatch(Object source, Object target, BeanField sourceBeanField, BeanField targetBeanField, String targetFieldName) {
+    public BeanFieldMatch(Object source, Object target, BeanField sourceBeanField, BeanField targetBeanField, String targetFieldName, BeanMatch beanMatch) {
         this.source = source;
         this.target = target;
         this.sourceBeanField = sourceBeanField;
         this.targetBeanField = targetBeanField;
         this.targetFieldName = targetFieldName;
+        this.beanMatch = beanMatch;
     }
     public boolean hasSimilarClasses() {
         return sourceBeanField.getProperty().getType().equals(targetBeanField.getProperty().getType());
@@ -56,7 +58,7 @@ public class BeanFieldMatch {
         targetBeanField.getProperty().setValue(target, value);
     }
     public void writeObject(Object value) throws BeanMappingException {
-        targetBeanField.writeObject(value, target);
+        targetBeanField.writeObject(value, target, source, beanMatch);
     }
     public Object getSourceObject() throws BeanMappingException {
         return sourceBeanField.getObject(source);
@@ -64,14 +66,15 @@ public class BeanFieldMatch {
     public Object getTargetObject() throws BeanMappingException {
         return targetBeanField.getObject(target);
     }
-    public Object getOrCreateTargetObject() throws BeanMappingException {
-        return targetBeanField.getOrCreate(target);
-    }
     public BeanCollectionInstructions getCollectionInstructions() {
         return targetBeanField.getCollectionInstructions() != null ?
                 targetBeanField.getCollectionInstructions() :
                 sourceBeanField.getCollectionInstructions() != null ?
                         sourceBeanField.getCollectionInstructions() :
                         null;
+    }
+
+    public BeanMatch getBeanMatch() {
+        return beanMatch;
     }
 }

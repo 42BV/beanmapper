@@ -9,6 +9,17 @@ import io.beanmapper.core.converter.impl.NestedSourceClassToNestedTargetClassCon
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
 import io.beanmapper.core.rule.SourceFieldMapperRule;
 import io.beanmapper.exceptions.BeanMappingException;
+import io.beanmapper.testmodel.beanAlias.NestedSourceWithAlias;
+import io.beanmapper.testmodel.beanAlias.SourceWithAlias;
+import io.beanmapper.testmodel.beanAlias.TargetWithAlias;
+import io.beanmapper.testmodel.collections.*;
+import io.beanmapper.testmodel.construct.NestedSourceWithoutConstruct;
+import io.beanmapper.testmodel.construct.SourceWithConstruct;
+import io.beanmapper.testmodel.construct.TargetWithoutConstruct;
+import io.beanmapper.testmodel.constructNotMatching.BigConstructTarget;
+import io.beanmapper.testmodel.constructNotMatching.BigConstructTarget2;
+import io.beanmapper.testmodel.constructNotMatching.FlatConstructSource;
+import io.beanmapper.testmodel.constructNotMatching.FlatConstructSource2;
 import io.beanmapper.testmodel.collections.CollectionListSource;
 import io.beanmapper.testmodel.collections.CollectionListTarget;
 import io.beanmapper.testmodel.collections.CollectionListTargetClear;
@@ -631,6 +642,76 @@ public class BeanMapperTest {
 
         TargetWithListPublicField target = beanMapper.map(source, TargetWithListPublicField.class);
         assertEquals(3, target.lines.size());
+    }
+
+    @Test
+    public void beanAliasTest() {
+        SourceWithAlias source = new SourceWithAlias();
+        source.id = 42;
+        source.sourceName = "name";
+        // Nested class variables
+        NestedSourceWithAlias nested = new NestedSourceWithAlias();
+        nested.x = "100";
+        nested.y = 200;
+        nested.property = "Property";
+        source.nestedWithAlias = nested;
+
+        TargetWithAlias target = beanMapper.map(source, TargetWithAlias.class);
+        assertEquals(source.id, target.aliasId, 0);
+        assertEquals(source.sourceName, target.targetName);
+        assertEquals(source.nestedWithAlias.x, target.nestedWithAlias.nestedString);
+        assertEquals(source.nestedWithAlias.y, target.nestedWithAlias.nestedInt, 0);
+        assertEquals(source.nestedWithAlias.property, target.nestedWithAlias.property);
+    }
+
+    @Test
+    public void beanConstructTest() {
+        SourceWithConstruct source = new SourceWithConstruct();
+        source.id = 238L;
+        source.firstName = "Piet";
+        source.infix = "van";
+        source.lastName = "Straten";
+        NestedSourceWithoutConstruct nestedClass = new NestedSourceWithoutConstruct();
+        nestedClass.street = "boomweg";
+        nestedClass.number = 42;
+        source.nestedClass = nestedClass;
+
+        TargetWithoutConstruct target = beanMapper.map(source, TargetWithoutConstruct.class);
+        assertEquals(source.id, target.id, 0);
+        assertEquals(source.firstName + source.infix + source.lastName, target.getFullName());
+        assertEquals(source.nestedClass.street+source.nestedClass.number, target.nestedClass.streetWithNumber);
+    }
+
+    @Test
+    public void nestedConstructorAtTargetSideWithBeanUnwrap() {
+        FlatConstructSource source = new FlatConstructSource();
+        source.id = 2901L;
+        source.street = "boomweg";
+        source.city = "Zoetermeer";
+        source.country = "Nederland";
+
+        BigConstructTarget target = beanMapper.map(source, BigConstructTarget.class);
+        assertEquals(source.id, target.id, 0);
+        assertEquals(source.street, target.street);
+        assertEquals(source.city, target.nestedClass.city);
+        assertEquals(source.country, target.nestedClass.country);
+        assertEquals(source.city + " " + source.country, target.nestedClass.getCityCountry());
+    }
+
+    @Test
+    public void nestedConstructorAtTargetSideWithBeanProperty() {
+        FlatConstructSource2 source = new FlatConstructSource2();
+        source.id = 2901L;
+        source.street = "boomweg";
+        source.city = "Zoetermeer";
+        source.country = "Nederland";
+
+        BigConstructTarget2 target = beanMapper.map(source, BigConstructTarget2.class);
+        assertEquals(source.id, target.id, 0);
+        assertEquals(source.street, target.street);
+        assertEquals(source.city, target.nestedClass.city);
+        assertEquals(source.country, target.nestedClass.country);
+        assertEquals(source.city + " " + source.country, target.nestedClass.getCityCountry());
     }
 
     public Person createPerson(String name) {
