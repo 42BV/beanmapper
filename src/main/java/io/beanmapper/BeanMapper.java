@@ -55,7 +55,7 @@ public class BeanMapper {
     /**
      * The list of packages (and subpackages) containing classes which are eligible for mapping.
      */
-    private List<Package> packagePrefixesForMappableClasses = new ArrayList<Package>();
+    private List<String> packagePrefixesForMappableClasses = new ArrayList<String>();
 
     /**
      * The list of converters that should be checked for conversions.
@@ -351,8 +351,8 @@ public class BeanMapper {
      * @return true if the class may be mapped, false if it may not
      */
     private boolean isMappableClass(Class<?> clazz) {
-        for (Package packagePrefix : packagePrefixesForMappableClasses) {
-            if (clazz.getPackage() != null && clazz.getPackage().toString().startsWith(packagePrefix.toString())) {
+        for (String packagePrefix : packagePrefixesForMappableClasses) {
+            if (clazz.getPackage() != null && clazz.getPackage().getName().startsWith(packagePrefix)) {
                 return true;
             }
         }
@@ -417,7 +417,20 @@ public class BeanMapper {
      * @param clazz the class which sets the package prefix for all mappable classes
      */
     public final void addPackagePrefix(Class<?> clazz) {
-        packagePrefixesForMappableClasses.add(clazz.getPackage());
+        if(clazz.getPackage() != null) {
+            addPackagePrefix(clazz.getPackage().getName());
+        }
+    }
+
+    /**
+     * Adds a package on the basis of a class. All classes in that package and sub-packages are
+     * eligible for mapping. The root source and target do not need to be set as such, because
+     * the verification is only run against nested classes which should be mapped implicity as
+     * well
+     * @param packagePrefix the String which sets the package prefix for all mappable classes
+     */
+    public final void addPackagePrefix(String packagePrefix) {
+        packagePrefixesForMappableClasses.add(packagePrefix);
     }
     
     /**
