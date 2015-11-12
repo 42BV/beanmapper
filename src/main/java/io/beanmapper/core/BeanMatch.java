@@ -1,5 +1,7 @@
 package io.beanmapper.core;
 
+import io.beanmapper.core.rule.MappableFields;
+
 import java.util.Map;
 
 public class BeanMatch {
@@ -14,12 +16,19 @@ public class BeanMatch {
 
     private final Map<String, BeanField> aliases;
 
+    private final MappableFields mappableFields;
+
     public BeanMatch(Class<?> sourceClass, Class<?> targetClass, Map<String, BeanField> sourceNode, Map<String, BeanField> targetNode, Map<String, BeanField> aliases) {
+        this(sourceClass, targetClass, sourceNode, targetNode, aliases, null);
+    }
+
+    public BeanMatch(Class<?> sourceClass, Class<?> targetClass, Map<String, BeanField> sourceNode, Map<String, BeanField> targetNode, Map<String, BeanField> aliases, MappableFields mappableFields) {
         this.sourceClass = sourceClass;
         this.targetClass = targetClass;
         this.sourceNode = sourceNode;
         this.targetNode = targetNode;
         this.aliases = aliases;
+        this.mappableFields = mappableFields;
     }
 
     public Class<?> getSourceClass() {
@@ -40,5 +49,9 @@ public class BeanMatch {
 
     public Map<String, BeanField> getAliases() {
         return aliases;
+    }
+
+    public MappableFields getMappableFields() {
+        return mappableFields;
     }
 }

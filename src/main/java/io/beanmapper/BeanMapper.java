@@ -14,8 +14,7 @@ import io.beanmapper.core.converter.collections.CollectionListConverter;
 import io.beanmapper.core.converter.collections.CollectionMapConverter;
 import io.beanmapper.core.converter.collections.CollectionSetConverter;
 import io.beanmapper.core.converter.impl.*;
-import io.beanmapper.core.rule.BeanMapperRule;
-import io.beanmapper.core.rule.ConstantMapperRule;
+import io.beanmapper.core.rule.MappableFields;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
@@ -135,7 +134,7 @@ public class BeanMapper {
         BeanMatch beanMatch = getBeanMatch(source.getClass(), targetClass);
         T target = beanInitializer.instantiate(targetClass, getConstructorArguments(source, beanMatch));
 
-        return processFields(source, target, beanMatch, new ConstantMapperRule(true));
+        return processFields(source, target, beanMatch);
     }
 
     /**
@@ -182,22 +181,21 @@ public class BeanMapper {
      */
     public <S, T> T map(S source, T target) {
         BeanMatch beanMatch = getBeanMatch(source.getClass(), target.getClass());
-        return processFields(source, target, beanMatch, new ConstantMapperRule(true));
+        return processFields(source, target, beanMatch);
     }
     
     /**
      * Copies the values from the source object to an existing target instance
      * @param source source instance of the properties
      * @param target target instance for the properties
-     * @param rule the matching rule
      * @param <S> the instance from which the properties get copied.
      * @param <T> the instance to which the properties get copied
      * @return the original target instance containing all applicable properties
      * @throws BeanMappingException
      */
-    public <S, T> T map(S source, T target, BeanMapperRule rule) {
+    public <S, T> T map(S source, T target, MappableFields fieldsToMap) {
         BeanMatch beanMatch = getBeanMatch(source.getClass(), target.getClass());
-        return processFields(source, target, beanMatch, rule);
+        return processFields(source, target, fieldsToMap.compressBeanMatch(beanMatch));
     }
 
     private <S> ConstructorArguments getConstructorArguments(S source, BeanMatch beanMatch) {
@@ -249,7 +247,7 @@ public class BeanMapper {
      * @return A filled target object.
      * @throws BeanMappingException
      */
-    private <S, T> T processFields(S source, T target, BeanMatch beanMatch, BeanMapperRule rule) {
+    private <S, T> T processFields(S source, T target, BeanMatch beanMatch) {
         for (String fieldName : beanMatch.getTargetNode().keySet()) {
             BeanField sourceField = beanMatch.getSourceNode().get(fieldName);
             if(sourceField == null) {
@@ -261,7 +259,7 @@ public class BeanMapper {
                 // No target field found -> check for alias
                 targetField = beanMatch.getAliases().get(fieldName);
             }
-            processField(new BeanFieldMatch(source, target, sourceField, targetField, fieldName, beanMatch), rule);
+            processField(new BeanFieldMatch(source, target, sourceField, targetField, fieldName, beanMatch));
         }
         return target;
     }
@@ -271,17 +269,17 @@ public class BeanMapper {
      * @param beanFieldMatch contains the fields belonging to the source/target field match
      * @throws BeanMappingException
      */
-    private void processField(BeanFieldMatch beanFieldMatch, BeanMapperRule rule) {
+    private void processField(BeanFieldMatch beanFieldMatch) {
         if (!beanFieldMatch.hasMatchingSource()) {
             dealWithNonMatchingNode(beanFieldMatch);
             return;
         }
         if (!isConverterFor(beanFieldMatch.getSourceClass(), beanFieldMatch.getTargetClass()) &&
-                                !beanFieldMatch.hasSimilarClasses() &&
-                                isMappableClass(beanFieldMatch.getTargetClass()) &&
+                (!beanFieldMatch.hasSimilarClasses() || (beanFieldMatch.hasSimilarClasses() && beanFieldMatch.getTargetObject() != null)) &&
+                isMappableClass(beanFieldMatch.getTargetClass()) &&
                                 beanFieldMatch.getSourceObject() != null) {
 
-            dealWithMappableNestedClass(beanFieldMatch, rule);
+            dealWithMappableNestedClass(beanFieldMatch);
             return;
         }
         if (beanFieldMatch.isMappable()) {
@@ -326,17 +324,20 @@ public class BeanMapper {
      * If the field is a class which can itself be mapped to another class, it must be treated
      * as such. The matching process is called recursively to deal with this pair.
      * @param beanFieldMatch contains the fields belonging to the source/target field match
-     * @param rule the matching rule
      * @throws BeanMappingException
      */
-    private void dealWithMappableNestedClass(BeanFieldMatch beanFieldMatch, BeanMapperRule rule) {
+    private void dealWithMappableNestedClass(BeanFieldMatch beanFieldMatch) {
         Object encapsulatedSource = beanFieldMatch.getSourceObject();
         Object target;
         if (encapsulatedSource != null) {
             if(beanFieldMatch.getTargetObject() == null){
                 target = map(encapsulatedSource, beanFieldMatch.getTargetClass());
             }else {
-                target = map(encapsulatedSource, beanFieldMatch.getTarget(), rule);
+                if(beanFieldMatch.getBeanMatch().getMappableFields() == null) {
+                    target = map(encapsulatedSource, beanFieldMatch.getTargetObject());
+                } else {
+                    target = map(encapsulatedSource, beanFieldMatch.getTargetObject(), beanFieldMatch.getBeanMatch().getMappableFields().splitForField(beanFieldMatch.getSourceFieldName()));
+                }
             }
             beanFieldMatch.writeObject(target);
         }

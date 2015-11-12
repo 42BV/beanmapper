@@ -1,13 +1,10 @@
 package io.beanmapper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
 import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
 import io.beanmapper.core.converter.impl.NestedSourceClassToNestedTargetClassConverter;
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
-import io.beanmapper.core.rule.SourceFieldMapperRule;
+import io.beanmapper.core.rule.MappableFields;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.testmodel.beanAlias.NestedSourceWithAlias;
 import io.beanmapper.testmodel.beanAlias.SourceWithAlias;
@@ -20,15 +17,6 @@ import io.beanmapper.testmodel.constructNotMatching.BigConstructTarget;
 import io.beanmapper.testmodel.constructNotMatching.BigConstructTarget2;
 import io.beanmapper.testmodel.constructNotMatching.FlatConstructSource;
 import io.beanmapper.testmodel.constructNotMatching.FlatConstructSource2;
-import io.beanmapper.testmodel.collections.CollectionListSource;
-import io.beanmapper.testmodel.collections.CollectionListTarget;
-import io.beanmapper.testmodel.collections.CollectionListTargetClear;
-import io.beanmapper.testmodel.collections.CollectionMapSource;
-import io.beanmapper.testmodel.collections.CollectionMapTarget;
-import io.beanmapper.testmodel.collections.CollectionSetSource;
-import io.beanmapper.testmodel.collections.CollectionSetTarget;
-import io.beanmapper.testmodel.collections.SourceWithListGetter;
-import io.beanmapper.testmodel.collections.TargetWithListPublicField;
 import io.beanmapper.testmodel.converter.SourceWithDate;
 import io.beanmapper.testmodel.converter.TargetWithDateTime;
 import io.beanmapper.testmodel.converterbetweennestedclasses.NestedSourceClass;
@@ -39,14 +27,8 @@ import io.beanmapper.testmodel.defaults.SourceWithDefaults;
 import io.beanmapper.testmodel.defaults.TargetWithDefaults;
 import io.beanmapper.testmodel.emptyobject.EmptySource;
 import io.beanmapper.testmodel.emptyobject.EmptyTarget;
-import io.beanmapper.testmodel.emptyobject.NestedEmptySource;
 import io.beanmapper.testmodel.emptyobject.NestedEmptyTarget;
-import io.beanmapper.testmodel.encapsulate.Address;
-import io.beanmapper.testmodel.encapsulate.Country;
-import io.beanmapper.testmodel.encapsulate.House;
-import io.beanmapper.testmodel.encapsulate.ResultManyToMany;
-import io.beanmapper.testmodel.encapsulate.ResultManyToOne;
-import io.beanmapper.testmodel.encapsulate.ResultOneToMany;
+import io.beanmapper.testmodel.encapsulate.*;
 import io.beanmapper.testmodel.encapsulate.sourceAnnotated.Car;
 import io.beanmapper.testmodel.encapsulate.sourceAnnotated.CarDriver;
 import io.beanmapper.testmodel.encapsulate.sourceAnnotated.Driver;
@@ -78,6 +60,9 @@ import io.beanmapper.testmodel.project.CodeProject;
 import io.beanmapper.testmodel.project.CodeProjectResult;
 import io.beanmapper.testmodel.publicfields.SourceWithPublicFields;
 import io.beanmapper.testmodel.publicfields.TargetWithPublicFields;
+import io.beanmapper.testmodel.rule.NestedWithRule;
+import io.beanmapper.testmodel.rule.SourceWithRule;
+import io.beanmapper.testmodel.rule.TargetWithRule;
 import io.beanmapper.testmodel.samesourcediffresults.Entity;
 import io.beanmapper.testmodel.samesourcediffresults.ResultOne;
 import io.beanmapper.testmodel.samesourcediffresults.ResultTwo;
@@ -86,6 +71,11 @@ import io.beanmapper.testmodel.similarsubclasses.DifferentTarget;
 import io.beanmapper.testmodel.similarsubclasses.SimilarSubclass;
 import io.beanmapper.testmodel.tostring.SourceWithNonString;
 import io.beanmapper.testmodel.tostring.TargetWithString;
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.Verifications;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -94,12 +84,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.TreeSet;
 
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.Verifications;
-
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class BeanMapperTest {
 
@@ -297,26 +282,6 @@ public class BeanMapperTest {
         assertEquals(false, mappedTarget.bool);// Default for primitive boolean is false
         assertNull(mappedTarget.nestedEmptyClass.name);
         assertNull(mappedTarget.nestedEmpty);
-    }
-    
-    @Test
-    public void sourceToTargetPatch() {
-        EmptySource source = new EmptySource();
-        source.name = "My new name";
-        source.bool = false;
-        source.nestedEmpty = new NestedEmptySource();
-        source.nestedEmpty.name = "My new nested name";
-        
-        EmptyTarget target = new EmptyTarget();
-        target.name = "My name";
-        target.bool = true;
-        target.nestedEmpty = new NestedEmptyTarget();
-        target.nestedEmpty.name = "My nested name";
-
-        beanMapper.map(source, target, new SourceFieldMapperRule("name", "nestedEmpty", "nestedEmpty.name"));
-        assertEquals("My new name", target.name); // Overwritten
-        assertEquals(true, target.bool); // Not overwritten because not in rule
-        assertEquals("My new nested name", target.nestedEmpty.name); // Overwritten (nested)
     }
 
     @Test
@@ -712,6 +677,56 @@ public class BeanMapperTest {
         assertEquals(source.city, target.nestedClass.city);
         assertEquals(source.country, target.nestedClass.country);
         assertEquals(source.city + " " + source.country, target.nestedClass.getCityCountry());
+    }
+
+    @Test
+    public void sourceToTargetWithRule() {
+        SourceWithRule source = new SourceWithRule();
+        source.id = null;
+        source.name = "Name";
+        source.nested = new NestedWithRule();
+        source.nested.nestedInt = null;
+        source.nested.nestedName = "NestedName";
+
+        TargetWithRule target = new TargetWithRule();
+        target.id = 1;
+        target.name = "targetName";
+        target.nested = new NestedWithRule();
+        target.nested.nestedInt = 2;
+        target.nested.nestedName = "targetNestedName";
+
+        beanMapper.map(source, target);
+        assertEquals(source.id, target.id);
+        assertEquals(source.name, target.name);
+        assertEquals(target.nested.nestedInt, target.nested.nestedInt);
+        assertEquals(source.nested.nestedName, target.nested.nestedName);
+    }
+
+    @Test
+    public void sourceToTargetWithRuleOnlyNames() {
+        // First normal mapping
+        sourceToTargetWithRule();
+
+        // Second only names mapping
+        SourceWithRule source = new SourceWithRule();
+        source.id = null;
+        source.name = "Name";
+        source.nested = new NestedWithRule();
+        source.nested.nestedInt = null;
+        source.nested.nestedName = "NestedName";
+
+        TargetWithRule target = new TargetWithRule();
+        target.id = 1;
+        target.name = "targetName";
+        target.nested = new NestedWithRule();
+        target.nested.nestedInt = 2;
+        target.nested.nestedName = "targetNestedName";
+
+        beanMapper.map(source, target, new MappableFields("name", "nested", "nested.nestedName"));
+        assertEquals(1, target.id, 0); // Not mapped
+        assertEquals(source.name, target.name); // Overwritten
+        assertEquals(2, target.nested.nestedInt, 0); // Not mapped
+        assertEquals(source.nested.nestedName, target.nested.nestedName); // Overwritten
     }
 
     public Person createPerson(String name) {

@@ -74,6 +74,10 @@ public class BeanFieldMatch {
                         null;
     }
 
+    public String getSourceFieldName() {
+        return sourceBeanField.getName();
+    }
+
     public BeanMatch getBeanMatch() {
         return beanMatch;
     }
