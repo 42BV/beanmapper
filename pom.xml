@@ -44,7 +44,6 @@
     <properties>
         <junit.version>4.10</junit.version>
         <slf4j.version>1.7.2</slf4j.version>
-        <spring.version>4.1.6.RELEASE</spring.version>
         <!-- Reporting -->
         <maven.cobertura.version>2.5.2</maven.cobertura.version>
         <maven.javadoc.version>2.8</maven.javadoc.version>
@@ -53,15 +52,7 @@
     </properties>
 
     <dependencies>
-
-        <!-- Spring integration -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-            <version>${spring.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
+    
         <!-- Used for unit testing -->
         <dependency>
             <groupId>org.jmockit</groupId>
