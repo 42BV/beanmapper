@@ -1,6 +1,5 @@
 package io.beanmapper.core.converter;
 
-import io.beanmapper.BeanMapper;
 import io.beanmapper.core.BeanFieldMatch;
 
 /**
@@ -28,5 +27,4 @@ public interface BeanConverter {
      */
     boolean match(Class<?> sourceClass, Class<?> targetClass);
 
-    void setBeanMapper(BeanMapper beanMapper);
 }

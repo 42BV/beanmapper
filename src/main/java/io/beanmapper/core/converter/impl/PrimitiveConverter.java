@@ -3,7 +3,6 @@
  */
 package io.beanmapper.core.converter.impl;
 
-import io.beanmapper.BeanMapper;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.utils.Check;
@@ -51,10 +50,6 @@ public class PrimitiveConverter implements BeanConverter {
     @Override
     public boolean match(Class<?> sourceClass, Class<?> targetClass) {
         return targetClass.equals(MAPPINGS.get(sourceClass));
-    }
-
-    @Override
-    public void setBeanMapper(BeanMapper beanMapper) {
     }
 
 }

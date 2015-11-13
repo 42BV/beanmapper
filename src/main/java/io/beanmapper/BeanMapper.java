@@ -10,10 +10,18 @@ import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
+import io.beanmapper.core.converter.BeanMapperAware;
 import io.beanmapper.core.converter.collections.CollectionListConverter;
 import io.beanmapper.core.converter.collections.CollectionMapConverter;
 import io.beanmapper.core.converter.collections.CollectionSetConverter;
-import io.beanmapper.core.converter.impl.*;
+import io.beanmapper.core.converter.impl.NumberToNumberConverter;
+import io.beanmapper.core.converter.impl.ObjectToStringConverter;
+import io.beanmapper.core.converter.impl.PrimitiveConverter;
+import io.beanmapper.core.converter.impl.StringToBigDecimalConverter;
+import io.beanmapper.core.converter.impl.StringToBooleanConverter;
+import io.beanmapper.core.converter.impl.StringToEnumConverter;
+import io.beanmapper.core.converter.impl.StringToIntegerConverter;
+import io.beanmapper.core.converter.impl.StringToLongConverter;
 import io.beanmapper.core.rule.MappableFields;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
@@ -441,7 +449,9 @@ public class BeanMapper {
      *                  from the abstract BeanConverter class.
      */
     public final void addConverter(BeanConverter converter) {
-        converter.setBeanMapper(this);
+        if (converter instanceof BeanMapperAware) {
+            ((BeanMapperAware) converter).setBeanMapper(this);
+        }
         beanConverters.add(converter);
     }
     

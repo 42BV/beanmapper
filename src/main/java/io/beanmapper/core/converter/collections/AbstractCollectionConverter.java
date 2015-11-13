@@ -4,12 +4,13 @@ import io.beanmapper.BeanMapper;
 import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.converter.BeanConverter;
+import io.beanmapper.core.converter.BeanMapperAware;
 import io.beanmapper.utils.Classes;
 
 import java.util.Collection;
 import java.util.Map;
 
-public abstract class AbstractCollectionConverter<T> implements BeanConverter {
+public abstract class AbstractCollectionConverter<T> implements BeanConverter, BeanMapperAware {
 
     private final Class<?> type;
     private BeanMapper beanMapper;
@@ -75,4 +76,5 @@ public abstract class AbstractCollectionConverter<T> implements BeanConverter {
     public void setBeanMapper(BeanMapper beanMapper) {
         this.beanMapper = beanMapper;
     }
+
 }

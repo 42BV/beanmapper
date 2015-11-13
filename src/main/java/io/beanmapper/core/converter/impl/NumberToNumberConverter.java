@@ -6,6 +6,7 @@ package io.beanmapper.core.converter.impl;
 import io.beanmapper.BeanMapper;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.converter.BeanConverter;
+import io.beanmapper.core.converter.BeanMapperAware;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +17,7 @@ import java.util.Set;
  * @author Jeroen van Schagen
  * @since Jun 24, 2015
  */
-public class NumberToNumberConverter implements BeanConverter {
+public class NumberToNumberConverter implements BeanConverter, BeanMapperAware {
     
     private static final Set<Class<?>> PRIMITIVES = new HashSet<Class<?>>();
     
@@ -33,10 +34,6 @@ public class NumberToNumberConverter implements BeanConverter {
      * Bean mapper, used to delegate conversions.
      */
     private BeanMapper beanMapper;
-
-    public void setBeanMapper(BeanMapper beanMapper) {
-        this.beanMapper = beanMapper;
-    }
 
     /**
      * {@inheritDoc}
@@ -65,4 +62,12 @@ public class NumberToNumberConverter implements BeanConverter {
         return Number.class.isAssignableFrom(clazz) || PRIMITIVES.contains(clazz);
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setBeanMapper(BeanMapper beanMapper) {
+        this.beanMapper = beanMapper;
+    }
+
 }

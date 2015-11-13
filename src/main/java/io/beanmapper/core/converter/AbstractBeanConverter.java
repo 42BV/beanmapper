@@ -3,7 +3,6 @@
  */
 package io.beanmapper.core.converter;
 
-import io.beanmapper.BeanMapper;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.utils.Check;
 import io.beanmapper.utils.Classes;
@@ -19,8 +18,6 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
     private final Class<?> sourceClass;
     
     private final Class<?> targetClass;
-
-    protected BeanMapper beanMapper;
 
     /**
      * Construct a new bean converter, dynamically resolving the source and target class. 
@@ -77,10 +74,6 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
     
     protected boolean isMatchingTarget(Class<?> targetClass) {
         return this.targetClass.isAssignableFrom(targetClass);
-    }
-
-    public void setBeanMapper(BeanMapper beanMapper) {
-        this.beanMapper = beanMapper;
     }
     
 }
