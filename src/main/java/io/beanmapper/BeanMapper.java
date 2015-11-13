@@ -34,6 +34,7 @@ import io.beanmapper.utils.ConstructorArguments;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -63,7 +64,7 @@ public class BeanMapper {
     /**
      * The list of packages (and subpackages) containing classes which are eligible for mapping.
      */
-    private List<String> packagePrefixesForMappableClasses = new ArrayList<String>();
+    private List<String> packagePrefixes = new ArrayList<String>();
 
     /**
      * The list of converters that should be checked for conversions.
@@ -358,9 +359,23 @@ public class BeanMapper {
      * @param clazz the class to be verified against the allowed packages
      * @return true if the class may be mapped, false if it may not
      */
-    private boolean isMappableClass(Class<?> clazz) {
-        for (String packagePrefix : packagePrefixesForMappableClasses) {
-            if (clazz.getPackage() != null && clazz.getPackage().getName().startsWith(packagePrefix)) {
+    public boolean isMappableClass(Class<?> clazz) {
+        if (clazz.getPackage() == null) {
+            return false;
+        }
+        return isMappable(clazz.getPackage().getName());
+    }
+    
+    /**
+     * Verifies whether the package is part of the beans which may be mapped by the bean mapper. This logic is
+     * used when nested classes are encountered which need to be treated in a similar way as the main source/
+     * target classes.
+     * @param packageName the package
+     * @return true if the class may be mapped, false if it may not
+     */
+    public boolean isMappable(String packageName) {
+        for (String packagePrefix : packagePrefixes) {
+            if (packageName.startsWith(packagePrefix)) {
                 return true;
             }
         }
@@ -425,7 +440,7 @@ public class BeanMapper {
      * @param clazz the class which sets the package prefix for all mappable classes
      */
     public final void addPackagePrefix(Class<?> clazz) {
-        if(clazz.getPackage() != null) {
+        if (clazz.getPackage() != null) {
             addPackagePrefix(clazz.getPackage().getName());
         }
     }
@@ -438,9 +453,18 @@ public class BeanMapper {
      * @param packagePrefix the String which sets the package prefix for all mappable classes
      */
     public final void addPackagePrefix(String packagePrefix) {
-        packagePrefixesForMappableClasses.add(packagePrefix);
+        packagePrefixes.add(packagePrefix);
     }
     
+    /**
+     * Retrieve the package prefixes.
+     * 
+     * @return the package prefixes
+     */
+    public final List<String> getPackagePrefixes() {
+        return Collections.unmodifiableList(packagePrefixes);
+    }
+
     /**
      * Add a converter class (must inherit from abstract BeanConverter class) to the beanMapper.
      * On mapping, the beanMapper will check for a suitable converter and use its from and
