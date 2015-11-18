@@ -297,6 +297,13 @@ public class BeanMapperTest {
     }
 
     @Test
+    public void mapNull() {
+        EmptySource source = null;
+        EmptyTarget target = beanMapper.map(source, EmptyTarget.class);
+        assertNull(target);
+    }
+
+    @Test
     public void copyToExistingTargetInstance() {
         Person person = createPerson();
         PersonForm form = createPersonForm();

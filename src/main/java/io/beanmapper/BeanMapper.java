@@ -101,6 +101,7 @@ public class BeanMapper {
      * @throws BeanMappingException
      */
     public <S, T> T map(S source, Class<T> targetClass) {
+        if(source == null) return null;
         return map(source, targetClass, beanInitializer, false);
     }
 
@@ -116,6 +117,7 @@ public class BeanMapper {
      */
     @SuppressWarnings("unchecked")
     public <S, T> T map(S source, Class<T> targetClass, boolean converterChoosable) {
+        if(source == null) return null;
         return map(source, targetClass, beanInitializer, converterChoosable);
     }
     
@@ -132,6 +134,7 @@ public class BeanMapper {
      */
     @SuppressWarnings("unchecked")
     public <S, T> T map(S source, Class<T> targetClass, BeanInitializer beanInitializer, boolean converterChoosable) {
+        if(source == null) return null;
         if (converterChoosable) {
             Class<?> valueClass = beanUnproxy.unproxy(source.getClass());
             BeanConverter converter = getConverterOptional(valueClass, targetClass);
@@ -157,6 +160,7 @@ public class BeanMapper {
      */
     @SuppressWarnings("unchecked")
     public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass) {
+        if(sourceItems == null) return null;
         return map(sourceItems, targetClass, sourceItems.getClass());
     }
     
@@ -172,6 +176,7 @@ public class BeanMapper {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass, Class<? extends Collection> collectionClass) {
+        if(sourceItems == null) return null;
         Collection<T> targetItems = (Collection<T>) beanInitializer.instantiate(collectionClass, null);
         for (S source : sourceItems) {
             targetItems.add(map(source, targetClass));
@@ -189,6 +194,7 @@ public class BeanMapper {
      * @throws BeanMappingException
      */
     public <S, T> T map(S source, T target) {
+        if(source == null) return null;
         BeanMatch beanMatch = getBeanMatch(source.getClass(), target.getClass());
         return processFields(source, target, beanMatch);
     }
@@ -203,6 +209,7 @@ public class BeanMapper {
      * @throws BeanMappingException
      */
     public <S, T> T map(S source, T target, MappableFields fieldsToMap) {
+        if(source == null) return null;
         BeanMatch beanMatch = getBeanMatch(source.getClass(), target.getClass());
         return processFields(source, target, fieldsToMap.compressBeanMatch(beanMatch));
     }
