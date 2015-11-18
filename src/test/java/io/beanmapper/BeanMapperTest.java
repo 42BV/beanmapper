@@ -110,6 +110,18 @@ public class BeanMapperTest {
     }
 
     @Test
+    public void mapEnumWithExistingTarget() throws BeanMappingException {
+        ColorEntity source = new ColorEntity();
+        source.setCurrentColor(ColorEntity.RGB.BLUE);
+
+        ColorResult target = new ColorResult();
+        target.currentColor = ColorEntity.RGB.GREEN;
+
+        beanMapper.map(source, target);
+        assertEquals(ColorEntity.RGB.BLUE, target.currentColor);
+    }
+
+    @Test
     public void mapEnumToString() throws BeanMappingException {
         ColorEntity colorEntity = new ColorEntity();
         colorEntity.setCurrentColor(ColorEntity.RGB.GREEN);
