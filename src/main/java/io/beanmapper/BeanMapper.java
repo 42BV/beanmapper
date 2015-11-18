@@ -285,6 +285,7 @@ public class BeanMapper {
         }
         if (!isConverterFor(beanFieldMatch.getSourceClass(), beanFieldMatch.getTargetClass()) &&
                 (!beanFieldMatch.hasSimilarClasses() || (beanFieldMatch.hasSimilarClasses() && beanFieldMatch.getTargetObject() != null)) &&
+                !(beanFieldMatch.getSourceClass().isEnum() || beanFieldMatch.getTargetClass().isEnum()) &&
                 isMappableClass(beanFieldMatch.getTargetClass()) &&
                                 beanFieldMatch.getSourceObject() != null) {
 
