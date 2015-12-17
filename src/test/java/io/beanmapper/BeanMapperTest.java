@@ -456,6 +456,19 @@ public class BeanMapperTest {
     }
 
     @Test
+    public void EncapsulateManyToOneWithNull() {
+        House house = createHouse();
+        house.setAddress(null);
+
+        ResultManyToOne result = beanMapper.map(house, ResultManyToOne.class);
+        assertEquals("housename", result.getName());
+        assertEquals(null, result.getStreet());
+        assertEquals(0, result.getNumber());
+        assertEquals(null, result.getCountryName());
+    }
+
+
+    @Test
     public void EncapsulateOneToMany() {
         Country country = new Country("Nederland");
 
