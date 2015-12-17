@@ -223,11 +223,7 @@ public class BeanMapper {
         }
 
         // If no BeanConstruct exists, assume a no-arg constructor must be used
-        if(beanConstruct == null) {
-            return null;
-        }
-
-        return new ConstructorArguments(source, beanMatch, beanConstruct.value());
+        return beanConstruct == null ? null : new ConstructorArguments(source, beanMatch, beanConstruct.value());
     }
 
     private <T, S> BeanMatch getBeanMatch(Class<S> sourceClazz, Class<T> targetClazz) {
