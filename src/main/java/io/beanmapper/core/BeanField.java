@@ -83,28 +83,12 @@ public class BeanField {
             Class<?> type = getCurrentField().getType();
             BeanConstruct beanConstruct = type.getAnnotation(BeanConstruct.class);
 
-            if(beanConstruct == null){
+            if(beanConstruct == null) {
                 target = new DefaultBeanInitializer().instantiate(type, null);
-            }else {
-                String[] constructArgs = beanConstruct.value();
-                ConstructorArguments arguments = new ConstructorArguments(constructArgs.length);;
-
-                for(int i=0; i<constructArgs.length; i++) {
-                    if (beanMatch.getSourceNode().containsKey(constructArgs[i]) || beanMatch.getAliases().containsKey(constructArgs[i])) {
-                        BeanField constructField = beanMatch.getSourceNode().get(constructArgs[i]);
-                        if(constructField == null) {
-                            constructField = beanMatch.getAliases().get(constructArgs[i]);
-                        }
-                        arguments.types[i] = constructField.getProperty().getType();
-                        arguments.values[i] = constructField.getObject(source);
-                    } else {
-                        throw new BeanInstantiationException(beanMatch.getTargetClass(), null);
-                    }
-                }
-
+            } else {
+                ConstructorArguments arguments = new ConstructorArguments(source, beanMatch, beanConstruct.value());
                 target = new DefaultBeanInitializer().instantiate(type, arguments);
             }
-
             getCurrentField().setValue(parent, target);
         }
         return target;

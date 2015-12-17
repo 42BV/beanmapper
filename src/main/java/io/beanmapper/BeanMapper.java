@@ -217,31 +217,17 @@ public class BeanMapper {
     private <S> ConstructorArguments getConstructorArguments(S source, BeanMatch beanMatch) {
         BeanConstruct beanConstruct = beanMatch.getTargetClass().getAnnotation(BeanConstruct.class);
 
+        // If the target does not have a BeanConstruct annotation, check the source
         if(beanConstruct == null){
             beanConstruct = beanMatch.getSourceClass().getAnnotation(BeanConstruct.class);
         }
 
-        String[] constructArgs;
-        ConstructorArguments arguments = null;
-
-        if(beanConstruct != null){
-            constructArgs = beanConstruct.value();
-            arguments = new ConstructorArguments(constructArgs.length);
-
-            for(int i=0; i<constructArgs.length; i++) {
-                if (beanMatch.getSourceNode().containsKey(constructArgs[i]) || beanMatch.getAliases().containsKey(constructArgs[i])) {
-                    BeanField constructField = beanMatch.getSourceNode().get(constructArgs[i]);
-                    if(constructField == null) {
-                        constructField = beanMatch.getAliases().get(constructArgs[i]);
-                    }
-                    arguments.types[i] = constructField.getProperty().getType();
-                    arguments.values[i] = constructField.getObject(source);
-                } else {
-                    throw new BeanInstantiationException(beanMatch.getTargetClass(), null);
-                }
-            }
+        // If no BeanConstruct exists, assume a no-arg constructor must be used
+        if(beanConstruct == null) {
+            return null;
         }
-        return arguments;
+
+        return new ConstructorArguments(source, beanMatch, beanConstruct.value());
     }
 
     private <T, S> BeanMatch getBeanMatch(Class<S> sourceClazz, Class<T> targetClazz) {

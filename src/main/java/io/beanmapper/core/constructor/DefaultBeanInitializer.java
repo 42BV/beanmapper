@@ -18,7 +18,7 @@ public class DefaultBeanInitializer implements BeanInitializer {
             if (arguments == null) {
                 return beanClass.getConstructor().newInstance();
             } else {
-                return (T) beanClass.getConstructor(arguments.types).newInstance(arguments.values);
+                return (T) beanClass.getConstructor(arguments.getTypes()).newInstance(arguments.getValues());
             }
         } catch (NoSuchMethodException e){
             throw new BeanConstructException(beanClass, e);

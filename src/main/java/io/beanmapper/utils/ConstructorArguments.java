@@ -1,12 +1,42 @@
 package io.beanmapper.utils;
 
+import io.beanmapper.core.BeanField;
+import io.beanmapper.core.BeanMatch;
+import io.beanmapper.exceptions.BeanInstantiationException;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class ConstructorArguments {
 
-    public Class[] types;
-    public Object[] values;
+    private List<Class> types = new ArrayList<Class>();
+    private List<Object> values = new ArrayList<Object>();
 
-    public ConstructorArguments(int count){
-        types = new Class[count];
-        values = new Object[count];
+    public ConstructorArguments(Object source, BeanMatch beanMatch, String[] constructorArgs){
+
+        for (String constructorArg : constructorArgs) {
+            if (constructorArgumentFoundInSource(beanMatch, constructorArg)) {
+                BeanField constructField = beanMatch.getSourceNode().get(constructorArg);
+                if(constructField == null) {
+                    constructField = beanMatch.getAliases().get(constructorArg);
+                }
+                types.add(constructField.getProperty().getType());
+                values.add(constructField.getObject(source));
+            } else {
+                throw new BeanInstantiationException(beanMatch.getTargetClass(), null);
+            }
+        }
+    }
+
+    private boolean constructorArgumentFoundInSource(BeanMatch beanMatch, String constructorArg) {
+        return beanMatch.getSourceNode().containsKey(constructorArg) || beanMatch.getAliases().containsKey(constructorArg);
+    }
+
+    public Class[] getTypes() {
+        return types.toArray(new Class[types.size()]);
+    }
+
+    public Object[] getValues() {
+        return values.toArray(new Object[values.size()]);
     }
 }
