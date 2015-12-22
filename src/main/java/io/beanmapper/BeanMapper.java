@@ -3,92 +3,86 @@ package io.beanmapper;
 import io.beanmapper.annotations.BeanConstruct;
 import io.beanmapper.annotations.BeanDefault;
 import io.beanmapper.annotations.BeanProperty;
+import io.beanmapper.config.BeanMapperBuilder;
+import io.beanmapper.config.Configuration;
+import io.beanmapper.config.CoreConfiguration;
 import io.beanmapper.core.BeanField;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.BeanMatch;
-import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.constructor.BeanInitializer;
-import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
-import io.beanmapper.core.converter.BeanMapperAware;
-import io.beanmapper.core.converter.collections.CollectionListConverter;
-import io.beanmapper.core.converter.collections.CollectionMapConverter;
-import io.beanmapper.core.converter.collections.CollectionSetConverter;
-import io.beanmapper.core.converter.impl.NumberToNumberConverter;
-import io.beanmapper.core.converter.impl.ObjectToStringConverter;
-import io.beanmapper.core.converter.impl.PrimitiveConverter;
-import io.beanmapper.core.converter.impl.StringToBigDecimalConverter;
-import io.beanmapper.core.converter.impl.StringToBooleanConverter;
-import io.beanmapper.core.converter.impl.StringToEnumConverter;
-import io.beanmapper.core.converter.impl.StringToIntegerConverter;
-import io.beanmapper.core.converter.impl.StringToLongConverter;
 import io.beanmapper.core.rule.MappableFields;
-import io.beanmapper.core.unproxy.BeanUnproxy;
-import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
-import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
 import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanFieldNoMatchException;
-import io.beanmapper.exceptions.BeanInstantiationException;
 import io.beanmapper.exceptions.BeanMappingException;
+import io.beanmapper.exceptions.BeanNoTargetException;
 import io.beanmapper.utils.ConstructorArguments;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Class that is responsible first for understanding the semantics of the source and target
  * objects. Once that has been determined, the applicable properties will be copied from
  * source to target.
  */
+@SuppressWarnings("unchecked")
 public class BeanMapper {
 
-    /**
-     * Initializes the beans.
-     */
-    private BeanInitializer beanInitializer = new DefaultBeanInitializer();
+    Configuration configuration = new CoreConfiguration();
 
-    /**
-     * Removes any potential proxies of beans.
-     */
-    private SkippingBeanUnproxy beanUnproxy = new SkippingBeanUnproxy(new DefaultBeanUnproxy());
-    
-    /**
-     * Contains a store of matches for source and target class pairs. A pair is created only
-     * once and reused every time thereafter.
-     */
-    private BeanMatchStore beanMatchStore = new BeanMatchStore();
-
-    /**
-     * The list of packages (and subpackages) containing classes which are eligible for mapping.
-     */
-    private List<String> packagePrefixes = new ArrayList<String>();
-
-    /**
-     * The list of converters that should be checked for conversions.
-     */
-    private List<BeanConverter> beanConverters = new ArrayList<BeanConverter>();
-
-    /**
-     * Determines if the default converters must be added during the next conversion.
-     */
-    private final AtomicBoolean shouldAddDefaultConverters;
-
-    /**
-     * Construct a new bean mapper, with default converters.
-     */
-    public BeanMapper() {
-        this(true);
+    public BeanMapper(Configuration configuration) {
+        this.configuration = configuration;
     }
-    
-    /**
-     * Construct a new bean mapper.
-     * @param includeDefaultConverters whether default converters should be registered
-     */
-    public BeanMapper(boolean includeDefaultConverters) {
-        shouldAddDefaultConverters = new AtomicBoolean(includeDefaultConverters);
+
+
+    public Object map(Object source) {
+
+        if (source == null) {
+            return null;
+        }
+
+        // If a collection target class has been passed, we are dealing with a collection
+        if (configuration.getCollectionClass() != null) {
+
+            Collection targetItems = (Collection)configuration.getBeanInitializer().instantiate(configuration.getCollectionClass(), null);
+            for (Object item : (Collection)source) {
+                targetItems.add(map(item, configuration.getTargetClass()));
+            }
+            return targetItems;
+        }
+
+        final Object target;
+        final BeanMatch beanMatch;
+
+        if (configuration.getTargetClass() != null) {
+
+            Class targetClass = configuration.getTargetClass();
+
+            if (configuration.isConverterChoosable()) {
+                Class<?> valueClass = configuration.getBeanUnproxy().unproxy(source.getClass());
+                BeanConverter converter = getConverterOptional(valueClass, targetClass);
+                if (converter != null) {
+                    return converter.convert(source, targetClass, null);
+                }
+            }
+
+            beanMatch = getBeanMatch(source.getClass(), targetClass);
+            target = configuration.getBeanInitializer().instantiate(targetClass, getConstructorArguments(source, beanMatch));
+
+        } else if (configuration.getTarget() != null) {
+
+            target = configuration.getTarget();
+            beanMatch = getBeanMatch(source.getClass(), target.getClass());
+        } else {
+            throw new BeanNoTargetException();
+        }
+
+        return processFields(
+                source,
+                target,
+                configuration.getMappableFields() != null ?
+                        configuration.getMappableFields().compressBeanMatch(beanMatch) :
+                        beanMatch);
     }
 
     /**
@@ -101,8 +95,12 @@ public class BeanMapper {
      * @throws BeanMappingException
      */
     public <S, T> T map(S source, Class<T> targetClass) {
-        if(source == null) return null;
-        return map(source, targetClass, beanInitializer, false);
+
+        return (T)config()
+                .setTargetClass(targetClass)
+                .setConverterChoosable(false)
+                .build()
+            .map(source);
     }
 
     /**
@@ -117,8 +115,12 @@ public class BeanMapper {
      */
     @SuppressWarnings("unchecked")
     public <S, T> T map(S source, Class<T> targetClass, boolean converterChoosable) {
-        if(source == null) return null;
-        return map(source, targetClass, beanInitializer, converterChoosable);
+
+        return (T)config()
+                .setTargetClass(targetClass)
+                .setConverterChoosable(converterChoosable)
+                .build()
+            .map(source);
     }
     
     /**
@@ -134,19 +136,13 @@ public class BeanMapper {
      */
     @SuppressWarnings("unchecked")
     public <S, T> T map(S source, Class<T> targetClass, BeanInitializer beanInitializer, boolean converterChoosable) {
-        if(source == null) return null;
-        if (converterChoosable) {
-            Class<?> valueClass = beanUnproxy.unproxy(source.getClass());
-            BeanConverter converter = getConverterOptional(valueClass, targetClass);
-            if (converter != null) {
-                return (T) converter.convert(source, targetClass, null);
-            }
-        }
 
-        BeanMatch beanMatch = getBeanMatch(source.getClass(), targetClass);
-        T target = beanInitializer.instantiate(targetClass, getConstructorArguments(source, beanMatch));
-
-        return processFields(source, target, beanMatch);
+        return (T)config()
+                .setTargetClass(targetClass)
+                .setBeanInitializer(beanInitializer)
+                .setConverterChoosable(converterChoosable)
+                .build()
+            .map(source);
     }
 
     /**
@@ -160,8 +156,12 @@ public class BeanMapper {
      */
     @SuppressWarnings("unchecked")
     public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass) {
-        if(sourceItems == null) return null;
-        return map(sourceItems, targetClass, sourceItems.getClass());
+
+        return (Collection<T>)config()
+                .setTargetClass(targetClass)
+                .setCollectionClass(sourceItems.getClass())
+                .build()
+            .map(sourceItems);
     }
     
     /**
@@ -176,12 +176,12 @@ public class BeanMapper {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass, Class<? extends Collection> collectionClass) {
-        if(sourceItems == null) return null;
-        Collection<T> targetItems = (Collection<T>) beanInitializer.instantiate(collectionClass, null);
-        for (S source : sourceItems) {
-            targetItems.add(map(source, targetClass));
-        }
-        return targetItems;
+
+        return (Collection<T>)config()
+                .setTargetClass(targetClass)
+                .setCollectionClass(collectionClass)
+                .build()
+            .map(sourceItems);
     }
 
     /**
@@ -194,9 +194,11 @@ public class BeanMapper {
      * @throws BeanMappingException
      */
     public <S, T> T map(S source, T target) {
-        if(source == null) return null;
-        BeanMatch beanMatch = getBeanMatch(source.getClass(), target.getClass());
-        return processFields(source, target, beanMatch);
+
+        return (T)config()
+                .setTarget(target)
+                .build()
+            .map(source);
     }
     
     /**
@@ -209,9 +211,12 @@ public class BeanMapper {
      * @throws BeanMappingException
      */
     public <S, T> T map(S source, T target, MappableFields fieldsToMap) {
-        if(source == null) return null;
-        BeanMatch beanMatch = getBeanMatch(source.getClass(), target.getClass());
-        return processFields(source, target, fieldsToMap.compressBeanMatch(beanMatch));
+
+        return (T)config()
+                .setTarget(target)
+                .setMappableFields(fieldsToMap)
+                .build()
+            .map(source);
     }
 
     private <S> ConstructorArguments getConstructorArguments(S source, BeanMatch beanMatch) {
@@ -227,9 +232,9 @@ public class BeanMapper {
     }
 
     private <T, S> BeanMatch getBeanMatch(Class<S> sourceClazz, Class<T> targetClazz) {
-        Class<?> sourceClass = beanUnproxy.unproxy(sourceClazz);
-        Class<?> targetClass = beanUnproxy.unproxy(targetClazz);
-        return beanMatchStore.getBeanMatch(sourceClass, targetClass);
+        Class<?> sourceClass = configuration.getBeanUnproxy().unproxy(sourceClazz);
+        Class<?> targetClass = configuration.getBeanUnproxy().unproxy(targetClazz);
+        return configuration.getBeanMatchStore().getBeanMatch(sourceClass, targetClass);
     }
 
     /**
@@ -350,10 +355,7 @@ public class BeanMapper {
      * @return true if the class may be mapped, false if it may not
      */
     public boolean isMappableClass(Class<?> clazz) {
-        if (clazz.getPackage() == null) {
-            return false;
-        }
-        return isMappable(clazz.getPackage().getName());
+        return clazz.getPackage() != null && isMappable(clazz.getPackage().getName());
     }
     
     /**
@@ -364,7 +366,7 @@ public class BeanMapper {
      * @return true if the class may be mapped, false if it may not
      */
     public boolean isMappable(String packageName) {
-        for (String packagePrefix : packagePrefixes) {
+        for (String packagePrefix : configuration.getPackagePrefixes()) {
             if (packageName.startsWith(packagePrefix)) {
                 return true;
             }
@@ -384,7 +386,7 @@ public class BeanMapper {
             return null;
         }
 
-        Class<?> valueClass = beanUnproxy.unproxy(value.getClass());
+        Class<?> valueClass = configuration.getBeanUnproxy().unproxy(value.getClass());
 
         BeanConverter converter = getConverterOptional(valueClass, targetClass);
         if (converter != null) {
@@ -399,15 +401,9 @@ public class BeanMapper {
     }
 
     private BeanConverter getConverterOptional(Class<?> sourceClass, Class<?> targetClass) {
-        // Register the default converters last so that custom converters are placed before
-        synchronized (this) {
-            if (shouldAddDefaultConverters.get()) {
-                addDefaultConverters();
-            }
-        }
 
         // Retrieve the first supported converter
-        for (BeanConverter beanConverter : beanConverters) {
+        for (BeanConverter beanConverter : configuration.getBeanConverters()) {
             if (beanConverter != null && beanConverter.match(sourceClass, targetClass)) {
                 return beanConverter;
             }
@@ -420,90 +416,12 @@ public class BeanMapper {
         return getConverterOptional(sourceClass, targetClass) != null;
     }
     
-    // Configurations
-    
-    /**
-     * Adds a package on the basis of a class. All classes in that package and sub-packages are
-     * eligible for mapping. The root source and target do not need to be set as such, because
-     * the verification is only run against nested classes which should be mapped implicity as
-     * well
-     * @param clazz the class which sets the package prefix for all mappable classes
-     */
-    public final void addPackagePrefix(Class<?> clazz) {
-        if (clazz.getPackage() != null) {
-            addPackagePrefix(clazz.getPackage().getName());
-        }
+    public final Configuration getConfiguration() {
+        return configuration;
     }
 
-    /**
-     * Adds a package on the basis of a class. All classes in that package and sub-packages are
-     * eligible for mapping. The root source and target do not need to be set as such, because
-     * the verification is only run against nested classes which should be mapped implicity as
-     * well
-     * @param packagePrefix the String which sets the package prefix for all mappable classes
-     */
-    public final void addPackagePrefix(String packagePrefix) {
-        packagePrefixes.add(packagePrefix);
-    }
-    
-    /**
-     * Retrieve the package prefixes.
-     * 
-     * @return the package prefixes
-     */
-    public final List<String> getPackagePrefixes() {
-        return Collections.unmodifiableList(packagePrefixes);
-    }
-
-    /**
-     * Add a converter class (must inherit from abstract BeanConverter class) to the beanMapper.
-     * On mapping, the beanMapper will check for a suitable converter and use its from and
-     * to methods to convert the value of the fields to the correct new data type.
-     * @param converter an instance of the class that contains the conversion method implementations and inherits
-     *                  from the abstract BeanConverter class.
-     */
-    public final void addConverter(BeanConverter converter) {
-        if (converter instanceof BeanMapperAware) {
-            ((BeanMapperAware) converter).setBeanMapper(this);
-        }
-        beanConverters.add(converter);
-    }
-    
-    /**
-     * Add classes to skip while unproxying to prevent failing of the BeanMapper while mapping
-     * proxy classes or classes containing synthetic fields (Like ENUM types).
-     * @param clazz the class that is added to the list of skipped classes
-     */
-    public final void addProxySkipClass(Class<?> clazz) {
-        beanUnproxy.skip(clazz);
-    }
-    
-    /**
-     * Add all default converters.
-     */
-    private void addDefaultConverters() {
-        addConverter(new PrimitiveConverter());
-        addConverter(new StringToBooleanConverter());
-        addConverter(new StringToIntegerConverter());
-        addConverter(new StringToLongConverter());
-        addConverter(new StringToBigDecimalConverter());
-        addConverter(new StringToEnumConverter());
-        addConverter(new NumberToNumberConverter());
-        addConverter(new ObjectToStringConverter());
-
-        addConverter(new CollectionListConverter());
-        addConverter(new CollectionSetConverter());
-        addConverter(new CollectionMapConverter());
-        
-        shouldAddDefaultConverters.set(false);
-    }
-
-    public final void setBeanInitializer(BeanInitializer beanInitializer) {
-        this.beanInitializer = beanInitializer;
-    }
-    
-    public final void setBeanUnproxy(BeanUnproxy beanUnproxy) {
-        this.beanUnproxy.setDelegate(beanUnproxy);
+    public BeanMapperBuilder config() {
+        return new BeanMapperBuilder(configuration);
     }
 
 }
