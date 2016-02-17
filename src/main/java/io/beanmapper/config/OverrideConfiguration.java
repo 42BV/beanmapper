@@ -12,7 +12,7 @@ import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OverrideConfiguration implements Configuration {
+public class OverrideConfiguration extends AbstractConfiguration {
 
     private final Configuration parentConfiguration;
 
@@ -32,54 +32,53 @@ public class OverrideConfiguration implements Configuration {
 
     private boolean converterChoosable = true;
 
-    private Class collectionClass;
-
-    public OverrideConfiguration() {
-        this(null);
-    }
+    private NullableField<Class> collectionClass = new NullableField<Class>(null);
 
     public OverrideConfiguration(Configuration configuration) {
+        if (configuration == null) {
+            throw new RuntimeException("Developer error: the parent configuration may not be null");
+        }
         this.parentConfiguration = configuration;
     }
 
     @Override
     public Class getTargetClass() {
-        return targetClass == null ? (parentConfiguration == null ? null : parentConfiguration.getTargetClass()) : targetClass;
+        return targetClass == null ? parentConfiguration.getTargetClass() : targetClass;
     }
 
     @Override
     public Object getTarget() {
-        return target == null ? (parentConfiguration == null ? null : parentConfiguration.getTarget()) : target;
+        return target == null ? parentConfiguration.getTarget() : target;
     }
 
     @Override
     public MappableFields getMappableFields() {
-        return mappableFields == null ? (parentConfiguration == null ? null : parentConfiguration.getMappableFields()) : mappableFields;
+        return mappableFields == null ? parentConfiguration.getMappableFields() : mappableFields;
     }
 
     @Override
     public BeanInitializer getBeanInitializer() {
-        return beanInitializer == null ? (parentConfiguration == null ? null : parentConfiguration.getBeanInitializer()) : beanInitializer;
+        return beanInitializer == null ? parentConfiguration.getBeanInitializer() : beanInitializer;
     }
 
     @Override
     public SkippingBeanUnproxy getBeanUnproxy() {
-        return beanUnproxy == null ? (parentConfiguration == null ? null : parentConfiguration.getBeanUnproxy()) : beanUnproxy;
+        return beanUnproxy == null ? parentConfiguration.getBeanUnproxy() : beanUnproxy;
     }
 
     @Override
     public BeanMatchStore getBeanMatchStore() {
-        return parentConfiguration == null ? null : parentConfiguration.getBeanMatchStore();
+        return parentConfiguration.getBeanMatchStore();
     }
 
     @Override
     public List<String> getPackagePrefixes() {
-        return packagePrefixes == null ? (parentConfiguration == null ? null : parentConfiguration.getPackagePrefixes()) : packagePrefixes;
+        return packagePrefixes == null ? parentConfiguration.getPackagePrefixes() : packagePrefixes;
     }
 
     @Override
     public List<BeanConverter> getBeanConverters() {
-        return beanConverters == null ? (parentConfiguration == null ? null : parentConfiguration.getBeanConverters()) : beanConverters;
+        return beanConverters == null ? parentConfiguration.getBeanConverters() : beanConverters;
     }
 
     @Override
@@ -92,10 +91,9 @@ public class OverrideConfiguration implements Configuration {
         // not supported for override options
     }
 
-    // @todo how about multiple override configs here?
     @Override
     public Class getCollectionClass() {
-        return collectionClass;
+        return collectionClass == null ? parentConfiguration.getCollectionClass() : collectionClass.get();
     }
 
     // @todo make sure addConverter works for override
@@ -160,7 +158,12 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public void setCollectionClass(Class collectionClass) {
-        this.collectionClass = collectionClass;
+        this.collectionClass = new NullableField<Class>(collectionClass);
+    }
+
+    @Override
+    public boolean canReuse() {
+        return true;
     }
 
 }

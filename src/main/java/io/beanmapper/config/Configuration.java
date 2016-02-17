@@ -21,7 +21,6 @@ public interface Configuration {
 
     SkippingBeanUnproxy getBeanUnproxy();
 
-    // @todo what was the thought behind this... NPE possible
     BeanMatchStore getBeanMatchStore();
 
     List<String> getPackagePrefixes();
@@ -84,4 +83,31 @@ public interface Configuration {
 
     void setCollectionClass(Class collectionClass);
 
+    /**
+     * Unsetting a collection class, means that the current collection class will be removed,
+     * so that the collection class of the parent configuration is used. If you need to
+     * explicitly set the collection class to null, use setCollectionClass instead.
+     */
+    void unsetCollectionClass();
+
+    /**
+     * Unsetting a target class, means that the current target class will be removed,
+     * so that the target class of the parent configuration is used. If you need to
+     * explicitly set the target class to null, use setTargetClass instead.
+     */
+    void unsetTargetClass();
+
+    /**
+     * Unsetting a target, means that the current target will be removed, so that the
+     * target of the parent configuration is used. If you need to explicitly set the
+     * target to null, use setTarget instead.
+     */
+    void unsetTarget();
+
+    /**
+     * Used to determine whether the configuration can be reused and modified (Override config)
+     * or whether it must be wrapped in a new configuration (Core config).
+     * @return true (Override config) if the configuration can be reused, false (Core config) if not.
+     */
+    boolean canReuse();
 }

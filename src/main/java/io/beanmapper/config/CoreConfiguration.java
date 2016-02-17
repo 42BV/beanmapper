@@ -9,10 +9,11 @@ import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
 
+import javax.naming.OperationNotSupportedException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CoreConfiguration implements Configuration {
+public class CoreConfiguration extends AbstractConfiguration {
 
     /**
      * Initializes the beans.
@@ -135,27 +136,37 @@ public class CoreConfiguration implements Configuration {
 
     @Override
     public void setTargetClass(Class targetClass) {
-        // not supported for Core Cfg
+        throw new ConfigurationOperationNotAllowedException(
+                "Illegal to set target class on the Core configuration, works only for override configurations");
     }
 
     @Override
     public void setTarget(Object target) {
-        // not supported for Core Cfg
+        throw new ConfigurationOperationNotAllowedException(
+                "Illegal to set a target instance on the Core configuration, works only for override configurations");
     }
 
     @Override
     public void setMappableFields(MappableFields mappableFields) {
-        // not supported for Core Cfg
+        throw new ConfigurationOperationNotAllowedException(
+                "Illegal to set mappable fields on the Core configuration, works only for override configurations");
     }
 
     @Override
     public void setConverterChoosable(boolean converterChoosable) {
-        // not supported for Core Cfg
+        throw new ConfigurationOperationNotAllowedException(
+                "Illegal to set whether the converter is choosable on the Core configuration, works only for override configurations.");
     }
 
     @Override
     public void setCollectionClass(Class collectionClass) {
-        // not supported for Core Cfg
+        throw new ConfigurationOperationNotAllowedException(
+                "Illegal to set collection class on the Core configuration, works only for override configurations");
+    }
+
+    @Override
+    public boolean canReuse() {
+        return false;
     }
 
 }

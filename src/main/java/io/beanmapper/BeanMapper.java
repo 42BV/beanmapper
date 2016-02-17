@@ -45,7 +45,7 @@ public class BeanMapper {
      */
     public <S, T> T map(S source, Class<T> targetClass) {
 
-        return (T)config()
+        return (T) config()
                 .setTargetClass(targetClass)
                 .setConverterChoosable(false)
                 .build()
@@ -65,7 +65,7 @@ public class BeanMapper {
     @SuppressWarnings("unchecked")
     public <S, T> T map(S source, Class<T> targetClass, boolean converterChoosable) {
 
-        return (T)config()
+        return (T) config()
                 .setTargetClass(targetClass)
                 .setConverterChoosable(converterChoosable)
                 .build()
@@ -86,7 +86,7 @@ public class BeanMapper {
     @SuppressWarnings("unchecked")
     public <S, T> T map(S source, Class<T> targetClass, BeanInitializer beanInitializer, boolean converterChoosable) {
 
-        return (T)config()
+        return (T) config()
                 .setTargetClass(targetClass)
                 .setBeanInitializer(beanInitializer)
                 .setConverterChoosable(converterChoosable)
@@ -106,7 +106,7 @@ public class BeanMapper {
     @SuppressWarnings("unchecked")
     public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass) {
 
-        return (Collection<T>)config()
+        return (Collection<T>) config()
                 .setTargetClass(targetClass)
                 .setCollectionClass(sourceItems.getClass())
                 .build()
@@ -126,7 +126,7 @@ public class BeanMapper {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass, Class<? extends Collection> collectionClass) {
 
-        return (Collection<T>)config()
+        return (Collection<T>) config()
                 .setTargetClass(targetClass)
                 .setCollectionClass(collectionClass)
                 .build()
@@ -144,7 +144,7 @@ public class BeanMapper {
      */
     public <S, T> T map(S source, T target) {
 
-        return (T)config()
+        return (T) config()
                 .setTarget(target)
                 .build()
             .map(source);
@@ -161,7 +161,7 @@ public class BeanMapper {
      */
     public <S, T> T map(S source, T target, MappableFields fieldsToMap) {
 
-        return (T)config()
+        return (T) config()
                 .setTarget(target)
                 .setMappableFields(fieldsToMap)
                 .build()
@@ -173,7 +173,11 @@ public class BeanMapper {
     }
 
     public BeanMapperBuilder config() {
-        return new BeanMapperBuilder(configuration);
+        return BeanMapperBuilder.config(configuration);
+    }
+
+    public BeanMapperBuilder wrapConfig() {
+        return BeanMapperBuilder.wrapConfig(configuration);
     }
 
 }

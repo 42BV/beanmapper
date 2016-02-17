@@ -16,6 +16,9 @@ import java.util.List;
 
 public class BeanMapperBuilder {
 
+    private static final boolean REUSE_CONFIGURATION = true;
+    private static final boolean WRAP_IN_NEW_CONFIGURATION = false;
+
     private final Configuration configuration;
 
     List<BeanConverter> customBeanConverters = new ArrayList<BeanConverter>();
@@ -24,8 +27,18 @@ public class BeanMapperBuilder {
         this.configuration = new CoreConfiguration();
     }
 
-    public BeanMapperBuilder(Configuration configuration) {
-        this.configuration = new OverrideConfiguration(configuration);
+    protected BeanMapperBuilder(Configuration configuration, boolean reuseConfiguration) {
+        this.configuration = reuseConfiguration && configuration.canReuse() ?
+                configuration :
+                new OverrideConfiguration(configuration);
+    }
+
+    public static BeanMapperBuilder config(Configuration configuration) {
+        return new BeanMapperBuilder(configuration, REUSE_CONFIGURATION);
+    }
+
+    public static BeanMapperBuilder wrapConfig(Configuration configuration) {
+        return new BeanMapperBuilder(configuration, WRAP_IN_NEW_CONFIGURATION);
     }
 
     public BeanMapperBuilder withoutDefaultConverters() {
@@ -88,21 +101,28 @@ public class BeanMapperBuilder {
         return this;
     }
 
+    public BeanMapperBuilder unsetCollectionClass() {
+        this.configuration.unsetCollectionClass();
+        return this;
+    }
+
     public BeanMapper build() {
         BeanMapper beanMapper = new BeanMapper(configuration);
+        // Custom bean converters must be registered before default ones
+        addCustomConverters(beanMapper);
         if (configuration.isAddDefaultConverters()) {
             addDefaultConverters(beanMapper);
         }
         return beanMapper;
     }
 
-    private void addDefaultConverters(BeanMapper beanMapper) {
-
-        // Custom bean converters must be registered before default ones
+    private void addCustomConverters(BeanMapper beanMapper) {
         for (BeanConverter customBeanConverter : customBeanConverters) {
             addConverter(beanMapper, customBeanConverter);
         }
+    }
 
+    private void addDefaultConverters(BeanMapper beanMapper) {
         addConverter(beanMapper, new PrimitiveConverter());
         addConverter(beanMapper, new StringToBooleanConverter());
         addConverter(beanMapper, new StringToIntegerConverter());
