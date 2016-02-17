@@ -21,6 +21,7 @@ public interface Configuration {
 
     SkippingBeanUnproxy getBeanUnproxy();
 
+    // @todo what was the thought behind this... NPE possible
     BeanMatchStore getBeanMatchStore();
 
     List<String> getPackagePrefixes();

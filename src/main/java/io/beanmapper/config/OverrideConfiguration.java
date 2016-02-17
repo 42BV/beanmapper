@@ -92,11 +92,13 @@ public class OverrideConfiguration implements Configuration {
         // not supported for override options
     }
 
+    // @todo how about multiple override configs here?
     @Override
     public Class getCollectionClass() {
         return collectionClass;
     }
 
+    // @todo make sure addConverter works for override
     @Override
     public void addConverter(BeanConverter converter) {
 //        if (beanConverters == null) {
