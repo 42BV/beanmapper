@@ -24,15 +24,15 @@ public class OverrideConfiguration extends AbstractConfiguration {
 
     private List<BeanConverter> beanConverters;
 
-    private Class targetClass;
+    private NullableField<Class> targetClass = new NullableField<Class>(null);
 
-    private Object target;
+    private NullableField<Object> target = new NullableField<Object>(null);
+
+    private NullableField<Class> collectionClass = new NullableField<Class>(null);
 
     private MappableFields mappableFields;
 
     private boolean converterChoosable = true;
-
-    private NullableField<Class> collectionClass = new NullableField<Class>(null);
 
     public OverrideConfiguration(Configuration configuration) {
         if (configuration == null) {
@@ -43,12 +43,17 @@ public class OverrideConfiguration extends AbstractConfiguration {
 
     @Override
     public Class getTargetClass() {
-        return targetClass == null ? parentConfiguration.getTargetClass() : targetClass;
+        return targetClass == null ? parentConfiguration.getTargetClass() : targetClass.get();
     }
 
     @Override
     public Object getTarget() {
-        return target == null ? parentConfiguration.getTarget() : target;
+        return target == null ? parentConfiguration.getTarget() : target.get();
+    }
+
+    @Override
+    public Class getCollectionClass() {
+        return collectionClass == null ? parentConfiguration.getCollectionClass() : collectionClass.get();
     }
 
     @Override
@@ -89,11 +94,6 @@ public class OverrideConfiguration extends AbstractConfiguration {
     @Override
     public void withoutDefaultConverters() {
         // not supported for override options
-    }
-
-    @Override
-    public Class getCollectionClass() {
-        return collectionClass == null ? parentConfiguration.getCollectionClass() : collectionClass.get();
     }
 
     // @todo make sure addConverter works for override
@@ -137,13 +137,18 @@ public class OverrideConfiguration extends AbstractConfiguration {
     }
 
     @Override
-    public void setTargetClass(Class targetClass) {
-        this.targetClass = targetClass;
+    public void setCollectionClass(Class collectionClass, boolean fallbackToParent) {
+        this.collectionClass = fallbackToParent ? null : new NullableField<Class>(collectionClass);
     }
 
     @Override
-    public void setTarget(Object target) {
-        this.target = target;
+    public void setTargetClass(Class targetClass, boolean fallbackToParent) {
+        this.targetClass = fallbackToParent ? null : new NullableField<Class>(targetClass);
+    }
+
+    @Override
+    public void setTarget(Object target, boolean fallbackToParent) {
+        this.target = fallbackToParent ? null : new NullableField<Object>(target);
     }
 
     @Override
@@ -154,11 +159,6 @@ public class OverrideConfiguration extends AbstractConfiguration {
     @Override
     public void setConverterChoosable(boolean converterChoosable) {
         this.converterChoosable = converterChoosable;
-    }
-
-    @Override
-    public void setCollectionClass(Class collectionClass) {
-        this.collectionClass = new NullableField<Class>(collectionClass);
     }
 
     @Override

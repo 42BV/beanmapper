@@ -38,6 +38,24 @@ public class BeanMapperBuilderTest {
         builder.setCollectionClass(null);
     }
 
+    @Test(expected = ConfigurationOperationNotAllowedException.class)
+    public void unsetCollectionClassOnCoreThrowsException() {
+        BeanMapperBuilder builder = new BeanMapperBuilder();
+        builder.unsetCollectionClass();
+    }
+
+    @Test(expected = ConfigurationOperationNotAllowedException.class)
+    public void unsetTargetClassOnCoreThrowsException() {
+        BeanMapperBuilder builder = new BeanMapperBuilder();
+        builder.unsetTargetClass();
+    }
+
+    @Test(expected = ConfigurationOperationNotAllowedException.class)
+    public void unsetTargetOnCoreThrowsException() {
+        BeanMapperBuilder builder = new BeanMapperBuilder();
+        builder.unsetTarget();
+    }
+
     @Test
     public void isConverterChoosableForCoreConfig() {
         BeanMapper beanMapper = new BeanMapperBuilder().build();
@@ -72,7 +90,7 @@ public class BeanMapperBuilderTest {
     @Test
     public void currentConfigOnCoreLeadsToOverrideConfig() {
         BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrapConfig
-        beanMapper = beanMapper.wrapConfig().build();
+        beanMapper = beanMapper.config().build(); // Wrap in an override config
         Object parentConfiguration = Deencapsulation.getField(beanMapper.getConfiguration(), "parentConfiguration");
         assertNotNull(parentConfiguration);
     }
@@ -80,7 +98,7 @@ public class BeanMapperBuilderTest {
     @Test
     public void currentConfigOnOverrideLeadsToExistingConfig() {
         BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrapConfig
-        beanMapper = beanMapper.wrapConfig().build(); // Wrap in an override config
+        beanMapper = beanMapper.config().build(); // Wrap in an override config
         Configuration currentConfiguration = beanMapper.getConfiguration();
         beanMapper = beanMapper.config().build(); // <<< explicitly fetch the existing configu
         assertEquals("The configuration must be the same as the one we already had",
@@ -90,11 +108,36 @@ public class BeanMapperBuilderTest {
     @Test
     public void newConfigOnOverrideLeadsToExistingConfig() {
         BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrapConfig
-        beanMapper = beanMapper.wrapConfig().build(); // Wrap in an override config
+        beanMapper = beanMapper.config().build(); // Wrap in an override config
         Configuration currentConfiguration = beanMapper.getConfiguration();
         beanMapper = beanMapper.wrapConfig().build(); // <<< explicitly wrap in an override config
         assertNotSame("The configuration must be a new one from the one we already had",
                 currentConfiguration, beanMapper.getConfiguration());
+    }
+
+    @Test
+    public void cleanConfig() {
+        BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrapConfig
+        beanMapper = wrapAndSetFieldsForSingleRun(beanMapper);
+        beanMapper = wrapAndSetFieldsForSingleRun(beanMapper); // Wrap it twice to make sure we have a parent
+                                                               // override config with the fields all set
+        assertNotNull("Container class must be set", beanMapper.getConfiguration().getCollectionClass());
+        assertNotNull("Target class must be set", beanMapper.getConfiguration().getTargetClass());
+        assertNotNull("Target must be set", beanMapper.getConfiguration().getTarget());
+
+        beanMapper = beanMapper.clear().build();
+        assertNull("Container class must be cleared", beanMapper.getConfiguration().getCollectionClass());
+        assertNull("Target class must be cleared", beanMapper.getConfiguration().getTargetClass());
+        assertNull("Target must be cleared", beanMapper.getConfiguration().getTarget());
+    }
+
+    private BeanMapper wrapAndSetFieldsForSingleRun(BeanMapper beanMapper) {
+        return beanMapper
+                .wrapConfig()
+                .setTargetClass(String.class)
+                .setTarget("Hello world!")
+                .setCollectionClass(String.class)
+                .build(); // Wrap in an override config
     }
 
 }

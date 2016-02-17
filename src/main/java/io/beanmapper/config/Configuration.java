@@ -77,11 +77,11 @@ public interface Configuration {
 
     void setTarget(Object target);
 
+    void setCollectionClass(Class collectionClass);
+
     void setMappableFields(MappableFields mappableFields);
 
     void setConverterChoosable(boolean converterChoosable);
-
-    void setCollectionClass(Class collectionClass);
 
     /**
      * Unsetting a collection class, means that the current collection class will be removed,

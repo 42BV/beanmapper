@@ -172,6 +172,14 @@ public class BeanMapper {
         return configuration;
     }
 
+    public BeanMapperBuilder clear() {
+        return BeanMapperBuilder
+                .config(configuration)
+                .setCollectionClass(null)
+                .setTargetClass(null)
+                .setTarget(null);
+    }
+
     public BeanMapperBuilder config() {
         return BeanMapperBuilder.config(configuration);
     }

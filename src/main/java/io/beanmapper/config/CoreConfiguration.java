@@ -135,18 +135,6 @@ public class CoreConfiguration extends AbstractConfiguration {
     }
 
     @Override
-    public void setTargetClass(Class targetClass) {
-        throw new ConfigurationOperationNotAllowedException(
-                "Illegal to set target class on the Core configuration, works only for override configurations");
-    }
-
-    @Override
-    public void setTarget(Object target) {
-        throw new ConfigurationOperationNotAllowedException(
-                "Illegal to set a target instance on the Core configuration, works only for override configurations");
-    }
-
-    @Override
     public void setMappableFields(MappableFields mappableFields) {
         throw new ConfigurationOperationNotAllowedException(
                 "Illegal to set mappable fields on the Core configuration, works only for override configurations");
@@ -159,9 +147,21 @@ public class CoreConfiguration extends AbstractConfiguration {
     }
 
     @Override
-    public void setCollectionClass(Class collectionClass) {
+    public void setCollectionClass(Class collectionClass, boolean fallbackToParent) {
         throw new ConfigurationOperationNotAllowedException(
-                "Illegal to set collection class on the Core configuration, works only for override configurations");
+                "Illegal to set a target instance on the Core configuration, works only for override configurations");
+    }
+
+    @Override
+    public void setTargetClass(Class targetClass, boolean fallbackToParent) {
+        throw new ConfigurationOperationNotAllowedException(
+                "Illegal to set target class on the Core configuration, works only for override configurations");
+    }
+
+    @Override
+    public void setTarget(Object target, boolean fallbackToParent) {
+        throw new ConfigurationOperationNotAllowedException(
+                "Illegal to set a target instance on the Core configuration, works only for override configurations");
     }
 
     @Override

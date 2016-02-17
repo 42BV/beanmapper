@@ -106,6 +106,16 @@ public class BeanMapperBuilder {
         return this;
     }
 
+    public BeanMapperBuilder unsetTargetClass() {
+        this.configuration.unsetTargetClass();
+        return this;
+    }
+
+    public BeanMapperBuilder unsetTarget() {
+        this.configuration.unsetTarget();
+        return this;
+    }
+
     public BeanMapper build() {
         BeanMapper beanMapper = new BeanMapper(configuration);
         // Custom bean converters must be registered before default ones
