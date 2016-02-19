@@ -175,6 +175,7 @@ public class BeanMapper {
     public BeanMapperBuilder clear() {
         return BeanMapperBuilder
                 .config(configuration)
+                .setIncludeFields(null)
                 .setCollectionClass(null)
                 .setTargetClass(null)
                 .setTarget(null);

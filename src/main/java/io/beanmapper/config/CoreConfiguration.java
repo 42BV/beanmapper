@@ -44,6 +44,9 @@ public class CoreConfiguration implements Configuration {
     private boolean addDefaultConverters = true;
 
     @Override
+    public List<String> getIncludeFields() { return null; }
+
+    @Override
     public Class getTargetClass() {
         return null;
     }
@@ -144,6 +147,12 @@ public class CoreConfiguration implements Configuration {
     public void setConverterChoosable(boolean converterChoosable) {
         throw new BeanConfigurationOperationNotAllowedException(
                 "Illegal to set whether the converter is choosable on the Core configuration, works only for override configurations.");
+    }
+
+    @Override
+    public void setIncludeFields(List<String> includeFields) {
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to set a include fields on the Core configuration, works only for override configurations");
     }
 
     @Override

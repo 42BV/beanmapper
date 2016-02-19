@@ -24,6 +24,8 @@ public class OverrideConfiguration implements Configuration {
 
     private List<BeanConverter> beanConverters;
 
+    private List<String> includeFields;
+
     private Class targetClass;
 
     private Object target;
@@ -39,6 +41,11 @@ public class OverrideConfiguration implements Configuration {
             throw new RuntimeException("Developer error: the parent configuration may not be null");
         }
         this.parentConfiguration = configuration;
+    }
+
+    @Override
+    public List<String> getIncludeFields() {
+        return includeFields;
     }
 
     @Override
@@ -134,6 +141,11 @@ public class OverrideConfiguration implements Configuration {
     @Override
     public boolean isAddDefaultConverters() {
         return false;
+    }
+
+    @Override
+    public void setIncludeFields(List<String> includeFields) {
+        this.includeFields = includeFields;
     }
 
     @Override

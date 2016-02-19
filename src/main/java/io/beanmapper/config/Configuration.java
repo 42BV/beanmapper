@@ -12,6 +12,15 @@ import java.util.List;
 public interface Configuration {
 
     /**
+     * When include fields are passed, BeanMapper will assume that the generation (or reuse)
+     * of a dynamic class is required. For this, DynamicBeanMapper is used. Note that
+     * include fields is a marker field which impact the selection of the mapping strategy.
+     * Include fields never refer to the parent configuration.
+     * @return the fields to include in the target
+     */
+    List<String> getIncludeFields();
+
+    /**
      * The class that represents the collection itself. Used to instantiate a collection.
      * Note that collection class is a marker field which impact the selection of the mapping
      * strategy. Collection class never refers to the parent configuration.
@@ -99,8 +108,16 @@ public interface Configuration {
     void setConverterChoosable(boolean converterChoosable);
 
     /**
+     * Sets the only fields that are allowed in the target class. If the include fields are set,
+     * it impacts the usage of the mapping strategy. Note that getting this field never refers to
+     * the parent configuration.
+     * @param includeFields
+     */
+    void setIncludeFields(List<String> includeFields);
+
+    /**
      * Sets the collection class of the collection. Used to instantiate the collection. If the
-     * collection class is set, it impact the usage of the mapping strategy. Note that getting
+     * collection class is set, it impacts the usage of the mapping strategy. Note that getting
      * this field never refers to the parent configuration.
      * @param collectionClass the class type of the collection
      */

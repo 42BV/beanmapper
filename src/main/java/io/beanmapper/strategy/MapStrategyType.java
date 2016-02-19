@@ -5,6 +5,12 @@ import io.beanmapper.config.Configuration;
 import io.beanmapper.exceptions.BeanNoTargetException;
 
 public enum MapStrategyType {
+    CREATE_DYNAMIC_CLASS() {
+        @Override
+        public MapStrategy generateMapStrategy(BeanMapper beanMapper, Configuration configuration) {
+            return new MapToDynamicClassStrategy(beanMapper, configuration);
+        }
+    },
     MAP_COLLECTION() {
         @Override
         public MapStrategy generateMapStrategy(BeanMapper beanMapper, Configuration configuration) {
@@ -29,7 +35,9 @@ public enum MapStrategyType {
     }
 
     public static MapStrategyType determineStrategy(Configuration configuration) {
-        if (configuration.getCollectionClass() != null) {
+        if (configuration.getIncludeFields() != null) {
+            return CREATE_DYNAMIC_CLASS;
+        } else if (configuration.getCollectionClass() != null) {
             return MAP_COLLECTION;
         } else if (configuration.getTargetClass() != null) {
             return MAP_TO_CLASS;

@@ -76,6 +76,16 @@ public class BeanMapperBuilder {
         return this;
     }
 
+    public BeanMapperBuilder setIncludeFields(List<String> includeFields) {
+        this.configuration.setIncludeFields(includeFields);
+        return this;
+    }
+
+    public BeanMapperBuilder setCollectionClass(Class collectionClass) {
+        this.configuration.setCollectionClass(collectionClass);
+        return this;
+    }
+
     public BeanMapperBuilder setTargetClass(Class targetClass) {
         this.configuration.setTargetClass(targetClass);
         return this;
@@ -93,11 +103,6 @@ public class BeanMapperBuilder {
 
     public BeanMapperBuilder setConverterChoosable(boolean converterChoosable) {
         this.configuration.setConverterChoosable(converterChoosable);
-        return this;
-    }
-
-    public BeanMapperBuilder setCollectionClass(Class collectionClass) {
-        this.configuration.setCollectionClass(collectionClass);
         return this;
     }
 
