@@ -25,7 +25,9 @@ public class MapToClassStrategy extends MapToInstanceStrategy {
         }
 
         final BeanMatch beanMatch = getBeanMatch(source.getClass(), targetClass);
-        final Object target = getConfiguration().getBeanInitializer().instantiate(targetClass, getConstructorArguments(source, beanMatch));
+        final Object target = getConfiguration().getBeanInitializer().instantiate(
+                targetClass,
+                getConstructorArguments(source, beanMatch));
 
         return map(source, target, beanMatch);
     }

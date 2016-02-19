@@ -11,8 +11,27 @@ import java.util.List;
 
 public interface Configuration {
 
+    /**
+     * The class that represents the collection itself. Used to instantiate a collection.
+     * Note that collection class is a marker field which impact the selection of the mapping
+     * strategy. Collection class never refers to the parent configuration.
+     * @return class of the collection
+     */
+    Class getCollectionClass();
+
+    /**
+     * The class that represents the target class. Used to instantiate a target for the mapping.
+     * Note that target class is a marker field which impact the selection of the mapping
+     * strategy. Target class never refers to the parent configuration.
+     * @return class of the target
+     */
     Class getTargetClass();
 
+    /**
+     * The target to map to. Note that collection class is a marker field which impact the
+     * selection of the mapping strategy. Target never refers to the parent configuration.
+     * @return class of the collection
+     */
     Object getTarget();
 
     MappableFields getMappableFields();
@@ -21,6 +40,10 @@ public interface Configuration {
 
     SkippingBeanUnproxy getBeanUnproxy();
 
+    /**
+     * Always use the CoreConfiguration beanmatch store
+     * @return the one beanmatch store
+     */
     BeanMatchStore getBeanMatchStore();
 
     List<String> getPackagePrefixes();
@@ -30,8 +53,6 @@ public interface Configuration {
     boolean isConverterChoosable();
 
     void withoutDefaultConverters();
-
-    Class getCollectionClass();
 
     /**
      * Add a converter class (must inherit from abstract BeanConverter class) to the beanMapper.
@@ -73,36 +94,32 @@ public interface Configuration {
 
     boolean isAddDefaultConverters();
 
-    void setTargetClass(Class targetClass);
-
-    void setTarget(Object target);
-
-    void setCollectionClass(Class collectionClass);
-
     void setMappableFields(MappableFields mappableFields);
 
     void setConverterChoosable(boolean converterChoosable);
 
     /**
-     * Unsetting a collection class, means that the current collection class will be removed,
-     * so that the collection class of the parent configuration is used. If you need to
-     * explicitly set the collection class to null, use setCollectionClass instead.
+     * Sets the collection class of the collection. Used to instantiate the collection. If the
+     * collection class is set, it impact the usage of the mapping strategy. Note that getting
+     * this field never refers to the parent configuration.
+     * @param collectionClass the class type of the collection
      */
-    void unsetCollectionClass();
+    void setCollectionClass(Class collectionClass);
 
     /**
-     * Unsetting a target class, means that the current target class will be removed,
-     * so that the target class of the parent configuration is used. If you need to
-     * explicitly set the target class to null, use setTargetClass instead.
+     * Sets the target class. Used to instantiate the target. If this class is set, it impact
+     * the usage of the mapping strategy. Note that getting this field never refers to the
+     * parent configuration.
+     * @param targetClass the class type of the target
      */
-    void unsetTargetClass();
+    void setTargetClass(Class targetClass);
 
     /**
-     * Unsetting a target, means that the current target will be removed, so that the
-     * target of the parent configuration is used. If you need to explicitly set the
-     * target to null, use setTarget instead.
+     * Sets the target. If the target is set, it impact the usage of the mapping strategy.
+     * Note that getting this field never refers to the parent configuration.
+     * @param target the target instance to map to
      */
-    void unsetTarget();
+    void setTarget(Object target);
 
     /**
      * Used to determine whether the configuration can be reused and modified (Override config)

@@ -13,7 +13,7 @@ import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CoreConfiguration extends AbstractConfiguration {
+public class CoreConfiguration implements Configuration {
 
     /**
      * Initializes the beans.
@@ -147,19 +147,19 @@ public class CoreConfiguration extends AbstractConfiguration {
     }
 
     @Override
-    public void setCollectionClass(Class collectionClass, boolean fallbackToParent) {
+    public void setCollectionClass(Class collectionClass) {
         throw new BeanConfigurationOperationNotAllowedException(
                 "Illegal to set a target instance on the Core configuration, works only for override configurations");
     }
 
     @Override
-    public void setTargetClass(Class targetClass, boolean fallbackToParent) {
+    public void setTargetClass(Class targetClass) {
         throw new BeanConfigurationOperationNotAllowedException(
                 "Illegal to set target class on the Core configuration, works only for override configurations");
     }
 
     @Override
-    public void setTarget(Object target, boolean fallbackToParent) {
+    public void setTarget(Object target) {
         throw new BeanConfigurationOperationNotAllowedException(
                 "Illegal to set a target instance on the Core configuration, works only for override configurations");
     }

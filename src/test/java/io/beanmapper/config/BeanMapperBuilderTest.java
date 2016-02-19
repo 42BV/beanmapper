@@ -39,24 +39,6 @@ public class BeanMapperBuilderTest {
         builder.setCollectionClass(null);
     }
 
-    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
-    public void unsetCollectionClassOnCoreThrowsException() {
-        BeanMapperBuilder builder = new BeanMapperBuilder();
-        builder.unsetCollectionClass();
-    }
-
-    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
-    public void unsetTargetClassOnCoreThrowsException() {
-        BeanMapperBuilder builder = new BeanMapperBuilder();
-        builder.unsetTargetClass();
-    }
-
-    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
-    public void unsetTargetOnCoreThrowsException() {
-        BeanMapperBuilder builder = new BeanMapperBuilder();
-        builder.unsetTarget();
-    }
-
     @Test
     public void isConverterChoosableForCoreConfig() {
         BeanMapper beanMapper = new BeanMapperBuilder().build();

@@ -12,7 +12,7 @@ import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OverrideConfiguration extends AbstractConfiguration {
+public class OverrideConfiguration implements Configuration {
 
     private final Configuration parentConfiguration;
 
@@ -24,11 +24,11 @@ public class OverrideConfiguration extends AbstractConfiguration {
 
     private List<BeanConverter> beanConverters;
 
-    private NullableField<Class> targetClass = new NullableField<Class>(null);
+    private Class targetClass;
 
-    private NullableField<Object> target = new NullableField<Object>(null);
+    private Object target;
 
-    private NullableField<Class> collectionClass = new NullableField<Class>(null);
+    private Class collectionClass;
 
     private MappableFields mappableFields;
 
@@ -42,18 +42,18 @@ public class OverrideConfiguration extends AbstractConfiguration {
     }
 
     @Override
+    public Class getCollectionClass() {
+        return collectionClass;
+    }
+
+    @Override
     public Class getTargetClass() {
-        return targetClass == null ? parentConfiguration.getTargetClass() : targetClass.get();
+        return targetClass;
     }
 
     @Override
     public Object getTarget() {
-        return target == null ? parentConfiguration.getTarget() : target.get();
-    }
-
-    @Override
-    public Class getCollectionClass() {
-        return collectionClass == null ? parentConfiguration.getCollectionClass() : collectionClass.get();
+        return target;
     }
 
     @Override
@@ -137,18 +137,18 @@ public class OverrideConfiguration extends AbstractConfiguration {
     }
 
     @Override
-    public void setCollectionClass(Class collectionClass, boolean fallbackToParent) {
-        this.collectionClass = fallbackToParent ? null : new NullableField<Class>(collectionClass);
+    public void setCollectionClass(Class collectionClass) {
+        this.collectionClass = collectionClass;
     }
 
     @Override
-    public void setTargetClass(Class targetClass, boolean fallbackToParent) {
-        this.targetClass = fallbackToParent ? null : new NullableField<Class>(targetClass);
+    public void setTargetClass(Class targetClass) {
+        this.targetClass = targetClass;
     }
 
     @Override
-    public void setTarget(Object target, boolean fallbackToParent) {
-        this.target = fallbackToParent ? null : new NullableField<Object>(target);
+    public void setTarget(Object target) {
+        this.target = target;
     }
 
     @Override
