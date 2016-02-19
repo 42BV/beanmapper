@@ -8,8 +8,8 @@ import io.beanmapper.core.rule.MappableFields;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
+import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -136,31 +136,31 @@ public class CoreConfiguration extends AbstractConfiguration {
 
     @Override
     public void setMappableFields(MappableFields mappableFields) {
-        throw new ConfigurationOperationNotAllowedException(
+        throw new BeanConfigurationOperationNotAllowedException(
                 "Illegal to set mappable fields on the Core configuration, works only for override configurations");
     }
 
     @Override
     public void setConverterChoosable(boolean converterChoosable) {
-        throw new ConfigurationOperationNotAllowedException(
+        throw new BeanConfigurationOperationNotAllowedException(
                 "Illegal to set whether the converter is choosable on the Core configuration, works only for override configurations.");
     }
 
     @Override
     public void setCollectionClass(Class collectionClass, boolean fallbackToParent) {
-        throw new ConfigurationOperationNotAllowedException(
+        throw new BeanConfigurationOperationNotAllowedException(
                 "Illegal to set a target instance on the Core configuration, works only for override configurations");
     }
 
     @Override
     public void setTargetClass(Class targetClass, boolean fallbackToParent) {
-        throw new ConfigurationOperationNotAllowedException(
+        throw new BeanConfigurationOperationNotAllowedException(
                 "Illegal to set target class on the Core configuration, works only for override configurations");
     }
 
     @Override
     public void setTarget(Object target, boolean fallbackToParent) {
-        throw new ConfigurationOperationNotAllowedException(
+        throw new BeanConfigurationOperationNotAllowedException(
                 "Illegal to set a target instance on the Core configuration, works only for override configurations");
     }
 

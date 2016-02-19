@@ -1,6 +1,7 @@
 package io.beanmapper.config;
 
 import io.beanmapper.BeanMapper;
+import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
 import mockit.Deencapsulation;
 import org.junit.Test;
 
@@ -8,49 +9,49 @@ import static org.junit.Assert.*;
 
 public class BeanMapperBuilderTest {
 
-    @Test(expected = ConfigurationOperationNotAllowedException.class)
+    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
     public void setTargetClassOnCoreThrowsException() {
         BeanMapperBuilder builder = new BeanMapperBuilder();
         builder.setTargetClass(null);
     }
 
-    @Test(expected = ConfigurationOperationNotAllowedException.class)
+    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
     public void setTargetOnCoreThrowsException() {
         BeanMapperBuilder builder = new BeanMapperBuilder();
         builder.setTarget(null);
     }
 
-    @Test(expected = ConfigurationOperationNotAllowedException.class)
+    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
     public void setMappableFieldsOnCoreThrowsException() {
         BeanMapperBuilder builder = new BeanMapperBuilder();
         builder.setMappableFields(null);
     }
 
-    @Test(expected = ConfigurationOperationNotAllowedException.class)
+    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
     public void setConverterChoosableOnCoreThrowsException() {
         BeanMapperBuilder builder = new BeanMapperBuilder();
         builder.setConverterChoosable(false);
     }
 
-    @Test(expected = ConfigurationOperationNotAllowedException.class)
+    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
     public void setCollectionClassOnCoreThrowsException() {
         BeanMapperBuilder builder = new BeanMapperBuilder();
         builder.setCollectionClass(null);
     }
 
-    @Test(expected = ConfigurationOperationNotAllowedException.class)
+    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
     public void unsetCollectionClassOnCoreThrowsException() {
         BeanMapperBuilder builder = new BeanMapperBuilder();
         builder.unsetCollectionClass();
     }
 
-    @Test(expected = ConfigurationOperationNotAllowedException.class)
+    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
     public void unsetTargetClassOnCoreThrowsException() {
         BeanMapperBuilder builder = new BeanMapperBuilder();
         builder.unsetTargetClass();
     }
 
-    @Test(expected = ConfigurationOperationNotAllowedException.class)
+    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
     public void unsetTargetOnCoreThrowsException() {
         BeanMapperBuilder builder = new BeanMapperBuilder();
         builder.unsetTarget();
