@@ -1,5 +1,8 @@
 # Beanmapper
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper)
+[![Javadoc](https://javadoc-emblem.rhcloud.com/doc/io.beanmapper/beanmapper/badge.svg)](http://www.javadoc.io/doc/io.beanmapper/beanmapper)
+
 Beanmapper is a Java library for mapping dissimilar Java classes with similar names. The use
 cases for Beanmapper are the following:
 * mapping from forms to entities, because:
