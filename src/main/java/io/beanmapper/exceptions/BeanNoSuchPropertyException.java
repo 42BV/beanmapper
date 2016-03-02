@@ -9,9 +9,9 @@ package io.beanmapper.exceptions;
  * @author Jeroen van Schagen
  * @since Jun 24, 2015
  */
-public class NoSuchPropertyException extends IllegalArgumentException {
+public class BeanNoSuchPropertyException extends IllegalArgumentException {
     
-    public NoSuchPropertyException(String message) {
+    public BeanNoSuchPropertyException(String message) {
         super(message);
     }
     

@@ -5,9 +5,8 @@ import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
 import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessors;
-import io.beanmapper.exceptions.BeanInstantiationException;
 import io.beanmapper.exceptions.BeanMappingException;
-import io.beanmapper.exceptions.NoSuchPropertyException;
+import io.beanmapper.exceptions.BeanNoSuchPropertyException;
 import io.beanmapper.utils.ConstructorArguments;
 import io.beanmapper.utils.DefaultValues;
 
@@ -151,7 +150,7 @@ public class BeanField {
         for (String node : route.getRoute()) {
             final PropertyAccessor property = PropertyAccessors.findProperty(baseClass, node);
             if (property == null) {
-                throw new NoSuchPropertyException("Property '" + node + "' does not exist in: " + baseClass.getSimpleName());
+                throw new BeanNoSuchPropertyException("Property '" + node + "' does not exist in: " + baseClass.getSimpleName());
             }
             beanFields.push(new BeanField(node, property));
             baseClass = property.getType();

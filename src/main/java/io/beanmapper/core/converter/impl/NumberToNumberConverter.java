@@ -7,6 +7,7 @@ import io.beanmapper.BeanMapper;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.converter.BeanMapperAware;
+import io.beanmapper.exceptions.BeanConversionException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -46,10 +47,10 @@ public class NumberToNumberConverter implements BeanConverter, BeanMapperAware {
         if (source == null || source.getClass().equals(targetClass) || (beanFieldMatch != null && beanFieldMatch.getSourceClass().equals(targetClass))) {
             return source;
         }
-        Object sourceAsString = beanMapper.convert(source, String.class, beanFieldMatch);
-        return beanMapper.convert(sourceAsString, targetClass, beanFieldMatch);
+        Object sourceAsString = beanMapper.map(source, String.class, true);
+        return beanMapper.map(sourceAsString, targetClass, true);
     }
-    
+
     /**
      * {@inheritDoc}
      */

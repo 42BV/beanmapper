@@ -1,5 +1,6 @@
 package io.beanmapper;
 
+import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
 import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
 import io.beanmapper.core.converter.impl.NestedSourceClassToNestedTargetClassConverter;
@@ -92,13 +93,14 @@ public class BeanMapperTest {
     
     @Before
     public void prepareBeanMapper() {
-        beanMapper = new BeanMapper();
-        beanMapper.addPackagePrefix(BeanMapper.class);
-        beanMapper.addConverter(new LocalDateTimeToLocalDate());
-        beanMapper.addConverter(new LocalDateToLocalDateTime());
-        beanMapper.addConverter(new ObjectToStringConverter());
-        beanMapper.addConverter(new NestedSourceClassToNestedTargetClassConverter());
-        beanMapper.addProxySkipClass(Enum.class);
+        beanMapper = new BeanMapperBuilder()
+                .addPackagePrefix(BeanMapper.class)
+                .addConverter(new LocalDateTimeToLocalDate())
+                .addConverter(new LocalDateToLocalDateTime())
+                .addConverter(new ObjectToStringConverter())
+                .addConverter(new NestedSourceClassToNestedTargetClassConverter())
+                .addProxySkipClass(Enum.class)
+                .build();
     }
 
     @Test

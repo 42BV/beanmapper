@@ -5,7 +5,7 @@ import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
 import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessors;
 import io.beanmapper.exceptions.BeanMissingPathException;
-import io.beanmapper.exceptions.NoSuchPropertyException;
+import io.beanmapper.exceptions.BeanNoSuchPropertyException;
 
 import java.util.List;
 import java.util.Map;
@@ -80,7 +80,7 @@ public class BeanMatchStore {
             BeanField currentBeanField = null;
             try {
                 currentBeanField = BeanField.determineNodesForPath(ourType, accessor.getName(), prefixingBeanField);
-            } catch (NoSuchPropertyException e) {
+            } catch (BeanNoSuchPropertyException e) {
                 throw new BeanMissingPathException(ourType, accessor.getName(), e);
             }
 
@@ -121,7 +121,7 @@ public class BeanMatchStore {
             // If the field is referred to by a path, store the custom field in the other map
             try {
                 otherNodes.put(name, BeanField.determineNodesForPath(otherType, name, null));
-            } catch (NoSuchPropertyException err) {
+            } catch (BeanNoSuchPropertyException err) {
                 // Acceptable, might have been tagged as @BeanProperty as well
             }
         }
