@@ -2,7 +2,6 @@ package io.beanmapper.strategy;
 
 import io.beanmapper.BeanMapper;
 import io.beanmapper.annotations.BeanCollection;
-import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.config.Configuration;
 import io.beanmapper.dynclass.GeneratedClass;
 import io.beanmapper.dynclass.Node;
@@ -47,7 +46,11 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
         }
 
         // generate or reuse a dynamic class
-        final Class dynamicClass = getOrCreateGeneratedClass(getConfiguration().getTargetClass(), includeFields).generatedClass;
+        Class targetClass = getConfiguration().getTargetClass();
+        if (targetClass == null) {
+            targetClass = getConfiguration().getTarget().getClass();
+        }
+        final Class dynamicClass = getOrCreateGeneratedClass(targetClass, includeFields).generatedClass;
 
         // If no collection class is set, but we are dealing with a collection class, make sure it is set
         Class collectionClass = getConfiguration().getCollectionClass();

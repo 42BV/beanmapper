@@ -800,10 +800,12 @@ public class BeanMapperTest {
         target.nested.nestedInt = 2;
         target.nested.nestedName = "targetNestedName";
 
-        beanMapper.wrapConfig()
+        Object generatedTarget = beanMapper.wrapConfig()
                 .setIncludeFields(Arrays.asList("name", "nested", "nested.nestedName"))
                 .build()
                 .map(source, target);
+
+        target = beanMapper.map(generatedTarget, target);
 
         assertEquals(1, target.id, 0); // Not mapped
         assertEquals(source.name, target.name); // Overwritten
