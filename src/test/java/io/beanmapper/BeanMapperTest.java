@@ -80,10 +80,7 @@ import org.junit.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -777,6 +774,37 @@ public class BeanMapperTest {
         target.nested.nestedName = "targetNestedName";
 
         beanMapper.map(source, target, new MappableFields("name", "nested", "nested.nestedName"));
+        assertEquals(1, target.id, 0); // Not mapped
+        assertEquals(source.name, target.name); // Overwritten
+        assertEquals(2, target.nested.nestedInt, 0); // Not mapped
+        assertEquals(source.nested.nestedName, target.nested.nestedName); // Overwritten
+    }
+
+    @Test
+    public void sourceToTargetWithRuleOnlyNamesWrapConfig() {
+        // First normal mapping
+        sourceToTargetWithRule();
+
+        // Second only names mapping
+        SourceWithRule source = new SourceWithRule();
+        source.id = null;
+        source.name = "Name";
+        source.nested = new NestedWithRule();
+        source.nested.nestedInt = null;
+        source.nested.nestedName = "NestedName";
+
+        TargetWithRule target = new TargetWithRule();
+        target.id = 1;
+        target.name = "targetName";
+        target.nested = new NestedWithRule();
+        target.nested.nestedInt = 2;
+        target.nested.nestedName = "targetNestedName";
+
+        beanMapper.wrapConfig()
+                .setIncludeFields(Arrays.asList("name", "nested", "nested.nestedName"))
+                .build()
+                .map(source, target);
+
         assertEquals(1, target.id, 0); // Not mapped
         assertEquals(source.name, target.name); // Overwritten
         assertEquals(2, target.nested.nestedInt, 0); // Not mapped
