@@ -22,14 +22,15 @@ public class MapCollectionStrategy extends AbstractMapStrategy {
         // When mapping a collection, a new target class must be passed. Therefore the current BeanMapper
         // is wrapped in an override configuration containing i) a reference to the target class and ii)
         // without a container class.
-        BeanMapper nestedBeanMapper = getBeanMapper()
-                .wrapConfig()
-                .setTargetClass(getConfiguration().getTargetClass())
-                .build();
-
+        Class targetClass = getConfiguration().getTargetClass();
         for (Object item : (Collection)source) {
+            BeanMapper nestedBeanMapper = getBeanMapper()
+                    .wrapConfig()
+                    .setTargetClass(targetClass)
+                    .build();
             targetItems.add(nestedBeanMapper.map(item));
         }
+
         return targetItems;
     }
 
