@@ -206,6 +206,26 @@ public class BeanMapperTest {
     }
 
     @Test
+    public void mapListCollectionWithNested() {
+        List<Address> sourceItems = new ArrayList<Address>();
+        sourceItems.add(new Address("Koraalrood", 1, "Nederland"));
+        sourceItems.add(new Address("ComputerStraat", 1, "Duitsland"));
+        sourceItems.add(new Address("InternetWeg", 1, "Belgie"));
+        sourceItems.add(new Address("MuisLaan", 1, "Frankrijk"));
+
+        List<ResultAddress> targetItems = (List<ResultAddress>) beanMapper.map(sourceItems, ResultAddress.class);
+        assertEquals("Koraalrood", targetItems.get(0).getStreet());
+        assertEquals("ComputerStraat", targetItems.get(1).getStreet());
+        assertEquals("InternetWeg", targetItems.get(2).getStreet());
+        assertEquals("MuisLaan", targetItems.get(3).getStreet());
+
+        assertEquals("Nederland", targetItems.get(0).getCountry().getCountryName());
+        assertEquals("Duitsland", targetItems.get(1).getCountry().getCountryName());
+        assertEquals("Belgie", targetItems.get(2).getCountry().getCountryName());
+        assertEquals("Frankrijk", targetItems.get(3).getCountry().getCountryName());
+    }
+
+    @Test
     public void mapListCollectionInContainerAndClearTheContainer() {
         CollectionListSource source = new CollectionListSource();
         source.items.add(createPerson("Jan"));
@@ -795,5 +815,4 @@ public class BeanMapperTest {
         house.setAddress(address);
         return house;
     }
-
 }

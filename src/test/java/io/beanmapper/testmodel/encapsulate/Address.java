@@ -6,6 +6,15 @@ public class Address {
     private int number;
     private Country country;
 
+    public Address() {
+    }
+
+    public Address(String street, int number, String countryName) {
+        this.street = street;
+        this.number = number;
+        this.country = new Country(countryName);
+    }
+
     public String getStreet() {
         return street;
     }
