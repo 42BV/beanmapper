@@ -28,13 +28,13 @@ $(document).ready(function () {
      * Function that handles highlighting of menu items.
      */
     $(window).scroll(function () {
-        var windowPos = $(window).scrollTop();
+        var windowPos = $(window).scrollTop()+50; // Look 50px ahead
 
         menu.find("a").each(function() {
             var sectionByLink = $($(this).attr('href'));
             var divPos = sectionByLink.offset().top;
             var divHeight = sectionByLink.height();
-            if (windowPos >= divPos && windowPos < (divPos + divHeight)) {
+            if (divPos <= windowPos && (divPos + divHeight) > windowPos) {
                 $(this).addClass("active");
             } else {
                 $(this).removeClass("active");
