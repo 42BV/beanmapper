@@ -1,0 +1,50 @@
+header {
+    text-align: center;
+    background-color: #dcdcdc;
+    margin-bottom: 35px;
+}
+
+section {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+}
+
+section>.section-title {
+    padding: 10px 15px;
+    border-bottom: 1px solid #ddd;
+    background-color: #dcdcdc;
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 16px;
+}
+
+section>.section-body {
+    padding: 15px;
+}
+
+.stick {
+    position: fixed;
+    top: 0;
+    z-index: 10000;
+    margin-top:12px;
+}
+
+.col-xs-3>.stick {
+    width: 25%;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+#menu .list-group-item {
+    border: none;
+    padding: 5px 15px;
+}
+
+#menu .panel-heading {
+    padding: 5px 15px;
+    background-color: #dcdcdc;
+}
+
+#menu .panel-title {
+    font-size: inherit;
+}

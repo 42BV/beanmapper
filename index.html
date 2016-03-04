@@ -1,205 +1,129 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
 
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+  <link rel="stylesheet" href="styles/bootstrap.min.css">
+  <link rel="stylesheet" href="styles/main.css">
 
-    <title>Beanmapper by 42BV</title>
-  </head>
+  <title>Beanmapper by 42BV</title>
+</head>
 
-  <body>
+<body>
 
-    <header>
-      <div class="container">
-        <h1>Beanmapper</h1>
-        <h2>Library for converting from one Java class to a dissimilar Java class with similar names based on the Bean convention</h2>
+<header class="container-fluid">
+  <div class="row">
+    <div class="col-xs-12">
+      <h1>Beanmapper</h1>
+      <h2>Library for converting from one Java class to a dissimilar Java class <br>with similar names based on the Bean
+        convention</h2>
 
-        <section id="downloads">
-          <a href="https://github.com/42BV/beanmapper/zipball/master" class="btn">Download as .zip</a>
-          <a href="https://github.com/42BV/beanmapper/tarball/master" class="btn">Download as .tar.gz</a>
-          <a href="https://github.com/42BV/beanmapper" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
-        </section>
-      </div>
-    </header>
-
-    <div class="container">
-      <section id="main_content">
-        <h1>
-          <a id="user-content-beanmapper" class="anchor" href="#beanmapper" aria-hidden="true"><span class="octicon octicon-link"></span></a>Beanmapper</h1>
-
-        <p>Beanmapper is a Java library for mapping dissimilar Java classes with similar names. The use
-          cases for Beanmapper are the following:</p>
-
-        <ul>
-          <li>mapping from forms to entities, because:
-
-            <ul>
-              <li>for security reasons you want to accept only a limited number of fields as input</li>
-              <li>the form fields are simplified to support frontend processing</li>
-            </ul>
-          </li>
-          <li>mapping from entities to results, because:
-
-            <ul>
-              <li>you want to simplify the result for frontend processing</li>
-              <li>you want to expose a limited number of fields for security reasons</li>
-            </ul>
-          </li>
-        </ul>
-
-        <h2>
-          <a id="user-content-maven-dependency" class="anchor" href="#maven-dependency" aria-hidden="true"><span class="octicon octicon-link"></span></a>Maven dependency</h2>
-
-        <p>In order to use Beanmapper in your project, simply add the following Maven dependency:</p>
-
-        <div class="highlight highlight-xml"><pre>&lt;<span class="pl-ent">dependency</span>&gt;
-    &lt;<span class="pl-ent">groupId</span>&gt;io.beanmapper&lt;/<span class="pl-ent">groupId</span>&gt;
-    &lt;<span class="pl-ent">artifactId</span>&gt;beanmapper&lt;/<span class="pl-ent">artifactId</span>&gt;
-    &lt;<span class="pl-ent">version</span>&gt;0.2.18&lt;/<span class="pl-ent">version</span>&gt;
-&lt;/<span class="pl-ent">dependency</span>&gt;</pre></div>
-
-        <h2>
-          <a id="user-content-getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting started</h2>
-
-        <p>You want to map two dissimilar classes with no hierarchical relation (save java.lang.Object),
-          but with a fairly similar naming schema for the fields.</p>
-
-        <p><a href="images/01-basic-use-case.png" target="_blank"><img src="images/01-basic-use-case.png" alt="Basic use case for Beanmapper" style="max-width:100%;"></a></p>
-
-        <div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">SourceClass</span> {
-   <span class="pl-k">public</span> <span class="pl-smi">Long</span> id;
-   <span class="pl-k">public</span> <span class="pl-smi">String</span> name;
-   <span class="pl-k">public</span> <span class="pl-smi">LocalDate</span> date;
-}</pre></div>
-
-        <div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">TargetClass</span> {
-   <span class="pl-k">public</span> <span class="pl-smi">String</span> name;
-   <span class="pl-k">public</span> <span class="pl-smi">LocalDate</span> date;
-}</pre></div>
-
-        <div class="highlight highlight-java"><pre><span class="pl-smi">BeanMapper</span> beanMapper <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">BeanMapper</span>();
-<span class="pl-smi">SourceClass</span> source <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">SourceClass</span>();
-source<span class="pl-k">.</span>id <span class="pl-k">=</span> <span class="pl-c1">42L</span>;
-source<span class="pl-k">.</span>name <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>Henk<span class="pl-pds">"</span></span>;
-source<span class="pl-k">.</span>date <span class="pl-k">=</span> <span class="pl-smi">LocalDate</span><span class="pl-k">.</span>of(<span class="pl-c1">2015</span>, <span class="pl-c1">4</span>, <span class="pl-c1">1</span>));
-<span class="pl-smi">TargetClass</span> target <span class="pl-k">=</span> beanMapper<span class="pl-k">.</span>map(source, <span class="pl-smi">TargetClass</span><span class="pl-k">.</span>class);</pre></div>
-
-        <ul>
-          <li><a href="#user-content-beanproperty">@BeanProperty</a> | Referencing properties</li>
-          <li><a href="#user-content-beanignore">@BeanIgnore</a> | Explicitly not mapping fields</li>
-          <li><a href="#user-content-beandefault">@BeanDefault</a> | Default values when the source value is null</li>
-          <li><a href="#user-content-beanunwrap">@BeanUnwrap</a> | Flattening class hierarchies</li>
-        </ul>
-
-        <h2>
-          <a id="user-content-beanproperty" class="anchor" href="#beanproperty" aria-hidden="true"><span class="octicon octicon-link"></span></a>@BeanProperty</h2>
-
-        <p>Beanmapper can be instructed to look for properties with different names. Either property can be annotated with the @BeanProperty annotation. Within the annotation the name value references the other property. </p>
-
-        <p><a href="images/02-bean-property.png" target="_blank"><img src="images/02-bean-property.png" alt="@BeanProperty annotation for fields" style="max-width:100%;"></a></p>
-
-        <div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">SourceClass</span> {
-   <span class="pl-k">public</span> <span class="pl-smi">String</span> name;
-}</pre></div>
-
-        <div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">TargetClass</span> {
-   <span class="pl-k">@BeanProperty</span>(<span class="pl-c1">name</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>)
-   <span class="pl-k">public</span> <span class="pl-smi">String</span> otherName;
-}</pre></div>
-
-        <h2>
-          <a id="user-content-beanignore" class="anchor" href="#beanignore" aria-hidden="true"><span class="octicon octicon-link"></span></a>@BeanIgnore</h2>
-
-        <p>Sometimes it is useful not to map a field, for example when you wish to perform your own operations on it instead of relying on the Beanmapper. In this case a field on either side could be annotated with the @BeanIgnore property to instruct the Beanmapper to skip the field.</p>
-
-        <p><a href="images/03-bean-ignore.png" target="_blank"><img src="images/03-bean-ignore.png" alt="@BeanIgnore annotation for fields" style="max-width:100%;"></a></p>
-
-        <div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">SourceClass</span> {
-   <span class="pl-k">public</span> <span class="pl-smi">String</span> name;
-   <span class="pl-k">public</span> <span class="pl-smi">String</span> surname;
-}</pre></div>
-
-        <div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">TargetClass</span> {
-   <span class="pl-k">@BeanIgnore</span>
-   <span class="pl-k">public</span> <span class="pl-smi">String</span> name;
-}</pre></div>
-
-        <h2>
-          <a id="user-content-beandefault" class="anchor" href="#beandefault" aria-hidden="true"><span class="octicon octicon-link"></span></a>@BeanDefault</h2>
-
-        <p>It is possible to control the value of the target field when the source field is null. In this case you declare a @BeanDefault annotation on either source or target side. </p>
-
-        <p><a href="images/04-bean-default.png" target="_blank"><img src="images/04-bean-default.png" alt="@BeanDefault annotation for fields" style="max-width:100%;"></a></p>
-
-        <div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">SourceClass</span> {
-   <span class="pl-k">public</span> <span class="pl-smi">String</span> name;
-}</pre></div>
-
-        <div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">TargetClass</span> {
-   <span class="pl-k">@BeanDefault(value="-- empty --")</span>
-   <span class="pl-k">public</span> <span class="pl-smi">String</span> name;
-}</pre></div>
-
-        <h2>
-          <a id="user-content-beanunwrap" class="anchor" href="#beanunwrap" aria-hidden="true"><span class="octicon octicon-link"></span></a>@BeanUnwrap</h2>
-
-        <p>During the process of mapping it may be desirable to flatten structures. In this case, a field can be annotated with @BeanUnwrap. When the Beanmapper encounters this annotation, it will treat all the fields within that class as if they were on the same level as the class itself resides in. @BeanUnwrap effectively flattens layers this way.</p>
-
-        <p><a href="images/05-bean-unwrap.png" target="_blank"><img src="images/05-bean-unwrap.png" alt="@BeanDefault annotation for fields" style="max-width:100%;"></a></p>
-
-        <div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">SourceParent</span> {
-   <span class="pl-k">public</span> <span class="pl-smi">String</span> parentName;
-   <span class="pl-k">@BeanUnwrap</span>
-   <span class="pl-k">public</span> <span class="pl-smi">SourceChild</span> child;
-}</pre></div>
-
-        <div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">SourceChild</span> {
-   <span class="pl-k">public</span> <span class="pl-smi">String</span> childName;
-}</pre></div>
-
-        <div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">TargetParent</span> {
-   <span class="pl-k">public</span> <span class="pl-smi">String</span> parentName;
-   <span class="pl-k">public</span> <span class="pl-smi">String</span> childName;
-}</pre></div>
-
-        <h2>
-          <a id="user-content-whats-more" class="anchor" href="#whats-more" aria-hidden="true"><span class="octicon octicon-link"></span></a>What's more?</h2>
-
-        <p>The library can help you with the following situations:</p>
-
-        <ul>
-          <li>nested dissimilar classes</li>
-          <li>ignoring parts</li>
-          <li>mapping to fields with other names, even if nested</li>
-          <li>settings defaults if no value is found</li>
-          <li>unwrapping class layers in order to flatten the structure</li>
-          <li>works directly on the bean, no getters/setters required</li>
-          <li>supports a combination of automated and manual processing</li>
-        </ul>
-
-        <h2>
-          <a id="user-content-what-beanmapper-is-not-for" class="anchor" href="#what-beanmapper-is-not-for" aria-hidden="true"><span class="octicon octicon-link"></span></a>What Beanmapper is not for</h2>
-
-        <p>Beanmapper is <em>not</em> a library for deep-copying classes. Whenever Beanmapper can get away with a shallow
-          copy, it will do so. Deep-copying is reserved for dissimilar classes.</p>
-
-      </section>
+      <a href="https://github.com/42BV/beanmapper/zipball/master" class="btn">Download as .zip</a>
+      <a href="https://github.com/42BV/beanmapper/tarball/master" class="btn">Download as .tar.gz</a>
+      <a href="https://github.com/42BV/beanmapper" class="btn" target="_blank">View on GitHub</a>
     </div>
+  </div>
+</header>
 
-              <script type="text/javascript">
-            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-          </script>
-          <script type="text/javascript">
-            try {
-              var pageTracker = _gat._getTracker("UA-62579420-1");
-            pageTracker._trackPageview();
-            } catch(err) {}
-          </script>
+<div class="container-fluid content">
+  <div class="row">
+    <div class="col-xs-offset-1 col-xs-7">
+      <!-- BeanMapper -->
+      <section id="about">
+        <h3 class="section-title">What does BeanMapper?</h3>
+        <div class="section-body">
+          Etiam efficitur nulla eget sapien elementum maximus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin pretium turpis ligula, vel mollis mi ullamcorper sed. Nulla bibendum maximus libero ac laoreet. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce sed suscipit purus. Curabitur nec nibh nisl. Morbi aliquet libero eget viverra maximus. Ut vel massa et est ornare porttitor et at diam. Phasellus scelerisque, ligula nec facilisis porttitor, ligula velit imperdiet turpis, nec varius arcu eros quis diam. Mauris placerat ex a lorem rhoncus ullamcorper.<br><br>
+          Duis id sem id massa pretium consequat. Vivamus mattis metus dolor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur luctus semper efficitur. In purus neque, accumsan ultricies ipsum at, rutrum accumsan sapien. Nullam commodo vel purus id placerat. Proin sagittis quam quis faucibus aliquam. Duis eget nisi sed eros eleifend tincidunt. Nam ornare tellus libero, commodo semper arcu posuere vel. Nulla facilisi. Donec non molestie ex. Morbi ut posuere nulla, sed ornare lorem. Nunc id massa in lorem maximus sollicitudin ut sit amet dui. Fusce pretium libero non sem consequat sodales.<br>
+        </div>
+      </section>
+      <section id="usage">
+        <h3 class="section-title">Why using BeanMapper?</h3>
+        <div class="section-body">
+          Etiam efficitur nulla eget sapien elementum maximus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin pretium turpis ligula, vel mollis mi ullamcorper sed. Nulla bibendum maximus libero ac laoreet. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce sed suscipit purus. Curabitur nec nibh nisl. Morbi aliquet libero eget viverra maximus. Ut vel massa et est ornare porttitor et at diam. Phasellus scelerisque, ligula nec facilisis porttitor, ligula velit imperdiet turpis, nec varius arcu eros quis diam. Mauris placerat ex a lorem rhoncus ullamcorper.<br><br>
+          Duis id sem id massa pretium consequat. Vivamus mattis metus dolor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur luctus semper efficitur. In purus neque, accumsan ultricies ipsum at, rutrum accumsan sapien. Nullam commodo vel purus id placerat. Proin sagittis quam quis faucibus aliquam. Duis eget nisi sed eros eleifend tincidunt. Nam ornare tellus libero, commodo semper arcu posuere vel. Nulla facilisi. Donec non molestie ex. Morbi ut posuere nulla, sed ornare lorem. Nunc id massa in lorem maximus sollicitudin ut sit amet dui. Fusce pretium libero non sem consequat sodales.<br>
+        </div>
+      </section>
+      <section id="download">
+        <h3 class="section-title">Download</h3>
+        <div class="section-body">
+          Etiam efficitur nulla eget sapien elementum maximus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin pretium turpis ligula, vel mollis mi ullamcorper sed. Nulla bibendum maximus libero ac laoreet. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce sed suscipit purus. Curabitur nec nibh nisl. Morbi aliquet libero eget viverra maximus. Ut vel massa et est ornare porttitor et at diam. Phasellus scelerisque, ligula nec facilisis porttitor, ligula velit imperdiet turpis, nec varius arcu eros quis diam. Mauris placerat ex a lorem rhoncus ullamcorper.<br><br>
+          Duis id sem id massa pretium consequat. Vivamus mattis metus dolor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur luctus semper efficitur. In purus neque, accumsan ultricies ipsum at, rutrum accumsan sapien. Nullam commodo vel purus id placerat. Proin sagittis quam quis faucibus aliquam. Duis eget nisi sed eros eleifend tincidunt. Nam ornare tellus libero, commodo semper arcu posuere vel. Nulla facilisi. Donec non molestie ex. Morbi ut posuere nulla, sed ornare lorem. Nunc id massa in lorem maximus sollicitudin ut sit amet dui. Fusce pretium libero non sem consequat sodales.<br>
+        </div>
+      </section>
 
-  </body>
+      <!-- Annotations -->
+      <section id="beanproperty">
+        <h3 class="section-title">BeanProperty</h3>
+        <div class="section-body">
+          Etiam efficitur nulla eget sapien elementum maximus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin pretium turpis ligula, vel mollis mi ullamcorper sed. Nulla bibendum maximus libero ac laoreet. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce sed suscipit purus. Curabitur nec nibh nisl. Morbi aliquet libero eget viverra maximus. Ut vel massa et est ornare porttitor et at diam. Phasellus scelerisque, ligula nec facilisis porttitor, ligula velit imperdiet turpis, nec varius arcu eros quis diam. Mauris placerat ex a lorem rhoncus ullamcorper.<br><br>
+          Duis id sem id massa pretium consequat. Vivamus mattis metus dolor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur luctus semper efficitur. In purus neque, accumsan ultricies ipsum at, rutrum accumsan sapien. Nullam commodo vel purus id placerat. Proin sagittis quam quis faucibus aliquam. Duis eget nisi sed eros eleifend tincidunt. Nam ornare tellus libero, commodo semper arcu posuere vel. Nulla facilisi. Donec non molestie ex. Morbi ut posuere nulla, sed ornare lorem. Nunc id massa in lorem maximus sollicitudin ut sit amet dui. Fusce pretium libero non sem consequat sodales.<br>
+        </div>
+      </section>
+      <section id="beanignore">
+        <h3 class="section-title">BeanIgnore</h3>
+        <div class="section-body">
+          Etiam efficitur nulla eget sapien elementum maximus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin pretium turpis ligula, vel mollis mi ullamcorper sed. Nulla bibendum maximus libero ac laoreet. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce sed suscipit purus. Curabitur nec nibh nisl. Morbi aliquet libero eget viverra maximus. Ut vel massa et est ornare porttitor et at diam. Phasellus scelerisque, ligula nec facilisis porttitor, ligula velit imperdiet turpis, nec varius arcu eros quis diam. Mauris placerat ex a lorem rhoncus ullamcorper.<br><br>
+          Duis id sem id massa pretium consequat. Vivamus mattis metus dolor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur luctus semper efficitur. In purus neque, accumsan ultricies ipsum at, rutrum accumsan sapien. Nullam commodo vel purus id placerat. Proin sagittis quam quis faucibus aliquam. Duis eget nisi sed eros eleifend tincidunt. Nam ornare tellus libero, commodo semper arcu posuere vel. Nulla facilisi. Donec non molestie ex. Morbi ut posuere nulla, sed ornare lorem. Nunc id massa in lorem maximus sollicitudin ut sit amet dui. Fusce pretium libero non sem consequat sodales.<br>
+        </div>
+      </section>
+      <section id="beandefault">
+        <h3 class="section-title">BeanDefault</h3>
+        <div class="section-body">
+          Etiam efficitur nulla eget sapien elementum maximus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin pretium turpis ligula, vel mollis mi ullamcorper sed. Nulla bibendum maximus libero ac laoreet. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce sed suscipit purus. Curabitur nec nibh nisl. Morbi aliquet libero eget viverra maximus. Ut vel massa et est ornare porttitor et at diam. Phasellus scelerisque, ligula nec facilisis porttitor, ligula velit imperdiet turpis, nec varius arcu eros quis diam. Mauris placerat ex a lorem rhoncus ullamcorper.<br><br>
+          Duis id sem id massa pretium consequat. Vivamus mattis metus dolor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur luctus semper efficitur. In purus neque, accumsan ultricies ipsum at, rutrum accumsan sapien. Nullam commodo vel purus id placerat. Proin sagittis quam quis faucibus aliquam. Duis eget nisi sed eros eleifend tincidunt. Nam ornare tellus libero, commodo semper arcu posuere vel. Nulla facilisi. Donec non molestie ex. Morbi ut posuere nulla, sed ornare lorem. Nunc id massa in lorem maximus sollicitudin ut sit amet dui. Fusce pretium libero non sem consequat sodales.<br>
+        </div>
+      </section>
+      <section id="beanunwrap">
+        <h3 class="section-title">BeanUnwrap</h3>
+        <div class="section-body">
+          Etiam efficitur nulla eget sapien elementum maximus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin pretium turpis ligula, vel mollis mi ullamcorper sed. Nulla bibendum maximus libero ac laoreet. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce sed suscipit purus. Curabitur nec nibh nisl. Morbi aliquet libero eget viverra maximus. Ut vel massa et est ornare porttitor et at diam. Phasellus scelerisque, ligula nec facilisis porttitor, ligula velit imperdiet turpis, nec varius arcu eros quis diam. Mauris placerat ex a lorem rhoncus ullamcorper.<br><br>
+          Duis id sem id massa pretium consequat. Vivamus mattis metus dolor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur luctus semper efficitur. In purus neque, accumsan ultricies ipsum at, rutrum accumsan sapien. Nullam commodo vel purus id placerat. Proin sagittis quam quis faucibus aliquam. Duis eget nisi sed eros eleifend tincidunt. Nam ornare tellus libero, commodo semper arcu posuere vel. Nulla facilisi. Donec non molestie ex. Morbi ut posuere nulla, sed ornare lorem. Nunc id massa in lorem maximus sollicitudin ut sit amet dui. Fusce pretium libero non sem consequat sodales.<br>
+        </div>
+      </section>
+      <section id="beancollection">
+        <h3 class="section-title">BeanCollection</h3>
+        <div class="section-body">
+          Etiam efficitur nulla eget sapien elementum maximus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin pretium turpis ligula, vel mollis mi ullamcorper sed. Nulla bibendum maximus libero ac laoreet. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce sed suscipit purus. Curabitur nec nibh nisl. Morbi aliquet libero eget viverra maximus. Ut vel massa et est ornare porttitor et at diam. Phasellus scelerisque, ligula nec facilisis porttitor, ligula velit imperdiet turpis, nec varius arcu eros quis diam. Mauris placerat ex a lorem rhoncus ullamcorper.<br><br>
+          Duis id sem id massa pretium consequat. Vivamus mattis metus dolor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur luctus semper efficitur. In purus neque, accumsan ultricies ipsum at, rutrum accumsan sapien. Nullam commodo vel purus id placerat. Proin sagittis quam quis faucibus aliquam. Duis eget nisi sed eros eleifend tincidunt. Nam ornare tellus libero, commodo semper arcu posuere vel. Nulla facilisi. Donec non molestie ex. Morbi ut posuere nulla, sed ornare lorem. Nunc id massa in lorem maximus sollicitudin ut sit amet dui. Fusce pretium libero non sem consequat sodales.<br>
+        </div>
+      </section>
+    </div> <!-- End content column -->
+
+
+    <div class="col-xs-3">
+      <div id="menu">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <span class="panel-title">BeanMapper</span>
+          </div>
+          <div class="list-group">
+            <a href="#about" class="list-group-item">About</a>
+            <a href="#usage" class="list-group-item">Usage</a>
+            <a href="#download" class="list-group-item">Download</a>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <span class="panel-title">Annotations</span>
+          </div>
+          <div class="list-group">
+            <a href="#beanproperty" class="list-group-item">BeanProperty</a>
+            <a href="#beanignore" class="list-group-item">BeanIgnore</a>
+            <a href="#beandefault" class="list-group-item">BeanDefault</a>
+            <a href="#beanunwrap" class="list-group-item">BeanUnwrap</a>
+            <a href="#beancollection" class="list-group-item">BeanCollection</a>
+          </div>
+        </div>
+      </div>
+    </div> <!-- End menu column -->
+
+  </div> <!-- End row -->
+</div> <!-- End container -->
+
+<script src="javascripts/jquery-2.2.1.min.js"></script>
+<script src="javascripts/bootstrap.min.js"></script>
+<script src="javascripts/main.js"></script>
+
+</body>
 </html>
