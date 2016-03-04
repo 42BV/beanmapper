@@ -58,13 +58,24 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
             collectionClass = source.getClass();
         }
 
-        return getBeanMapper()
+        Object result = getBeanMapper()
                 .config()
                 .setCollectionClass(collectionClass)
                 .setIncludeFields(null)
                 .setTargetClass(dynamicClass)
                 .build()
             .map(source);
+
+        Object target = getConfiguration().getTarget();
+        if (target != null) {
+            result = getBeanMapper()
+                    .wrapConfig()
+                    .setTarget(target)
+                    .build()
+                .map(result);
+        }
+
+        return result;
     }
 
     private GeneratedClass getOrCreateGeneratedClass(Class<?> targetClass, List<String> includeFields) {
