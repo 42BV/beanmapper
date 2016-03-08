@@ -29,10 +29,20 @@ section>.section-body {
     margin-top:12px;
 }
 
-.col-xs-3>.stick {
+.col-sm-3>.stick {
     width: 25%;
     padding-right: 15px;
     padding-left: 15px;
+}
+
+@media(max-width: 768px) {
+    #menu {
+        display: none;
+    }
+}
+
+#menu {
+    overflow-y: auto;
 }
 
 #menu .list-group-item {
@@ -47,4 +57,8 @@ section>.section-body {
 
 #menu .panel-title {
     font-size: inherit;
+}
+
+code {
+    white-space: pre;
 }

@@ -5,6 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="chrome=1">
 
   <link rel="stylesheet" href="styles/bootstrap.min.css">
+  <link rel="stylesheet" href="styles/default.css">
   <link rel="stylesheet" href="styles/main.css">
 
   <title>Beanmapper by 42BV</title>
@@ -28,83 +29,212 @@
 
 <div class="container-fluid content">
   <div class="row">
-    <div class="col-xs-offset-1 col-xs-7">
+    <div class="col-md-offset-1 col-xs-12 col-sm-9 col-md-7">
       <!-- BeanMapper -->
       <section id="about">
-        <h3 class="section-title">What does BeanMapper?</h3>
+        <h3 class="section-title">What is BeanMapper?</h3>
         <div class="section-body">
-          Beanmapper is a Java library for mapping dissimilar Java classes with similar names.
+          The core definition of the task of BeanMapper is for converting from one Java class to a dissimilar Java class with similar names based on the Bean convention.
+          However BeanMapper does have a lot more functionality than only converting Java classes.<br>
+          You can read about this in the rest of this documentation.<br>
+          <br>
+          Using Spring?<br>
+          Take a look at <a href="https://github.com/42BV/beanmapper-spring" target="_blank">BeanMapper-Spring</a> for combining the power of BeanMapper together with Spring.<br>
+          <br>
+          Take a look at the <a href="https://github.com/42BV/beanmapper-petshop" target="_blank">BeanMapper-Petshop</a> for samples of using BeanMapper.
+          It shows you how to use the BeanMapper in a REST API in Java.
+          It also show examples of using BeanMapper in combination with BeanMapper-Spring
         </div>
       </section>
       <section id="usage">
         <h3 class="section-title">Why using BeanMapper?</h3>
         <div class="section-body">
-          Mapping from forms to entities, because:
+         When building a REST API you work quite often with three kinds of objects.
+          <ol>
+            <li>The Entity; The entity represents the data inside the application.</li>
+            <li>The Result; The result represents the entity to the outside of the world. This could be a partially entity.</li>
+            <li>The Form; When creating/updating a entity you often want to use a form object to pass the given data to.</li>
+          </ol>
+          Below a image showing this three objects in context of the application: <br>
+          <img src="images/beanmapper-usage.png" height="200px"><br>
+
+          <b>Why using forms?</b>
           <ul>
             <li>For security reasons you want to accept only a limited number of fields as input.</li>
-            <li>the form fields are simplified to support frontend processing.</li>
+            <li>The form fields are simplified to support frontend processing.</li>
           </ul>
-          Mapping from entities to results, because:
+
+          <b>Why using results?</b>
           <ul>
             <li>You want to simplify the result for frontend processing.</li>
             <li>You want to expose a limited number of fields for security reasons.</li>
           </ul>
+
+          When using these three kinds of objects you want to convert incoming data to your entity. You also want to convert your entity to a result when representing data to the outside.
+          These conversions will cost a lot of unnecessary code.<br>
+          <br>
+          <b>Wouldn't it be great if mapping from Form to Entity and from Entity to Result can be done automatically?</b><br>
+          Let us suppose we have a tool that is able to map similar fields from dissimilar classes.<br>
+          In this case, it would be just a matter of passing both instances and delegating the task of mapping from source to target to this tool.<br>
+          This is why you should BeanMapper; BeanMapper just does the above described problem in a very easy way.<br>
+          Want to use BeanMapper? In the <a href="#how-to-use">next section</a>  you can read about using BeanMapper.<br>
+          <br>
+          For a more detailed use case of why using BeanMapper,
+          read this blog <a href="http://dontpanic.42.nl/2016/02/the-case-for-beanmapper.html" target="_blank">'The Case for BeanMapper'</a>.<br>
+        </div>
+      </section>
+      <section id="how-to-use">
+        <h3 class="section-title">How to Use</h3>
+        <div class="section-body">
+          You can convert your objects on four different ways.
+          <ol>
+            <li>convert to a new class</li>
+            <li>convert to a existing instance</li>
+            <li>convert to a collection</li>
+            <li>convert to a dynamic generated class</li>
+          </ol>
+          Below a basic sample of each way of converting. These samples only show a basic conversion.
+          You should take a look at the rest of the documentation if you want to map some different fields or a map a different structure.<br>
+          <br>
+          Lets assume that we have two classes. SourceClass is your entity that is used inside the application.
+          TargetClass is the class that you would like to expose to the outside.
+          <code>
+            public class Source {
+                public Long id;
+                public String name;
+                public Integer age;
+
+                public Source(Long id, String name, Integer age) {
+                    this.id = id;
+                    this.name = name;
+                    this.age = age;
+                }
+            }
+
+            public class Target {
+                public String name;
+                public Integer age;
+            }</code>
+
+          <br><b>Convert to a new class</b>
+          <code>
+            Source source = new Source(1L, "Henk", 42);
+
+            Target target = new BeanMapperBuilder().build()
+                      .map(source, Target.class);</code>
+
+          <br><b>Convert to a existing instance</b>
+          <code>
+            Source source = new Source(1L, "Henk", 42);
+            Target existingTarget = new Target();
+            existingTarget.name = "piet";
+
+            Target mergedTarget = new BeanMapperBuilder().build()
+                      .map(source, existingTarget);</code>
+
+          <br><b>Convert to a collection</b>
+          <code>
+            List&lt;Source> sources = new ArrayList<>();
+            sources.add(new Source(1L, "Henk", 42));
+            sources.add(new Source(2L, "Piet", 50));
+            sources.add(new Source(3L, "Kees", 3));
+
+            Collection&lt;Target> targets = new BeanMapperBuilder().build()
+                    .map(sources, Target.class, ArrayList.class);</code>
+
+          <br><b>Convert to a dynamic generated class</b>
+          <code>
+            Source source = new Source(1L, "Henk", 42);
+
+            Object target = new BeanMapperBuilder().build()
+                      .map(source, Target.class, new MappableFields("name"));
+            // Target now a class only containing a name</code>
         </div>
       </section>
       <section id="download">
         <h3 class="section-title">Download</h3>
         <div class="section-body">
-          Maven dependency:<br>
+          In order to use Beanmapper in your project, simply add the following Maven dependency.<br>
           <code>
-            &lt;dependency&gt;<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;groupId&gt;io.beanmapper&lt;/groupId&gt;<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;artifactId&gt;beanmapper&lt;/artifactId&gt;<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;version&gt;0.2.18&lt;/version&gt;<br>
+            &lt;dependency&gt;
+              &lt;groupId&gt;io.beanmapper&lt;/groupId&gt;
+              &lt;artifactId&gt;beanmapper&lt;/artifactId&gt;
+              &lt;version&gt;{{version}}&lt;/version&gt;
             &lt;/dependency&gt;
           </code>
+          Version is the latest version of BeanMapper
+          <a href="https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper" target="_blank"><img src="https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper/badge.svg"></a><br>
+          <br>
+          You can find the javadoc for BeanMapper <a href="http://www.javadoc.io/doc/io.beanmapper/beanmapper" target="_blank">here</a>.<br>
+          You can also download the <a href="http://repository.sonatype.org/service/local/artifact/maven/redirect?g=io.beanmapper&a=beanmapper&v=LATEST&r=central-proxy"> latest jar </a> and include this in your project.
         </div>
+      </section>
+
+      <!-- REST -->
+      <section id="get">
+        <h3 class="section-title">GET</h3>
+        <div class="section-body"></div>
+      </section>
+      <section id="post">
+        <h3 class="section-title">POST</h3>
+        <div class="section-body"></div>
+      </section>
+      <section id="put">
+        <h3 class="section-title">PUT</h3>
+        <div class="section-body"></div>
+      </section>
+      <section id="patch">
+        <h3 class="section-title">PATCH</h3>
+        <div class="section-body"></div>
+      </section>
+      <section id="delete">
+        <h3 class="section-title">DELETE</h3>
+        <div class="section-body"></div>
       </section>
 
       <!-- Annotations -->
       <section id="beanproperty">
         <h3 class="section-title">BeanProperty</h3>
-        <div class="section-body">
-          Etiam efficitur nulla eget sapien elementum maximus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin pretium turpis ligula, vel mollis mi ullamcorper sed. Nulla bibendum maximus libero ac laoreet. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce sed suscipit purus. Curabitur nec nibh nisl. Morbi aliquet libero eget viverra maximus. Ut vel massa et est ornare porttitor et at diam. Phasellus scelerisque, ligula nec facilisis porttitor, ligula velit imperdiet turpis, nec varius arcu eros quis diam. Mauris placerat ex a lorem rhoncus ullamcorper.<br><br>
-          Duis id sem id massa pretium consequat. Vivamus mattis metus dolor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur luctus semper efficitur. In purus neque, accumsan ultricies ipsum at, rutrum accumsan sapien. Nullam commodo vel purus id placerat. Proin sagittis quam quis faucibus aliquam. Duis eget nisi sed eros eleifend tincidunt. Nam ornare tellus libero, commodo semper arcu posuere vel. Nulla facilisi. Donec non molestie ex. Morbi ut posuere nulla, sed ornare lorem. Nunc id massa in lorem maximus sollicitudin ut sit amet dui. Fusce pretium libero non sem consequat sodales.<br>
-        </div>
+        <div class="section-body"></div>
       </section>
       <section id="beanignore">
         <h3 class="section-title">BeanIgnore</h3>
-        <div class="section-body">
-          Etiam efficitur nulla eget sapien elementum maximus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin pretium turpis ligula, vel mollis mi ullamcorper sed. Nulla bibendum maximus libero ac laoreet. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce sed suscipit purus. Curabitur nec nibh nisl. Morbi aliquet libero eget viverra maximus. Ut vel massa et est ornare porttitor et at diam. Phasellus scelerisque, ligula nec facilisis porttitor, ligula velit imperdiet turpis, nec varius arcu eros quis diam. Mauris placerat ex a lorem rhoncus ullamcorper.<br><br>
-          Duis id sem id massa pretium consequat. Vivamus mattis metus dolor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur luctus semper efficitur. In purus neque, accumsan ultricies ipsum at, rutrum accumsan sapien. Nullam commodo vel purus id placerat. Proin sagittis quam quis faucibus aliquam. Duis eget nisi sed eros eleifend tincidunt. Nam ornare tellus libero, commodo semper arcu posuere vel. Nulla facilisi. Donec non molestie ex. Morbi ut posuere nulla, sed ornare lorem. Nunc id massa in lorem maximus sollicitudin ut sit amet dui. Fusce pretium libero non sem consequat sodales.<br>
-        </div>
+        <div class="section-body"></div>
       </section>
       <section id="beandefault">
         <h3 class="section-title">BeanDefault</h3>
-        <div class="section-body">
-          Etiam efficitur nulla eget sapien elementum maximus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin pretium turpis ligula, vel mollis mi ullamcorper sed. Nulla bibendum maximus libero ac laoreet. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce sed suscipit purus. Curabitur nec nibh nisl. Morbi aliquet libero eget viverra maximus. Ut vel massa et est ornare porttitor et at diam. Phasellus scelerisque, ligula nec facilisis porttitor, ligula velit imperdiet turpis, nec varius arcu eros quis diam. Mauris placerat ex a lorem rhoncus ullamcorper.<br><br>
-          Duis id sem id massa pretium consequat. Vivamus mattis metus dolor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur luctus semper efficitur. In purus neque, accumsan ultricies ipsum at, rutrum accumsan sapien. Nullam commodo vel purus id placerat. Proin sagittis quam quis faucibus aliquam. Duis eget nisi sed eros eleifend tincidunt. Nam ornare tellus libero, commodo semper arcu posuere vel. Nulla facilisi. Donec non molestie ex. Morbi ut posuere nulla, sed ornare lorem. Nunc id massa in lorem maximus sollicitudin ut sit amet dui. Fusce pretium libero non sem consequat sodales.<br>
-        </div>
-      </section>
-      <section id="beanunwrap">
-        <h3 class="section-title">BeanUnwrap</h3>
-        <div class="section-body">
-          Etiam efficitur nulla eget sapien elementum maximus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin pretium turpis ligula, vel mollis mi ullamcorper sed. Nulla bibendum maximus libero ac laoreet. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce sed suscipit purus. Curabitur nec nibh nisl. Morbi aliquet libero eget viverra maximus. Ut vel massa et est ornare porttitor et at diam. Phasellus scelerisque, ligula nec facilisis porttitor, ligula velit imperdiet turpis, nec varius arcu eros quis diam. Mauris placerat ex a lorem rhoncus ullamcorper.<br><br>
-          Duis id sem id massa pretium consequat. Vivamus mattis metus dolor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur luctus semper efficitur. In purus neque, accumsan ultricies ipsum at, rutrum accumsan sapien. Nullam commodo vel purus id placerat. Proin sagittis quam quis faucibus aliquam. Duis eget nisi sed eros eleifend tincidunt. Nam ornare tellus libero, commodo semper arcu posuere vel. Nulla facilisi. Donec non molestie ex. Morbi ut posuere nulla, sed ornare lorem. Nunc id massa in lorem maximus sollicitudin ut sit amet dui. Fusce pretium libero non sem consequat sodales.<br>
-        </div>
+        <div class="section-body"></div>
       </section>
       <section id="beancollection">
         <h3 class="section-title">BeanCollection</h3>
-        <div class="section-body">
-          Etiam efficitur nulla eget sapien elementum maximus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin pretium turpis ligula, vel mollis mi ullamcorper sed. Nulla bibendum maximus libero ac laoreet. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce sed suscipit purus. Curabitur nec nibh nisl. Morbi aliquet libero eget viverra maximus. Ut vel massa et est ornare porttitor et at diam. Phasellus scelerisque, ligula nec facilisis porttitor, ligula velit imperdiet turpis, nec varius arcu eros quis diam. Mauris placerat ex a lorem rhoncus ullamcorper.<br><br>
-          Duis id sem id massa pretium consequat. Vivamus mattis metus dolor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur luctus semper efficitur. In purus neque, accumsan ultricies ipsum at, rutrum accumsan sapien. Nullam commodo vel purus id placerat. Proin sagittis quam quis faucibus aliquam. Duis eget nisi sed eros eleifend tincidunt. Nam ornare tellus libero, commodo semper arcu posuere vel. Nulla facilisi. Donec non molestie ex. Morbi ut posuere nulla, sed ornare lorem. Nunc id massa in lorem maximus sollicitudin ut sit amet dui. Fusce pretium libero non sem consequat sodales.<br>
-        </div>
+        <div class="section-body"></div>
+      </section>
+      <section id="beanconstruct">
+        <h3 class="section-title">BeanConstruct</h3>
+        <div class="section-body"></div>
+      </section>
+      <section id="beanalias">
+        <h3 class="section-title">BeanAlias</h3>
+        <div class="section-body"></div>
+      </section>
+
+      <!-- Nested -->
+      <section id="nested-to-nested">
+        <h3 class="section-title">Nested to Nested</h3>
+        <div class="section-body"></div>
+      </section>
+      <section id="nested-to-flat">
+        <h3 class="section-title">Nested to Flat</h3>
+        <div class="section-body"></div>
+      </section>
+      <section id="flat-to-nested">
+        <h3 class="section-title">Flat to Nested</h3>
+        <div class="section-body"></div>
       </section>
     </div> <!-- End content column -->
 
 
-    <div class="col-xs-3">
+    <div class="col-xs-hidden col-sm-3">
       <div id="menu">
         <div class="panel panel-default">
           <div class="panel-heading">
@@ -113,19 +243,43 @@
           <div class="list-group">
             <a href="#about" class="list-group-item">About</a>
             <a href="#usage" class="list-group-item">Usage</a>
+            <a href="#how-to-use" class="list-group-item">How to Use</a>
             <a href="#download" class="list-group-item">Download</a>
           </div>
         </div>
         <div class="panel panel-default">
           <div class="panel-heading">
-            <span class="panel-title">Annotations</span>
+            <span class="panel-title">REST</span>
           </div>
           <div class="list-group">
-            <a href="#beanproperty" class="list-group-item">BeanProperty</a>
-            <a href="#beanignore" class="list-group-item">BeanIgnore</a>
-            <a href="#beandefault" class="list-group-item">BeanDefault</a>
-            <a href="#beanunwrap" class="list-group-item">BeanUnwrap</a>
-            <a href="#beancollection" class="list-group-item">BeanCollection</a>
+            <a href="#get" class="list-group-item">GET</a>
+            <a href="#post" class="list-group-item">POST</a>
+            <a href="#put" class="list-group-item">PUT</a>
+            <a href="#patch" class="list-group-item">PATCH</a>
+            <a href="#delete" class="list-group-item">DELETE</a>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <span class="panel-title">Different structure</span>
+          </div>
+          <div class="list-group">
+            <a href="#beanproperty" class="list-group-item">Different names</a>
+            <a href="#beanignore" class="list-group-item">Ignore fields</a>
+            <a href="#beandefault" class="list-group-item">Default value for fields</a>
+            <a href="#beancollection" class="list-group-item">Collection fields</a>
+            <a href="#beanconstruct" class="list-group-item">No no-args constructor</a>
+            <a href="#beanalias" class="list-group-item">Aliases</a>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <span class="panel-title">Nested structure</span>
+          </div>
+          <div class="list-group">
+            <a href="#nested-to-nested" class="list-group-item">Nested to nested</a>
+            <a href="#nested-to-flat" class="list-group-item">Nested to flat</a>
+            <a href="#flat-to-nested" class="list-group-item">Flat to nested</a>
           </div>
         </div>
       </div>
@@ -136,6 +290,7 @@
 
 <script src="javascripts/jquery-2.2.1.min.js"></script>
 <script src="javascripts/bootstrap.min.js"></script>
+<script src="javascripts/highlight.pack.js"></script>
 <script src="javascripts/main.js"></script>
 
 </body>

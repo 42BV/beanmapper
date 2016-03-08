@@ -1,6 +1,10 @@
 $(document).ready(function () {
 
+    $('code').each(function(i, block) {
+        hljs.highlightBlock(block);
+    });
     var menu = $('#menu');
+    menu.css('max-height', window.innerHeight);
 
     /**
      * Function to set fixed navigation after scrolling.
