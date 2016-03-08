@@ -2,14 +2,11 @@ package io.beanmapper.config;
 
 import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.constructor.BeanInitializer;
-import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.rule.MappableFields;
 import io.beanmapper.core.unproxy.BeanUnproxy;
-import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class OverrideConfiguration implements Configuration {
@@ -178,4 +175,8 @@ public class OverrideConfiguration implements Configuration {
         return true;
     }
 
+    @Override
+    public Class determineTargetClass() {
+        return getTargetClass() == null ? getTarget().getClass() : getTargetClass();
+    }
 }

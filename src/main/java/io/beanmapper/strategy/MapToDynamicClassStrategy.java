@@ -31,6 +31,7 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
     public MapToDynamicClassStrategy(BeanMapper beanMapper, Configuration configuration) {
         super(beanMapper, configuration);
         this.classPool = ClassPool.getDefault();
+        this.classPool.insertClassPath(new ClassClassPath(configuration.determineTargetClass()));
     }
 
     @Override

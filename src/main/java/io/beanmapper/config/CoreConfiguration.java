@@ -178,4 +178,8 @@ public class CoreConfiguration implements Configuration {
         return false;
     }
 
+    @Override
+    public Class determineTargetClass() {
+        return getTargetClass() == null ? getTarget().getClass() : getTargetClass();
+    }
 }

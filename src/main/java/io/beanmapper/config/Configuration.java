@@ -144,4 +144,6 @@ public interface Configuration {
      * @return true (Override config) if the configuration can be reused, false (Core config) if not.
      */
     boolean canReuse();
+
+    Class determineTargetClass();
 }
