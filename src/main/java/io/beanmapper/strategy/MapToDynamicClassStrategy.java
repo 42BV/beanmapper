@@ -47,11 +47,7 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
         }
 
         // generate or reuse a dynamic class
-        Class targetClass = getConfiguration().getTargetClass();
-        if (targetClass == null) {
-            targetClass = getConfiguration().getTarget().getClass();
-        }
-        final Class dynamicClass = getOrCreateGeneratedClass(targetClass, includeFields).generatedClass;
+        final Class dynamicClass = getOrCreateGeneratedClass(getConfiguration().determineTargetClass(), includeFields).generatedClass;
 
         // If no collection class is set, but we are dealing with a collection class, make sure it is set
         Class collectionClass = getConfiguration().getCollectionClass();
