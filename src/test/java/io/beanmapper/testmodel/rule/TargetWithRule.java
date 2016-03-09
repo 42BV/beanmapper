@@ -1,18 +1,9 @@
 package io.beanmapper.testmodel.rule;
 
-public class TargetWithRule {
+public class TargetWithRule extends SuperWithRule {
 
-    public Integer id;
-    public String name;
-    public NestedWithRule nested;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    private String name;
+    private NestedWithRule nested;
 
     public String getName() {
         return name;
