@@ -46,3 +46,7 @@ $(document).ready(function () {
         });
     });
 });
+
+$(window).resize(function() {
+    $('#menu').css('max-height', window.innerHeight);
+});
