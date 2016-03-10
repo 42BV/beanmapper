@@ -12,7 +12,11 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ClassMemberValue;
 
-import java.util.*;
+import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class MapToDynamicClassStrategy extends AbstractMapStrategy {
 
@@ -75,7 +79,7 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
     private GeneratedClass getOrCreateGeneratedClass(Class<?> targetClass, List<String> includeFields) {
         Node displayFields = Node.createTree(includeFields);
         try {
-            return getOrCreateGeneratedClass(targetClass.getName(), displayFields);
+            return getOrCreateGeneratedClass(targetClass, displayFields);
         } catch (Exception err) {
             throw new BeanDynamicClassGenerationException(
                     err,
@@ -84,7 +88,8 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
         }
     }
 
-    protected GeneratedClass getOrCreateGeneratedClass(String classInPackage, Node displayFields) throws NotFoundException, CannotCompileException, ClassNotFoundException {
+    protected GeneratedClass getOrCreateGeneratedClass(Class<?> targetClass, Node displayFields) throws CannotCompileException, NotFoundException {
+        String classInPackage = targetClass.getName();
         Map<String, GeneratedClass> generatedClassesForClass = CACHE.get(classInPackage);
         if (generatedClassesForClass == null) {
             generatedClassesForClass = new TreeMap<String, GeneratedClass>();
@@ -92,51 +97,47 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
         }
         GeneratedClass generatedClass = generatedClassesForClass.get(displayFields.getKey());
         if (generatedClass == null) {
-            CtClass dynamicClass = classPool.get(classInPackage);
-            dynamicClass.setName(classInPackage + "Dyn" + ++GENERATED_CLASS_PREFIX);
-            processClassTree(dynamicClass, displayFields);
+            String newClassName = classInPackage + "Dyn" + ++GENERATED_CLASS_PREFIX;
+            CtClass dynamicClass = classPool.makeClass(newClassName);
+            processClassTree(dynamicClass, displayFields, targetClass);
             generatedClass = new GeneratedClass(dynamicClass);
             generatedClassesForClass.put(displayFields.getKey(), generatedClass);
         }
         return generatedClass;
     }
 
-    private void processClassTree(CtClass dynClass, Node node) throws NotFoundException, CannotCompileException, ClassNotFoundException {
-        for (CtField field : dynClass.getDeclaredFields()) {
-            if (node.getFields().contains(field.getName())) {
+    private void processClassTree(CtClass dynClass, Node node, Class<?> targetClass) throws CannotCompileException, NotFoundException {
+        for(Field field : targetClass.getDeclaredFields()) {
+            if(node.getFields().contains(field.getName())) {
                 Node fieldNode = node.getNode(field.getName());
-                // Apply include filter, aka generate new dynamic class
-                if (fieldNode.hasNodes() && isMappable(field.getType().getPackageName())) {
-                    GeneratedClass nestedClass = getOrCreateGeneratedClass(field.getType().getName(), fieldNode);
-                    field.setType(nestedClass.ctClass);
-                } else if (field.hasAnnotation(BeanCollection.class)){
-                    BeanCollection beanCollection = (BeanCollection) field.getAnnotation(BeanCollection.class);
-                    Class<?> elementType = beanCollection.elementType();
-                    GeneratedClass elementClass = getOrCreateGeneratedClass(elementType.getName(), fieldNode);
+                CtClass fieldType;
+                AnnotationsAttribute attr = null;
 
-                    elementClass.ctClass.defrost();
-                    ConstPool constPool = elementClass.ctClass.getClassFile().getConstPool();
-                    AnnotationsAttribute attr = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
-                    Annotation annot = new Annotation(BeanCollection.class.getName(), constPool);
-                    annot.addMemberValue("elementType", new ClassMemberValue(elementClass.generatedClass.getName(), constPool));
-                    attr.addAnnotation(annot);
-                    field.getFieldInfo().addAttribute(attr);
-                    elementClass.ctClass.freeze();
+                if(fieldNode.hasNodes()) {
+                    if (Collection.class.isAssignableFrom(field.getType())) {
+                        BeanCollection beanCollection = field.getAnnotation(BeanCollection.class);
+                        GeneratedClass elementClass = getOrCreateGeneratedClass(beanCollection.elementType(), fieldNode);
+
+                        // Add BeanCollection annotion on new field
+                        ConstPool constPool = dynClass.getClassFile().getConstPool();
+                        attr = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
+                        Annotation annot = new Annotation(BeanCollection.class.getName(), constPool);
+                        annot.addMemberValue("elementType", new ClassMemberValue(elementClass.generatedClass.getName(), constPool));
+                        attr.addAnnotation(annot);
+                        fieldType = classPool.getCtClass(field.getType().getName());
+                    } else {
+                        GeneratedClass nestedClass = getOrCreateGeneratedClass(field.getType(), fieldNode);
+                        fieldType = nestedClass.ctClass;
+                    }
+                } else {
+                    fieldType = classPool.getCtClass(field.getType().getName());
                 }
-            } else {
-                if (node.hasNodes()) {
-                    // Only remove fields if there are any fields at all to remove, else assume full showing
-                    dynClass.removeField(field);
-                    String fieldName = field.getName().substring(0, 1).toUpperCase() + field.getName().substring(1);
-                    // remove setter if exist
-                    try {
-                        dynClass.removeMethod(dynClass.getDeclaredMethod("set" + fieldName));
-                    } catch (Exception ignored) {}
-                    // Remove getter if exist
-                    try {
-                        dynClass.removeMethod(dynClass.getDeclaredMethod("get" + fieldName));
-                    } catch (Exception ignored) {}
+                CtField generatedField = new CtField(fieldType, field.getName(), dynClass);
+                generatedField.getFieldInfo().setAccessFlags(1);
+                if(attr != null) {
+                    generatedField.getFieldInfo().addAttribute(attr);
                 }
+                dynClass.addField(generatedField);
             }
         }
     }
