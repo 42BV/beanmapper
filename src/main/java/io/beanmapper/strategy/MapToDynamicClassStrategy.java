@@ -12,10 +12,7 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ClassMemberValue;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class MapToDynamicClassStrategy extends AbstractMapStrategy {
 
@@ -47,11 +44,7 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
         }
 
         // generate or reuse a dynamic class
-        Class targetClass = getConfiguration().getTargetClass();
-        if (targetClass == null) {
-            targetClass = getConfiguration().getTarget().getClass();
-        }
-        final Class dynamicClass = getOrCreateGeneratedClass(targetClass, includeFields).generatedClass;
+        final Class dynamicClass = getOrCreateGeneratedClass(getConfiguration().determineTargetClass(), includeFields).generatedClass;
 
         // If no collection class is set, but we are dealing with a collection class, make sure it is set
         Class collectionClass = getConfiguration().getCollectionClass();
@@ -134,10 +127,17 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
                 if (node.hasNodes()) {
                     // Only remove fields if there are any fields at all to remove, else assume full showing
                     dynClass.removeField(field);
+                    String fieldName = field.getName().substring(0, 1).toUpperCase() + field.getName().substring(1);
+                    // remove setter if exist
+                    try {
+                        dynClass.removeMethod(dynClass.getDeclaredMethod("set" + fieldName));
+                    } catch (Exception ignored) {}
+                    // Remove getter if exist
+                    try {
+                        dynClass.removeMethod(dynClass.getDeclaredMethod("get" + fieldName));
+                    } catch (Exception ignored) {}
                 }
             }
         }
     }
-
-
 }
