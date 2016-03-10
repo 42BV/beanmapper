@@ -22,6 +22,7 @@ public class SkippingBeanUnproxy implements BeanUnproxy {
     private BeanUnproxy delegate;
 
     public SkippingBeanUnproxy(BeanUnproxy delegate) {
+        this.skip(Enum.class); // Skip enum classes by default
         this.delegate = delegate;
     }
     

@@ -96,7 +96,6 @@ public class BeanMapperTest {
                 .addConverter(new LocalDateToLocalDateTime())
                 .addConverter(new ObjectToStringConverter())
                 .addConverter(new NestedSourceClassToNestedTargetClassConverter())
-                .addProxySkipClass(Enum.class)
                 .build();
     }
 
