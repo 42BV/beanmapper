@@ -4,7 +4,6 @@ import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
-import io.beanmapper.core.rule.MappableFields;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
@@ -44,7 +43,10 @@ public class CoreConfiguration implements Configuration {
     private boolean addDefaultConverters = true;
 
     @Override
-    public List<String> getIncludeFields() { return null; }
+    public List<String> getDownsizeTarget() { return null; }
+
+    @Override
+    public List<String> getDownsizeSource() { return null; }
 
     @Override
     public Class getTargetClass() {
@@ -58,11 +60,6 @@ public class CoreConfiguration implements Configuration {
 
     @Override
     public Class getCollectionClass() {
-        return null;
-    }
-
-    @Override
-    public MappableFields getMappableFields() {
         return null;
     }
 
@@ -138,19 +135,19 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
-    public void setMappableFields(MappableFields mappableFields) {
-        throw new BeanConfigurationOperationNotAllowedException(
-                "Illegal to set mappable fields on the Core configuration, works only for override configurations");
-    }
-
-    @Override
     public void setConverterChoosable(boolean converterChoosable) {
         throw new BeanConfigurationOperationNotAllowedException(
                 "Illegal to set whether the converter is choosable on the Core configuration, works only for override configurations.");
     }
 
     @Override
-    public void setIncludeFields(List<String> includeFields) {
+    public void downsizeSource(List<String> includeFields) {
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to set a include fields on the Core configuration, works only for override configurations");
+    }
+
+    @Override
+    public void downsizeTarget(List<String> includeFields) {
         throw new BeanConfigurationOperationNotAllowedException(
                 "Illegal to set a include fields on the Core configuration, works only for override configurations");
     }

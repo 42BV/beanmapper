@@ -3,7 +3,6 @@ package io.beanmapper.config;
 import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
-import io.beanmapper.core.rule.MappableFields;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
 
@@ -21,15 +20,15 @@ public class OverrideConfiguration implements Configuration {
 
     private List<BeanConverter> beanConverters;
 
-    private List<String> includeFields;
+    private List<String> limitSource;
+
+    private List<String> limitTarget;
 
     private Class targetClass;
 
     private Object target;
 
     private Class collectionClass;
-
-    private MappableFields mappableFields;
 
     private boolean converterChoosable = true;
 
@@ -41,8 +40,13 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public List<String> getIncludeFields() {
-        return includeFields;
+    public List<String> getDownsizeSource() {
+        return limitSource;
+    }
+
+    @Override
+    public List<String> getDownsizeTarget() {
+        return limitTarget;
     }
 
     @Override
@@ -58,11 +62,6 @@ public class OverrideConfiguration implements Configuration {
     @Override
     public Object getTarget() {
         return target;
-    }
-
-    @Override
-    public MappableFields getMappableFields() {
-        return mappableFields == null ? parentConfiguration.getMappableFields() : mappableFields;
     }
 
     @Override
@@ -141,8 +140,13 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public void setIncludeFields(List<String> includeFields) {
-        this.includeFields = includeFields;
+    public void downsizeSource(List<String> includeFields) {
+        this.limitSource = includeFields;
+    }
+
+    @Override
+    public void downsizeTarget(List<String> includeFields) {
+        this.limitTarget = includeFields;
     }
 
     @Override
@@ -158,11 +162,6 @@ public class OverrideConfiguration implements Configuration {
     @Override
     public void setTarget(Object target) {
         this.target = target;
-    }
-
-    @Override
-    public void setMappableFields(MappableFields mappableFields) {
-        this.mappableFields = mappableFields;
     }
 
     @Override

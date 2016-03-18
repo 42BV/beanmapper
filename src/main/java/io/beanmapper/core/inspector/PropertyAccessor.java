@@ -4,6 +4,7 @@
 package io.beanmapper.core.inspector;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
 /**
  * Abstraction over accessing properties.
@@ -58,4 +59,6 @@ public interface PropertyAccessor {
      */
     void setValue(Object instance, Object value);
 
+    Method getReadMethod();
+    Method getWriteMethod();
 }

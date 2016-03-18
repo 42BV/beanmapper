@@ -22,9 +22,15 @@ public class BeanMapperBuilderTest {
     }
 
     @Test(expected = BeanConfigurationOperationNotAllowedException.class)
-    public void setMappableFieldsOnCoreThrowsException() {
+    public void setLimitSourceOnCoreThrowsException() {
         BeanMapperBuilder builder = new BeanMapperBuilder();
-        builder.setMappableFields(null);
+        builder.limitSource(null);
+    }
+
+    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
+    public void setLimitTargetOnCoreThrowsException() {
+        BeanMapperBuilder builder = new BeanMapperBuilder();
+        builder.limitTarget(null);
     }
 
     @Test(expected = BeanConfigurationOperationNotAllowedException.class)

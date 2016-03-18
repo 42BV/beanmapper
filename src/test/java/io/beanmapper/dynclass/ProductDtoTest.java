@@ -29,7 +29,7 @@ public class ProductDtoTest {
         Product product = createProduct(false);
         beanMapper = beanMapper.config()
                 .setTargetClass(ProductDto.class)
-                .setIncludeFields(Arrays.asList("id", "name", "organization.id", "organization.name"))
+                .limitTarget(Arrays.asList("id", "name", "organization.id", "organization.name"))
                 .build();
         Object productDto = beanMapper.map(product);
         String json = new ObjectMapper().writeValueAsString(productDto);
@@ -41,7 +41,7 @@ public class ProductDtoTest {
         Product product = createProduct(true);
         beanMapper = beanMapper.config()
                 .setTargetClass(ProductDto.class)
-                .setIncludeFields(Arrays.asList("id", "name", "assets.id", "assets.name", "artists"))
+                .limitTarget(Arrays.asList("id", "name", "assets.id", "assets.name", "artists"))
                 .build();
         Object productDto = beanMapper.map(product);
         String json = new ObjectMapper().writeValueAsString(productDto);
@@ -64,7 +64,7 @@ public class ProductDtoTest {
         List<Artist> artists = createArtists();
         beanMapper = beanMapper.config()
                 .setTargetClass(ArtistDto.class)
-                .setIncludeFields(Arrays.asList("id", "name"))
+                .limitTarget(Arrays.asList("id", "name"))
                 .build();
         Object dto = beanMapper.map(artists);
         String json = new ObjectMapper().writeValueAsString(dto);
@@ -78,7 +78,7 @@ public class ProductDtoTest {
         products.add(createProduct(43L, true));
         beanMapper = beanMapper.config()
                 .setTargetClass(ProductDto.class)
-                .setIncludeFields(Arrays.asList("id", "assets.id"))
+                .limitTarget(Arrays.asList("id", "assets.id"))
                 .build();
         Object dto = beanMapper.map(products);
         String json = new ObjectMapper().writeValueAsString(dto);

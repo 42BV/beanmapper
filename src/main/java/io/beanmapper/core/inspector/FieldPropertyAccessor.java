@@ -8,6 +8,7 @@ import io.beanmapper.exceptions.BeanSetFieldException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 /**
@@ -88,5 +89,20 @@ public class FieldPropertyAccessor implements PropertyAccessor {
             throw new BeanSetFieldException(instance.getClass(), field.getName(), e);
         }
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Method getReadMethod() {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Method getWriteMethod() {
+        return null;
+    }
 }

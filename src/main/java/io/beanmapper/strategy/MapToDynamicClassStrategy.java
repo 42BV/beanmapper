@@ -1,19 +1,17 @@
 package io.beanmapper.strategy;
 
 import io.beanmapper.BeanMapper;
-import io.beanmapper.annotations.BeanCollection;
+import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.config.Configuration;
+import io.beanmapper.core.BeanField;
+import io.beanmapper.dynclass.ClassBuilder;
 import io.beanmapper.dynclass.GeneratedClass;
 import io.beanmapper.dynclass.Node;
 import io.beanmapper.exceptions.BeanDynamicClassGenerationException;
-import javassist.*;
-import javassist.bytecode.AnnotationsAttribute;
-import javassist.bytecode.ConstPool;
-import javassist.bytecode.annotation.Annotation;
-import javassist.bytecode.annotation.ClassMemberValue;
+import javassist.ClassClassPath;
+import javassist.ClassPool;
+import javassist.CtClass;
 
-import java.lang.reflect.Field;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -37,108 +35,115 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
 
     @Override
     public Object map(Object source) {
-        List<String> includeFields = getConfiguration().getIncludeFields();
-        if (includeFields == null || includeFields.size() == 0) {
+        List<String> limitSourceFields = getConfiguration().getDownsizeSource();
+        List<String> limitTargetFields = getConfiguration().getDownsizeTarget();
+        if (limitSourceFields != null && limitSourceFields.size() > 0) {
+            return limitSource(source, limitSourceFields);
+        } else if (limitTargetFields != null && limitTargetFields.size() > 0) {
+            return limitTarget(source, limitTargetFields);
+        } else {
             // Force re-entry through the core map method, but disregard the include fields now
             return getBeanMapper()
                     .config()
-                        .setIncludeFields(null)
-                        .build()
+                    .limitSource(null)
+                    .limitTarget(null)
+                    .build()
                     .map(source);
         }
+    }
 
-        // generate or reuse a dynamic class
-        final Class dynamicClass = getOrCreateGeneratedClass(getConfiguration().determineTargetClass(), includeFields).generatedClass;
-
-        // If no collection class is set, but we are dealing with a collection class, make sure it is set
-        Class collectionClass = getConfiguration().getCollectionClass();
-        if (collectionClass == null && Collection.class.isAssignableFrom(source.getClass())) {
-            collectionClass = source.getClass();
-        }
-
-        Object result = getBeanMapper()
+    public Object limitSource(Object source, List<String> limitSourceFields) {
+        final Class dynamicClass = getOrCreateGeneratedClass(source.getClass(), limitSourceFields).generatedClass;
+        Class<?> targetClass = getConfiguration().getTargetClass();
+        Object target = getConfiguration().getTarget();
+        Object dynSource = getBeanMapper()
                 .config()
-                .setCollectionClass(collectionClass)
-                .setIncludeFields(null)
+                .limitSource(null)
                 .setTargetClass(dynamicClass)
                 .build()
-            .map(source);
+                .map(source);
 
-        Object target = getConfiguration().getTarget();
-        if (target != null) {
-            result = getBeanMapper()
-                    .wrapConfig()
-                    .setTarget(target)
-                    .build()
-                .map(result);
-        }
 
-        return result;
+        return getBeanMapper()
+                .wrapConfig()
+                .setTargetClass(targetClass)
+                .setTarget(target)
+                .build()
+                .map(dynSource);
     }
 
-    private GeneratedClass getOrCreateGeneratedClass(Class<?> targetClass, List<String> includeFields) {
-        Node displayFields = Node.createTree(includeFields);
-        try {
-            return getOrCreateGeneratedClass(targetClass, displayFields);
-        } catch (Exception err) {
-            throw new BeanDynamicClassGenerationException(
-                    err,
-                    getConfiguration().getTargetClass(),
-                    displayFields.getKey());
-        }
+    public Object limitTarget(Object source, List<String> limitTargetFields) {
+        final Class dynamicClass = getOrCreateGeneratedClass(getConfiguration().determineTargetClass(), limitTargetFields).generatedClass;
+        return getBeanMapper()
+                .config()
+                .limitTarget(null)
+                .setTargetClass(dynamicClass)
+                .build()
+                .map(source);
     }
 
-    protected GeneratedClass getOrCreateGeneratedClass(Class<?> targetClass, Node displayFields) throws CannotCompileException, NotFoundException {
-        String classInPackage = targetClass.getName();
-        Map<String, GeneratedClass> generatedClassesForClass = CACHE.get(classInPackage);
+    private GeneratedClass getOrCreateGeneratedClass(Class<?> baseClass, List<String> includeFields) {
+        Node displayNodes = Node.createTree(includeFields);
+        String baseClassName = baseClass.getName();
+
+        // get class from cache
+        Map<String, GeneratedClass> generatedClassesForClass = CACHE.get(baseClassName);
         if (generatedClassesForClass == null) {
             generatedClassesForClass = new TreeMap<String, GeneratedClass>();
-            CACHE.put(classInPackage, generatedClassesForClass);
+            CACHE.put(baseClassName, generatedClassesForClass);
         }
-        GeneratedClass generatedClass = generatedClassesForClass.get(displayFields.getKey());
+        GeneratedClass generatedClass = generatedClassesForClass.get(displayNodes.getKey());
         if (generatedClass == null) {
-            String newClassName = classInPackage + "Dyn" + ++GENERATED_CLASS_PREFIX;
-            CtClass dynamicClass = classPool.makeClass(newClassName);
-            processClassTree(dynamicClass, displayFields, targetClass);
-            generatedClass = new GeneratedClass(dynamicClass);
-            generatedClassesForClass.put(displayFields.getKey(), generatedClass);
+            try {
+                generatedClass = new GeneratedClass(createClass(baseClass, displayNodes));
+            } catch (Exception err) {
+                throw new BeanDynamicClassGenerationException(err, baseClass, displayNodes.getKey());
+            }
+            generatedClassesForClass.put(displayNodes.getKey(), generatedClass);
         }
         return generatedClass;
     }
 
-    private void processClassTree(CtClass dynClass, Node node, Class<?> targetClass) throws CannotCompileException, NotFoundException {
-        for(Field field : targetClass.getDeclaredFields()) {
-            if(node.getFields().contains(field.getName())) {
-                Node fieldNode = node.getNode(field.getName());
-                CtClass fieldType;
-                AnnotationsAttribute attr = null;
+    private CtClass createClass(Class<?> baseClass, Node displayNodes) throws Exception {
+        Map<String, BeanField> baseFields = getConfiguration().getBeanMatchStore().getBeanMatch(baseClass, Object.class).getSourceNode();
+        return createClass(baseClass, baseFields, displayNodes);
+    }
 
-                if(fieldNode.hasNodes()) {
-                    if (Collection.class.isAssignableFrom(field.getType())) {
-                        BeanCollection beanCollection = field.getAnnotation(BeanCollection.class);
-                        GeneratedClass elementClass = getOrCreateGeneratedClass(beanCollection.elementType(), fieldNode);
+    private CtClass createClass(Class<?> base, Map<String, BeanField> baseFields, Node displayNodes) throws Exception {
+        String newClassName = base.getName() + "Dyn" + ++GENERATED_CLASS_PREFIX;
+        ClassBuilder classBuilder = new ClassBuilder(classPool.getCtClass(base.getName()), classPool.makeClass(newClassName));
 
-                        // Add BeanCollection annotion on new field
-                        ConstPool constPool = dynClass.getClassFile().getConstPool();
-                        attr = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
-                        Annotation annot = new Annotation(BeanCollection.class.getName(), constPool);
-                        annot.addMemberValue("elementType", new ClassMemberValue(elementClass.generatedClass.getName(), constPool));
-                        attr.addAnnotation(annot);
-                        fieldType = classPool.getCtClass(field.getType().getName());
+        for(String key : baseFields.keySet()) {
+            if (displayNodes.getFields().contains(key)) {
+                BeanField baseField = baseFields.get(key);
+                if(displayNodes.getNode(key).hasNodes()) {
+                    if(baseField.getCollectionInstructions() != null) {
+                        Class<?> elementType = baseField.getCollectionInstructions().getCollectionMapsTo();
+                        BeanCollectionUsage beanCollectionUsage = baseField.getCollectionInstructions().getBeanCollectionUsage();
+                        CtClass elementClass = createClass(elementType, displayNodes.getNode(key));
+                        classBuilder.copyField(baseField.getName()).addBeanCollection(elementClass, beanCollectionUsage);
                     } else {
-                        GeneratedClass nestedClass = getOrCreateGeneratedClass(field.getType(), fieldNode);
-                        fieldType = nestedClass.ctClass;
+                        CtClass nestedClass = createClass(baseField.getProperty().getType(), displayNodes.getNode(key));
+                        classBuilder.copyField(baseField.getName()).type(nestedClass);
+                        if (baseField.getProperty().getReadMethod() != null) {
+                            classBuilder.copyMethod(baseField.getProperty().getReadMethod().getName()).returnType(nestedClass);
+                        }
+                        if (baseField.getProperty().getWriteMethod() != null) {
+                            CtClass type = classPool.getCtClass(baseField.getProperty().getType().getName());
+                            classBuilder.copyMethod(baseField.getProperty().getWriteMethod().getName()).changeParam(type, nestedClass);
+                        }
                     }
                 } else {
-                    fieldType = classPool.getCtClass(field.getType().getName());
+                    classBuilder.copyField(baseField.getName());
+                    if (baseField.getProperty().getReadMethod() != null) {
+                        classBuilder.copyMethod(baseField.getProperty().getReadMethod().getName());
+                    }
+                    if (baseField.getProperty().getWriteMethod() != null) {
+                        classBuilder.copyMethod(baseField.getProperty().getWriteMethod().getName());
+                    }
                 }
-                CtField generatedField = new CtField(fieldType, field.getName(), dynClass);
-                generatedField.getFieldInfo().setAccessFlags(1);
-                if(attr != null) {
-                    generatedField.getFieldInfo().addAttribute(attr);
-                }
-                dynClass.addField(generatedField);
             }
         }
+        return classBuilder.build();
     }
 }

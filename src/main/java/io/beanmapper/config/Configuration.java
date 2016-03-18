@@ -3,7 +3,6 @@ package io.beanmapper.config;
 import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
-import io.beanmapper.core.rule.MappableFields;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
 
@@ -18,7 +17,16 @@ public interface Configuration {
      * Include fields never refer to the parent configuration.
      * @return the fields to include in the target
      */
-    List<String> getIncludeFields();
+    List<String> getDownsizeTarget();
+
+    /**
+     * When include fields are passed, BeanMapper will assume that the generation (or reuse)
+     * of a dynamic class is required. For this, DynamicBeanMapper is used. Note that
+     * include fields is a marker field which impact the selection of the mapping strategy.
+     * Include fields never refer to the parent configuration.
+     * @return the fields to include in the source
+     */
+    List<String> getDownsizeSource();
 
     /**
      * The class that represents the collection itself. Used to instantiate a collection.
@@ -42,8 +50,6 @@ public interface Configuration {
      * @return class of the collection
      */
     Object getTarget();
-
-    MappableFields getMappableFields();
 
     BeanInitializer getBeanInitializer();
 
@@ -103,17 +109,22 @@ public interface Configuration {
 
     boolean isAddDefaultConverters();
 
-    void setMappableFields(MappableFields mappableFields);
-
     void setConverterChoosable(boolean converterChoosable);
+
+    /**
+     * Sets the field to downsize the source class.
+     * THe limited source class is mapped over the given target class.
+     * @param includeFields The fields to be mapped to the target class.
+     */
+    void downsizeSource(List<String> includeFields);
 
     /**
      * Sets the only fields that are allowed in the target class. If the include fields are set,
      * it impacts the usage of the mapping strategy. Note that getting this field never refers to
      * the parent configuration.
-     * @param includeFields
+     * @param includeFields The field that are allowed in the target class.
      */
-    void setIncludeFields(List<String> includeFields);
+    void downsizeTarget(List<String> includeFields);
 
     /**
      * Sets the collection class of the collection. Used to instantiate the collection. If the

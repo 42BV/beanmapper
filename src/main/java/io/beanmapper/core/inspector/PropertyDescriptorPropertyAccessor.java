@@ -116,4 +116,19 @@ public class PropertyDescriptorPropertyAccessor implements PropertyAccessor {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Method getReadMethod() {
+        return descriptor.getReadMethod();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Method getWriteMethod() {
+        return descriptor.getWriteMethod();
+    }
 }
