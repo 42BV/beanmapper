@@ -753,9 +753,6 @@ public class BeanMapperTest {
 
     @Test
     public void sourceToTargetWithRuleOnlyNames() {
-        // First normal mapping
-        //sourceToTargetWithRule();
-
         // Second only names mapping
         SourceWithRule source = new SourceWithRule();
         source.setId(null);

@@ -1,5 +1,6 @@
 package io.beanmapper.dynclass;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.beanmapper.BeanMapper;
 import io.beanmapper.config.BeanMapperBuilder;
@@ -7,6 +8,7 @@ import io.beanmapper.dynclass.model.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,10 +46,10 @@ public class ProductDtoTest {
                 .limitTarget(Arrays.asList("id", "name", "assets.id", "assets.name", "artists"))
                 .build();
         Object productDto = beanMapper.map(product);
-        String json = new ObjectMapper().writeValueAsString(productDto);
-        assertEquals(
+
+        String expectedJson =
                 "{\"id\":42,\"name\":\"Aller menscher\"," +
-                    "\"assets\":[" +
+                     "\"assets\":[" +
                         "{\"id\":1138,\"name\":\"Track 1\"}," +
                         "{\"id\":1139,\"name\":\"Track 2\"}," +
                         "{\"id\":1140,\"name\":\"Track 3\"}" +
@@ -56,7 +58,8 @@ public class ProductDtoTest {
                         "{\"id\":1141,\"name\":\"Artist 1\"}," +
                         "{\"id\":1142,\"name\":\"Artist 2\"}" +
                     "]" +
-                "}", json);
+                "}";
+        compareJson(productDto, expectedJson);
     }
 
     @Test
@@ -81,12 +84,12 @@ public class ProductDtoTest {
                 .limitTarget(Arrays.asList("id", "assets.id"))
                 .build();
         Object dto = beanMapper.map(products);
-        String json = new ObjectMapper().writeValueAsString(dto);
-        assertEquals("" +
+        String expectedJson =
                 "[" +
                     "{\"id\":42,\"assets\":[{\"id\":1138},{\"id\":1139},{\"id\":1140}]}," +
                     "{\"id\":43,\"assets\":[{\"id\":1138},{\"id\":1139},{\"id\":1140}]}" +
-                "]", json);
+                "]";
+        compareJson(dto, expectedJson);
     }
 
     private Product createProduct(boolean includeLists) {
@@ -142,6 +145,15 @@ public class ProductDtoTest {
         artist.setId(id);
         artist.setName(name);
         return artist;
+    }
+
+    private void compareJson(Object object, String expectedJson) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(object);
+
+        JsonNode jsonNode = objectMapper.readTree(json);
+        JsonNode expectedJsonNode = objectMapper.readTree(expectedJson);
+        assertEquals(jsonNode, expectedJsonNode);
     }
 
 }
