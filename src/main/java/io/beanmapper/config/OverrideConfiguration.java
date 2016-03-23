@@ -5,6 +5,7 @@ import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
+import io.beanmapper.dynclass.ClassStore;
 
 import java.util.List;
 
@@ -77,6 +78,11 @@ public class OverrideConfiguration implements Configuration {
     @Override
     public BeanMatchStore getBeanMatchStore() {
         return parentConfiguration.getBeanMatchStore();
+    }
+
+    @Override
+    public ClassStore getClassStore() {
+        return parentConfiguration.getClassStore();
     }
 
     @Override

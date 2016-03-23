@@ -5,6 +5,7 @@ import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
+import io.beanmapper.dynclass.ClassStore;
 
 import java.util.List;
 
@@ -60,6 +61,12 @@ public interface Configuration {
      * @return the one beanmatch store
      */
     BeanMatchStore getBeanMatchStore();
+
+    /**
+     * Always use the CoreConfiguration class store
+     * @return the one class store
+     */
+    ClassStore getClassStore();
 
     List<String> getPackagePrefixes();
 
