@@ -1,0 +1,15 @@
+{
+  "name": "beanmapper-docs",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "lite-server"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "lite-server": "^2.1.0"
+  },
+  "dependencies": {
+    "bootstrap": "^3.3.6",
+    "jquery": "^2.2.2"
+  }
+}
