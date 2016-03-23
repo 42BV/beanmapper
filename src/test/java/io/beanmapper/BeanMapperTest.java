@@ -769,7 +769,7 @@ public class BeanMapperTest {
         target.getNested().nestedName = "targetNestedName";
 
         beanMapper.wrapConfig()
-                .limitSource(Arrays.asList("name", "nested", "nested.nestedName"))
+                .downsizeSource(Arrays.asList("name", "nested", "nested.nestedName"))
                 .build()
                 .map(source, target);
         assertEquals(1, target.getId(), 0); // Not mapped

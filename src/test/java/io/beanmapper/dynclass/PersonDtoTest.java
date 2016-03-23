@@ -42,7 +42,7 @@ public class PersonDtoTest {
         beanMapper = beanMapper
                 .config()
                 .setTargetClass(PersonDto.class)
-                .limitTarget(Arrays.asList("id", "name")) // <<< this triggers the dynamic bean generation
+                .downsizeTarget(Arrays.asList("id", "name")) // <<< this triggers the dynamic bean generation
                 .build();
         Person person = createPerson();
         Object dynPersonDto = beanMapper.map(person);
@@ -57,7 +57,7 @@ public class PersonDtoTest {
 
         Person person = beanMapper.config()
                 //only map street & number to the new person.
-                .limitSource(Arrays.asList("street", "houseNumber"))
+                .downsizeSource(Arrays.asList("street", "houseNumber"))
                 .build()
                 .map(personForm, Person.class);
 
@@ -76,7 +76,7 @@ public class PersonDtoTest {
 
         person = beanMapper.config()
                 //only map street & number over the existing person.
-                .limitSource(Arrays.asList("street", "houseNumber"))
+                .downsizeSource(Arrays.asList("street", "houseNumber"))
                 .build()
                 .map(personForm, person);
 

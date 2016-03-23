@@ -156,8 +156,8 @@ public class BeanMapper {
     public BeanMapperBuilder clear() {
         return BeanMapperBuilder
                 .config(configuration)
-                .limitSource(null)
-                .limitTarget(null)
+                .downsizeSource(null)
+                .downsizeTarget(null)
                 .setCollectionClass(null)
                 .setTargetClass(null)
                 .setTarget(null);

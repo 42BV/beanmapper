@@ -22,15 +22,15 @@ public class BeanMapperBuilderTest {
     }
 
     @Test(expected = BeanConfigurationOperationNotAllowedException.class)
-    public void setLimitSourceOnCoreThrowsException() {
+    public void setDownsizeSourceOnCoreThrowsException() {
         BeanMapperBuilder builder = new BeanMapperBuilder();
-        builder.limitSource(null);
+        builder.downsizeSource(null);
     }
 
     @Test(expected = BeanConfigurationOperationNotAllowedException.class)
-    public void setLimitTargetOnCoreThrowsException() {
+    public void setDownsizeTargetOnCoreThrowsException() {
         BeanMapperBuilder builder = new BeanMapperBuilder();
-        builder.limitTarget(null);
+        builder.downsizeTarget(null);
     }
 
     @Test(expected = BeanConfigurationOperationNotAllowedException.class)

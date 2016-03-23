@@ -75,13 +75,13 @@ public class BeanMapperBuilder {
         return this;
     }
 
-    public BeanMapperBuilder limitSource(List<String> limitSourceFields) {
-        this.configuration.downsizeSource(limitSourceFields);
+    public BeanMapperBuilder downsizeSource(List<String> includeFields) {
+        this.configuration.downsizeSource(includeFields);
         return this;
     }
 
-    public BeanMapperBuilder limitTarget(List<String> limitTargetFields) {
-        this.configuration.downsizeTarget(limitTargetFields);
+    public BeanMapperBuilder downsizeTarget(List<String> includeFields) {
+        this.configuration.downsizeTarget(includeFields);
         return this;
     }
 

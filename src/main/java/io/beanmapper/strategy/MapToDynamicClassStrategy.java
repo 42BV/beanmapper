@@ -14,8 +14,8 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
 
     @Override
     public Object map(Object source) {
-        List<String> limitSourceFields = getConfiguration().getDownsizeSource();
-        List<String> limitTargetFields = getConfiguration().getDownsizeTarget();
+        List<String> downsizeSourceFields = getConfiguration().getDownsizeSource();
+        List<String> downsizeTargetFields = getConfiguration().getDownsizeTarget();
 
         // If no collection class is set, but we are dealing with a collection class, make sure it is set
         Class collectionClass = getConfiguration().getCollectionClass();
@@ -23,28 +23,28 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
             getConfiguration().setCollectionClass(source.getClass());
         }
 
-        if (limitSourceFields != null && limitSourceFields.size() > 0) {
-            return limitSource(source, limitSourceFields);
-        } else if (limitTargetFields != null && limitTargetFields.size() > 0) {
-            return limitTarget(source, limitTargetFields);
+        if (downsizeSourceFields != null && downsizeSourceFields.size() > 0) {
+            return downsizeSource(source, downsizeSourceFields);
+        } else if (downsizeTargetFields != null && downsizeTargetFields.size() > 0) {
+            return downsizeTarget(source, downsizeTargetFields);
         } else {
             // Force re-entry through the core map method, but disregard the include fields now
             return getBeanMapper()
                     .config()
-                    .limitSource(null)
-                    .limitTarget(null)
+                    .downsizeSource(null)
+                    .downsizeTarget(null)
                     .build()
                     .map(source);
         }
     }
 
-    public Object limitSource(Object source, List<String> limitSourceFields) {
-        final Class dynamicClass = getConfiguration().getClassStore().getOrCreateGeneratedClass(source.getClass(), limitSourceFields);
+    public Object downsizeSource(Object source, List<String> downsizeSourceFields) {
+        final Class dynamicClass = getConfiguration().getClassStore().getOrCreateGeneratedClass(source.getClass(), downsizeSourceFields);
         Class<?> targetClass = getConfiguration().getTargetClass();
         Object target = getConfiguration().getTarget();
         Object dynSource = getBeanMapper()
                 .config()
-                .limitSource(null)
+                .downsizeSource(null)
                 .setTargetClass(dynamicClass)
                 .build()
                 .map(source);
@@ -58,11 +58,11 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
                 .map(dynSource);
     }
 
-    public Object limitTarget(Object source, List<String> limitTargetFields) {
-        final Class dynamicClass = getConfiguration().getClassStore().getOrCreateGeneratedClass(getConfiguration().determineTargetClass(), limitTargetFields);
+    public Object downsizeTarget(Object source, List<String> downsizeTargetFields) {
+        final Class dynamicClass = getConfiguration().getClassStore().getOrCreateGeneratedClass(getConfiguration().determineTargetClass(), downsizeTargetFields);
         return getBeanMapper()
                 .config()
-                .limitTarget(null)
+                .downsizeTarget(null)
                 .setTargetClass(dynamicClass)
                 .build()
                 .map(source);

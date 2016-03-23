@@ -21,9 +21,9 @@ public class OverrideConfiguration implements Configuration {
 
     private List<BeanConverter> beanConverters;
 
-    private List<String> limitSource;
+    private List<String> downsizeSourceFields;
 
-    private List<String> limitTarget;
+    private List<String> downsizeTargetFields;
 
     private Class targetClass;
 
@@ -42,12 +42,12 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public List<String> getDownsizeSource() {
-        return limitSource;
+        return downsizeSourceFields;
     }
 
     @Override
     public List<String> getDownsizeTarget() {
-        return limitTarget;
+        return downsizeTargetFields;
     }
 
     @Override
@@ -147,12 +147,12 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public void downsizeSource(List<String> includeFields) {
-        this.limitSource = includeFields;
+        this.downsizeSourceFields = includeFields;
     }
 
     @Override
     public void downsizeTarget(List<String> includeFields) {
-        this.limitTarget = includeFields;
+        this.downsizeTargetFields = includeFields;
     }
 
     @Override
