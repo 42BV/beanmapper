@@ -6,7 +6,7 @@ public class TargetWithInnerClass {
     public String name;
     public TargetInnerClass innerClass;
 
-    public class TargetInnerClass {
+    public static class TargetInnerClass {
         public String description;
     }
 }
