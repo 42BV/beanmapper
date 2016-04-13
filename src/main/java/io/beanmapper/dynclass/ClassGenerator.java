@@ -45,11 +45,11 @@ public class ClassGenerator {
                 CtMethod readMethod = null;
                 CtMethod writeMethod = null;
                 if (beanField.getProperty().getReadMethod() != null) {
-                    CtMethod baseReadMethod = baseClass.getDeclaredMethod(beanField.getProperty().getReadMethod().getName());
+                    CtMethod baseReadMethod = getMethod(baseClass, beanField.getProperty().getReadMethod().getName());
                     readMethod = new CtMethod(baseReadMethod, dynClass, null);
                 }
                 if (beanField.getProperty().getWriteMethod() != null) {
-                    CtMethod baseWriteMethod = baseClass.getDeclaredMethod(beanField.getProperty().getWriteMethod().getName());
+                    CtMethod baseWriteMethod = getMethod(baseClass, beanField.getProperty().getWriteMethod().getName());
                     writeMethod = new CtMethod(baseWriteMethod, dynClass, null);
                 }
 
@@ -97,5 +97,17 @@ public class ClassGenerator {
         ClassMap classMap = new ClassMap();
         classMap.put(oldType, newType);
         return new CtMethod(writeMethod, writeMethod.getDeclaringClass(), classMap);
+    }
+
+    private CtMethod getMethod(CtClass clazz, String methodName) {
+        try {
+            return clazz.getDeclaredMethod(methodName);
+        } catch (NotFoundException e) {
+            try {
+                return getMethod(clazz.getSuperclass(), methodName);
+            } catch (NotFoundException e1) {
+                return null;
+            }
+        }
     }
 }
