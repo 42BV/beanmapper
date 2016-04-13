@@ -39,6 +39,8 @@ import io.beanmapper.testmodel.ignore.IgnoreSource;
 import io.beanmapper.testmodel.ignore.IgnoreTarget;
 import io.beanmapper.testmodel.initiallyunmatchedsource.SourceWithUnmatchedField;
 import io.beanmapper.testmodel.initiallyunmatchedsource.TargetWithoutUnmatchedField;
+import io.beanmapper.testmodel.innerclass.SourceWithInnerClass;
+import io.beanmapper.testmodel.innerclass.TargetWithInnerClass;
 import io.beanmapper.testmodel.multipleunwrap.AllTogether;
 import io.beanmapper.testmodel.multipleunwrap.LayerA;
 import io.beanmapper.testmodel.nestedclasses.Layer1;
@@ -776,6 +778,17 @@ public class BeanMapperTest {
         assertEquals(source.getName(), target.getName()); // Overwritten
         assertEquals(2, target.getNested().nestedInt, 0); // Not mapped
         assertEquals(source.getNested().nestedName, target.getNested().nestedName); // Overwritten
+    }
+
+    @Test
+    public void mapWithInnerClass() {
+        SourceWithInnerClass source = new SourceWithInnerClass(1L, "42BV");
+        source.innerClass = new SourceWithInnerClass.SourceInnerClass("IT Company");
+
+        TargetWithInnerClass target = beanMapper.map(source, TargetWithInnerClass.class);
+        assertEquals(1L, target.id, 0);
+        assertEquals("42BV", target.name);
+        assertEquals("IT Company", target.innerClass.description);
     }
 
     public Person createPerson(String name) {

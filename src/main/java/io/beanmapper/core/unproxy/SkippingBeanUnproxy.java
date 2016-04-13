@@ -49,7 +49,10 @@ public class SkippingBeanUnproxy implements BeanUnproxy {
             if (skipClazz.equals(clazz)) {
                 return true;
             } else if (clazz.getSuperclass() != null) {
-                return isSkippedProxyClass(clazz.getSuperclass());
+                boolean skipSuperClass = isSkippedProxyClass(clazz.getSuperclass());
+                if(skipSuperClass) {
+                    return true;
+                }
             }
         }
         return false;

@@ -18,7 +18,10 @@ public class DefaultBeanUnproxy implements BeanUnproxy {
     public Class<?> unproxy(Class<?> beanClass) {
         String name = beanClass.getName();
         if (name.contains("$")) {
-            return beanClass.getInterfaces()[0];
+            Class<?>[] interfaces = beanClass.getInterfaces();
+            if(interfaces.length > 0) {
+                return beanClass.getInterfaces()[0];
+            }
         }
         return beanClass;
     }
