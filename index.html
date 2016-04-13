@@ -46,7 +46,7 @@
           It also show examples of using BeanMapper in combination with BeanMapper-Spring
         </div>
       </section>
-      <section id="usage">
+      <section id="use-case">
         <h3 class="section-title">Why using BeanMapper?</h3>
         <div class="section-body">
          When building a REST API you work quite often with three kinds of objects.
@@ -56,7 +56,7 @@
             <li>The Form; When creating/updating a entity you often want to use a form object to pass the given data to.</li>
           </ol>
           Below a image showing this three objects in context of the application: <br>
-          <a href="/images/beanmapper-usage.png" target="_blank"><img src="images/beanmapper-usage.png" height="200px"></a><br>
+          <a href="/images/beanmapper-usecase.png" target="_blank"><img src="images/beanmapper-usecase.png" height="200px"></a><br>
 
           <b>Why using forms?</b>
           <ul>
@@ -116,45 +116,126 @@
                 public Integer age;
             }</code>
 
-          <br><b>Convert to a new class</b>
+          <br><b>Convert to a new class</b><br>
+          Mapping to a new class does first create an instance of the given target class.<br>
+          Then BeanMapper uses the map to existing instance strategy to map the source to the created class instance.<br>
+          Take a look at <a href="#beanconstruct">BeanConstruct</a>  if you do not have a non-args constructor.<br>
           <code>
             Source source = new Source(1L, "Henk", 42);
 
             Target target = new BeanMapperBuilder().build()
-                      .map(source, Target.class);</code>
+                  .map(source, Target.class);
 
-          <br><b>Convert to a existing instance</b>
+            assertEquals("Henk", target.name);
+            assertEquals(42, target.age, 0);</code>
+
+          <br><b>Convert to a existing instance</b><br>
+          Use this method if you want to override a instance with another instance.<br>
+          The values of the target instance are overwritten by the given source instance.<br>
+          Fields are mapped base on the name of the field and based on bean conventions.
+          BeanMapper only maps fields when a field name in the source instance matches a field name in the target instance.<br>
+          With annotations you have a lot more possibilities to map classes, take a look on the list below.<br>
+          <br>
+          <table class="table table-condensed">
+            <tr>
+              <th>BeanIgnore</th>
+              <td>Use this when you explicitly don't want to map a field.</td>
+              <td><a href="#beanignore">docs</a></td>
+            </tr>
+            <tr>
+              <th>BeanProperty</th>
+              <td>Use this when you want to map fields that have no matching field names.</td>
+              <td><a href="#beanproperty">docs</a></td>
+            </tr>
+            <tr>
+              <th>BeanDefault</th>
+              <td>Use this when you want to set a default value when the mapped value is null.</td>
+              <td><a href="#beandefault">docs</a></td>
+            </tr>
+            <tr>
+              <th>BeanCollection</th>
+              <td>Use this when you want to map a field of type Collection.</td>
+              <td><a href="#beancollection">docs</a></td>
+            </tr>
+          </table>
           <code>
             Source source = new Source(1L, "Henk", 42);
-            Target existingTarget = new Target();
-            existingTarget.name = "piet";
 
-            Target mergedTarget = new BeanMapperBuilder().build()
-                      .map(source, existingTarget);</code>
+            Target target = new BeanMapperBuilder().build()
+                  .map(source, Target.class);
 
-          <br><b>Convert to a collection</b>
+            assertEquals("Henk", target.name);
+            assertEquals(42, target.age, 0);</code>
+
+          <br><b>Convert to a collection</b><br>
+          Use this method when you want to map a collection of items to a collection of items of an other type.<br>
+          Of course you can do this for yourself by creating a loop and call map inside each loop.
+          This method is just to make it easy for you.
+          Can also pass a third optional argument to convert the list to. In this case i have choose a ArrayList.class.
           <code>
-            List&lt;Source> sources = new ArrayList<>();
+            List&lt;Source> sources = new ArrayList&lt;Source>();
             sources.add(new Source(1L, "Henk", 42));
             sources.add(new Source(2L, "Piet", 50));
             sources.add(new Source(3L, "Kees", 3));
 
-            Collection&lt;Target> targets = new BeanMapperBuilder().build()
-                    .map(sources, Target.class, ArrayList.class);</code>
+            ArrayList&lt;Target> targets = (ArrayList&lt;Target>) new BeanMapperBuilder().build()
+                      .map(sources, Target.class, ArrayList.class);
 
-          <br><b>Convert to a dynamic generated class</b>
+            assertEquals(3, targets.size(), 0);
+            assertEquals("Henk", targets.get(0).name);
+            assertEquals("Piet", targets.get(1).name);
+            assertEquals("Kees", targets.get(2).name);</code>
+
+          <br><b>Convert to a dynamic generated class</b><br>
+          This method consist of two different ways:
+          <ol>
+            <li>Map only a few fields of the source class over the existing target instance.</li>
+            <li>Map to a new target instance and restrict this target instance to contain only the given fields.</li>
+          </ol>
+          Both methods does use javassist to create a new class.
+          <br><br>
+          The first option is called 'downsizeSource'.
+          This method generates a new class based on the source class but only with the fields you want to map.
+          BeanMapper uses the generated class to map over the existing given target instance.
+          The result is that you have mapped only a few fields from the source over the target instance.
+          Use case for this method is for example a <a href="#patch">PATCH request</a>.
+          <br><br>
+          The second options is called 'downsizeTarget'.
+          With this option you can expose a few fields of the source class to the outside.
+          BeanMapper generates a new class based on the given target class but only with the fields you want to exist in the target.
+          <br><br>
+          Below examples of both options.
           <code>
+            // Option 1: downsizeSource
+            BeanMapper beanMapper = new BeanMapperBuilder().build();
+            Source source = new Source(1L, "Henk", 42);
+            Target target = new Target("Piet", 12);
+
+            beanMapper.wrapConfig()
+                    .downsizeSource(Arrays.asList("age"))
+                    .build()
+                    .map(source, target);
+
+            assertEquals("Piet", target.name);
+            assertEquals(42, target.age, 0);</code>
+          <code>
+            // Option 2: downsizeTarget
+            BeanMapper beanMapper = new BeanMapperBuilder().build();
             Source source = new Source(1L, "Henk", 42);
 
-            Object target = new BeanMapperBuilder().build()
-                      .map(source, Target.class, new MappableFields("name"));
-            // Target now a class only containing a name</code>
+            Object target = beanMapper.wrapConfig()
+                    .downsizeTarget(Arrays.asList("name"))
+                    .build()
+                    .map(source, Target.class);
+
+            String json = new ObjectMapper().writeValueAsString(target);
+            assertEquals("{\"name\":\"Henk\"}", json);</code>
         </div>
       </section>
       <section id="download">
         <h3 class="section-title">Download</h3>
         <div class="section-body">
-          In order to use Beanmapper in your project, simply add the following Maven dependency.<br>
+          In order to use Beanmapper in your project, simple add the following Maven dependency.<br>
           <code>
             &lt;dependency&gt;
               &lt;groupId&gt;io.beanmapper&lt;/groupId&gt;
@@ -170,40 +251,99 @@
         </div>
       </section>
 
-      <!-- REST -->
-      <section id="get">
-        <h3 class="section-title">GET</h3>
-        <div class="section-body"></div>
-      </section>
-      <section id="post">
-        <h3 class="section-title">POST</h3>
-        <div class="section-body"></div>
-      </section>
-      <section id="put">
-        <h3 class="section-title">PUT</h3>
-        <div class="section-body"></div>
-      </section>
-      <section id="patch">
-        <h3 class="section-title">PATCH</h3>
-        <div class="section-body"></div>
-      </section>
-      <section id="delete">
-        <h3 class="section-title">DELETE</h3>
-        <div class="section-body"></div>
-      </section>
-
       <!-- Annotations -->
       <section id="beanproperty">
         <h3 class="section-title">BeanProperty</h3>
-        <div class="section-body"></div>
+        <div class="section-body">
+          You can annotate your fields with @BeanProperty.
+          The BeanProperty annotation takes one argument which is a name.
+          BeanProperty indicates that the given field has an other name on the other side.
+          The given name in BeanProperty should matches the field name on the other side.
+          BeanMapper throws a BeanNoSuchPropertyException if it does not find a field with the given name.
+          This annotation can be used by properties on both sides. Below a example:
+          <code>
+            public class Source {
+                public Long id;
+                public String name;
+                @BeanProperty(name = "otherAge")
+                public Integer age;
+            }</code>
+          <code>
+            public class Target {
+                @BeanProperty(name = "name")
+                public String otherName;
+                public Integer otherAge;
+            }</code>
+          <code>
+            // Test
+            Source source = new Source(1L, "Henk", 42);
+            Target target = new BeanMapperBuilder().build()
+                    .map(source, Target.class);
+
+            assertEquals("Henk", target.otherName);
+            assertEquals(42, target.otherAge, 0);
+          </code>
+        </div>
       </section>
       <section id="beanignore">
         <h3 class="section-title">BeanIgnore</h3>
-        <div class="section-body"></div>
+        <div class="section-body">
+          Ignoring fields can be done through the @BeanIgnore annotation.
+          BeanMapper does not map these fields. This annotation can be used at both sides.
+          Below a example:
+          <code>
+            public class Source {
+                public Long id;
+                public String name;
+                @BeanIgnore
+                public Integer age;
+            }</code>
+          <code>
+            public class Target {
+                @BeanIgnore
+                public String name;
+                public Integer age;
+            }</code>
+          <code>
+            // Test
+            Source source = new Source(1L, "Henk", 42);
+            Target target = new BeanMapperBuilder().build()
+                    .map(source, Target.class);
+
+            assertNull(target.name);
+            assertNull(target.age);
+          </code>
+        </div>
       </section>
       <section id="beandefault">
         <h3 class="section-title">BeanDefault</h3>
-        <div class="section-body"></div>
+        <div class="section-body">
+          You can set a default value when the value to map contains null.
+          This annotation can be used at both sides. Below a example:
+          <code>
+            public class Source {
+                public Long id;
+                public String name;
+                @BeanDefault("5")
+                public Integer age;
+            }</code>
+          <code>
+            public class Target {
+                @BeanDefault("Henk")
+                public String name;
+                public Integer age;
+            }</code>
+          When mapping an empty source to a new target instance it gets the default values because the value to map is empty.
+          <code>
+            Source source = new Source(null, null, null);
+            Target target = new BeanMapperBuilder()
+                    .build()
+                    .map(source, Target.class);
+
+            assertEquals(5, target.age, 0);
+            assertEquals("Henk", target.name);
+          </code>
+        </div>
       </section>
       <section id="beancollection">
         <h3 class="section-title">BeanCollection</h3>
@@ -231,6 +371,29 @@
         <h3 class="section-title">Flat to Nested</h3>
         <div class="section-body"></div>
       </section>
+
+      <!-- REST -->
+      <section id="get">
+        <h3 class="section-title">GET</h3>
+        <div class="section-body"></div>
+      </section>
+      <section id="post">
+        <h3 class="section-title">POST</h3>
+        <div class="section-body"></div>
+      </section>
+      <section id="put">
+        <h3 class="section-title">PUT</h3>
+        <div class="section-body"></div>
+      </section>
+      <section id="patch">
+        <h3 class="section-title">PATCH</h3>
+        <div class="section-body"></div>
+      </section>
+      <section id="delete">
+        <h3 class="section-title">DELETE</h3>
+        <div class="section-body"></div>
+      </section>
+
     </div> <!-- End content column -->
 
 
@@ -242,21 +405,9 @@
           </div>
           <div class="list-group">
             <a href="#about" class="list-group-item">About</a>
-            <a href="#usage" class="list-group-item">Usage</a>
+            <a href="#use-case" class="list-group-item">Use case</a>
             <a href="#how-to-use" class="list-group-item">How to Use</a>
             <a href="#download" class="list-group-item">Download</a>
-          </div>
-        </div>
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <span class="panel-title">REST</span>
-          </div>
-          <div class="list-group">
-            <a href="#get" class="list-group-item">GET</a>
-            <a href="#post" class="list-group-item">POST</a>
-            <a href="#put" class="list-group-item">PUT</a>
-            <a href="#patch" class="list-group-item">PATCH</a>
-            <a href="#delete" class="list-group-item">DELETE</a>
           </div>
         </div>
         <div class="panel panel-default">
@@ -280,6 +431,18 @@
             <a href="#nested-to-nested" class="list-group-item">Nested to nested</a>
             <a href="#nested-to-flat" class="list-group-item">Nested to flat</a>
             <a href="#flat-to-nested" class="list-group-item">Flat to nested</a>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <span class="panel-title">REST</span>
+          </div>
+          <div class="list-group">
+            <a href="#get" class="list-group-item">GET</a>
+            <a href="#post" class="list-group-item">POST</a>
+            <a href="#put" class="list-group-item">PUT</a>
+            <a href="#patch" class="list-group-item">PATCH</a>
+            <a href="#delete" class="list-group-item">DELETE</a>
           </div>
         </div>
       </div>
