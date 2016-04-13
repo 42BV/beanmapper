@@ -35,30 +35,31 @@ public class ClassGenerator {
 
         for(String key : baseFields.keySet()) {
             if (displayNodes.getFields().contains(key)) {
-                BeanField baseField = baseFields.get(key);
+                BeanField beanField = baseFields.get(key);
+                CtField baseField = baseClass.getField(beanField.getName());
 
                 // Field must be included -> copy field with related methods
-                CtField generatedField = new CtField(baseClass.getField(baseField.getName()), dynClass);
+                CtField generatedField = new CtField(baseField, dynClass);
                 dynClass.addField(generatedField);
 
                 CtMethod readMethod = null;
                 CtMethod writeMethod = null;
-                if (baseField.getProperty().getReadMethod() != null) {
-                    CtMethod baseReadMethod = baseClass.getDeclaredMethod(baseField.getProperty().getReadMethod().getName());
+                if (beanField.getProperty().getReadMethod() != null) {
+                    CtMethod baseReadMethod = baseClass.getDeclaredMethod(beanField.getProperty().getReadMethod().getName());
                     readMethod = new CtMethod(baseReadMethod, dynClass, null);
                 }
-                if (baseField.getProperty().getWriteMethod() != null) {
-                    CtMethod baseWriteMethod = baseClass.getDeclaredMethod(baseField.getProperty().getWriteMethod().getName());
+                if (beanField.getProperty().getWriteMethod() != null) {
+                    CtMethod baseWriteMethod = baseClass.getDeclaredMethod(beanField.getProperty().getWriteMethod().getName());
                     writeMethod = new CtMethod(baseWriteMethod, dynClass, null);
                 }
 
                 if(displayNodes.getNode(key).hasNodes()) {
-                    if(baseField.getCollectionInstructions() != null) {
-                        handleBeanCollection(dynClass, generatedField, baseField.getCollectionInstructions(), displayNodes.getNode(key));
+                    if(beanField.getCollectionInstructions() != null) {
+                        handleBeanCollection(generatedField, beanField.getCollectionInstructions(), displayNodes.getNode(key));
                     } else {
-                        GeneratedClass nestedClass = handleNestedClass(generatedField, baseField.getProperty().getType(), displayNodes.getNode(key));
+                        GeneratedClass nestedClass = handleNestedClass(generatedField, beanField.getProperty().getType(), displayNodes.getNode(key));
                         if(readMethod != null) readMethod = changeReadMethod(readMethod, nestedClass.ctClass);
-                        if(writeMethod != null) writeMethod = changeWriteMethod(writeMethod, baseField.getProperty().getType(), nestedClass.ctClass);
+                        if(writeMethod != null) writeMethod = changeWriteMethod(writeMethod, baseField.getType(), nestedClass.ctClass);
                     }
                 }
 
@@ -75,10 +76,10 @@ public class ClassGenerator {
         return nestedClass;
     }
 
-    private void handleBeanCollection(CtClass dynClass, CtField field, BeanCollectionInstructions collectionInstructions, Node displayNodes) throws Exception {
+    private void handleBeanCollection(CtField field, BeanCollectionInstructions collectionInstructions, Node displayNodes) throws Exception {
         GeneratedClass elementClass = createClass(collectionInstructions.getCollectionMapsTo(), displayNodes);
 
-        ConstPool constPool = dynClass.getClassFile().getConstPool();
+        ConstPool constPool = field.getDeclaringClass().getClassFile().getConstPool();
         AnnotationsAttribute attr= new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
         Annotation annotation = new Annotation(BeanCollection.class.getName(), constPool);
         annotation.addMemberValue("elementType", new ClassMemberValue(elementClass.generatedClass.getName(), constPool));
@@ -87,19 +88,14 @@ public class ClassGenerator {
     }
 
     private CtMethod changeReadMethod(CtMethod readMethod, CtClass newType) throws NotFoundException, CannotCompileException {
-        CtMethod newReadMethod = new CtMethod(newType, readMethod.getName(), readMethod.getParameterTypes(), readMethod.getDeclaringClass());
-        newReadMethod.setBody(readMethod, null);
-        return null;
+        ClassMap classMap = new ClassMap();
+        classMap.put(readMethod.getReturnType(), newType);
+        return new CtMethod(readMethod, readMethod.getDeclaringClass(), classMap);
     }
 
-    private CtMethod changeWriteMethod(CtMethod writeMethod, Class<?> oldType, CtClass newType) throws NotFoundException, CannotCompileException {
-        CtClass ctType = classPool.getCtClass(oldType.getName());
-        CtClass[] parameters = writeMethod.getParameterTypes();
-        for(int i=0; i<parameters.length; i++) {
-            if(parameters[i] == ctType) parameters[i] = newType;
-        }
-        CtMethod newWriteMethod = new CtMethod(writeMethod.getReturnType(), writeMethod.getName(), parameters, writeMethod.getDeclaringClass());
-        newWriteMethod.setBody(writeMethod, null);
-        return null;
+    private CtMethod changeWriteMethod(CtMethod writeMethod, CtClass oldType, CtClass newType) throws NotFoundException, CannotCompileException {
+        ClassMap classMap = new ClassMap();
+        classMap.put(oldType, newType);
+        return new CtMethod(writeMethod, writeMethod.getDeclaringClass(), classMap);
     }
 }
