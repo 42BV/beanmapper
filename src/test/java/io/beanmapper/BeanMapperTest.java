@@ -6,6 +6,7 @@ import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
 import io.beanmapper.core.converter.impl.NestedSourceClassToNestedTargetClassConverter;
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
 import io.beanmapper.core.rule.MappableFields;
+import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.testmodel.beanAlias.NestedSourceWithAlias;
 import io.beanmapper.testmodel.beanAlias.SourceWithAlias;
@@ -78,7 +79,9 @@ import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -89,6 +92,7 @@ import static org.junit.Assert.*;
 public class BeanMapperTest {
 
     private BeanMapper beanMapper;
+    @Rule public ExpectedException exception = ExpectedException.none();
     
     @Before
     public void prepareBeanMapper() {
@@ -821,6 +825,29 @@ public class BeanMapperTest {
         assertEquals(1L, target.id, 0);
         assertEquals("42BV", target.name);
         assertEquals("IT Company", target.innerClass.description);
+    }
+
+    @Test
+    public void overrideConverterTest() {
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .addPackagePrefix(BeanMapper.class)
+                .build();
+
+        SourceWithDate source = new SourceWithDate();
+        source.setDiffType(LocalDate.of(2015, 1, 1));
+        source.setSameType(LocalDate.of(2000, 1, 1));
+
+        TargetWithDateTime target = beanMapper.wrapConfig()
+                .addConverter(new LocalDateToLocalDateTime())
+                .build()
+                .map(source, TargetWithDateTime.class);
+
+        assertEquals(target.getDiffType(), LocalDateTime.of(2015, 1, 1, 0, 0));
+        assertEquals(target.getSameType(), LocalDate.of(2000, 1, 1));
+
+        exception.expect(BeanConversionException.class);
+        exception.expectMessage("Could not convert LocalDate to LocalDateTime.");
+        beanMapper.map(source, TargetWithDateTime.class);
     }
 
     public Person createPerson(String name) {

@@ -7,6 +7,7 @@ import io.beanmapper.core.rule.MappableFields;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class OverrideConfiguration implements Configuration {
@@ -19,7 +20,7 @@ public class OverrideConfiguration implements Configuration {
 
     private List<String> packagePrefixes;
 
-    private List<BeanConverter> beanConverters;
+    private List<BeanConverter> beanConverters = new ArrayList<BeanConverter>();
 
     private List<String> includeFields;
 
@@ -87,7 +88,10 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public List<BeanConverter> getBeanConverters() {
-        return beanConverters == null ? parentConfiguration.getBeanConverters() : beanConverters;
+        List<BeanConverter> converters = new ArrayList<BeanConverter>();
+        converters.addAll(parentConfiguration.getBeanConverters());
+        converters.addAll(beanConverters);
+        return converters;
     }
 
     @Override
@@ -100,14 +104,9 @@ public class OverrideConfiguration implements Configuration {
         // not supported for override options
     }
 
-    // @todo make sure addConverter works for override
     @Override
     public void addConverter(BeanConverter converter) {
-//        if (beanConverters == null) {
-//            beanConverters = new ArrayList<BeanConverter>();
-//        }
-//        beanConverters.add(converter);
-        // not supported for override options
+        beanConverters.add(converter);
     }
 
     @Override
