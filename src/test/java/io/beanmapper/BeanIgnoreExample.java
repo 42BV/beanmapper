@@ -11,7 +11,7 @@ import static junit.framework.Assert.assertNull;
 public class BeanIgnoreExample {
 
     @Test
-    public void mapOtherNames() {
+    public void mapAndIgnore() {
         Source source = new Source(1L, "Henk", 42);
         Target target = new BeanMapperBuilder().build()
                 .map(source, Target.class);

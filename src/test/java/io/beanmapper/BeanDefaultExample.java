@@ -11,7 +11,7 @@ import static junit.framework.Assert.assertNull;
 public class BeanDefaultExample {
 
     @Test
-    public void mapOtherNames() {
+    public void mapWithDefaults() {
         Source source = new Source(null, null, null);
         Target target = new BeanMapperBuilder()
                 .build()
