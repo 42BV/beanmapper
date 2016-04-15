@@ -4,6 +4,21 @@
   <meta charset='utf-8'>
   <meta http-equiv="X-UA-Compatible" content="chrome=1">
 
+  <link rel="apple-touch-icon" sizes="57x57" href="/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+  <link rel="manifest" href="/icons/manifest.json">
+
   <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="styles/highlight.css">
   <link rel="stylesheet" href="styles/main.css">
@@ -16,6 +31,7 @@
 <header class="container-fluid">
   <div class="row">
     <div class="col-xs-12">
+      <img src="images/logo.png" alt="Logo BeanMapper" class="logo">
       <h1>Beanmapper</h1>
       <h2>Library for converting from one Java class to a dissimilar Java class <br>with similar names based on the Bean
         convention</h2>
@@ -651,7 +667,71 @@ assertEquals("Henk", target.otherName);
       <!-- Nested -->
       <section id="nested-to-nested">
         <h3 class="section-title">Nested to Nested</h3>
-        <div class="section-body"></div>
+        <div class="section-body">
+          BeanMapper does support by default nested objects.
+          Nested in this context means fields that have more fields inside.
+          For example a pet. A pet does have name, birthDate and a type.
+          Type is an instance of PetType which contains a name.
+          If you want to map that pet you may also want to map the type inside the pet class.
+          To indicate which classes are custom nested class (not String, Object etc.) you must set a package.
+          All classes in the given package and sub-packages are eligible for mapping.
+          The root source and target do not need to be set as such,
+          because the verification is only run against nested classes which should be mapped implicitly as well.
+          Below a example which is showing this use case.
+          <br>
+          <div class="row">
+            <div class="col-xs-12 col-md-6">
+<code>
+public class Pet {
+    public String nickname;
+    public LocalDate birthDate;
+    public PetType type;
+
+    public Pet(String nickname, LocalDate birthDate, Long typeId, String typeName) {
+        this.nickname = nickname;
+        this.birthDate = birthDate;
+        this.type = new PetType();
+        this.type.name = typeName;
+        this.type.id = typeId;
+    }
+}
+
+public class PetType {
+    public Long id;
+    public String name;
+}
+</code>
+            </div>
+            <div class="col-xs-12 col-md-6">
+<code>
+public class PetResult {
+    @BeanProperty(name = "nickname")
+    public String name;
+    public PetTypeResult type;
+}
+
+public class PetTypeResult {
+    public String name;
+}
+</code>
+            </div>
+            <div class="col-xs-12">
+              <br>
+<code>
+Pet pet = new Pet("Loebas", LocalDate.now(), 1L, "Dog");
+
+PetResult petResult = new BeanMapperBuilder()
+        .addPackagePrefix(PetTypeResult.class)
+        .build()
+        .map(pet, PetResult.class);
+
+assertEquals("Loebas", petResult.name);
+// Class PetType in Pet is mapped as well to PetTypeResult
+assertEquals("Dog", petResult.type.name);
+</code>
+            </div>
+          </div>
+        </div>
       </section>
       <section id="nested-to-flat">
         <h3 class="section-title">Nested to Flat</h3>

@@ -26,6 +26,13 @@ section>.section-body {
     padding: 15px;
 }
 
+.logo {
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    height: 150px;
+}
+
 .stick {
     position: fixed;
     top: 0;
