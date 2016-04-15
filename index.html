@@ -668,17 +668,21 @@ assertEquals("Henk", target.otherName);
       <section id="nested-to-nested">
         <h3 class="section-title">Nested to Nested</h3>
         <div class="section-body">
+          Let's start with an example of mapping nested objects:
+          <img src="images/nested-to-nested.png" alt="nested to nested mapping"><br>
           BeanMapper does support by default nested objects.
           Nested in this context means fields that have more fields inside.
-          For example a pet. A pet does have name, birthDate and a type.
-          Type is an instance of PetType which contains a name.
+          For example a pet. A pet does have a name, birthDate and a type.
+          Type is an instance of PetType which contains an id and a name.
           If you want to map that pet you may also want to map the type inside the pet class.
-          To indicate which classes are custom nested class (not String, Object etc.) you must set a package.
+          BeanMapper just do that.
+          <br><br>
+          To indicate which classes are mapped deeper inside, you have to set a package.
           All classes in the given package and sub-packages are eligible for mapping.
           The root source and target do not need to be set as such,
           because the verification is only run against nested classes which should be mapped implicitly as well.
           Below a example which is showing this use case.
-          <br>
+          <br><br>
           <div class="row">
             <div class="col-xs-12 col-md-6">
 <code>
