@@ -64,5 +64,10 @@ section>.section-body {
 }
 
 code {
-    white-space: pre;
+    white-space: pre-line;
+
+}
+
+tab {
+    padding-left: 2em;
 }
