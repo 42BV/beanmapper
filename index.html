@@ -36,7 +36,7 @@
         <div class="section-body">
           The core definition of the task of BeanMapper is for converting from one Java class to a dissimilar Java class with similar names based on the Bean convention.
           However BeanMapper does have a lot more functionality than only converting Java classes.<br>
-          You can read about this in the rest of this documentation.<br>
+          You can read about this in the rest of the documentation.<br>
           <br>
           Using Spring?<br>
           Take a look at <a href="https://github.com/42BV/beanmapper-spring" target="_blank">BeanMapper-Spring</a> for combining the power of BeanMapper together with Spring.<br>
@@ -99,38 +99,41 @@
           Lets assume that we have two classes. SourceClass is your entity that is used inside the application.
           TargetClass is the class that you would like to expose to the outside.<br>
           <br>
-          <code>public class Source {
-            <tab/>public Long id;
-            <tab/>public String name;
-            <tab/>public Integer age;
+<code>
+public class Source {
+    public Long id;
+    public String name;
+    public Integer age;
 
-            <tab/>public Source(Long id, String name, Integer age) {
-            <tab/><tab/>this.id = id;
-            <tab/><tab/>this.name = name;
-            <tab/><tab/>this.age = age;
-            <tab/>}
-            }
+    public Source(Long id, String name, Integer age) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+    }
+}
 
-            public class Target {
-            <tab/>public String name;
-            <tab/>public Integer age;
-            }
-          </code>
+public class Target {
+    public String name;
+    public Integer age;
+}
+</code>
 
-          <br><b>Convert to a new class</b><br>
+          <br><b>Map to a new class</b><br>
           Mapping to a new class does first create an instance of the given target class.<br>
           Then BeanMapper uses the map to existing instance strategy to map the source to the created class instance.<br>
           Take a look at <a href="#beanconstruct">BeanConstruct</a>  if you do not have a non-args constructor.<br>
           <br>
-          <code>Source source = new Source(1L, "Henk", 42);
+<code>
+Source source = new Source(1L, "Henk", 42);
 
-            Target target = new BeanMapperBuilder().build()
-            <tab/><tab/>.map(source, Target.class);
+Target target = new BeanMapperBuilder().build()
+        .map(source, Target.class);
 
-            assertEquals("Henk", target.name);
-            assertEquals(42, target.age, 0);</code>
+assertEquals("Henk", target.name);
+assertEquals(42, target.age, 0);
+</code>
 
-          <br><b>Convert to a existing instance</b><br>
+          <br><b>Map to a existing instance</b><br>
           Use this method if you want to override a instance with another instance.<br>
           The values of the target instance are overwritten by the given source instance.<br>
           Fields are mapped base on the name of the field and based on bean conventions.
@@ -159,33 +162,35 @@
               <td><a href="#beancollection">docs</a></td>
             </tr>
           </table>
-          <code>Source source = new Source(1L, "Henk", 42);
+<code>
+Source source = new Source(1L, "Henk", 42);
 
-            Target target = new BeanMapperBuilder().build()
-            <tab/><tab/>.map(source, Target.class);
+Target target = new BeanMapperBuilder().build()
+        .map(source, Target.class);
 
-            assertEquals("Henk", target.name);
-            assertEquals(42, target.age, 0);</code>
-
-          <br><b>Convert to a collection</b><br>
+assertEquals("Henk", target.name);
+assertEquals(42, target.age, 0);
+</code>
+          <br><b>Map to a collection</b><br>
           Use this method when you want to map a collection of items to a collection of items of an other type.<br>
           Of course you can do this for yourself by creating a loop and call map inside each loop.
           This method is just to make it easy for you.
-          Can also pass a third optional argument to convert the list to. In this case i have choose a ArrayList.class.<br>
+          Can also pass a third optional argument to convert the list to. In this case we choose a ArrayList.class.<br>
           <br>
-          <code>List&lt;Source> sources = new ArrayList&lt;Source>();
-            sources.add(new Source(1L, "Henk", 42));
-            sources.add(new Source(2L, "Piet", 50));
-            sources.add(new Source(3L, "Kees", 3));
+<code>
+List&lt;Source> sources = new ArrayList&lt;Source>();
+sources.add(new Source(1L, "Henk", 42));
+sources.add(new Source(2L, "Piet", 50));
+sources.add(new Source(3L, "Kees", 3));
 
-            ArrayList&lt;Target> targets = (ArrayList&lt;Target>) new BeanMapperBuilder().build()
-            <tab/><tab/>.map(sources, Target.class, ArrayList.class);
+ArrayList&lt;Target> targets = (ArrayList&lt;Target>) new BeanMapperBuilder().build()
+        .map(sources, Target.class, ArrayList.class);
 
-            assertEquals(3, targets.size(), 0);
-            assertEquals("Henk", targets.get(0).name);
-            assertEquals("Piet", targets.get(1).name);
-            assertEquals("Kees", targets.get(2).name);</code>
-
+assertEquals(3, targets.size(), 0);
+assertEquals("Henk", targets.get(0).name);
+assertEquals("Piet", targets.get(1).name);
+assertEquals("Kees", targets.get(2).name);
+</code>
           <br><b>Convert to a dynamic generated class</b><br>
           This method consist of two different ways:
           <ol>
@@ -205,42 +210,45 @@
           BeanMapper generates a new class based on the given target class but only with the fields you want to exist in the target.
           <br><br>
           Below examples of both options.
-          <code>// Option 1: downsizeSource
-            BeanMapper beanMapper = new BeanMapperBuilder().build();
-            Source source = new Source(1L, "Henk", 42);
-            Target target = new Target("Piet", 12);
+<code>
+// Option 1: downsizeSource
+BeanMapper beanMapper = new BeanMapperBuilder().build();
+Source source = new Source(1L, "Henk", 42);
+Target target = new Target("Piet", 12);
 
-            beanMapper.wrapConfig()
-            <tab/><tab/>.downsizeSource(Arrays.asList("age"))
-            <tab/><tab/>.build()
-            <tab/><tab/>.map(source, target);
+beanMapper.wrapConfig()
+        .downsizeSource(Arrays.asList("age"))
+        .build()
+        .map(source, target);
 
-            assertEquals("Piet", target.name);
-            assertEquals(42, target.age, 0);</code>
-          <code>
-            // Option 2: downsizeTarget
-            BeanMapper beanMapper = new BeanMapperBuilder().build();
-            Source source = new Source(1L, "Henk", 42);
+assertEquals("Piet", target.name);
+assertEquals(42, target.age, 0);
 
-            Object target = beanMapper.wrapConfig()
-            <tab/><tab/>.downsizeTarget(Arrays.asList("name"))
-            <tab/><tab/>.build()
-            <tab/><tab/>.map(source, Target.class);
+// Option 2: downsizeTarget
+BeanMapper beanMapper = new BeanMapperBuilder().build();
+Source source = new Source(1L, "Henk", 42);
 
-            String json = new ObjectMapper().writeValueAsString(target);
-            assertEquals("{\"name\":\"Henk\"}", json);</code>
+Object target = beanMapper.wrapConfig()
+        .downsizeTarget(Arrays.asList("name"))
+        .build()
+        .map(source, Target.class);
+
+String json = new ObjectMapper().writeValueAsString(target);
+assertEquals("{\"name\":\"Henk\"}", json);
+</code>
         </div>
       </section>
       <section id="download">
         <h3 class="section-title">Download</h3>
         <div class="section-body">
           In order to use Beanmapper in your project, simple add the following Maven dependency.<br>
-          <code>&lt;dependency&gt;
-            <tab/>&lt;groupId&gt;io.beanmapper&lt;/groupId&gt;
-            <tab/>&lt;artifactId&gt;beanmapper&lt;/artifactId&gt;
-            <tab/>&lt;version&gt;{{version}}&lt;/version&gt;
-            &lt;/dependency&gt;
-          </code>
+<code>
+  &lt;dependency&gt;
+      &lt;groupId&gt;io.beanmapper&lt;/groupId&gt;
+      &lt;artifactId&gt;beanmapper&lt;/artifactId&gt;
+      &lt;version&gt;{{version}}&lt;/version&gt;
+  &lt;/dependency&gt;
+</code>
           <br>
           Version is the latest version of BeanMapper
           <a href="https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper" target="_blank"><img src="https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper/badge.svg"></a><br>
@@ -261,27 +269,38 @@
           BeanMapper throws a BeanNoSuchPropertyException if it does not find a field with the given name.
           This annotation can be used by properties on both sides. <br>
           <br>
-          <code>public class Source {
-            <tab/>public Long id;
-            <tab/>public String name;
-            <tab/>@BeanProperty(name = "otherAge")
-            <tab/>public Integer age;
-            }</code>
-          <code>
-            public class Target {
-            <tab/>@BeanProperty(name = "name")
-            <tab/>public String otherName;
-            <tab/>public Integer otherAge;
-            }</code>
-          <code>
-            // Test
-            Source source = new Source(1L, "Henk", 42);
-            Target target = new BeanMapperBuilder().build()
-            <tab/><tab/>.map(source, Target.class);
+          <div class="row">
+            <div class="col-xs-12 col-md-6">
+<code>
+public class Source {
+    public Long id;
+    public String name;
+    @BeanProperty(name = "otherAge")
+    public Integer age;
+}
+</code>
+            </div>
+            <div class="col-xs-12 col-md-6">
+<code>
+public class Target {
+    @BeanProperty(name = "name")
+    public String otherName;
+    public Integer otherAge;
+}
+</code>
+            </div>
+            <div class="col-xs-12">
+              <br>
+<code>
+Source source = new Source(1L, "Henk", 42);
+Target target = new BeanMapperBuilder().build()
+        .map(source, Target.class);
 
-            assertEquals("Henk", target.otherName);
-            assertEquals(42, target.otherAge, 0);
-          </code>
+assertEquals("Henk", target.otherName);
+assertEquals(42, target.otherAge, 0);
+</code>
+            </div>
+          </div>
         </div>
       </section>
       <section id="beanignore">
@@ -290,27 +309,38 @@
           Ignoring fields can be done through the @BeanIgnore annotation.
           BeanMapper does not map these fields. This annotation can be used at both sides.<br>
           <br>
-          <code>public class Source {
-            <tab/>public Long id;
-            <tab/>public String name;
-            <tab/>@BeanIgnore
-            <tab/>public Integer age;
-            }</code>
-          <code>
-            public class Target {
-            <tab/>@BeanIgnore
-            <tab/>public String name;
-            <tab/>public Integer age;
-            }</code>
-          <code>
-            // Test
-            Source source = new Source(1L, "Henk", 42);
-            Target target = new BeanMapperBuilder().build()
-            <tab/><tab/>.map(source, Target.class);
+          <div class="row">
+            <div class="col-xs-12 col-md-6">
+<code>
+public class Source {
+    public Long id;
+    public String name;
+    @BeanIgnore
+    public Integer age;
+}
+</code>
+            </div>
+            <div class="col-xs-12 col-md-6">
+<code>
+public class Target {
+      @BeanIgnore
+      public String name;
+      public Integer age;
+}
+</code>
+            </div>
+            <div class="col-xs-12">
+              <br>
+<code>
+Source source = new Source(1L, "Henk", 42);
+Target target = new BeanMapperBuilder().build()
+        .map(source, Target.class);
 
-            assertNull(target.name);
-            assertNull(target.age);
-          </code>
+assertNull(target.name);
+assertNull(target.age);
+</code>
+            </div>
+          </div>
         </div>
       </section>
       <section id="beandefault">
@@ -319,29 +349,39 @@
           You can set a default value when the value to map contains null.
           This annotation can be used at both sides. <br>
           <br>
-          <code>public class Source {
-            <tab/>public Long id;
-            <tab/>public String name;
-            <tab/>@BeanDefault("5")
-            <tab/>public Integer age;
-            }</code>
-          <code>
-            public class Target {
-            <tab/>@BeanDefault("Henk")
-            <tab/>public String name;
-            <tab/>public Integer age;
-            }</code>
-          <br>
-          When mapping an empty source to a new target instance it gets the default values because the value to map is empty.
-          <br><br>
-          <code>Source source = new Source(null, null, null);
-            Target target = new BeanMapperBuilder()
-            <tab/><tab/>.build()
-            <tab/><tab/>.map(source, Target.class);
+          <div class="row">
+            <div class="col-xs-12 col-md-6">
+<code>
+public class Source {
+    public Long id;
+    public String name;
+    @BeanDefault("5")
+    public Integer age;
+}
+</code>
+            </div>
+            <div class="col-xs-12 col-md-6">
+<code>
+public class Target {
+    @BeanDefault("Henk")
+    public String name;
+    public Integer age;
+}
+</code>
+            </div>
+            <div class="col-xs-12">
+              <br>
+<code>
+Source source = new Source(null, null, null);
+Target target = new BeanMapperBuilder()
+        .build()
+        .map(source, Target.class);
 
-            assertEquals(5, target.age, 0);
-            assertEquals("Henk", target.name);
-          </code>
+assertEquals(5, target.age, 0);
+assertEquals("Henk", target.name);
+</code>
+            </div>
+          </div>
         </div>
       </section>
       <section id="beancollection">

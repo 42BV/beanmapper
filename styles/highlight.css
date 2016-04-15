@@ -10,17 +10,6 @@ vim-hybrid theme by w0ng (https://github.com/w0ng/vim-hybrid)
   background: #1d1f21;
 }
 
-/*selection color*/
-.hljs::selection,
-.hljs span::selection {
-  background: #373b41;
-}
-
-.hljs::-moz-selection,
-.hljs span::-moz-selection {
-  background: #373b41;
-}
-
 /*foreground color*/
 .hljs {
   color: #c5c8c6;
@@ -37,6 +26,10 @@ vim-hybrid theme by w0ng (https://github.com/w0ng/vim-hybrid)
 .hljs-meta,
 .hljs-meta .hljs-keyword {
   color: #707880;
+}
+
+.hljs-meta {
+  color: #808000;
 }
 
 /*color: fg_red*/
