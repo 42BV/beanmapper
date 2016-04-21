@@ -878,10 +878,12 @@ public class BeanMapperTest {
         BeanMapper beanMapper = new BeanMapperBuilder().addPackagePrefix(BeanMapper.class).build();
         
         Person person = new Person();
+        person.setId(42L);
         person.setName("Jan");
         person.setPlace("Zoetermeer");
         
         PersonProjection projection = beanMapper.map(person, PersonProjection.class);
+        Assert.assertEquals(Long.valueOf(42), projection.getId());
         Assert.assertEquals("Jan", projection.getName());
         Assert.assertEquals("Jan Zoetermeer", projection.getNameAndPlace());
     }

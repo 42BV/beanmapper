@@ -10,6 +10,8 @@ import io.beanmapper.annotations.BeanExpression;
  */
 public interface PersonProjection {
     
+    Long getId();
+
     String getName();
     
     @BeanExpression("#{name} #{place}")
