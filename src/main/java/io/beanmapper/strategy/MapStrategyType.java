@@ -23,6 +23,12 @@ public enum MapStrategyType {
             return new MapToClassStrategy(beanMapper, configuration);
         }
     },
+    MAP_TO_INTERFACE() {
+        @Override
+        public MapStrategy generateMapStrategy(BeanMapper beanMapper, Configuration configuration) {
+            return new MapToInterfaceStrategy(beanMapper, configuration);
+        }
+    },
     MAP_TO_INSTANCE() {
         @Override
         public MapStrategy generateMapStrategy(BeanMapper beanMapper, Configuration configuration) {
@@ -40,7 +46,11 @@ public enum MapStrategyType {
         } else if (configuration.getCollectionClass() != null) {
             return MAP_COLLECTION;
         } else if (configuration.getTargetClass() != null) {
-            return MAP_TO_CLASS;
+            if (configuration.getTargetClass().isInterface()) {
+                return MAP_TO_INTERFACE;
+            } else {
+                return MAP_TO_CLASS;
+            }
         } else if (configuration.getTarget() != null) {
             return MAP_TO_INSTANCE;
         } else {
