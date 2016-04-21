@@ -75,6 +75,8 @@ public class MapToInterfaceStrategy extends MapToInstanceStrategy {
                     return evaluateSingle(rawExpression);
                 }
             }
+            
+            // Otherwise concatenate the evaluations in a string value
             return evaluateConcatenated(expressions);
         }
 
