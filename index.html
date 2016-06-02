@@ -66,7 +66,7 @@
         <li><a href="#beanignore">Ignore fields</a></li>
         <li><a href="#beandefault">Default value for fields</a></li>
         <li><a href="#beancollection">Collection fields</a></li>
-        <li><a href="#beanconstruct">No no-args constructor</a></li>
+        <li><a href="#beanconstruct">Parameterized constructor</a></li>
         <li><a href="#beanalias">Aliases</a></li>
         <li><a href="#beanconverter">Converters</a></li>
       </ul>
@@ -676,6 +676,53 @@ assertEquals("Henk", target.otherName);</code>
         <div class="section-body">
           Implement AbstractConverter
           Use SimpleBeanConverter
+
+          <br>
+          Let's assume we have a AgeCalculator.class which extends from the SimpleBeanConverter.class.
+          The age calculator is a beanconverter between LocalDate and Integer.
+<code>public class AgeCalculator extends SimpleBeanConverter&lt;LocalDate, Integer> {
+
+    @Override
+    public Integer doConvert(LocalDate birthDate) {
+        return birthDate.until(LocalDate.now()).getYears();
+    }
+}</code><br>
+          Now we map a pet to a result containing the name and the age of the pet.
+          In this mapping the birthdate, which is a LocalDate, matches the age field which is a Integer.
+          Because we have added a converter for these types, the converter is applied and the age is calculated.
+          <br>
+          <div class="row">
+            <div class="col-xs-12 col-md-6">
+<code>
+public class Pet {
+    public String nickname;
+    public LocalDate birthDate;
+}</code>
+            </div>
+            <div class="col-xs-12 col-md-6">
+<code>public class PetNameAndAgeResult {
+    public String nickname;
+    @BeanProperty(name = "birthDate")
+    public Integer age;
+}</code>
+            </div>
+            <div class="col-xs-12">
+              <br>
+<code>Pet pet = new Pet();
+pet.nickname = "Loebas";
+pet.birthDate = LocalDate.of(2012, 1, 1);
+
+AgeCalculator ageCalculator = new AgeCalculator();
+PetNameAndAgeResult petNameAndAgeResult = new BeanMapperBuilder()
+      .addConverter(ageCalculator)
+      .build()
+      .map(pet, PetNameAndAgeResult.class);
+
+assertEquals("Loebas", petNameAndAgeResult.nickname);
+assertEquals(LocalDate.now().getYear()-2012, petNameAndAgeResult.age, 0);</code>
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -890,9 +937,13 @@ assertEquals("Canidae", pet.type.familyName);</code>
         <div class="section-body">
           <b>BeanMapper way & BeanMapper-Spring way</b><br>
           BeanMapper-Spring does not have a special kind of mapping for get requests.<br>
-<code>// Some request mappings
+<code>/*
+  Some request mappings
+  One path variable named id which contains the identification key for the object to get.
+*/
 public AddressResult findOne(Long id) {
-    return beanMapper.map(addressService.findOne(id), AddressResult.class));
+    Address address = addressService.findOne(id);
+    return beanMapper.map(address, AddressResult.class));
 }</code>
         </div>
       </section>
@@ -900,15 +951,25 @@ public AddressResult findOne(Long id) {
         <h3 class="section-title">POST request</h3>
         <div class="section-body">
           <b>BeanMapper way</b><br>
-<code>// Some request mappings
+<code>/*
+  Some request mappings
+  One request body containing a AddressForm.class with values to create a address.
+*/
 public AddressResult create(AddressForm addressForm) {
     Address newAddress = beanMapper.map(addressForm, Address.class);
-    return beanMapper.map(addressService.save(newAddress), AddressResult.class));
+    Address savedAddress = addressService.save(newAddress);
+    return beanMapper.map(savedAddress, AddressResult.class));
 }</code>
+          <br>
           <b>BeanMapper-Spring way</b>
-<code>// Some request mappingsT)
+<code>/*
+  Some request mappings
+  One request body containing a PetForm.class with values to create a pet.
+  The given form is automatically converted to a Pet.class object.
+*/
 public PetResult create(@MergedForm(value = PetForm.class) Pet pet) {
-    return beanMapper.map(petService.save(pet), PetResult.class));
+    Pet createdPet = petService.save(pet);
+    return beanMapper.map(createdPet, PetResult.class));
 }</code>
         </div>
       </section>
@@ -916,10 +977,28 @@ public PetResult create(@MergedForm(value = PetForm.class) Pet pet) {
         <h3 class="section-title">PUT request</h3>
         <div class="section-body">
           <b>BeanMapper way</b><br>
+<code>/*
+  Some request mappings
+  One path variable named id which is the identifaction for the old address.
+  One request body containing a AddressForm.class with values to update the old address.
+*/
+public AddressResult update(Long id, AddressForm addressForm) {
+    Address oldAddress = addressService.findOne(id);
+    Address updatedAddress = beanMapper.map(addressForm, oldAddress);
+    Address savedAddress = addressService.save(updatedAddress);
+    return beanMapper.map(savedAddress, AddressResult.class);
+}
+</code><br>
           <b>BeanMapper-Spring way</b>
-<code>@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+<code>/*
+  Some request mappings
+  One path variable named id which is the identification for the old Pet.
+  One request body containing a PetForm.class with values to update the old pet.
+  The given form is automatically mapped over the old pet and converted to a Pet.class object.
+*/
 public PetResult update(@MergedForm(value = PetForm.class, mergeId = "id") Pet pet) {
-    return beanMapper.map(petService.save(pet), PetResult.class);
+    Pet updatedPet = petService.save(pet);
+    return beanMapper.map(updatedPet, PetResult.class);
 }</code>
         </div>
       </section>
@@ -927,14 +1006,50 @@ public PetResult update(@MergedForm(value = PetForm.class, mergeId = "id") Pet p
         <h3 class="section-title">PATCH request</h3>
         <div class="section-body">
           <b>BeanMapper way</b><br>
+<code class="java">/*
+  Some request mappings
+  One path variable named id which is the identification for the old address.
+  One request body containing the fields and values to update the address.
+*/
+public AddressResult partialUpdate(Long id, Map&lt;String, Object> inputFields) {
+    ObjectMapper objectMapper = new ObjectMapper();
+    AddressForm addressForm = objectMapper.convertValue(inputFields, AddressForm.class);
+    Address oldAddress = addressService.findOne(id);
+    Address updatedAddress = beanMapper.wrapConfig()
+          .downsizeSource(new ArrayList<>(inputFields.keySet()))
+          .build()
+          .map(addressForm, oldAddress);
+
+    Address savedAddress = addressService.save(updatedAddress);
+    return beanMapper.map(savedAddress, AddressResult.class);
+}</code><br>
           <b>BeanMapper-Spring way</b>
+<code>/*
+  Some request mappings
+  One path variable named id which contains the identification for the old pet.
+  One request body containing a PetForm.class.
+  The old pet is automatically received with spring and only the given fields in the form are mapped over the old pet.
+  The updated pet is what you receive in the method, only saving the object is necessary.
+*/
+public PetResult partialUpdate(@MergedForm(value = PetForm.class, patch = true, mergeId = "id") Pet pet) {
+    Pet savedPet = petService.save(pet);
+    return beanMapper.map(savedPet, PetResult.class);
+}
+</code>
         </div>
       </section>
       <section id="delete">
         <h3 class="section-title">DELETE request</h3>
         <div class="section-body">
-          <b>BeanMapper way</b><br>
-          <b>BeanMapper-Spring way</b>
+          <b>BeanMapper way & BeanMapper-Spring way</b><br>
+          BeanMapper-Spring does not have a special kind of mapping for delete requests.<br>
+<code>/*
+  Some request mappings
+  One path variable named id which contains the identification key for the object to remove.
+*/
+public void delete(Long id) {
+    addressService.delete(id);
+}</code>
         </div>
       </section>
     </div>
