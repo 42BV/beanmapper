@@ -82,12 +82,8 @@ public abstract class AbstractMapStrategy implements MapStrategy {
         if (encapsulatedSource != null) {
             if(beanFieldMatch.getTargetObject() == null){
                 target = getBeanMapper().map(encapsulatedSource, beanFieldMatch.getTargetClass());
-            }else {
-                if(beanFieldMatch.getBeanMatch().getMappableFields() == null) {
-                    target = getBeanMapper().map(encapsulatedSource, beanFieldMatch.getTargetObject());
-                } else {
-                    target = getBeanMapper().map(encapsulatedSource, beanFieldMatch.getTargetObject(), beanFieldMatch.getBeanMatch().getMappableFields().splitForField(beanFieldMatch.getSourceFieldName()));
-                }
+            } else {
+                target = getBeanMapper().map(encapsulatedSource, beanFieldMatch.getTargetObject());
             }
             beanFieldMatch.writeObject(target);
         }

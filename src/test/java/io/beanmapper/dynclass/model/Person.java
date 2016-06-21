@@ -1,8 +1,6 @@
 package io.beanmapper.dynclass.model;
 
-public class Person {
-
-    private Long id;
+public class Person extends BasePerson {
 
     private String name;
 
@@ -13,14 +11,6 @@ public class Person {
     private String city;
 
     private String bankAccount;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

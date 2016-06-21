@@ -6,6 +6,7 @@ package io.beanmapper.core.inspector;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * Property accessor that looks at both the getter/setter
@@ -98,7 +99,7 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
             field.setValue(instance, value);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -111,4 +112,19 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
         return accessor != null && accessor.isWritable();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Method getReadMethod() {
+        return descriptor != null ? descriptor.getReadMethod() : null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Method getWriteMethod() {
+        return descriptor != null ? descriptor.getWriteMethod() : null;
+    }
 }

@@ -5,7 +5,6 @@ import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
 import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
 import io.beanmapper.core.converter.impl.NestedSourceClassToNestedTargetClassConverter;
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
-import io.beanmapper.core.rule.MappableFields;
 import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.testmodel.beanAlias.NestedSourceWithAlias;
@@ -93,7 +92,7 @@ public class BeanMapperTest {
 
     private BeanMapper beanMapper;
     @Rule public ExpectedException exception = ExpectedException.none();
-    
+
     @Before
     public void prepareBeanMapper() {
         beanMapper = new BeanMapperBuilder()
@@ -738,82 +737,51 @@ public class BeanMapperTest {
     @Test
     public void sourceToTargetWithRule() {
         SourceWithRule source = new SourceWithRule();
-        source.id = null;
-        source.name = "Name";
-        source.nested = new NestedWithRule();
-        source.nested.nestedInt = null;
-        source.nested.nestedName = "NestedName";
+        source.setId(null);
+        source.setName("Name");
+        source.setNested(new NestedWithRule());
+        source.getNested().nestedInt = null;
+        source.getNested().nestedName = "NestedName";
 
         TargetWithRule target = new TargetWithRule();
-        target.id = 1;
-        target.name = "targetName";
-        target.nested = new NestedWithRule();
-        target.nested.nestedInt = 2;
-        target.nested.nestedName = "targetNestedName";
+        target.setId(1);
+        target.setName("targetName");
+        target.setNested(new NestedWithRule());
+        target.getNested().nestedInt = 2;
+        target.getNested().nestedName = "targetNestedName";
 
         beanMapper.map(source, target);
-        assertEquals(source.id, target.id);
-        assertEquals(source.name, target.name);
-        assertEquals(target.nested.nestedInt, target.nested.nestedInt);
-        assertEquals(source.nested.nestedName, target.nested.nestedName);
+        assertEquals(source.getId(), target.getId());
+        assertEquals(source.getName(), target.getName());
+        assertEquals(target.getNested().nestedInt, target.getNested().nestedInt);
+        assertEquals(source.getNested().nestedName, target.getNested().nestedName);
     }
 
     @Test
     public void sourceToTargetWithRuleOnlyNames() {
-        // First normal mapping
-        sourceToTargetWithRule();
-
         // Second only names mapping
         SourceWithRule source = new SourceWithRule();
-        source.id = null;
-        source.name = "Name";
-        source.nested = new NestedWithRule();
-        source.nested.nestedInt = null;
-        source.nested.nestedName = "NestedName";
+        source.setId(null);
+        source.setName("Name");
+        source.setNested(new NestedWithRule());
+        source.getNested().nestedInt = null;
+        source.getNested().nestedName = "NestedName";
 
         TargetWithRule target = new TargetWithRule();
-        target.id = 1;
-        target.name = "targetName";
-        target.nested = new NestedWithRule();
-        target.nested.nestedInt = 2;
-        target.nested.nestedName = "targetNestedName";
+        target.setId(1);
+        target.setName("targetName");
+        target.setNested(new NestedWithRule());
+        target.getNested().nestedInt = 2;
+        target.getNested().nestedName = "targetNestedName";
 
-        beanMapper.map(source, target, new MappableFields("name", "nested", "nested.nestedName"));
-        assertEquals(1, target.id, 0); // Not mapped
-        assertEquals(source.name, target.name); // Overwritten
-        assertEquals(2, target.nested.nestedInt, 0); // Not mapped
-        assertEquals(source.nested.nestedName, target.nested.nestedName); // Overwritten
-    }
-
-    @Test
-    public void sourceToTargetWithRuleOnlyNamesWrapConfig() {
-        // First normal mapping
-        sourceToTargetWithRule();
-
-        // Second only names mapping
-        SourceWithRule source = new SourceWithRule();
-        source.id = null;
-        source.name = "Name";
-        source.nested = new NestedWithRule();
-        source.nested.nestedInt = null;
-        source.nested.nestedName = "NestedName";
-
-        TargetWithRule target = new TargetWithRule();
-        target.id = 1;
-        target.name = "targetName";
-        target.nested = new NestedWithRule();
-        target.nested.nestedInt = 2;
-        target.nested.nestedName = "targetNestedName";
-
-        target = beanMapper.wrapConfig()
-                .setIncludeFields(Arrays.asList("name", "nested", "nested.nestedName"))
+        beanMapper.wrapConfig()
+                .downsizeSource(Arrays.asList("name", "nested", "nested.nestedName"))
                 .build()
                 .map(source, target);
-
-        assertEquals(1, target.id, 0); // Not mapped
-        assertEquals(source.name, target.name); // Overwritten
-        assertEquals(2, target.nested.nestedInt, 0); // Not mapped
-        assertEquals(source.nested.nestedName, target.nested.nestedName); // Overwritten
+        assertEquals(1, target.getId(), 0); // Not mapped
+        assertEquals(source.getName(), target.getName()); // Overwritten
+        assertEquals(2, target.getNested().nestedInt, 0); // Not mapped
+        assertEquals(source.getNested().nestedName, target.getNested().nestedName); // Overwritten
     }
 
     @Test

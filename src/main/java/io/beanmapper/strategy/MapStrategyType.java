@@ -35,7 +35,7 @@ public enum MapStrategyType {
     }
 
     public static MapStrategyType determineStrategy(Configuration configuration) {
-        if (configuration.getIncludeFields() != null) {
+        if (configuration.getDownsizeSource() != null || configuration.getDownsizeTarget() != null) {
             return CREATE_DYNAMIC_CLASS;
         } else if (configuration.getCollectionClass() != null) {
             return MAP_COLLECTION;

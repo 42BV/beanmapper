@@ -8,7 +8,6 @@ import io.beanmapper.core.converter.collections.CollectionListConverter;
 import io.beanmapper.core.converter.collections.CollectionMapConverter;
 import io.beanmapper.core.converter.collections.CollectionSetConverter;
 import io.beanmapper.core.converter.impl.*;
-import io.beanmapper.core.rule.MappableFields;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 
 import java.util.ArrayList;
@@ -76,8 +75,13 @@ public class BeanMapperBuilder {
         return this;
     }
 
-    public BeanMapperBuilder setIncludeFields(List<String> includeFields) {
-        this.configuration.setIncludeFields(includeFields);
+    public BeanMapperBuilder downsizeSource(List<String> includeFields) {
+        this.configuration.downsizeSource(includeFields);
+        return this;
+    }
+
+    public BeanMapperBuilder downsizeTarget(List<String> includeFields) {
+        this.configuration.downsizeTarget(includeFields);
         return this;
     }
 
@@ -93,11 +97,6 @@ public class BeanMapperBuilder {
 
     public BeanMapperBuilder setTarget(Object target) {
         this.configuration.setTarget(target);
-        return this;
-    }
-
-    public BeanMapperBuilder setMappableFields(MappableFields mappableFields) {
-        this.configuration.setMappableFields(mappableFields);
         return this;
     }
 

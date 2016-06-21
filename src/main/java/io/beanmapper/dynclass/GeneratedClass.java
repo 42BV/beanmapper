@@ -16,5 +16,5 @@ public class GeneratedClass {
         this.ctClass = ctClass;
         this.generatedClass = ctClass.toClass();
     }
-    
+
 }

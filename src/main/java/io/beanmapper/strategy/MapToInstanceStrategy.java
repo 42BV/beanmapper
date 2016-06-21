@@ -21,11 +21,6 @@ public class MapToInstanceStrategy extends AbstractMapStrategy {
     }
 
     protected Object map(Object source, Object target, BeanMatch beanMatch) {
-        return processFields(
-                source,
-                target,
-                getConfiguration().getMappableFields() != null ?
-                        getConfiguration().getMappableFields().compressBeanMatch(beanMatch) :
-                        beanMatch);
+        return processFields(source, target, beanMatch);
     }
 }

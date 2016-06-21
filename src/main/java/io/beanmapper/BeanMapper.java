@@ -4,7 +4,6 @@ import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.config.Configuration;
 import io.beanmapper.config.CoreConfiguration;
 import io.beanmapper.core.constructor.BeanInitializer;
-import io.beanmapper.core.rule.MappableFields;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.strategy.MapStrategyType;
 
@@ -149,24 +148,6 @@ public class BeanMapper {
                 .build()
             .map(source);
     }
-    
-    /**
-     * Copies the values from the source object to an existing target instance
-     * @param source source instance of the properties
-     * @param target target instance for the properties
-     * @param <S> the instance from which the properties get copied.
-     * @param <T> the instance to which the properties get copied
-     * @return the original target instance containing all applicable properties
-     * @throws BeanMappingException
-     */
-    public <S, T> T map(S source, T target, MappableFields fieldsToMap) {
-
-        return (T) config()
-                .setTarget(target)
-                .setMappableFields(fieldsToMap)
-                .build()
-            .map(source);
-    }
 
     public final Configuration getConfiguration() {
         return configuration;
@@ -175,7 +156,8 @@ public class BeanMapper {
     public BeanMapperBuilder clear() {
         return BeanMapperBuilder
                 .config(configuration)
-                .setIncludeFields(null)
+                .downsizeSource(null)
+                .downsizeTarget(null)
                 .setCollectionClass(null)
                 .setTargetClass(null)
                 .setTarget(null);
