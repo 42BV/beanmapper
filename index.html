@@ -164,7 +164,7 @@
             <li>convert to a dynamic generated class</li>
           </ol>
           Below a basic sample of each way of converting. These samples only show a basic conversion.
-          You should take a look at the rest of the documentation if you want to map some different fields or a map a different structure.<br>
+          You should take a look at the rest of the documentation if you want to map some different fields or if you want to map a different structure.<br>
           <br>
           Lets assume that we have two classes. SourceClass is your entity that is used inside the application.
           TargetClass is the class that you would like to expose to the outside.<br>
@@ -238,7 +238,7 @@ assertEquals(42, target.age, 0);</code>
           Use this method when you want to map a collection of items to a collection of items of an other type.<br>
           Of course you can do this for yourself by creating a loop and call map inside each loop.
           This method is just to make it easy for you.
-          Can also pass a third optional argument to convert the list to. In this case we choose a ArrayList.class.<br>
+          You can also pass a third optional argument to convert the list to. In this case we choose a ArrayList.class.<br>
           <br>
           <code>List&lt;Source> sources = new ArrayList&lt;Source>();
 sources.add(new Source(1L, "Henk", 42));
@@ -674,9 +674,24 @@ assertEquals("Henk", target.otherName);</code>
       <section id="beanconverter">
         <h3 class="section-title">BeanConverters</h3>
         <div class="section-body">
-          Implement AbstractConverter
-          Use SimpleBeanConverter
+          A nice feature of BeanMapper is for applying converters.<br>
+          In BeanMapper you can easily add your own converter to map fields on a custom way.
+          You can add a converter for the current mapping or apply a converter for all mappings of BeanMapper.
+          Below both examples.
+<code>BeanMapper beanMapper = new BeanMapperBuilder().addConverter(converter).build();
+// Use this BeanMapper for your mappings and your converter is applied
+beanMapper.map(source, target);
 
+// Only during current mapping the tempConverter is applied.
+beanMapper.wrapConfig()
+    .addConverter(tempConverter)
+    .build()
+    .map(source, target);
+</code>
+<br>
+You can easily extend the SimpleBeanConverter.class to convert between fields, you can extend the AbstractBeanConverter.class
+          or implement the BeanConverter.class interface.
+Below a example from BeanMapper-Petshop which shows you how to apply a SimpleBeanConverter.
           <br>
           Let's assume we have a AgeCalculator.class which extends from the SimpleBeanConverter.class.
           The age calculator is a beanconverter between LocalDate and Integer.

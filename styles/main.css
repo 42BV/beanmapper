@@ -5,6 +5,7 @@ body {
 
 .navbar-fixed-top {
     border: 0;
+    box-shadow: 0 5px 10px;
 }
 
 .sidebar {
