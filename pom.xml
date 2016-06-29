@@ -45,7 +45,7 @@
         <junit.version>4.10</junit.version>
         <slf4j.version>1.7.2</slf4j.version>
         <spring.version>4.1.6.RELEASE</spring.version>
-        <beanmapper.version>0.3.0-SNAPSHOT</beanmapper.version>
+        <beanmapper.version>0.3.1</beanmapper.version>
         <jackson.version>2.5.2</jackson.version>
         <!-- Reporting -->
         <maven.cobertura.version>2.5.2</maven.cobertura.version>

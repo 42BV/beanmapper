@@ -1,12 +1,12 @@
 ### beanmapper documentation
 
-#### Getting started
-To install dependencies like bootstrap & jquery: 
+#### How to run the documentation in browser
+Install a command line lightweight development server
 ```
-npm install
+npm install -g lite-server
 ```
-To run the documentation website:
+Serve the application
 ```
-npm start
+lite-server
 ```
 
