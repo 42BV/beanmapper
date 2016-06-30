@@ -91,30 +91,43 @@
         <img src="images/logo.png" alt="Logo BeanMapper" width="100">
         Beanmapper
         <br>
-        <small>Library for converting from one Java class to a dissimilar Java class <br>with similar names based on the Bean
-          convention</small>
+        <small>
+            Library for converting from one Java class to a dissimilar Java class <br>
+            with similar attribute names based on the Bean convention
+        </small>
       </h1>
 
       <!-- BeanMapper -->
       <section id="about">
-        <h3 class="section-title">What is BeanMapper?</h3>
+        <h3 class="section-title">About BeanMapper</h3>
         <div class="section-body">
-          The core definition of the task of BeanMapper is for converting from one Java class to a dissimilar Java class with similar names based on the Bean convention.
-          BeanMapper does not transform your objects. It copies all the values of the fields from an object to another object.
-          You can configure the way BeanMapper should match the fields with annotations.
-          However BeanMapper does have a lot more functionality than only converting Java classes.<br>
-          <br>
-          You can read about this in the rest of the documentation.<br>
-          <br>
-          Using Spring?<br>
-          Take a look at <a href="https://github.com/42BV/beanmapper-spring" target="_blank">BeanMapper-Spring</a> for combining the power of BeanMapper together with Spring.
-          Scroll down to the <a href="#get">REST examples</a>  for usage with BeanMapper-Spring.
-          <br>
-          <br>
-          Take a look at the <a href="https://github.com/42BV/beanmapper-petshop" target="_blank">BeanMapper-Petshop</a> for samples of using BeanMapper.
+            <p>Beanmapper is a Java library for mapping dissimilar Java classes with similar attribute names. The use cases for Beanmapper are the following:</p>
+            <ul>
+                <li>mapping from forms to entities, because:
+                    <ul>
+                        <li>for security reasons you want to accept only a limited number of fields as input</li>
+                        <li>the form fields are simplified to support frontend processing</li>
+                    </ul>
+                </li>
+                <li>mapping from entities to results, because:
+                    <ul>
+                        <li>you want to simplify the result for frontend processing</li>
+                        <li>you want to expose a limited number of fields for security reasons</li>
+                    </ul>
+                </li>
+            </ul>    
+          <p>BeanMapper does not transform your objects. It copies all the values of the fields from an object to another object. You can configure the way BeanMapper should match the fields with annotations.
+          However BeanMapper does have a lot more functionality than only converting Java classes.</p>
+          <p>You can read about this in the rest of the documentation.</p>
+          <h4>What Beanmapper is not for?</h4>
+          <p>Beanmapper is not a library for deep-copying classes. Whenever Beanmapper can get away with a shallow copy, it will do so. Deep-copying is reserved for dissimilar classes.</p>  
+          <h4>Using Spring?</h4>
+          <p>Take a look at <a href="https://github.com/42BV/beanmapper-spring" target="_blank">BeanMapper-Spring</a> for combining the power of BeanMapper together with Spring.
+          Scroll down to the <a href="#get">REST examples</a>  for usage with BeanMapper-Spring.</p>
+          <p>Take a look at the <a href="https://github.com/42BV/beanmapper-petshop" target="_blank">BeanMapper-Petshop</a> for samples of using BeanMapper.
           It shows you how to use the BeanMapper in a REST API in Java.
           It also show examples of using BeanMapper in combination with BeanMapper-Spring.
-          All examples shown in this documentation are based on this example project.
+          All examples shown in this documentation are based on this example project.</p>
         </div>
       </section>
       <section id="use-case">
@@ -129,29 +142,25 @@
           Below a image showing this three objects in context of the application: <br>
           <a href="/images/beanmapper-usecase.png" target="_blank"><img src="images/beanmapper-usecase.png" height="200px"></a><br>
 
-          <b>Why use forms?</b>
+          <h4>Why use forms?</h4>
           <ul>
             <li>For security reasons, you may want to accept only a controlled number of fields</li>
             <li>For convenience, to disregard redundant or disallowed fields passed by the frontend</li>
           </ul>
 
-          <b>Why use results?</b>
+          <h4>Why use results?</h4>
           <ul>
             <li>For security, you may want to expose a controlled number of fields</li>
             <li>For convenience, to simplify the frontend processing of the result</li>
           </ul>
 
-          When using these three kinds of objects you want to convert incoming data to your entity. You also want to convert your entity to a result when representing data to the outside.
-          These conversions will cost a lot of unnecessary code.<br>
-          <br>
-          <b>Wouldn't it be great if mapping from Form to Entity and from Entity to Result can be done automatically?</b><br>
-          <br>
-          Let us suppose we have a tool that is able to map similar fields from dissimilar classes. In this case, it would be just a matter of passing both instances and delegating the task of mapping from source to target to this tool. This is why you should use BeanMapper; BeanMapper just does the above described problem in a very easy way.<br>
-          <br>
-          Want to use BeanMapper? In the <a href="#how-to-use">next section</a>  you can read about using BeanMapper.<br>
-          <br>
-          For a more detailed use case of why using BeanMapper,
-          read this blog <a href="http://dontpanic.42.nl/2016/02/the-case-for-beanmapper.html" target="_blank">The Case for BeanMapper</a>.<br>
+          <p>When using these three kinds of objects you want to convert incoming data to your entity. You also want to convert your entity to a result when representing data to the outside.
+          These conversions will cost a lot of unnecessary code.</p>
+          <h4>Wouldn't it be great if mapping from Form to Entity and from Entity to Result can be done automatically?</h4>
+          <p>Let us suppose we have a tool that is able to map similar fields from dissimilar classes. In this case, it would be just a matter of passing both instances and delegating the task of mapping from source to target to this tool. This is why you should use BeanMapper; BeanMapper just does the above described problem in a very easy way.</p>
+          <p>Want to use BeanMapper? In the <a href="#how-to-use">next section</a>  you can read about using BeanMapper.</p>
+          <p>For a more detailed use case of why using BeanMapper,
+          read this blog <a href="http://dontpanic.42.nl/2016/02/the-case-for-beanmapper.html" target="_blank">The Case for BeanMapper</a>.</p>
         </div>
       </section>
       <section id="how-to-use">
@@ -164,12 +173,10 @@
             <li><a href="#map-to-collection">convert to a collection</a></li>
             <li><a href="#map-to-dynclass">convert to a dynamic generated class</a></li>
           </ol>
-          Below a basic sample of each way of converting. These samples only show a basic conversion.
-          You should take a look at the rest of the documentation if you want to map some different fields or if you want to map a different structure.<br>
-          <br>
-          Lets assume that we have two classes. SourceClass is your entity that is used inside the application.
-          TargetClass is the class that you would like to expose to the outside.<br>
-          <br>
+          <p>Below a basic sample of each way of converting. These samples only show a basic conversion.
+          You should take a look at the rest of the documentation if you want to map some different fields or if you want to map a different structure.</p>
+          <p>Lets assume that we have two classes. SourceClass is your entity that is used inside the application.
+          TargetClass is the class that you would like to expose to the outside.</p>
           <code>public class Source {
     public Long id;
     public String name;
@@ -186,9 +193,8 @@ public class Target {
     public String name;
     public Integer age;
 }</code>
-          <br><b id="map-to-new-class">Map to a new class</b><br>
-          Mapping to a new class does first create an instance of the given target class. Then BeanMapper uses the map to existing instance strategy to map the source to the created class instance. Take a look at <a href="#beanconstruct">BeanConstruct</a>  if you do not have a non-args constructor.<br>
-          <br>
+          <h4 id="map-to-new-class">Map to a new class</h4>
+          <p>Mapping to a new class does first create an instance of the given target class. Then BeanMapper uses the map to existing instance strategy to map the source to the created class instance. Take a look at <a href="#beanconstruct">BeanConstruct</a>  if you do not have a non-args constructor.</p>
           <code>Source source = new Source(1L, "Henk", 42);
 
 Target target = new BeanMapperBuilder().build()
@@ -197,15 +203,13 @@ Target target = new BeanMapperBuilder().build()
 assertEquals("Henk", target.name);
 assertEquals(42, target.age, 0);</code>
 
-          <br><b id="map-to-existing-instance">Map to an existing instance</b><br>
-          Use this method if you want to override a instance with another instance. The values of the target instance are overwritten by the given source instance. Fields are mapped base on the name of the field and based on bean conventions. BeanMapper only maps fields when a field name in the source instance matches a field name in the target instance.<br>
-          <br>
-          With annotations you have a lot more possibilities to map classes, take a look on the list below:<br>
-          <br>
+          <h4 id="map-to-existing-instance">Map to an existing instance</h4>
+          <p>Use this method if you want to override a instance with another instance. The values of the target instance are overwritten by the given source instance. Fields are mapped base on the name of the field and based on bean conventions. BeanMapper only maps fields when a field name in the source instance matches a field name in the target instance.</p>
+          <p>With annotations you have a lot more possibilities to map classes, take a look on the list below:</p>
           <table class="table table-condensed">
             <tr>
               <th><a href="#beanignore">BeanIgnore</a></th>
-              <td>Use this when you explicitly don't want to map a field.</td>
+              <td>Use this when you explicitly do not want to map a field.</td>
             </tr>
             <tr>
               <th><a href="#beanproperty">BeanProperty</a></th>
@@ -227,10 +231,9 @@ Target target = new BeanMapperBuilder().build()
 
 assertEquals("Henk", target.name);
 assertEquals(42, target.age, 0);</code>
-          <br><b id="map-to-collection">Map to a collection</b><br>
-          Use this method when you want to map a collection of items to a collection of items of an other type. Of course you can do this for yourself by creating a loop and call map inside each loop. This method is just to make it easy for you.
-          You can also pass a third optional argument to convert the list to. In this case we choose an ArrayList.class.<br>
-          <br>
+          <h4 id="map-to-collection">Map to a collection</h4>
+          <p>Use this method when you want to map a collection of items to a collection of items of an other type. Of course you can do this for yourself by creating a loop and call map inside each loop. This method is just to make it easy for you.
+          You can also pass a third optional argument to convert the list to. In this case we choose an ArrayList.class.</p>
           <code>List&lt;Source> sources = new ArrayList&lt;Source>();
 sources.add(new Source(1L, "Henk", 42));
 sources.add(new Source(2L, "Piet", 50));
@@ -243,19 +246,16 @@ assertEquals(3, targets.size(), 0);
 assertEquals("Henk", targets.get(0).name);
 assertEquals("Piet", targets.get(1).name);
 assertEquals("Kees", targets.get(2).name);</code>
-          <br><b id="map-to-dynclass">Convert to a dynamic generated class</b><br>
-          This method consist of two different ways:
+          <h4 id="map-to-dynclass">Convert to a dynamic generated class</h4>
+          <p>This method consist of two different ways:</p>
           <ol>
             <li>Map only a few fields of the source class over the existing target instance.</li>
             <li>Map to a new target instance and restrict this target instance to contain only the given fields.</li>
           </ol>
-          Both methods does use javassist to create a new class.
-          <br><br>
-          The first option is called 'downsizeSource'. This method generates a new class based on the source class but only with the fields you want to map. BeanMapper uses the generated class to map over the existing given target instance. The result is that you have mapped only a few fields from the source over the target instance. Use case for this method is for example a <a href="#patch">PATCH request</a>.
-          <br><br>
-          The second options is called 'downsizeTarget'. With this option you can expose a few fields of the source class to the outside. BeanMapper generates a new class based on the given target class but only with the fields you want to exist in the target. The use case for 'downsize' is to produce a class that physically contains no other fields to expose; what you see is what you get. It can be equally well transformed into for example XML or JSON, without format-specific mapping. 
-          <br><br>
-          Below examples of both options.
+          <p>Both methods does use javassist to create a new class.</p>
+          <p>The first option is called 'downsizeSource'. This method generates a new class based on the source class but only with the fields you want to map. BeanMapper uses the generated class to map over the existing given target instance. The result is that you have mapped only a few fields from the source over the target instance. Use case for this method is for example a <a href="#patch">PATCH request</a>.</p>
+          <p>The second options is called 'downsizeTarget'. With this option you can expose a few fields of the source class to the outside. BeanMapper generates a new class based on the given target class but only with the fields you want to exist in the target. The use case for 'downsize' is to produce a class that physically contains no other fields to expose; what you see is what you get. It can be equally well transformed into for example XML or JSON, without format-specific mapping.</p> 
+          <p>Below examples of both options.</p>
           <code>// Option 1: downsizeSource
 BeanMapper beanMapper = new BeanMapperBuilder().build();
 Source source = new Source(1L, "Henk", 42);
@@ -285,8 +285,7 @@ assertEquals("{\"name\":\"Henk\"}", json);</code>
       <section id="download">
         <h3 class="section-title">Download</h3>
         <div class="section-body">
-          In order to use Beanmapper in your project, simple add the following Maven dependency.<br>
-          <br>
+          <p>In order to use Beanmapper in your project, simple add the following Maven dependency.</p>
           <code>
 &lt;dependency&gt;
     &lt;groupId&gt;io.beanmapper&lt;/groupId&gt;
@@ -294,18 +293,16 @@ assertEquals("{\"name\":\"Henk\"}", json);</code>
     &lt;version&gt;{{version}}&lt;/version&gt;
 &lt;/dependency&gt;
           </code>
-          <br>
-          Version is the latest version of BeanMapper
-          <a href="https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper" target="_blank"><img src="https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper/badge.svg"></a><br>
-          <br>
-          You can find the javadoc for BeanMapper <a href="http://www.javadoc.io/doc/io.beanmapper/beanmapper" target="_blank">here</a>.<br>
-          You can also <a href="http://repository.sonatype.org/service/local/artifact/maven/redirect?g=io.beanmapper&a=beanmapper&v=LATEST&r=central-proxy">download the latest jar</a> and include this in your project.
+          <p>Version is the latest version of BeanMapper</p>
+          <p><a href="https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper" target="_blank"><img src="https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper/badge.svg"></a></p>
+          <p>You can find the javadoc for BeanMapper <a href="http://www.javadoc.io/doc/io.beanmapper/beanmapper" target="_blank">here</a>.</p>
+          <p>You can also <a href="http://repository.sonatype.org/service/local/artifact/maven/redirect?g=io.beanmapper&a=beanmapper&v=LATEST&r=central-proxy">download the latest jar</a> and include this in your project.</p>
         </div>
       </section>
 
       <!-- Annotations -->
       <section id="beanproperty">
-        <h3 class="section-title">BeanProperty</h3>
+        <h3 class="section-title">@BeanProperty</h3>
         <div class="section-body">
           <table class="table table-condensed">
             <tr>
@@ -314,7 +311,7 @@ assertEquals("{\"name\":\"Henk\"}", json);</code>
             </tr>
             <tr>
               <th>Arguments</th>
-              <td>Name: the name that matches the field name on the other side</td>
+              <td>name: the name that matches the field name on the other side</td>
             </tr>
             <tr>
               <th>Description</th>
@@ -357,7 +354,7 @@ assertEquals(42, target.otherAge, 0);</code>
         </div>
       </section>
       <section id="beanignore">
-        <h3 class="section-title">BeanIgnore</h3>
+        <h3 class="section-title">@BeanIgnore</h3>
         <div class="section-body">
           <table class="table table-condensed">
             <tr>
@@ -406,7 +403,7 @@ assertNull(target.age);</code>
         </div>
       </section>
       <section id="beandefault">
-        <h3 class="section-title">BeanDefault</h3>
+        <h3 class="section-title">@BeanDefault</h3>
         <div class="section-body">
           <table class="table table-condensed">
             <tr>
@@ -456,7 +453,7 @@ assertEquals("Henk", target.name);</code>
         </div>
       </section>
       <section id="beancollection">
-        <h3 class="section-title">BeanCollection</h3>
+        <h3 class="section-title">@BeanCollection</h3>
         <div class="section-body">
           <table class="table table-condensed">
             <tr>
@@ -536,7 +533,7 @@ assertEquals("Gijs", target.items.get(2).name);</code>
         </div>
       </section>
       <section id="beanconstruct">
-        <h3 class="section-title">BeanConstruct</h3>
+        <h3 class="section-title">@BeanConstruct</h3>
         <div class="section-body">
           <table class="table table-condensed">
             <tr>
@@ -604,7 +601,7 @@ assertEquals("Henk de Vries", target.fullName);</code>
         </div>
       </section>
       <section id="beanalias">
-        <h3 class="section-title">BeanAlias</h3>
+        <h3 class="section-title">@BeanAlias</h3>
         <div class="section-body">
           <table class="table table-condensed">
             <tr>
@@ -661,8 +658,7 @@ assertEquals("Henk", target.otherName);</code>
       <section id="beanconverter">
         <h3 class="section-title">BeanConverters</h3>
         <div class="section-body">
-          A nice feature of BeanMapper is for applying custom converters. In BeanMapper you can easily add your own converter to map fields on a custom way. You can add a converter for the current mapping or apply a converter for all mappings of BeanMapper. Below you can find both examples.<br>
-          <br>
+          <p>A nice feature of BeanMapper is for applying custom converters. In BeanMapper you can easily add your own converter to map fields on a custom way. You can add a converter for the current mapping or apply a converter for all mappings of BeanMapper. Below you can find both examples.</p>
 <code>BeanMapper beanMapper = new BeanMapperBuilder().addConverter(converter).build();
 // Use this BeanMapper for your mappings and your converter is applied
 beanMapper.map(source, target);
@@ -673,22 +669,18 @@ beanMapper.wrapConfig()
     .build()
     .map(source, target);
 </code>
-<br>
-You can easily extend the SimpleBeanConverter.class to convert between fields, you can extend the AbstractBeanConverter.class or implement the BeanConverter.class interface. Below a example from BeanMapper-Petshop which shows you how to apply a SimpleBeanConverter.<br>
-          <br>
-          Let's assume we have a AgeCalculator.class which extends from the SimpleBeanConverter.class. The age calculator is a beanconverter between LocalDate and Integer.<br>
-          <br>
+          <p>You can easily extend the SimpleBeanConverter.class to convert between fields, you can extend the AbstractBeanConverter.class or implement the BeanConverter.class interface. Below a example from BeanMapper-Petshop which shows you how to apply a SimpleBeanConverter.</p>
+          <p>Let's assume we have a AgeCalculator.class which extends from the SimpleBeanConverter.class. The age calculator is a beanconverter between LocalDate and Integer.</p>
 <code>public class AgeCalculator extends SimpleBeanConverter&lt;LocalDate, Integer> {
 
     @Override
     public Integer doConvert(LocalDate birthDate) {
         return birthDate.until(LocalDate.now()).getYears();
     }
-}</code><br>
-          Now we map a pet to a result containing the name and the age of the pet.
+}</code>
+          <p>Now we map a pet to a result containing the name and the age of the pet.
           In this mapping the birthdate, which is a LocalDate, matches the age field which is a Integer.
-          Because we have added a converter for these types, the converter is applied and the age is calculated.<br>
-          <br>
+          Because we have added a converter for these types, the converter is applied and the age is calculated.</p>
           <div class="row">
             <div class="col-xs-12 col-md-6">
 <code>
@@ -728,21 +720,19 @@ assertEquals(LocalDate.now().getYear()-2012, petNameAndAgeResult.age, 0);</code>
       <section id="nested-to-nested">
         <h3 class="section-title">Nested to Nested</h3>
         <div class="section-body">
-          Let's start with an example of mapping nested objects:<br>
-          <img src="images/nested-to-nested.png" alt="nested to nested mapping"><br>
-          BeanMapper does support by default nested objects.
+          <p>Let's start with an example of mapping nested objects:</p>
+          <p><img src="images/nested-to-nested.png" alt="nested to nested mapping"></p>
+          <p>BeanMapper does support by default nested objects.
           Nested in this context means fields that have more fields inside.
           For example a pet. A pet does have a name, birthDate and a type.
           Type is an instance of PetType which contains an id and a name.
           If you want to map that pet you may also want to map the type inside the pet class.
-          BeanMapper just do that.
-          <br><br>
-          To indicate which classes are mapped deeper inside, you have to set a package.
+          BeanMapper just do that.</p>
+          <p>To indicate which classes are mapped deeper inside, you have to set a package.
           All classes in the given package and sub-packages are eligible for mapping.
           The root source and target do not need to be set as such,
           because the verification is only run against nested classes which should be mapped implicitly as well.
-          Below a example which is showing this use case.
-          <br><br>
+          Below a example which is showing this use case.</p>
           <div class="row">
             <div class="col-xs-12 col-md-6">
 <code>public class Pet {
@@ -794,22 +784,14 @@ assertEquals("Dog", petResult.type.name);</code>
       <section id="nested-to-flat">
         <h3 class="section-title">Nested to Flat</h3>
         <div class="section-body">
-          In this example the objects to map does not match and does have a different structure.
-          Below a example of this case. Take a look at the <a href="#flat-to-nested">next example</a> for mapping this example in reverse direction.<br>
-          <img src="images/nested-to-flat.png" alt="nested to flat mapping"><br>
+          <p>In this example the objects to map does not match and does have a different structure.
+          Below a example of this case. Take a look at the <a href="#flat-to-nested">next example</a> for mapping this example in reverse direction.</p>
+          <p><img src="images/nested-to-flat.png" alt="nested to flat mapping"></p>
 
-          This use case comes up if you want to simplify your result to the outside.
-          Your source object contains a nested structure of different fields.
-          You want to simplify that object and create an object that represent this object in an easy way to the outside.
-          <br>
-          This example shows a owner of a pet. The owner does have a name and a address.
-          The nested address object contains several fields such as street, number and city.
-          For simplicity you want only the name and the living place of the owner in your result.
-          With the BeanProperty annotation you can dive into objects on the other side.
-          In this example the annotation references address.city.
-          BeanMapper goes to the address and gets the city from it to map it to the living place in OwnerResult.class.
-          You can dive as deep as you want with BeanProperty.
-          <br><br>
+          <p>This use case comes up if you want to simplify your result to the outside. Your source object contains a nested structure of different fields. You want to simplify that object and create an object that represent this object in an easy way to the outside.</p>
+
+          <p>This example shows a owner of a pet. The owner does have a name and a address. The nested address object contains several fields such as street, number and city. For simplicity you want only the name and the living place of the owner in your result. With the BeanProperty annotation you can dive into objects on the other side. In this example the annotation references address.city. BeanMapper goes to the address and gets the city from it to map it to the living place in OwnerResult.class. You can dive as deep as you want with BeanProperty.</p>
+
           <div class="row">
             <div class="col-xs-12 col-md-6">
 <code>public class Owner {
@@ -859,12 +841,15 @@ assertEquals("Zoetermeer", ownerResult.livingPlace);</code>
       <section id="flat-to-nested">
         <h3 class="section-title">Flat to Nested</h3>
         <div class="section-body">
-          <img src="images/flat-to-nested.png" alt="flat to nested mapping"><br>
-          In this case you can use BeanUnwrap annotation.
+
+          <p><img src="images/flat-to-nested.png" alt="flat to nested mapping"></p>
+
+          <p>In this case you can use BeanUnwrap annotation.
           You want to use this annotation for example if you are mapping a form to a entity in your application.
-          Your source object is flat and you want to convert this object to a more complex object in your application.<br>
-          BeanUnwrap indicates that the fields inside the annoted field should be mapped at the same level as the annotation exist. With this annotation BeanMapper can match fields on a higher level your object structure.<br>
-          <br>
+          Your source object is flat and you want to convert this object to a more complex object in your application.</p>
+
+          <p>BeanUnwrap indicates that the fields inside the annoted field should be mapped at the same level as the annotation exist. With this annotation BeanMapper can match fields on a higher level your object structure.</p>
+
           <div class="row">
             <div class="col-xs-12 col-md-6">
 <code>public class PetForm {
@@ -893,11 +878,11 @@ public class PetType {
 }</code>
             </div>
             <div class="col-xs-12">
-              <br>
-              If you want your annotations at the other side you can use BeanProperty instead of BeanUnwrap.
+
+              <p>If you want your annotations at the other side you can use BeanProperty instead of BeanUnwrap.
               Now you can annotate the source side.
-              Below a example, in this case BeanProperty indicates that BeanMapper should look for a field named familyName in the object PetType.
-              <br><br>
+              Below a example, in this case BeanProperty indicates that BeanMapper should look for a field named familyName in the object PetType.</p>
+
 <code>public class PetForm {
     public String nickname;
     public LocalDate birthDate;
@@ -926,10 +911,9 @@ assertEquals("Canidae", pet.type.familyName);</code>
       <section id="get">
         <h3 class="section-title">GET request - Used to get one or multiple objects</h3>
         <div class="section-body">
-          <b>BeanMapper way & BeanMapper-Spring way</b><br>
-          In the example below we get one pet that matches the given identifier.
-          We convert the retrieved pet to a PetResult.class to expose the object to the outside.<br>
-          <br>
+          <h4>BeanMapper way & BeanMapper-Spring way</h4>
+          <p>In the example below we get one pet that matches the given identifier.
+          We convert the retrieved pet to a PetResult.class to expose the object to the outside.</p>
 <code>@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 public PetResult findOne(@PathVariable Long id) {
     Pet pet = petService.findOne(id);
@@ -940,19 +924,21 @@ public PetResult findOne(@PathVariable Long id) {
       <section id="post">
         <h3 class="section-title">POST request - Used to create an object</h3>
         <div class="section-body">
-          <b>BeanMapper way</b><br>
-          In the example below we send a PetForm through the request body of this POST request. The form is converted to a entity which is saved by the petService. The saved pet is converted to a PetResult.class to expose the object to the outside.<br>
-          <br>  
+          <h4>BeanMapper way</h4>
+
+          <p>In the example below we send a PetForm through the request body of this POST request. The form is converted to a entity which is saved by the petService. The saved pet is converted to a PetResult.class to expose the object to the outside.</p>
+
 <code>@RequestMapping(method = RequestMethod.POST)
 public PetResult create(@RequestBody PetForm petForm) {
     Pet newPet = beanMapper.map(petForm, Pet.class);
     Pet savedPet = petService.save(newPet);
     return beanMapper.map(savedPet, PetResult.class);
 }</code>
-          <br>
-          <b>BeanMapper-Spring way</b><br>
-          This example uses a BeanMapper-Spring dependency to simplify REST requests. The request body contains a petForm.class just like the previous example. BeanMapper-Spring automatically converts the given form to a pet which can be saved.<br>
-          <br>  
+
+          <h4>BeanMapper-Spring way</h4><br>
+
+          <p>This example uses a BeanMapper-Spring dependency to simplify REST requests. The request body contains a petForm.class just like the previous example. BeanMapper-Spring automatically converts the given form to a pet which can be saved.</p>
+
 <code>@RequestMapping(method = RequestMethod.POST)
 public PetResult create(@MergedForm(value = PetForm.class) Pet pet) {
     Pet createdPet = petService.save(pet);
@@ -963,9 +949,10 @@ public PetResult create(@MergedForm(value = PetForm.class) Pet pet) {
       <section id="put">
         <h3 class="section-title">PUT request - Used to update an object</h3>
         <div class="section-body">
-          <b>BeanMapper way</b><br>
-          This method takes a path variable which contains the identifier of the pet to update. The updated pet is send through the request body. As you can see, the old pet is retrieved by the given identifier. Then the form is mapped over the old pet. Finally the merged pet is saved to the database and converted to a PetResult.class to expose it to the outside.<br>
-          <br>
+          <h4>BeanMapper way</h4>
+
+          <p>This method takes a path variable which contains the identifier of the pet to update. The updated pet is send through the request body. As you can see, the old pet is retrieved by the given identifier. Then the form is mapped over the old pet. Finally the merged pet is saved to the database and converted to a PetResult.class to expose it to the outside.</p>
+
 <code>@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 public PetResult update(@PathVariable Long id, @RequestBody PetForm petForm) {
     Pet oldPet = petService.findOne(id);
@@ -974,9 +961,11 @@ public PetResult update(@PathVariable Long id, @RequestBody PetForm petForm) {
     return beanMapper.map(savedPet, PetResult.class);
 }
 </code><br>
-          <b>BeanMapper-Spring way</b><br>
-          This example uses a BeanMapper-Spring dependency to simplify REST requests. The previous used request body and path variable are used. BeanMapper-Spring automatically merged the given form with the old entity that is retrieved by the given identifier. The given pet as argument in this update method is the merged pet which can be saved to the database.<br>
-          <br>
+
+          <h4>BeanMapper-Spring way</h4><br>
+
+          <p>This example uses a BeanMapper-Spring dependency to simplify REST requests. The previous used request body and path variable are used. BeanMapper-Spring automatically merged the given form with the old entity that is retrieved by the given identifier. The given pet as argument in this update method is the merged pet which can be saved to the database.</p>
+
 <code>@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 public PetResult update(@MergedForm(value = PetForm.class, mergeId = "id") Pet pet) {
     Pet updatedPet = petService.save(pet);
@@ -987,9 +976,11 @@ public PetResult update(@MergedForm(value = PetForm.class, mergeId = "id") Pet p
       <section id="patch">
         <h3 class="section-title">PATCH request - Used to partially update an object</h3>
         <div class="section-body">
-          <b>BeanMapper way</b><br>
-          This method is used to partially update a pet. The given path variable contains the identifier of the old pet. The request body should contains the fields and values that must be updated in the old pet. The input is converted to a form which is mapped over the old pet. The downsize source method is used to only map the given input fields. Other fields are not updated because they are not mapped over the old pet.<br>
-          <br>
+
+          <h4>BeanMapper way</h4>
+
+          <p>This method is used to partially update a pet. The given path variable contains the identifier of the old pet. The request body should contains the fields and values that must be updated in the old pet. The input is converted to a form which is mapped over the old pet. The downsize source method is used to only map the given input fields. Other fields are not updated because they are not mapped over the old pet.</p>
+
 <code class="java">@RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
 public PetResult partialUpdate(@PathVariable Long id, @RequestBody Map&lt;String, Object> inputFields) {
     ObjectMapper objectMapper = new ObjectMapper();
@@ -1002,12 +993,14 @@ public PetResult partialUpdate(@PathVariable Long id, @RequestBody Map&lt;String
 
     Pet savedPet = petService.save(updatedPet);
     return beanMapper.map(savedPet, PetResult.class);
-}</code><br>
-          <b>BeanMapper-Spring way</b><br>
-          This example uses a BeanMapper-Spring dependency to simplify REST requests. It is recommended to use this method instead of the previous example because of simplicity. The old pet is automaticly received by the given identifier "id". Then the given fields and values are mapped over this old pet and the merged pet is given as argument in this partialUpdate method.<br>
-          <br>
-          After this you can do anything else with this merged pet and finally save it to the database.<br>
-          <br>
+}</code>
+            
+          <h4>BeanMapper-Spring way</h4>
+            
+          <p>This example uses a BeanMapper-Spring dependency to simplify REST requests. It is recommended to use this method instead of the previous example because of simplicity. The old pet is automaticly received by the given identifier "id". Then the given fields and values are mapped over this old pet and the merged pet is given as argument in this partialUpdate method.</p>
+
+          <p>After this you can do anything else with this merged pet and finally save it to the database.</p>
+
 <code>@RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
 public PetResult partialUpdate(@MergedForm(value = PetForm.class, patch = true, mergeId = "id") Pet pet) {
     Pet savedPet = petService.save(pet);
@@ -1019,9 +1012,11 @@ public PetResult partialUpdate(@MergedForm(value = PetForm.class, patch = true, 
       <section id="delete">
         <h3 class="section-title">DELETE request - Used to delete an object</h3>
         <div class="section-body">
-          <b>BeanMapper way & BeanMapper-Spring way</b><br>
-          Usage of BeanMapper is not needed for deleting objects by a given identifier.<br>
-          <br>
+
+          <h4>BeanMapper way & BeanMapper-Spring way</h4>
+            
+          <p>Usage of BeanMapper is not needed for deleting objects by a given identifier.</p>
+
 <code>@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 public void delete(Long id) {
     addressService.delete(id);
