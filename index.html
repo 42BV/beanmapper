@@ -85,6 +85,14 @@
         <li><a href="#patch">PATCH</a></li>
         <li><a href="#delete">DELETE</a></li>
       </ul>
+      <ul class="nav nav-sidebar">
+        <li class="li-heading">Spring</li>
+        <li><a href="#mergedform">@MergedForm</a></li>
+        <li><a href="#beanmapperspringconfig">Configuration</a></li>
+        <li><a href="#idtoentity">Id to Entity</a></li>
+        <li><a href="#pageablemapper">Map from page</a></li>
+        <li><a href="#mockmvcbeanmapper">Mocked BeanMapper</a></li>
+      </ul>
     </div>
     <div class="col-sm-9 col-sm-offset-3 main">
 
@@ -1142,6 +1150,189 @@ public PetResult partialUpdate(@MergedForm(value = PetForm.class, patch = true, 
 public void delete(Long id) {
     addressService.delete(id);
 }</code>
+        </div>
+      </section>
+
+      <!-- BeanMapper spring -->
+      <section id="mergedform">
+        <h3 class="section-title">@MergedForm</h3>
+        <div class="section-body">
+          <table class="table table-condensed">
+            <tr>
+              <th>Annotation</th>
+              <td>@MergedForm</td>
+            </tr>
+            <tr>
+              <th>Arguments</th>
+              <td>
+                value: The class type of the input form.<br>
+                patch: When patch, we only map the provided properties from our input form to the entity (default false).<br>
+                mergeId: Entity identifier variable in your path mapping.
+              </td>
+            </tr>
+            <tr>
+              <th>Description</th>
+              <td>
+                Use MergedForm if you want to map an input form automaticaly to a entity.
+                MergedForm is capable of reading an input form and mapping this into an existing/new entity.
+                The entity is declared as parameter in our handler mapping method.
+              </td>
+            </tr>
+          </table>
+          Take a look at the
+          <a href="#post">create</a>,
+          <a href="#put">update</a> and
+          <a href="#patch">partial update</a>
+          methods of this documentation to see different usages.<br>
+          Below a example of a partial update method.
+          The MergedForm annotation converts the input form to a entity which can be saved.<br>
+          PetForm.class is the input form in this case.
+          The patch variable is true so only the given fields are mapped to the Pet instance.
+          The given pet is already merged with the old existing pet instance.
+          This can be done because mergeId is specified which contains the identifier of the old pet to merge.
+<code class="java">@RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
+public PetResult partialUpdate(@MergedForm(value = PetForm.class, patch = true, mergeId = "id") Pet pet) {
+    return beanMapper.map(petService.save(pet), PetResult.class);
+}</code>
+        </div>
+      </section>
+
+      <section id="beanmapperspringconfig">
+        <h3 class="section-title">Configuration</h3>
+        <div class="section-body">
+          In order to use BeanMapper spring you have to add the following dependency in your project.
+          <code>
+&lt;dependency>
+    &lt;groupId>io.beanmapper&lt;/groupId>
+    &lt;artifactId>beanmapper-spring&lt;/artifactId>
+    &lt;version>${beanmapper-spring.version}&lt;/version>
+&lt;/dependency>
+          </code>
+          <p>
+            Version is the latest version of BeanMapper spring
+            <a href="https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper-spring" target="_blank"><img src="https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper-spring/badge.svg"></a><br>
+            You can find the javadoc for BeanMapper spring <a href="http://www.javadoc.io/doc/io.beanmapper/beanmapper-spring" target="_blank">here</a>.<br>
+            You can also <a href="http://repository.sonatype.org/service/local/artifact/maven/redirect?g=io.beanmapper&a=beanmapper-spring&v=LATEST&r=central-proxy">download the latest jar</a> and include this in your project.
+          </p>
+          <p>Then the following argument resolver should be added.</p>
+<code>@Override
+public void addArgumentResolvers(List&lt;HandlerMethodArgumentResolver> argumentResolvers) {
+    argumentResolvers.add(new MergeFormMethodArgumentResolver(
+            Collections.singletonList(mappingJackson2HttpMessageConverter()),
+            beanMapper,
+            applicationContext
+    ));
+}</code>
+          <p>
+            Finally you can create a BeanMapper.
+            The package prefix is necessary for mapping nested entities.
+            All classes that exist in the package of ApplicationConfig.class are mapped recursively.
+            A different bean unproxy method is added for removing proxy of spring classes.
+            The id to entity converter is added for conversion from a identifier to a entity (<a href="#idtoentity">read more</a>).
+          </p>
+<code>BeanMapper beanMapper = new BeanMapperBuilder()
+    .addPackagePrefix(ApplicationConfig.class)
+    .setBeanUnproxy(new HibernateAwareBeanUnproxy())
+    .addConverter(new IdToEntityBeanConverter(applicationContext))
+    .build();
+}</code>
+        </div>
+      </section>
+
+      <section id="idtoentity">
+        <h3 class="section-title">Id to Entity conversion</h3>
+        <div class="section-body">
+          The previous section shows that you should add a IdToEntityBeanConverter for using beanmapper spring.
+          This converter is applied when mapping a identifier to a entity.
+          It uses spring repositories to get the identifier matching the entity.<br>
+          For example we have the following repository.
+<code>@Repository
+public interface PetRepository extends JpaRepository&lt;Pet, Long> {
+}</code>
+          Let's take a look at the following test. For configure your test, take a look at <a href="#mockmvcbeanmapper">MockMvcBeanMapper</a>.
+          The map function is called with a identifier as source and a Pet.class as target.
+          BeanMapper spring id to entity converter automatically converts the given id to a pet from the repository.
+          Check BeanMapper petshop to see more examples.
+<code>Long id = 1L;
+Pet pet = new Pet();
+pet.setNickname("Snuf");
+pet.setBirthDate(LocalDate.of(2016,1,1));
+
+new Expectations() {{
+    petRepository.findOne(id);
+    result = pet;
+}};
+
+
+Pet petFromId = mockMvcBeanMapper.getBeanMapper()
+                          .map(id, Pet.class, true);
+assertEquals("Snuf", petFromId.getNickname());
+assertEquals(LocalDate.of(2016,1,1), petFromId.getBirthDate());</code>
+        </div>
+      </section>
+
+      <section id="pageablemapper">
+        <h3 class="section-title">Map from page</h3>
+        <div class="section-body">
+          BeanMapper spring does have a useful class named PageableMapper.
+          This class is for mapping a org.springframework.data.domain.Page to a page of different objects.
+          <code>PageableMapper.map(page, Result.class, beanMapper);</code>
+        </div>
+      </section>
+
+      <section id="mockmvcbeanmapper">
+        <h3 class="section-title">Mocked BeanMapper</h3>
+        <div class="section-body">
+          <p>
+            Since mapping to an Entity is done at an early stage, your Spring MVC controller level tests must be configured to deal with the usage of repositories.
+            The MockMvcBeanMapper is configured at the level of your abstract controller test, ie the class your controller tests all extend from.
+          </p>
+          <p>The reason why you need to do this is because:</p>
+          <ul>
+            <li>Spring's DomainClassConverter (working on @RequestParam and @PathVariable) makes use of your repositories</li>
+            <li>BeanMapper @MergedForm makes use of your repositories</li>
+            <li>BeanMapper IdToEntityBeanConverter makes use of your repositories</li>
+          </ul>
+          <p>Each of these vectors need to be addressed to set up controller tests that can deal with repositories.</p>
+          <p>Assuming you use Spring's MockMvcBuilders and assuming you have a web configuration class called WebMvcConfig, this is what you could do:</p>
+<code>public abstract class AbstractControllerTest {
+
+    private WebMvcConfig config = new WebMvcConfig();
+    protected MockMvc webClient;
+    protected MockMvcBeanMapper mockMvcBeanMapper;
+
+    protected void initWebClient(Object controller) {
+
+        this.mockMvcBeanMapper = new MockMvcBeanMapper(
+                new FormattingConversionService(),
+                Collections.singletonList(config.mappingJackson2HttpMessageConverter()),
+                new ApplicationConfig().beanMapper()
+        );
+
+        this.webClient = MockMvcBuilders.standaloneSetup(controller)
+                .setMessageConverters(config.mappingJackson2HttpMessageConverter())
+                .setCustomArgumentResolvers(mockMvcBeanMapper.createHandlerMethodArgumentResolvers())
+                .setConversionService(mockMvcBeanMapper.getConversionService())
+                .build();
+    }
+
+    public BeanMapper beanMapper() {
+        return mockMvcBeanMapper.getBeanMapper();
+    }
+
+    public void registerRepository(CrudRepository&lt;? extends BaseEntity, Long> repository, Class<?> entityClass) {
+        mockMvcBeanMapper.registerRepository(repository, entityClass);
+    }
+}</code>
+          <br>
+          <p>In your controller test, you will have to register all the repositories (presumably mock classes) that need to be added, ostensibly in a @Before method.</p>
+          <code>registerRepository(ownerRepository, Owner.class);</code>
+          <br>
+          <p>You can take program your mock repositories as you normally would, for example in JMockit:</p>
+<code>new NonStrictExpectations() {{
+    ownerRepository.findOne(1138L);
+    result = new Owner();
+}};</code>
         </div>
       </section>
     </div>
