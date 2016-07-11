@@ -59,6 +59,7 @@
         <li><a href="#use-case">Use case</a></li>
         <li><a href="#how-to-use">How to Use</a></li>
         <li><a href="#download">Download</a></li>
+        <li><a href="#builder">Builder</a></li>
       </ul>
       <ul class="nav nav-sidebar">
         <li class="li-heading">Annotations</li>
@@ -297,6 +298,33 @@ assertEquals("{\"name\":\"Henk\"}", json);</code>
           <p><a href="https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper" target="_blank"><img src="https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper/badge.svg"></a></p>
           <p>You can find the javadoc for BeanMapper <a href="http://www.javadoc.io/doc/io.beanmapper/beanmapper" target="_blank">here</a>.</p>
           <p>You can also <a href="http://repository.sonatype.org/service/local/artifact/maven/redirect?g=io.beanmapper&a=beanmapper&v=LATEST&r=central-proxy">download the latest jar</a> and include this in your project.</p>
+        </div>
+      </section>
+      <section id="builder">
+        <h3 class="section-title">BeanMapper Builder</h3>
+        <div class="section-body">
+          Each BeanMapper has its own configuration.
+          You can configure and construct a BeanMapper using the BeanMapperBuilder.
+          The easiest way to create a BeanMapper is with all default settings. You get something like this:
+          <code class="java">BeanMapper mapper = new BeanMapperBuilder().build()</code>
+          The configuration of this mapper is editable by using the config() method of the BeanMapper instance.
+          This method returns a BeanMapperBuilder to edit the configuration of BeanMapper for all mappings.
+          In the example below we add a converter to the created BeanMapper.
+          This converter is applied during all mappings with this instance of BeanMapper.
+          <code class="java">mapper = mapper.config()
+            .addConverter(converter)
+            .build();</code>
+          You can also configure BeanMapper for one mapping only.
+          In this case you should use the method wrapConfig() of the instance of BeanMapper followed by the map() method for mapping an instance.
+          The given converter is applied only during this mapping from source to target.
+          <code class="java">mapper.wrapConfig()
+          .addConverter(converter)
+          .build()
+          .map(source, target);</code>
+          <br>
+          With BeanMapperBuilder you can configure your own BeanMapper in the way you wanted it.
+          For example: you can add converters, configure the way to initialize classes, configure the way to unproxy a class or
+          already set the target instance for mapping.
         </div>
       </section>
 
