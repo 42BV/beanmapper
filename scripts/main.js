@@ -1,4 +1,6 @@
 $(document).ready(function () {
+    var offsetFromTop = 100;
+    
     $('code').each(function(i, block) {
         hljs.highlightBlock(block);
     });
@@ -9,7 +11,7 @@ $(document).ready(function () {
     $('.sidebar').find("a").click(function () {
         var target = $(this.hash);
         $('html, body').animate({
-            scrollTop: target.offset().top-50
+            scrollTop: target.offset().top - offsetFromTop
         }, 750);
     });
 
@@ -17,13 +19,13 @@ $(document).ready(function () {
      * Function that handles highlighting of menu items.
      */
     $(window).scroll(function () {
-        var windowPos = $(window).scrollTop()+50; // Look 50px ahead
+        var windowPos = $(window).scrollTop() + offsetFromTop + 1;
 
         $('.sidebar').find("a").each(function() {
             var sectionByLink = $($(this).attr('href'));
             var divPos = sectionByLink.offset().top;
             var divHeight = sectionByLink.height();
-            if (divPos <= windowPos && (divPos + divHeight) > windowPos) {
+            if (divPos <= windowPos && (divPos + divHeight) >= windowPos) {
                 $(this).parent().addClass("active");
             } else {
                 $(this).parent().removeClass("active");
