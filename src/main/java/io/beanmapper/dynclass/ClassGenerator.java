@@ -1,16 +1,23 @@
 package io.beanmapper.dynclass;
 
+import java.util.Map;
+
 import io.beanmapper.annotations.BeanCollection;
 import io.beanmapper.core.BeanField;
 import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
-import javassist.*;
+import javassist.CannotCompileException;
+import javassist.ClassClassPath;
+import javassist.ClassMap;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtField;
+import javassist.CtMethod;
+import javassist.NotFoundException;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ClassMemberValue;
-
-import java.util.Map;
 
 public class ClassGenerator {
 
@@ -29,7 +36,7 @@ public class ClassGenerator {
         return new GeneratedClass(createClass(baseClass, baseFields, displayNodes));
     }
 
-    private CtClass createClass(Class<?> base, Map<String, BeanField> baseFields, Node displayNodes) throws Exception {
+    private synchronized CtClass createClass(Class<?> base, Map<String, BeanField> baseFields, Node displayNodes) throws Exception {
         CtClass baseClass = classPool.getCtClass(base.getName());
         CtClass dynClass = classPool.makeClass(base.getName() + "Dyn" + ++GENERATED_CLASS_PREFIX);
 
