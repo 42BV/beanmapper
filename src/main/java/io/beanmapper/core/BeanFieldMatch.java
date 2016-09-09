@@ -1,10 +1,10 @@
 package io.beanmapper.core;
 
+import java.lang.annotation.Annotation;
+
 import io.beanmapper.annotations.BeanDefault;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
 import io.beanmapper.exceptions.BeanMappingException;
-
-import java.lang.annotation.Annotation;
 
 public class BeanFieldMatch {
 
@@ -81,4 +81,13 @@ public class BeanFieldMatch {
     public BeanMatch getBeanMatch() {
         return beanMatch;
     }
+
+    public String sourceToString() {
+        return source.getClass().getSimpleName() + (sourceBeanField == null ? "" : "." + sourceBeanField.getName());
+    }
+
+    public String targetToString() {
+        return target.getClass().getSimpleName() + (targetBeanField == null ? "" : "." + targetBeanField.getName());
+    }
+
 }

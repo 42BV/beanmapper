@@ -1,5 +1,8 @@
 package io.beanmapper.strategy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.beanmapper.BeanMapper;
 import io.beanmapper.annotations.BeanConstruct;
 import io.beanmapper.annotations.BeanDefault;
@@ -15,6 +18,12 @@ import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.utils.ConstructorArguments;
 
 public abstract class AbstractMapStrategy implements MapStrategy {
+
+    private static final String INDENT = "    ";
+
+    private static final String ARROW = " -> ";
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final BeanMapper beanMapper;
     private final Configuration configuration;
@@ -80,12 +89,14 @@ public abstract class AbstractMapStrategy implements MapStrategy {
         Object encapsulatedSource = beanFieldMatch.getSourceObject();
         Object target;
         if (encapsulatedSource != null) {
+            logger.debug("    {");
             if(beanFieldMatch.getTargetObject() == null){
                 target = getBeanMapper().map(encapsulatedSource, beanFieldMatch.getTargetClass());
             } else {
                 target = getBeanMapper().map(encapsulatedSource, beanFieldMatch.getTargetObject());
             }
             beanFieldMatch.writeObject(target);
+            logger.debug("    }");
         }
     }
 
@@ -105,6 +116,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
 
         BeanConverter converter = getConverterOptional(valueClass, targetClass);
         if (converter != null) {
+            logger.debug(INDENT + converter.getClass().getSimpleName() + ARROW);
             return converter.convert(value, targetClass, beanFieldMatch);
         }
 
@@ -165,7 +177,9 @@ public abstract class AbstractMapStrategy implements MapStrategy {
             return;
         }
         if (beanFieldMatch.isMappable()) {
+            logger.debug(beanFieldMatch.sourceToString() + ARROW);
             copySourceToTarget(beanFieldMatch);
+            logger.debug(INDENT + beanFieldMatch.targetToString());
         }
     }
 
