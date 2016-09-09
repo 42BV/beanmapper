@@ -1,10 +1,10 @@
 package io.beanmapper.dynclass;
 
-import io.beanmapper.exceptions.BeanDynamicClassGenerationException;
-
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import io.beanmapper.exceptions.BeanDynamicClassGenerationException;
 
 public class ClassStore {
 
@@ -22,21 +22,27 @@ public class ClassStore {
     public Class<?> getOrCreateGeneratedClass(Class<?> baseClass, List<String> includeFields) {
         Node displayNodes = Node.createTree(includeFields);
         String baseClassName = baseClass.getName();
+        Map<String, Class<?>> generatedClassesForClass = null;
 
-        Map<String, Class<?>> generatedClassesForClass = CACHE.get(baseClassName);
-        if (generatedClassesForClass == null) {
-            generatedClassesForClass = new TreeMap<String, Class<?>>();
-            CACHE.put(baseClassName, generatedClassesForClass);
-        }
-        Class<?> generatedClass = generatedClassesForClass.get(displayNodes.getKey());
-        if (generatedClass == null) {
-            try {
-                generatedClass = classGenerator.createClass(baseClass, displayNodes).generatedClass;
-            } catch (Exception err) {
-                throw new BeanDynamicClassGenerationException(err, baseClass, displayNodes.getKey());
+        synchronized (CACHE) {
+            generatedClassesForClass = CACHE.get(baseClassName);
+            if (generatedClassesForClass == null) {
+                generatedClassesForClass = new TreeMap<String, Class<?>>();
+                CACHE.put(baseClassName, generatedClassesForClass);
             }
-            generatedClassesForClass.put(displayNodes.getKey(), generatedClass);
         }
-        return generatedClass;
+
+        synchronized (generatedClassesForClass) {
+            Class<?> generatedClass = generatedClassesForClass.get(displayNodes.getKey());
+            if (generatedClass == null) {
+                try {
+                    generatedClass = classGenerator.createClass(baseClass, displayNodes).generatedClass;
+                } catch (Exception err) {
+                    throw new BeanDynamicClassGenerationException(err, baseClass, displayNodes.getKey());
+                }
+                generatedClassesForClass.put(displayNodes.getKey(), generatedClass);
+            }
+            return generatedClass;
+        }
     }
 }
