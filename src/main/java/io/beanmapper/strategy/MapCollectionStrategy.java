@@ -1,9 +1,9 @@
 package io.beanmapper.strategy;
 
+import java.util.Collection;
+
 import io.beanmapper.BeanMapper;
 import io.beanmapper.config.Configuration;
-
-import java.util.Collection;
 
 @SuppressWarnings("unchecked")
 public class MapCollectionStrategy extends AbstractMapStrategy {
@@ -23,6 +23,7 @@ public class MapCollectionStrategy extends AbstractMapStrategy {
         // is wrapped in an override configuration containing i) a reference to the target class and ii)
         // without a container class.
         Class targetClass = getConfiguration().getTargetClass();
+        logger.debug("    [");
         for (Object item : (Collection)source) {
             BeanMapper nestedBeanMapper = getBeanMapper()
                     .wrapConfig()
@@ -30,6 +31,7 @@ public class MapCollectionStrategy extends AbstractMapStrategy {
                     .build();
             targetItems.add(nestedBeanMapper.map(item));
         }
+        logger.debug("    ]");
 
         return targetItems;
     }
