@@ -19,7 +19,9 @@ import io.beanmapper.utils.ConstructorArguments;
 
 public abstract class AbstractMapStrategy implements MapStrategy {
 
-    private static final String STRING = " -> ";
+    private static final String INDENT = "    ";
+
+    private static final String ARROW = " -> ";
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -114,7 +116,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
 
         BeanConverter converter = getConverterOptional(valueClass, targetClass);
         if (converter != null) {
-            logger.debug("    " + converter.getClass().getSimpleName() + STRING);
+            logger.debug(INDENT + converter.getClass().getSimpleName() + ARROW);
             return converter.convert(value, targetClass, beanFieldMatch);
         }
 
@@ -175,9 +177,9 @@ public abstract class AbstractMapStrategy implements MapStrategy {
             return;
         }
         if (beanFieldMatch.isMappable()) {
-            logger.debug(beanFieldMatch.sourceToString() + STRING);
+            logger.debug(beanFieldMatch.sourceToString() + ARROW);
             copySourceToTarget(beanFieldMatch);
-            logger.debug("    " + beanFieldMatch.targetToString());
+            logger.debug(INDENT + beanFieldMatch.targetToString());
         }
     }
 
