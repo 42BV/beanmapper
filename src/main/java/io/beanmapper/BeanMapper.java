@@ -17,7 +17,7 @@ import java.util.Collection;
 @SuppressWarnings("unchecked")
 public class BeanMapper {
 
-    Configuration configuration = new CoreConfiguration();
+    private Configuration configuration = new CoreConfiguration();
 
     public BeanMapper(Configuration configuration) {
         this.configuration = configuration;

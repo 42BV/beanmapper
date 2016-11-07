@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class DefaultValues {
 
-    static final Map<Class<?>,Object> defaultValues = new HashMap<Class<?>,Object>()
+    private static final Map<Class<?>,Object> defaultValues = new HashMap<Class<?>,Object>()
     {{
             put(boolean.class, false);
             put(byte.class, (byte) 0);
