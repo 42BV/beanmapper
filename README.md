@@ -2,7 +2,7 @@
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper)
 [![Javadoc](https://javadoc-emblem.rhcloud.com/doc/io.beanmapper/beanmapper/badge.svg)](http://www.javadoc.io/doc/io.beanmapper/beanmapper)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/98dc599d9b8c4ef688aa1c2bd271bafb)](https://www.codacy.com/app/bor-robert/beanmapper?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=42BV/beanmapper&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a78e3521eb2e4de48679b21d27a36458)](https://www.codacy.com/app/42bv/beanmapper?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=42BV/beanmapper&amp;utm_campaign=Badge_Grade)
 
 Beanmapper is a Java library for mapping dissimilar Java classes with similar names. The use
 cases for Beanmapper are the following:
