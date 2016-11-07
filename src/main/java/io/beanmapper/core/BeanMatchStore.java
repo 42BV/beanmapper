@@ -64,6 +64,7 @@ public class BeanMatchStore {
     }
 
     private Map<String, BeanField> getAllFields(Map<String, BeanField> ourNodes, Map<String, BeanField> otherNodes, Map<String, BeanField> aliases, Class<?> ourType, Class<?> otherType, BeanField prefixingBeanField) {
+        Map<String, BeanField> ourCurrentNodes = ourNodes;
         List<PropertyAccessor> accessors = PropertyAccessors.getAll(ourType);
         for (PropertyAccessor accessor : accessors) {
 
@@ -95,12 +96,12 @@ public class BeanMatchStore {
             }
 
             if (accessor.findAnnotation(BeanUnwrap.class) != null) {
-                ourNodes = getAllFields(ourNodes, otherNodes, aliases, accessor.getType(), otherType, currentBeanField);
+                ourCurrentNodes = getAllFields(ourCurrentNodes, otherNodes, aliases, accessor.getType(), otherType, currentBeanField);
             } else {
-                ourNodes.put(name, currentBeanField);
+                ourCurrentNodes.put(name, currentBeanField);
             }
         }
-        return ourNodes;
+        return ourCurrentNodes;
     }
 
     private void handleBeanCollectionAnnotation(BeanCollection beanCollection, BeanField beanField) {

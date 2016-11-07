@@ -67,13 +67,13 @@ public class BeanField {
     }
 
     public Object getObject(Object object) throws BeanMappingException {
-        object = getCurrentField().getValue(object);
+        Object valueObject = getCurrentField().getValue(object);
         if (hasNext()) {
-            if (object != null) {
-                return getNext().getObject(object);
+            if (valueObject != null) {
+                return getNext().getObject(valueObject);
             }
         }
-        return object;
+        return valueObject;
     }
 
     public Object getOrCreate(Object parent, Object source, BeanMatch beanMatch) throws BeanMappingException {
@@ -121,9 +121,10 @@ public class BeanField {
 
     private static Stack<BeanField> copyNodes(BeanField prefixingBeanField) {
         Stack<BeanField> beanFields = new Stack<BeanField>();
-        while (prefixingBeanField != null) {
-            beanFields.push(new BeanField(prefixingBeanField.getName(), prefixingBeanField.getCurrentField()));
-            prefixingBeanField = prefixingBeanField.getNext();
+        BeanField currentPrefixingBeanField = prefixingBeanField;
+        while (currentPrefixingBeanField != null) {
+            beanFields.push(new BeanField(currentPrefixingBeanField.getName(), currentPrefixingBeanField.getCurrentField()));
+            currentPrefixingBeanField = currentPrefixingBeanField.getNext();
         }
         return beanFields;
     }
@@ -147,13 +148,14 @@ public class BeanField {
     }
 
     private static void traversePath(Class<?> baseClass, Route route, Stack<BeanField> beanFields) {
+        Class<?> currentBaseClass = baseClass;
         for (String node : route.getRoute()) {
-            final PropertyAccessor property = PropertyAccessors.findProperty(baseClass, node);
+            final PropertyAccessor property = PropertyAccessors.findProperty(currentBaseClass, node);
             if (property == null) {
-                throw new BeanNoSuchPropertyException("Property '" + node + "' does not exist in: " + baseClass.getSimpleName());
+                throw new BeanNoSuchPropertyException("Property '" + node + "' does not exist in: " + currentBaseClass.getSimpleName());
             }
             beanFields.push(new BeanField(node, property));
-            baseClass = property.getType();
+            currentBaseClass = property.getType();
         }
     }
 

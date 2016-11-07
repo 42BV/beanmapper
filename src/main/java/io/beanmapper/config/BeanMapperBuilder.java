@@ -20,7 +20,7 @@ public class BeanMapperBuilder {
 
     private final Configuration configuration;
 
-    List<BeanConverter> customBeanConverters = new ArrayList<BeanConverter>();
+    private List<BeanConverter> customBeanConverters = new ArrayList<BeanConverter>();
 
     public BeanMapperBuilder() {
         this.configuration = new CoreConfiguration();

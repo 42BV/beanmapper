@@ -7,7 +7,6 @@ import io.beanmapper.BeanMapper;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.converter.BeanMapperAware;
-import io.beanmapper.exceptions.BeanConversionException;
 
 import java.util.HashSet;
 import java.util.Set;
