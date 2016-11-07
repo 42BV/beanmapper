@@ -36,7 +36,7 @@ public class OverrideConfiguration implements Configuration {
 
     public OverrideConfiguration(Configuration configuration) {
         if (configuration == null) {
-            throw new RuntimeException("Developer error: the parent configuration may not be null");
+            throw new ParentConfigurationPossiblyNullException("Developer error: the parent configuration may not be null");
         }
         this.parentConfiguration = configuration;
     }

@@ -2,9 +2,9 @@ package io.beanmapper.testmodel.initiallyunmatchedsource;
 
 public class TargetWithoutUnmatchedField {
 
-    String name;
+    private String name;
 
-    String nation;
+    private String nation;
 
     public String getName() {
         return name;
