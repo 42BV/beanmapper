@@ -1,8 +1,10 @@
 # Beanmapper
 
+[![Build Status](https://travis-ci.org/42BV/beanmapper.svg?branch=master)](https://travis-ci.org/42BV/beanmapper)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a78e3521eb2e4de48679b21d27a36458)](https://www.codacy.com/app/42bv/beanmapper)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper)
 [![Javadoc](https://javadoc-emblem.rhcloud.com/doc/io.beanmapper/beanmapper/badge.svg)](http://www.javadoc.io/doc/io.beanmapper/beanmapper)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a78e3521eb2e4de48679b21d27a36458)](https://www.codacy.com/app/42bv/beanmapper?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=42BV/beanmapper&amp;utm_campaign=Badge_Grade)
+[![Apache 2](http://img.shields.io/badge/license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 Beanmapper is a Java library for mapping dissimilar Java classes with similar names. The use
 cases for Beanmapper are the following:
@@ -76,3 +78,17 @@ copy, it will do so. Deep-copying is reserved for dissimilar classes.
 ## Want to know more?
 
 Find the rest of the documentation on [beanmapper.io](http://beanmapper.io).
+
+## License
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
