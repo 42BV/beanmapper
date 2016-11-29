@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/42BV/beanmapper.svg?branch=master)](https://travis-ci.org/42BV/beanmapper)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/a78e3521eb2e4de48679b21d27a36458)](https://www.codacy.com/app/42bv/beanmapper)
+[![Codecov](https://codecov.io/gh/42BV/beanmapper/branch/master/graph/badge.svg)](https://codecov.io/gh/42BV/beanmapper)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper)
 [![Javadoc](https://javadoc-emblem.rhcloud.com/doc/io.beanmapper/beanmapper/badge.svg)](http://www.javadoc.io/doc/io.beanmapper/beanmapper)
 [![Apache 2](http://img.shields.io/badge/license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
