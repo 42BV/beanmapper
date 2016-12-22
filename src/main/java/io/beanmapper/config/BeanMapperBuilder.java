@@ -100,6 +100,11 @@ public class BeanMapperBuilder {
         return this;
     }
 
+    public BeanMapperBuilder setParent(Object parent) {
+        this.configuration.setParent(parent);
+        return this;
+    }
+
     public BeanMapperBuilder setConverterChoosable(boolean converterChoosable) {
         this.configuration.setConverterChoosable(converterChoosable);
         return this;

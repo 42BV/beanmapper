@@ -20,7 +20,7 @@ public class StringToBigDecimalConverterTest {
     
     @Test
     public void testConvert() {
-        Assert.assertEquals("42.24", converter.convert("42.24", BigDecimal.class, null).toString());
+        Assert.assertEquals("42.24", converter.convert(null,"42.24", BigDecimal.class, null).toString());
     }
 
 }

@@ -23,22 +23,22 @@ public class AbstractBeanConverterTest {
     @Test
     public void testConvert() {
         LocalDateTime time = LocalDateTime.now();
-        Assert.assertEquals(time.toLocalDate(), converter.convert(time, LocalDate.class, null));
+        Assert.assertEquals(time.toLocalDate(), converter.convert(null,time, LocalDate.class, null));
     }
     
     @Test
     public void testNullSource() {
-        Assert.assertNull(converter.convert(null, LocalDate.class, null));
+        Assert.assertNull(converter.convert(null,null, LocalDate.class, null));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidSource() {
-        converter.convert("Test", LocalDate.class, null);
+        converter.convert(null,"Test", LocalDate.class, null);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidTarget() {
-        converter.convert(LocalDateTime.now(), String.class, null);
+        converter.convert(null,LocalDateTime.now(), String.class, null);
     }
 
 }

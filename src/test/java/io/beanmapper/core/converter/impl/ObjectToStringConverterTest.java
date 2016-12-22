@@ -10,7 +10,7 @@ public class ObjectToStringConverterTest {
     
     @Test
     public void testConvert() {
-        Assert.assertEquals("42", new ObjectToStringConverter().convert(42, String.class, null));
+        Assert.assertEquals("42", new ObjectToStringConverter().convert(null,42, String.class, null));
     }
 
 }

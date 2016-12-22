@@ -39,7 +39,7 @@ public class PrimitiveConverter implements BeanConverter {
      * {@inheritDoc}
      */
     @Override
-    public Object convert(Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
+    public Object convert(Object parent, Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
         Check.argument(source != null, "Cannot convert null into primitive value.");
         return source; // Value will automatically be boxed or unboxed
     }

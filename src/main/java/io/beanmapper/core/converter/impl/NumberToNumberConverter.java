@@ -42,7 +42,7 @@ public class NumberToNumberConverter implements BeanConverter, BeanMapperAware {
      * then converting that string back into the target number.
      */
     @Override
-    public Object convert(Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
+    public Object convert(Object parent, Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
         if (source == null || source.getClass().equals(targetClass) || (beanFieldMatch != null && beanFieldMatch.getSourceClass().equals(targetClass))) {
             return source;
         }

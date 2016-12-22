@@ -30,6 +30,8 @@ public class OverrideConfiguration implements Configuration {
 
     private Object target;
 
+    private Object parent;
+
     private Class collectionClass;
 
     private boolean converterChoosable = true;
@@ -64,6 +66,11 @@ public class OverrideConfiguration implements Configuration {
     @Override
     public Object getTarget() {
         return target;
+    }
+
+    @Override
+    public Object getParent() {
+        return parent == null ? parentConfiguration.getParent() : parent;
     }
 
     @Override
@@ -168,6 +175,9 @@ public class OverrideConfiguration implements Configuration {
     public void setTarget(Object target) {
         this.target = target;
     }
+
+    @Override
+    public void setParent(Object parent) { this.parent = parent; }
 
     @Override
     public void setConverterChoosable(boolean converterChoosable) {

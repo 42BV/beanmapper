@@ -52,6 +52,14 @@ public interface Configuration {
      */
     Object getTarget();
 
+    /**
+     * The active parent for the field that is currently being mapped. This is always a parent
+     * on the target side of BeanMapper. @BeanParent makes us of this variable to assign to a
+     * field
+     * @return the parent of the active field
+     */
+    Object getParent();
+
     BeanInitializer getBeanInitializer();
 
     SkippingBeanUnproxy getBeanUnproxy();
@@ -155,6 +163,14 @@ public interface Configuration {
      * @param target the target instance to map to
      */
     void setTarget(Object target);
+
+    /**
+     * The active parent for the field that is currently being mapped. This is always a parent
+     * on the target side of BeanMapper. @BeanParent makes us of this variable to assign to a
+     * field
+     * @param parent the parent of the active field
+     */
+    void setParent(Object parent);
 
     /**
      * Used to determine whether the configuration can be reused and modified (Override config)

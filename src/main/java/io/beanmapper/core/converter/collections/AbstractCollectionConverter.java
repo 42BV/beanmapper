@@ -22,7 +22,7 @@ public abstract class AbstractCollectionConverter<T> implements BeanConverter, B
     }
 
     @Override
-    public T convert(Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
+    public T convert(Object parent, Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
         T sourceCollection = (T) source;
 
         if (beanFieldMatch.getCollectionInstructions() == null) {
@@ -31,13 +31,17 @@ public abstract class AbstractCollectionConverter<T> implements BeanConverter, B
 
         T targetCollection = getTargetCollection(beanFieldMatch);
 
+        BeanMapper wrappedBeanMapper = beanMapper
+                .wrapConfig()
+                .setParent(parent)
+                .build();
         if(targetCollection instanceof Map) {
             for (Object key : ((Map)sourceCollection).keySet()) {
-                ((Map) targetCollection).put(key, convertElement(((Map) sourceCollection).get(key), beanFieldMatch));
+                ((Map) targetCollection).put(key, convertElement(wrappedBeanMapper, ((Map) sourceCollection).get(key), beanFieldMatch));
             }
         } else {
             for (Object sourceItem : (Collection)sourceCollection) {
-                ((Collection) targetCollection).add(convertElement(sourceItem, beanFieldMatch));
+                ((Collection) targetCollection).add(convertElement(wrappedBeanMapper, sourceItem, beanFieldMatch));
             }
         }
 
@@ -63,7 +67,7 @@ public abstract class AbstractCollectionConverter<T> implements BeanConverter, B
         return targetCollection;
     }
 
-    private Object convertElement(Object source, BeanFieldMatch beanFieldMatch) {
+    private Object convertElement(BeanMapper beanMapper, Object source, BeanFieldMatch beanFieldMatch) {
         return beanMapper.map(source, beanFieldMatch.getCollectionInstructions().getCollectionMapsTo(), true);
     }
 

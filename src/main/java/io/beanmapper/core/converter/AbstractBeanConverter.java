@@ -43,7 +43,7 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public final Object convert(Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
+    public final Object convert(Object parent, Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
         if (source == null) {
             Check.argument(!targetClass.isPrimitive(), "Cannot convert null into primitive.");
             return null;
