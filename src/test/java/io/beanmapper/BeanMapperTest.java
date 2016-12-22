@@ -1,5 +1,8 @@
 package io.beanmapper;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
 import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
@@ -10,7 +13,15 @@ import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.testmodel.beanAlias.NestedSourceWithAlias;
 import io.beanmapper.testmodel.beanAlias.SourceWithAlias;
 import io.beanmapper.testmodel.beanAlias.TargetWithAlias;
-import io.beanmapper.testmodel.collections.*;
+import io.beanmapper.testmodel.collections.CollectionListSource;
+import io.beanmapper.testmodel.collections.CollectionListTarget;
+import io.beanmapper.testmodel.collections.CollectionListTargetClear;
+import io.beanmapper.testmodel.collections.CollectionMapSource;
+import io.beanmapper.testmodel.collections.CollectionMapTarget;
+import io.beanmapper.testmodel.collections.CollectionSetSource;
+import io.beanmapper.testmodel.collections.CollectionSetTarget;
+import io.beanmapper.testmodel.collections.SourceWithListGetter;
+import io.beanmapper.testmodel.collections.TargetWithListPublicField;
 import io.beanmapper.testmodel.construct.NestedSourceWithoutConstruct;
 import io.beanmapper.testmodel.construct.SourceWithConstruct;
 import io.beanmapper.testmodel.construct.TargetWithoutConstruct;
@@ -29,7 +40,13 @@ import io.beanmapper.testmodel.defaults.TargetWithDefaults;
 import io.beanmapper.testmodel.emptyobject.EmptySource;
 import io.beanmapper.testmodel.emptyobject.EmptyTarget;
 import io.beanmapper.testmodel.emptyobject.NestedEmptyTarget;
-import io.beanmapper.testmodel.encapsulate.*;
+import io.beanmapper.testmodel.encapsulate.Address;
+import io.beanmapper.testmodel.encapsulate.Country;
+import io.beanmapper.testmodel.encapsulate.House;
+import io.beanmapper.testmodel.encapsulate.ResultAddress;
+import io.beanmapper.testmodel.encapsulate.ResultManyToMany;
+import io.beanmapper.testmodel.encapsulate.ResultManyToOne;
+import io.beanmapper.testmodel.encapsulate.ResultOneToMany;
 import io.beanmapper.testmodel.encapsulate.sourceAnnotated.Car;
 import io.beanmapper.testmodel.encapsulate.sourceAnnotated.CarDriver;
 import io.beanmapper.testmodel.encapsulate.sourceAnnotated.Driver;
@@ -61,6 +78,7 @@ import io.beanmapper.testmodel.person.PersonForm;
 import io.beanmapper.testmodel.person.PersonView;
 import io.beanmapper.testmodel.project.CodeProject;
 import io.beanmapper.testmodel.project.CodeProjectResult;
+import io.beanmapper.testmodel.projection.PersonProjection;
 import io.beanmapper.testmodel.publicfields.SourceWithPublicFields;
 import io.beanmapper.testmodel.publicfields.TargetWithPublicFields;
 import io.beanmapper.testmodel.rule.NestedWithRule;
@@ -74,19 +92,24 @@ import io.beanmapper.testmodel.similarsubclasses.DifferentTarget;
 import io.beanmapper.testmodel.similarsubclasses.SimilarSubclass;
 import io.beanmapper.testmodel.tostring.SourceWithNonString;
 import io.beanmapper.testmodel.tostring.TargetWithString;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.TreeSet;
+
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-
-import static org.junit.Assert.*;
 
 public class BeanMapperTest {
 
@@ -816,6 +839,21 @@ public class BeanMapperTest {
         exception.expect(BeanConversionException.class);
         exception.expectMessage("Could not convert LocalDate to LocalDateTime.");
         beanMapper.map(source, TargetWithDateTime.class);
+    }
+
+    @Test
+    public void sourceToInterfaceWithExpression() {
+        BeanMapper beanMapper = new BeanMapperBuilder().addPackagePrefix(BeanMapper.class).build();
+        
+        Person person = new Person();
+        person.setId(42L);
+        person.setName("Jan");
+        person.setPlace("Zoetermeer");
+        
+        PersonProjection projection = beanMapper.map(person, PersonProjection.class);
+        Assert.assertEquals(Long.valueOf(42), projection.getId());
+        Assert.assertEquals("Jan", projection.getName());
+        Assert.assertEquals("Jan Zoetermeer", projection.getNameAndPlace());
     }
 
     public Person createPerson(String name) {
