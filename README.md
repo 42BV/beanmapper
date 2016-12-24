@@ -24,7 +24,7 @@ In order to use Beanmapper in your project, simply add the following Maven depen
 <dependency>
     <groupId>io.beanmapper</groupId>
     <artifactId>beanmapper</artifactId>
-    <version>0.3.2</version>
+    <version>0.4.0</version>
 </dependency>
 ```
 
