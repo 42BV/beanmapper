@@ -1,5 +1,6 @@
 package io.beanmapper.strategy;
 
+import io.beanmapper.annotations.BeanParent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +68,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
      */
     private void copySourceToTarget(BeanFieldMatch beanFieldMatch) {
         Object copyableSource = beanFieldMatch.getSourceObject();
+
         if (copyableSource == null) {
             if (beanFieldMatch.targetHasAnnotation(BeanDefault.class)) {
                 copyableSource = beanFieldMatch.getTargetDefaultValue();
@@ -75,7 +77,13 @@ public abstract class AbstractMapStrategy implements MapStrategy {
             }
         }
 
-        Object convertedValue = convert(copyableSource, beanFieldMatch.getTargetClass(), beanFieldMatch);
+        final Object convertedValue;
+        if (beanFieldMatch.sourceHasAnnotation(BeanParent.class) || beanFieldMatch.targetHasAnnotation(BeanParent.class)) {
+            convertedValue = beanMapper.getConfiguration().getParent();
+        } else {
+            convertedValue = convert(copyableSource, beanFieldMatch.getTargetClass(), beanFieldMatch);
+        }
+
         beanFieldMatch.writeObject(convertedValue);
     }
 
@@ -90,10 +98,14 @@ public abstract class AbstractMapStrategy implements MapStrategy {
         Object target;
         if (encapsulatedSource != null) {
             logger.debug("    {");
+            BeanMapper beanMapper = getBeanMapper()
+                    .wrapConfig()
+                    .setParent(beanFieldMatch.getTarget())
+                    .build();
             if(beanFieldMatch.getTargetObject() == null){
-                target = getBeanMapper().map(encapsulatedSource, beanFieldMatch.getTargetClass());
+                target = beanMapper.map(encapsulatedSource, beanFieldMatch.getTargetClass());
             } else {
-                target = getBeanMapper().map(encapsulatedSource, beanFieldMatch.getTargetObject());
+                target = beanMapper.map(encapsulatedSource, beanFieldMatch.getTargetObject());
             }
             beanFieldMatch.writeObject(target);
             logger.debug("    }");
@@ -117,7 +129,11 @@ public abstract class AbstractMapStrategy implements MapStrategy {
         BeanConverter converter = getConverterOptional(valueClass, targetClass);
         if (converter != null) {
             logger.debug(INDENT + converter.getClass().getSimpleName() + ARROW);
-            return converter.convert(value, targetClass, beanFieldMatch);
+            BeanMapper wrappedBeanMapper = beanMapper
+                    .wrapConfig()
+                    .setParent(beanFieldMatch.getTarget())
+                    .build();
+            return converter.convert(wrappedBeanMapper, value, targetClass, beanFieldMatch);
         }
 
         if (targetClass.isAssignableFrom(valueClass)) {

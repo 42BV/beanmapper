@@ -11,6 +11,7 @@ import io.beanmapper.BeanMapper;
  *
  * @author Jeroen van Schagen
  * @since Nov 13, 2015
+ * @deprecated As of release v0.4.0, internally solved by passing BeanMapper to BeanConverter.convert
  */
 public interface BeanMapperAware {
     

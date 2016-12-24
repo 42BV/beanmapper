@@ -66,6 +66,9 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
+    public Object getParent() { return null; }
+
+    @Override
     public Class getCollectionClass() {
         return null;
     }
@@ -180,6 +183,12 @@ public class CoreConfiguration implements Configuration {
     public void setTarget(Object target) {
         throw new BeanConfigurationOperationNotAllowedException(
                 "Illegal to set a target instance on the Core configuration, works only for override configurations");
+    }
+
+    @Override
+    public void setParent(Object parent) {
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to set a parent instance on the Core configuration, works only for override configurations");
     }
 
     @Override

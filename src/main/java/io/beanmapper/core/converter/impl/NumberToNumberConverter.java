@@ -6,7 +6,6 @@ package io.beanmapper.core.converter.impl;
 import io.beanmapper.BeanMapper;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.converter.BeanConverter;
-import io.beanmapper.core.converter.BeanMapperAware;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,7 +16,7 @@ import java.util.Set;
  * @author Jeroen van Schagen
  * @since Jun 24, 2015
  */
-public class NumberToNumberConverter implements BeanConverter, BeanMapperAware {
+public class NumberToNumberConverter implements BeanConverter {
     
     private static final Set<Class<?>> PRIMITIVES = new HashSet<Class<?>>();
     
@@ -31,18 +30,13 @@ public class NumberToNumberConverter implements BeanConverter, BeanMapperAware {
     }
 
     /**
-     * Bean mapper, used to delegate conversions.
-     */
-    private BeanMapper beanMapper;
-
-    /**
      * {@inheritDoc}
      * <br>
      * Works by first converting the number into a string and
      * then converting that string back into the target number.
      */
     @Override
-    public Object convert(Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
+    public Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
         if (source == null || source.getClass().equals(targetClass) || (beanFieldMatch != null && beanFieldMatch.getSourceClass().equals(targetClass))) {
             return source;
         }
@@ -62,12 +56,4 @@ public class NumberToNumberConverter implements BeanConverter, BeanMapperAware {
         return Number.class.isAssignableFrom(clazz) || PRIMITIVES.contains(clazz);
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setBeanMapper(BeanMapper beanMapper) {
-        this.beanMapper = beanMapper;
-    }
-
 }

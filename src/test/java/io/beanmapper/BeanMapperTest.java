@@ -52,6 +52,9 @@ import io.beanmapper.testmodel.numbers.SourceWithDouble;
 import io.beanmapper.testmodel.numbers.TargetWithDouble;
 import io.beanmapper.testmodel.othername.SourceWithOtherName;
 import io.beanmapper.testmodel.othername.TargetWithOtherName;
+import io.beanmapper.testmodel.parent.Player;
+import io.beanmapper.testmodel.parent.PlayerForm;
+import io.beanmapper.testmodel.parent.SkillForm;
 import io.beanmapper.testmodel.parentClass.Project;
 import io.beanmapper.testmodel.parentClass.Source;
 import io.beanmapper.testmodel.parentClass.Target;
@@ -816,6 +819,46 @@ public class BeanMapperTest {
         exception.expect(BeanConversionException.class);
         exception.expectMessage("Could not convert LocalDate to LocalDateTime.");
         beanMapper.map(source, TargetWithDateTime.class);
+    }
+
+    @Test
+    public void beanParentDirectDescendantAnnotationOnSource() {
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .addPackagePrefix(BeanMapper.class)
+                .build();
+
+        PlayerForm form = new PlayerForm();
+        form.name = "w00t";
+        form.skill = new SkillForm();
+        form.skill.name = "Athletics";
+
+        Player player = beanMapper.map(form, Player.class);
+
+        assertEquals("@BeanParent on source side was not triggered", form.name, player.getSkill().getPlayer1().getName());
+        assertEquals("@BeanParent on target side was not triggered", form.name, player.getSkill().getPlayer2().getName());
+    }
+
+    @Test
+    public void beanParentThroughCollection() {
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .addPackagePrefix(BeanMapper.class)
+                .build();
+
+        PlayerForm form = new PlayerForm();
+        form.name = "w00t";
+        form.skills = new ArrayList<SkillForm>();
+        form.skills.add(new SkillForm());
+        form.skills.get(0).name = "Athletics";
+        form.skills.add(new SkillForm());
+        form.skills.get(1).name = "Football";
+        form.skills.add(new SkillForm());
+        form.skills.get(2).name = "CLimbing";
+
+        Player player = beanMapper.map(form, Player.class);
+
+        assertEquals(form.name, player.getSkills().get(0).getPlayer1().getName());
+        assertEquals(form.name, player.getSkills().get(1).getPlayer1().getName());
+        assertEquals(form.name, player.getSkills().get(2).getPlayer1().getName());
     }
 
     public Person createPerson(String name) {

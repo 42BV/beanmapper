@@ -18,17 +18,17 @@ public class StringToEnumConverterTest {
     
     @Test
     public void testWithName() {
-        Assert.assertEquals(TestEnum.B, converter.convert("B", TestEnum.class, null));
+        Assert.assertEquals(TestEnum.B, converter.convert(null,"B", TestEnum.class, null));
     }
     
     @Test
     public void testWithEmptyName() {
-        Assert.assertNull(converter.convert("   ", TestEnum.class, null));
+        Assert.assertNull(converter.convert(null,"   ", TestEnum.class, null));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void testWithUnknownName() {
-        converter.convert("?", TestEnum.class, null);
+        converter.convert(null,"?", TestEnum.class, null);
     }
     
     public enum TestEnum {

@@ -20,7 +20,7 @@ public class MapToClassStrategy extends MapToInstanceStrategy {
             Class<?> valueClass = getConfiguration().getBeanUnproxy().unproxy(source.getClass());
             BeanConverter converter = getConverterOptional(valueClass, targetClass);
             if (converter != null) {
-                return converter.convert(source, targetClass, null);
+                return converter.convert(getBeanMapper(), source, targetClass, null);
             }
         }
 

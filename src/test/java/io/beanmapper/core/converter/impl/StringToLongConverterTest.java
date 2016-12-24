@@ -19,13 +19,13 @@ public class StringToLongConverterTest {
     @Test
     public void testConvertBoxed() {
         Assert.assertTrue(converter.match(String.class, Long.class));
-        Assert.assertEquals(Long.valueOf(42), converter.convert("42", Long.class, null));
+        Assert.assertEquals(Long.valueOf(42), converter.convert(null,"42", Long.class, null));
     }
     
     @Test
     public void testConvertPrimitive() {
         Assert.assertTrue(converter.match(String.class, long.class));
-        Assert.assertEquals(Long.valueOf(42), converter.convert("42", long.class, null));
+        Assert.assertEquals(Long.valueOf(42), converter.convert(null,"42", long.class, null));
     }
 
 }
