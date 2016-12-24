@@ -64,7 +64,6 @@ public abstract class AbstractMapStrategy implements MapStrategy {
      * The copy action puts the source's value to the target. When @BeanDefault has been set and the
      * value to copy is empty, it will use the default.
      * @param beanFieldMatch contains the fields belonging to the source/target field match
-     * @throws BeanMappingException
      */
     private void copySourceToTarget(BeanFieldMatch beanFieldMatch) {
         Object copyableSource = beanFieldMatch.getSourceObject();
@@ -91,7 +90,6 @@ public abstract class AbstractMapStrategy implements MapStrategy {
      * If the field is a class which can itself be mapped to another class, it must be treated
      * as such. The matching process is called recursively to deal with this pair.
      * @param beanFieldMatch contains the fields belonging to the source/target field match
-     * @throws BeanMappingException
      */
     private void dealWithMappableNestedClass(BeanFieldMatch beanFieldMatch) {
         Object encapsulatedSource = beanFieldMatch.getSourceObject();
@@ -116,6 +114,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
      * Converts a value into the target class.
      * @param value the value to convert
      * @param targetClass the target class
+     * @param beanFieldMatch contains the fields belonging to the source/target field match
      * @return the converted value
      */
     @SuppressWarnings("unchecked")
@@ -153,8 +152,8 @@ public abstract class AbstractMapStrategy implements MapStrategy {
      * @param target The target to which the values get copied.
      * @param <S>    The source type
      * @param <T>    The target type
+     * @param beanMatch the matchup of source and target
      * @return A filled target object.
-     * @throws BeanMappingException
      */
     public <S, T> T processFields(S source, T target, BeanMatch beanMatch) {
         for (String fieldName : beanMatch.getTargetNode().keySet()) {
@@ -176,7 +175,6 @@ public abstract class AbstractMapStrategy implements MapStrategy {
     /**
      * Process a single combination of a source and a target field.
      * @param beanFieldMatch contains the fields belonging to the source/target field match
-     * @throws BeanMappingException
      */
     private void processField(BeanFieldMatch beanFieldMatch) {
         if (!beanFieldMatch.hasMatchingSource()) {

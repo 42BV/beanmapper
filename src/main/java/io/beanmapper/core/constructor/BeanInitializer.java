@@ -7,14 +7,12 @@ import io.beanmapper.utils.ConstructorArguments;
 
 /**
  * Abstraction that initializes beans.
- *
- * @author Jeroen van Schagen
- * @since Jun 23, 2015
  */
 public interface BeanInitializer {
     
     /**
      * Initialize a new bean.
+     * @param <T> type of the class to instantiate
      * @param beanClass the bean class
      * @param arguments object containing types and values necessary for constructing using bean construct
      * @return the initialized bean

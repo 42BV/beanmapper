@@ -40,7 +40,6 @@ public class BeanMapper {
      * @param <S> The instance from which the properties get copied
      * @param <T> the instance to which the properties get copied
      * @return the target instance containing all applicable properties
-     * @throws BeanMappingException
      */
     public <S, T> T map(S source, Class<T> targetClass) {
 
@@ -59,7 +58,6 @@ public class BeanMapper {
      * @param <S> The instance from which the properties get copied
      * @param <T> the instance to which the properties get copied
      * @return the target instance containing all applicable properties
-     * @throws BeanMappingException
      */
     @SuppressWarnings("unchecked")
     public <S, T> T map(S source, Class<T> targetClass, boolean converterChoosable) {
@@ -80,7 +78,6 @@ public class BeanMapper {
      * @param <S> The instance from which the properties get copied
      * @param <T> the instance to which the properties get copied
      * @return the target instance containing all applicable properties
-     * @throws BeanMappingException
      */
     @SuppressWarnings("unchecked")
     public <S, T> T map(S source, Class<T> targetClass, BeanInitializer beanInitializer, boolean converterChoosable) {
@@ -100,7 +97,6 @@ public class BeanMapper {
      * @param <S> the instance from which the properties get copied.
      * @param <T> the instance to which the properties get copied
      * @return the list of mapped items with class T
-     * @throws BeanMappingException
      */
     @SuppressWarnings("unchecked")
     public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass) {
@@ -120,7 +116,6 @@ public class BeanMapper {
      * @param <S> the instance from which the properties get copied.
      * @param <T> the instance to which the properties get copied
      * @return the list of mapped items with class T
-     * @throws BeanMappingException
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass, Class<? extends Collection> collectionClass) {
@@ -139,7 +134,6 @@ public class BeanMapper {
      * @param <S> the instance from which the properties get copied.
      * @param <T> the instance to which the properties get copied
      * @return the original target instance containing all applicable properties
-     * @throws BeanMappingException
      */
     public <S, T> T map(S source, T target) {
 

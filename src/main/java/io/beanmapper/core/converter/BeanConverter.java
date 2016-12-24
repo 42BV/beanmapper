@@ -13,8 +13,10 @@ public interface BeanConverter {
 
     /**
      * Converts the source instance into the desired target type.
+     * @param beanMapper the instance of BeanMapper to use for further mappings
      * @param source the source instance
      * @param targetClass the desired target type
+     * @param beanFieldMatch information on the field pair (source / target)
      * @return the converted source instance
      */
     Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch);

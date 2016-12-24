@@ -28,6 +28,7 @@ public interface PropertyAccessor {
     
     /**
      * Retrieve the annotation on a property.
+     * @param <A> class type of the annotation class
      * @param annotationClass annotation class
      * @return the annotation, if any
      */
