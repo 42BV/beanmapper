@@ -4,16 +4,14 @@ import io.beanmapper.BeanMapper;
 import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.converter.BeanConverter;
-import io.beanmapper.core.converter.BeanMapperAware;
 import io.beanmapper.utils.Classes;
 
 import java.util.Collection;
 import java.util.Map;
 
-public abstract class AbstractCollectionConverter<T> implements BeanConverter, BeanMapperAware {
+public abstract class AbstractCollectionConverter<T> implements BeanConverter {
 
     private final Class<?> type;
-    private BeanMapper beanMapper;
     protected abstract T createCollection();
 
     public AbstractCollectionConverter() {
@@ -22,7 +20,7 @@ public abstract class AbstractCollectionConverter<T> implements BeanConverter, B
     }
 
     @Override
-    public T convert(Object parent, Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
+    public T convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
         T sourceCollection = (T) source;
 
         if (beanFieldMatch.getCollectionInstructions() == null) {
@@ -31,17 +29,13 @@ public abstract class AbstractCollectionConverter<T> implements BeanConverter, B
 
         T targetCollection = getTargetCollection(beanFieldMatch);
 
-        BeanMapper wrappedBeanMapper = beanMapper
-                .wrapConfig()
-                .setParent(parent)
-                .build();
         if(targetCollection instanceof Map) {
             for (Object key : ((Map)sourceCollection).keySet()) {
-                ((Map) targetCollection).put(key, convertElement(wrappedBeanMapper, ((Map) sourceCollection).get(key), beanFieldMatch));
+                ((Map) targetCollection).put(key, convertElement(beanMapper, ((Map) sourceCollection).get(key), beanFieldMatch));
             }
         } else {
             for (Object sourceItem : (Collection)sourceCollection) {
-                ((Collection) targetCollection).add(convertElement(wrappedBeanMapper, sourceItem, beanFieldMatch));
+                ((Collection) targetCollection).add(convertElement(beanMapper, sourceItem, beanFieldMatch));
             }
         }
 
@@ -76,9 +70,5 @@ public abstract class AbstractCollectionConverter<T> implements BeanConverter, B
         return targetClass.isAssignableFrom(type);
     }
 
-    @Override
-    public void setBeanMapper(BeanMapper beanMapper) {
-        this.beanMapper = beanMapper;
-    }
 
 }

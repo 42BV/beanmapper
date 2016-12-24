@@ -3,6 +3,7 @@
  */
 package io.beanmapper.core.converter;
 
+import io.beanmapper.BeanMapper;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.utils.Check;
 import io.beanmapper.utils.Classes;
@@ -18,6 +19,8 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
     private final Class<?> sourceClass;
     
     private final Class<?> targetClass;
+
+    protected BeanMapper beanMapper;
 
     /**
      * Construct a new bean converter, dynamically resolving the source and target class. 
@@ -43,7 +46,8 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public final Object convert(Object parent, Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
+    public final Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
+        this.beanMapper = beanMapper;
         if (source == null) {
             Check.argument(!targetClass.isPrimitive(), "Cannot convert null into primitive.");
             return null;

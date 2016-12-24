@@ -3,7 +3,6 @@ package io.beanmapper.config;
 import io.beanmapper.BeanMapper;
 import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
-import io.beanmapper.core.converter.BeanMapperAware;
 import io.beanmapper.core.converter.collections.CollectionListConverter;
 import io.beanmapper.core.converter.collections.CollectionMapConverter;
 import io.beanmapper.core.converter.collections.CollectionSetConverter;
@@ -113,38 +112,35 @@ public class BeanMapperBuilder {
     public BeanMapper build() {
         BeanMapper beanMapper = new BeanMapper(configuration);
         // Custom bean converters must be registered before default ones
-        addCustomConverters(beanMapper);
+        addCustomConverters();
         if (configuration.isAddDefaultConverters()) {
-            addDefaultConverters(beanMapper);
+            addDefaultConverters();
         }
         return beanMapper;
     }
 
-    private void addCustomConverters(BeanMapper beanMapper) {
+    private void addCustomConverters() {
         for (BeanConverter customBeanConverter : customBeanConverters) {
-            addConverter(beanMapper, customBeanConverter);
+            attachConverter(customBeanConverter);
         }
     }
 
-    private void addDefaultConverters(BeanMapper beanMapper) {
-        addConverter(beanMapper, new PrimitiveConverter());
-        addConverter(beanMapper, new StringToBooleanConverter());
-        addConverter(beanMapper, new StringToIntegerConverter());
-        addConverter(beanMapper, new StringToLongConverter());
-        addConverter(beanMapper, new StringToBigDecimalConverter());
-        addConverter(beanMapper, new StringToEnumConverter());
-        addConverter(beanMapper, new NumberToNumberConverter());
-        addConverter(beanMapper, new ObjectToStringConverter());
+    private void addDefaultConverters() {
+        attachConverter(new PrimitiveConverter());
+        attachConverter(new StringToBooleanConverter());
+        attachConverter(new StringToIntegerConverter());
+        attachConverter(new StringToLongConverter());
+        attachConverter(new StringToBigDecimalConverter());
+        attachConverter(new StringToEnumConverter());
+        attachConverter(new NumberToNumberConverter());
+        attachConverter(new ObjectToStringConverter());
 
-        addConverter(beanMapper, new CollectionListConverter());
-        addConverter(beanMapper, new CollectionSetConverter());
-        addConverter(beanMapper, new CollectionMapConverter());
+        attachConverter(new CollectionListConverter());
+        attachConverter(new CollectionSetConverter());
+        attachConverter(new CollectionMapConverter());
     }
 
-    private void addConverter(BeanMapper beanMapper, BeanConverter customBeanConverter) {
-        if (customBeanConverter instanceof BeanMapperAware) {
-            ((BeanMapperAware) customBeanConverter).setBeanMapper(beanMapper);
-        }
+    private void attachConverter(BeanConverter customBeanConverter) {
         configuration.addConverter(customBeanConverter);
     }
 

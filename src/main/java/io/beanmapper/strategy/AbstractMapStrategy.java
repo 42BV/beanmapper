@@ -129,7 +129,11 @@ public abstract class AbstractMapStrategy implements MapStrategy {
         BeanConverter converter = getConverterOptional(valueClass, targetClass);
         if (converter != null) {
             logger.debug(INDENT + converter.getClass().getSimpleName() + ARROW);
-            return converter.convert(beanFieldMatch.getTarget(), value, targetClass, beanFieldMatch);
+            BeanMapper wrappedBeanMapper = beanMapper
+                    .wrapConfig()
+                    .setParent(beanFieldMatch.getTarget())
+                    .build();
+            return converter.convert(wrappedBeanMapper, value, targetClass, beanFieldMatch);
         }
 
         if (targetClass.isAssignableFrom(valueClass)) {
