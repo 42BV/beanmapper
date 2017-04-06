@@ -643,9 +643,6 @@ public class BeanMapperTest {
 
     @Test
     public void converterForClassesInCollection() {
-
-        BeanMapper beanMapper = this.beanMapper.config().addConverter(new NestedSourceClassToNestedTargetClassConverter()).build();
-
         SourceWithCollection source = new SourceWithCollection();
         NestedSourceClass nestedSourceClass = new NestedSourceClass();
         nestedSourceClass.name = "42BV";
@@ -654,7 +651,7 @@ public class BeanMapperTest {
 
         TargetWithCollection target = beanMapper.map(source, TargetWithCollection.class);
         assertEquals(source.objects.get(0).name, target.objects.get(0).name);
-        assertEquals(source.objects.get(0).laptopNumber, target.objects.get(0).laptopNumber);
+        assertEquals("[" + source.objects.get(0).laptopNumber + "]", target.objects.get(0).laptopNumber);
     }
 
     @Test
