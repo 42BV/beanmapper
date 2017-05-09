@@ -34,7 +34,7 @@ public class OverrideConfiguration implements Configuration {
 
     private Class collectionClass;
 
-    private boolean converterChoosable = true;
+    private Boolean converterChoosable = null;
 
     public OverrideConfiguration(Configuration configuration) {
         if (configuration == null) {
@@ -107,8 +107,8 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public boolean isConverterChoosable() {
-        return converterChoosable;
+    public Boolean isConverterChoosable() {
+        return converterChoosable == null ? parentConfiguration.isConverterChoosable() : converterChoosable;
     }
 
     @Override

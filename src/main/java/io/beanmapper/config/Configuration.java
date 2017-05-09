@@ -80,7 +80,7 @@ public interface Configuration {
 
     List<BeanConverter> getBeanConverters();
 
-    boolean isConverterChoosable();
+    Boolean isConverterChoosable();
 
     void withoutDefaultConverters();
 

@@ -47,6 +47,11 @@ public class CoreConfiguration implements Configuration {
      */
     private List<BeanConverter> beanConverters = new ArrayList<BeanConverter>();
 
+    /**
+     * The value that decides whether a converter may be chosen, or direct mapping has to take place
+     */
+    private Boolean converterChoosable;
+
     private boolean addDefaultConverters = true;
 
     @Override
@@ -104,8 +109,8 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
-    public boolean isConverterChoosable() {
-        return false;
+    public Boolean isConverterChoosable() {
+        return converterChoosable == null ? false : converterChoosable;
     }
 
     @Override
@@ -151,8 +156,7 @@ public class CoreConfiguration implements Configuration {
 
     @Override
     public void setConverterChoosable(boolean converterChoosable) {
-        throw new BeanConfigurationOperationNotAllowedException(
-                "Illegal to set whether the converter is choosable on the Core configuration, works only for override configurations.");
+        this.converterChoosable = converterChoosable;
     }
 
     @Override
