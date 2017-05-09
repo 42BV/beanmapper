@@ -9,7 +9,7 @@ public class NestedSourceClassToNestedTargetClassConverter extends SimpleBeanCon
 
     @Override
     protected NestedTargetAbstractClass doConvert(NestedSourceClass source) {
-        NestedTargetClass target = beanMapper.map(source, NestedTargetClass.class);
+        NestedTargetClass target = beanMapper.map(source, NestedTargetClass.class, false);
         target.laptopNumber = "[" + target.laptopNumber + "]";
         return target;
     }
