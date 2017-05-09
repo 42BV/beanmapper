@@ -897,6 +897,28 @@ public class BeanMapperTest {
         assertEquals(form.name, player.getSkills().get(2).getPlayer1().getName());
     }
 
+    @Test
+    public void numberToNumberInList() {
+        BeanMapper beanMapper = new BeanMapperBuilder().build();
+
+        List<String> numberStrings = new ArrayList<>();
+        numberStrings.add("1");
+
+        List<Integer> numbers = (List<Integer>)beanMapper.map(numberStrings, Integer.class);
+        assertEquals((Integer)1, numbers.get(0));
+    }
+
+    @Test
+    public void numberToNumberInListPassCollectionClass() {
+        BeanMapper beanMapper = new BeanMapperBuilder().build();
+
+        List<String> numberStrings = new ArrayList<>();
+        numberStrings.add("1");
+
+        List<Integer> numbers = (List<Integer>)beanMapper.map(numberStrings, Integer.class, ArrayList.class);
+        assertEquals((Integer)1, numbers.get(0));
+    }
+
     public Person createPerson(String name) {
         Person person = new Person();
         person.setId(1984L);

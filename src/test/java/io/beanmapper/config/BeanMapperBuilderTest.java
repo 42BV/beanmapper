@@ -34,12 +34,6 @@ public class BeanMapperBuilderTest {
     }
 
     @Test(expected = BeanConfigurationOperationNotAllowedException.class)
-    public void setConverterChoosableOnCoreThrowsException() {
-        BeanMapperBuilder builder = new BeanMapperBuilder();
-        builder.setConverterChoosable(false);
-    }
-
-    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
     public void setCollectionClassOnCoreThrowsException() {
         BeanMapperBuilder builder = new BeanMapperBuilder();
         builder.setCollectionClass(null);
@@ -54,13 +48,12 @@ public class BeanMapperBuilderTest {
     }
 
     @Test
-    public void isConverterChoosableDefaultForOverrideConfig() {
-        BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrapConfig
-        beanMapper = beanMapper
-                .config()
-                .build(); // Override wrapConfig
+    public void isConverterChoosableSettableForCoreConfig() {
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .setConverterChoosable(true)
+                .build();
         assertTrue(
-                "The Override configuration assumes by default that are likely to be chosen for lower calls",
+                "The Core configuration converterChoosable is settable)",
                 beanMapper.getConfiguration().isConverterChoosable());
     }
 

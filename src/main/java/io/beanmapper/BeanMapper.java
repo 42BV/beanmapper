@@ -45,7 +45,6 @@ public class BeanMapper {
 
         return (T) config()
                 .setTargetClass(targetClass)
-                .setConverterChoosable(false)
                 .build()
             .map(source);
     }
@@ -100,12 +99,7 @@ public class BeanMapper {
      */
     @SuppressWarnings("unchecked")
     public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass) {
-
-        return (Collection<T>) config()
-                .setTargetClass(targetClass)
-                .setCollectionClass(sourceItems.getClass())
-                .build()
-            .map(sourceItems);
+        return map(sourceItems, targetClass, sourceItems.getClass());
     }
     
     /**
@@ -119,9 +113,9 @@ public class BeanMapper {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public <S, T> Collection<T> map(Collection<S> sourceItems, Class<T> targetClass, Class<? extends Collection> collectionClass) {
-
         return (Collection<T>) config()
                 .setTargetClass(targetClass)
+                .setConverterChoosable(true)
                 .setCollectionClass(collectionClass)
                 .build()
             .map(sourceItems);
