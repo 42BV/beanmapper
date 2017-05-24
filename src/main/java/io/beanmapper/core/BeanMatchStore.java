@@ -1,15 +1,19 @@
 package io.beanmapper.core;
 
-import io.beanmapper.annotations.*;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import io.beanmapper.annotations.BeanAlias;
+import io.beanmapper.annotations.BeanCollection;
+import io.beanmapper.annotations.BeanIgnore;
+import io.beanmapper.annotations.BeanProperty;
+import io.beanmapper.annotations.BeanUnwrap;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
 import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessors;
 import io.beanmapper.exceptions.BeanMissingPathException;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
-
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 public class BeanMatchStore {
 
@@ -111,6 +115,7 @@ public class BeanMatchStore {
         BeanCollectionInstructions collectionInstructions = new BeanCollectionInstructions();
         collectionInstructions.setCollectionMapsTo(beanCollection.elementType());
         collectionInstructions.setBeanCollectionUsage(beanCollection.beanCollectionUsage());
+        collectionInstructions.setTargetCollectionType(beanCollection.targetCollectionType() != void.class ? beanCollection.targetCollectionType() : null);
         beanField.setCollectionInstructions(collectionInstructions);
     }
 
