@@ -1,22 +1,26 @@
 package io.beanmapper.core.converter.collections;
 
+import java.util.Collection;
+import java.util.Map;
+
 import io.beanmapper.BeanMapper;
 import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.core.BeanFieldMatch;
+import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
+import io.beanmapper.exceptions.BeanCollectionUnassignableTargetCollectionTypeException;
 import io.beanmapper.utils.Classes;
-
-import java.util.Collection;
-import java.util.Map;
 
 public abstract class AbstractCollectionConverter<T> implements BeanConverter {
 
     private final Class<?> type;
-    protected abstract T createCollection();
+
+    private final DefaultBeanInitializer beanInitializer;
 
     public AbstractCollectionConverter() {
         Class<?>[] types = Classes.getParameteredTypes(getClass());
         this.type = types[0];
+        this.beanInitializer = new DefaultBeanInitializer();
     }
 
     @Override
@@ -48,7 +52,7 @@ public abstract class AbstractCollectionConverter<T> implements BeanConverter {
 
         T targetCollection =
                 (beanCollectionUsage == BeanCollectionUsage.CONSTRUCT || beanFieldMatch.getTargetObject() == null) ?
-                        createCollection() :
+                        createCollection(beanFieldMatch.getCollectionInstructions().getTargetCollectionType()) :
                         (T)beanFieldMatch.getTargetObject();
 
         if (beanCollectionUsage == BeanCollectionUsage.CLEAR) {
@@ -60,6 +64,18 @@ public abstract class AbstractCollectionConverter<T> implements BeanConverter {
 
         return targetCollection;
     }
+
+    private T createCollection(Class targetCollectionType) {
+        if (targetCollectionType == null) {
+            return createCollection();
+        } else if (!type.isAssignableFrom(targetCollectionType)) {
+            throw new BeanCollectionUnassignableTargetCollectionTypeException(type, targetCollectionType);
+        }
+
+        return (T) beanInitializer.instantiate(targetCollectionType, null);
+    }
+
+    protected abstract T createCollection();
 
     private Object convertElement(BeanMapper beanMapper, Object source, BeanFieldMatch beanFieldMatch) {
         return beanMapper.map(source, beanFieldMatch.getCollectionInstructions().getCollectionMapsTo(), true);

@@ -6,6 +6,8 @@ public class BeanCollectionInstructions {
 
     private Class collectionMapsTo;
 
+    private Class<?> targetCollectionType;
+
     private BeanCollectionUsage beanCollectionUsage;
 
     public Class getCollectionMapsTo() {
@@ -24,4 +26,11 @@ public class BeanCollectionInstructions {
         this.beanCollectionUsage = beanCollectionUsage;
     }
 
+    public Class<?> getTargetCollectionType() {
+        return targetCollectionType;
+    }
+
+    public void setTargetCollectionType(Class<?> targetCollectionType) {
+        this.targetCollectionType = targetCollectionType;
+    }
 }

@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -17,6 +18,7 @@ import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
 import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
 import io.beanmapper.core.converter.impl.NestedSourceClassToNestedTargetClassConverter;
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
+import io.beanmapper.exceptions.BeanCollectionUnassignableTargetCollectionTypeException;
 import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.testmodel.beanAlias.NestedSourceWithAlias;
@@ -29,6 +31,8 @@ import io.beanmapper.testmodel.collections.CollectionMapSource;
 import io.beanmapper.testmodel.collections.CollectionMapTarget;
 import io.beanmapper.testmodel.collections.CollectionSetSource;
 import io.beanmapper.testmodel.collections.CollectionSetTarget;
+import io.beanmapper.testmodel.collections.CollectionSetTargetIncorrectSubtype;
+import io.beanmapper.testmodel.collections.CollectionSetTargetSpecificSubtype;
 import io.beanmapper.testmodel.collections.SourceWithListGetter;
 import io.beanmapper.testmodel.collections.TargetWithListPublicField;
 import io.beanmapper.testmodel.construct.NestedSourceWithoutConstruct;
@@ -282,9 +286,37 @@ public class BeanMapperTest {
         source.items.add("43");
 
         CollectionSetTarget target = beanMapper.map(source, CollectionSetTarget.class);
+        assertEquals(TreeSet.class, target.items.getClass());
         assertTrue("Must contain 13", target.items.contains(13L));
         assertTrue("Must contain 29", target.items.contains(29L));
         assertTrue("Must contain 43", target.items.contains(43L));
+    }
+
+    @Test
+    public void mapSetCollectionsToSpecificSubType() {
+        CollectionSetSource source = new CollectionSetSource();
+        source.items = new TreeSet<String>();
+        source.items.add("13");
+        source.items.add("29");
+        source.items.add("43");
+
+        CollectionSetTargetSpecificSubtype target = beanMapper.map(source, CollectionSetTargetSpecificSubtype.class);
+        assertEquals(HashSet.class, target.items.getClass());
+        assertTrue("Must contain 13", target.items.contains(13L));
+        assertTrue("Must contain 29", target.items.contains(29L));
+        assertTrue("Must contain 43", target.items.contains(43L));
+    }
+
+
+    @Test(expected = BeanCollectionUnassignableTargetCollectionTypeException.class)
+    public void mapSetCollectionsToIncorrectSubType() {
+        CollectionSetSource source = new CollectionSetSource();
+        source.items = new TreeSet<String>();
+        source.items.add("13");
+        source.items.add("29");
+        source.items.add("43");
+
+        beanMapper.map(source, CollectionSetTargetIncorrectSubtype.class);
     }
 
     @Test

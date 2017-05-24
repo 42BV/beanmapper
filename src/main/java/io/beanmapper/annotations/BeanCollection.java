@@ -15,8 +15,9 @@ public @interface BeanCollection {
 
     Class elementType();
 
-    BeanCollectionUsage beanCollectionUsage() default BeanCollectionUsage.REUSE;
+    Class targetCollectionType() default void.class;
 
+    BeanCollectionUsage beanCollectionUsage() default BeanCollectionUsage.REUSE;
 }
 
 // 3 zaken interessant om op te geven:

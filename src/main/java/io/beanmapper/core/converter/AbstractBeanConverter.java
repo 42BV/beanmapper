@@ -80,5 +80,4 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
     protected boolean isMatchingTarget(Class<?> targetClass) {
         return this.targetClass.isAssignableFrom(targetClass);
     }
-    
 }
