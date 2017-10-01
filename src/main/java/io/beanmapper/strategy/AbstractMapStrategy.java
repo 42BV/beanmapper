@@ -9,13 +9,11 @@ import io.beanmapper.annotations.BeanConstruct;
 import io.beanmapper.annotations.BeanDefault;
 import io.beanmapper.annotations.BeanProperty;
 import io.beanmapper.config.Configuration;
-import io.beanmapper.core.BeanField;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.BeanMatch;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanFieldNoMatchException;
-import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.utils.ConstructorArguments;
 
 public abstract class AbstractMapStrategy implements MapStrategy {
@@ -57,7 +55,9 @@ public abstract class AbstractMapStrategy implements MapStrategy {
     public<T, S> BeanMatch getBeanMatch(Class<S> sourceClazz, Class<T> targetClazz) {
         Class<?> sourceClass = getConfiguration().getBeanUnproxy().unproxy(sourceClazz);
         Class<?> targetClass = getConfiguration().getBeanUnproxy().unproxy(targetClazz);
-        return getConfiguration().getBeanMatchStore().getBeanMatch(sourceClass, targetClass);
+        return getConfiguration().getBeanMatchStore().getBeanMatch(
+                configuration.getStrictMappingProperties().createBeanPair(sourceClass, targetClass)
+        );
     }
 
     /**
@@ -157,17 +157,12 @@ public abstract class AbstractMapStrategy implements MapStrategy {
      */
     public <S, T> T processFields(S source, T target, BeanMatch beanMatch) {
         for (String fieldName : beanMatch.getTargetNode().keySet()) {
-            BeanField sourceField = beanMatch.getSourceNode().get(fieldName);
-            if(sourceField == null) {
-                // No source field found -> check for alias
-                sourceField = beanMatch.getAliases().get(fieldName);
-            }
-            BeanField targetField = beanMatch.getTargetNode().get(fieldName);
-            if(targetField == null) {
-                // No target field found -> check for alias
-                targetField = beanMatch.getAliases().get(fieldName);
-            }
-            processField(new BeanFieldMatch(source, target, sourceField, targetField, fieldName, beanMatch));
+            processField(new BeanFieldMatch(
+                    source,
+                    target,
+                    beanMatch.findBeanPairField(fieldName),
+                    fieldName,
+                    beanMatch));
         }
         return target;
     }

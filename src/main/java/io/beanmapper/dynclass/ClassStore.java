@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import io.beanmapper.config.StrictMappingProperties;
 import io.beanmapper.exceptions.BeanDynamicClassGenerationException;
 
 public class ClassStore {
@@ -19,7 +20,9 @@ public class ClassStore {
         this.classGenerator = new ClassGenerator();
     }
 
-    public Class<?> getOrCreateGeneratedClass(Class<?> baseClass, List<String> includeFields) {
+    public Class<?> getOrCreateGeneratedClass(
+            Class<?> baseClass, List<String> includeFields,
+            StrictMappingProperties strictMappingProperties) {
         Node displayNodes = Node.createTree(includeFields);
         String baseClassName = baseClass.getName();
         Map<String, Class<?>> generatedClassesForClass = null;
@@ -36,7 +39,10 @@ public class ClassStore {
             Class<?> generatedClass = generatedClassesForClass.get(displayNodes.getKey());
             if (generatedClass == null) {
                 try {
-                    generatedClass = classGenerator.createClass(baseClass, displayNodes).generatedClass;
+                    generatedClass = classGenerator.createClass(
+                            baseClass,
+                            displayNodes,
+                            strictMappingProperties).generatedClass;
                 } catch (Exception err) {
                     throw new BeanDynamicClassGenerationException(err, baseClass, displayNodes.getKey());
                 }

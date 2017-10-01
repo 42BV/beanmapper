@@ -39,13 +39,19 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
     }
 
     public Object downsizeSource(Object source, List<String> downsizeSourceFields) {
-        final Class dynamicClass = getConfiguration().getClassStore().getOrCreateGeneratedClass(source.getClass(), downsizeSourceFields);
+        final Class dynamicClass = getConfiguration()
+                .getClassStore()
+                .getOrCreateGeneratedClass(
+                        source.getClass(),
+                        downsizeSourceFields,
+                        getConfiguration().getStrictMappingProperties());
         Class<?> targetClass = getConfiguration().getTargetClass();
         Object target = getConfiguration().getTarget();
         Object dynSource = getBeanMapper()
                 .config()
                 .downsizeSource(null)
                 .setTargetClass(dynamicClass)
+//                .setApplyStrictMappingConvention(false)
                 .build()
                 .map(source);
 
@@ -54,16 +60,21 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
                 .wrapConfig()
                 .setTargetClass(targetClass)
                 .setTarget(target)
+//                .setApplyStrictMappingConvention(false)
                 .build()
                 .map(dynSource);
     }
 
     public Object downsizeTarget(Object source, List<String> downsizeTargetFields) {
-        final Class dynamicClass = getConfiguration().getClassStore().getOrCreateGeneratedClass(getConfiguration().determineTargetClass(), downsizeTargetFields);
+        final Class dynamicClass = getConfiguration().getClassStore().getOrCreateGeneratedClass(
+                        getConfiguration().determineTargetClass(),
+                        downsizeTargetFields,
+                        getConfiguration().getStrictMappingProperties());
         return getBeanMapper()
                 .config()
                 .downsizeTarget(null)
                 .setTargetClass(dynamicClass)
+//                .setApplyStrictMappingConvention(false)
                 .build()
                 .map(source);
     }

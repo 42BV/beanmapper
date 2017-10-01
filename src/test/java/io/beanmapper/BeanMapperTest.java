@@ -3,6 +3,7 @@ package io.beanmapper;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 import io.beanmapper.config.BeanMapperBuilder;
+import io.beanmapper.core.BeanStrictMappingRequirementsException;
 import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
 import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
 import io.beanmapper.core.converter.impl.NestedSourceClassToNestedTargetClassConverter;
@@ -78,6 +80,8 @@ import io.beanmapper.testmodel.multipleunwrap.AllTogether;
 import io.beanmapper.testmodel.multipleunwrap.LayerA;
 import io.beanmapper.testmodel.nestedclasses.Layer1;
 import io.beanmapper.testmodel.nestedclasses.Layer1Result;
+import io.beanmapper.testmodel.nestedclasses.Layer3;
+import io.beanmapper.testmodel.nestedclasses.Layer4;
 import io.beanmapper.testmodel.numbers.ClassWithInteger;
 import io.beanmapper.testmodel.numbers.ClassWithLong;
 import io.beanmapper.testmodel.numbers.SourceWithDouble;
@@ -107,6 +111,18 @@ import io.beanmapper.testmodel.samesourcediffresults.ResultTwo;
 import io.beanmapper.testmodel.similarsubclasses.DifferentSource;
 import io.beanmapper.testmodel.similarsubclasses.DifferentTarget;
 import io.beanmapper.testmodel.similarsubclasses.SimilarSubclass;
+import io.beanmapper.testmodel.strict.SourceAStrict;
+import io.beanmapper.testmodel.strict.SourceBNonStrict;
+import io.beanmapper.testmodel.strict.SourceCStrict;
+import io.beanmapper.testmodel.strict.SourceDStrict;
+import io.beanmapper.testmodel.strict.SourceEForm;
+import io.beanmapper.testmodel.strict.SourceF;
+import io.beanmapper.testmodel.strict.TargetANonStrict;
+import io.beanmapper.testmodel.strict.TargetBStrict;
+import io.beanmapper.testmodel.strict.TargetCNonStrict;
+import io.beanmapper.testmodel.strict.TargetDNonStrict;
+import io.beanmapper.testmodel.strict.TargetE;
+import io.beanmapper.testmodel.strict.TargetFResult;
 import io.beanmapper.testmodel.tostring.SourceWithNonString;
 import io.beanmapper.testmodel.tostring.TargetWithString;
 import mockit.Expectations;
@@ -388,7 +404,11 @@ public class BeanMapperTest {
     public void copyToExistingTargetInstance() {
         Person person = createPerson();
         PersonForm form = createPersonForm();
-        person = beanMapper.map(form, person);
+        person = beanMapper
+                .wrapConfig()
+                .setApplyStrictMappingConvention(false)
+                .build()
+                .map(form, person);
         assertEquals(1984L, (long) person.getId());
         assertEquals("Truus", person.getName());
         assertEquals("XHT-8311-t33l-llac", person.getBankAccount());
@@ -949,6 +969,79 @@ public class BeanMapperTest {
 
         List<Integer> numbers = (List<Integer>)beanMapper.map(numberStrings, Integer.class, ArrayList.class);
         assertEquals((Integer)1, numbers.get(0));
+    }
+
+    @Test
+    public void referenceCopy() {
+        Layer3 source = new Layer3();
+        Layer4 nestedInSource = new Layer4();
+        nestedInSource.setId(42L);
+        source.setLayer4(nestedInSource);
+
+        BeanMapper beanMapper = new BeanMapperBuilder().build();
+
+        Layer3 target = beanMapper.map(source, Layer3.class);
+        assertEquals(source.getLayer4(), target.getLayer4());
+    }
+
+    @Test(expected = BeanStrictMappingRequirementsException.class)
+    public void strictSource() {
+        new BeanMapperBuilder()
+                .addBeanPairWithStrictSource(SourceAStrict.class, TargetANonStrict.class)
+                .build();
+    }
+
+    @Test(expected = BeanStrictMappingRequirementsException.class)
+    public void strictTarget() {
+        new BeanMapperBuilder()
+                .addBeanPairWithStrictTarget(SourceBNonStrict.class, TargetBStrict.class)
+                .build();
+    }
+
+    @Test(expected = BeanStrictMappingRequirementsException.class)
+    public void strictSourceUseAlias() {
+        new BeanMapperBuilder()
+                .addBeanPairWithStrictSource(SourceCStrict.class, TargetCNonStrict.class)
+                .build();
+    }
+
+    @Test
+    public void strictSourceAllIsFine() {
+        new BeanMapperBuilder()
+                .addBeanPairWithStrictSource(SourceDStrict.class, TargetDNonStrict.class)
+                .build();
+    }
+
+    @Test
+    public void strictMultipleBeanMismatches() {
+        try {
+            new BeanMapperBuilder()
+                    .addBeanPairWithStrictSource(SourceAStrict.class, TargetANonStrict.class)
+                    .addBeanPairWithStrictTarget(SourceBNonStrict.class, TargetBStrict.class)
+                    .addBeanPairWithStrictSource(SourceCStrict.class, TargetCNonStrict.class)
+                    .addBeanPairWithStrictSource(SourceDStrict.class, TargetDNonStrict.class)
+                    .build();
+            fail("Should have thrown an exception");
+        } catch (BeanStrictMappingRequirementsException ex) {
+            assertEquals(SourceAStrict.class, ex.getValidationMessages().get(0).getSourceClass());
+            assertEquals("noMatch", ex.getValidationMessages().get(0).getFields().get(0).getName());
+            assertEquals(TargetBStrict.class, ex.getValidationMessages().get(1).getTargetClass());
+            assertEquals("noMatch", ex.getValidationMessages().get(1).getFields().get(0).getName());
+            assertEquals(SourceCStrict.class, ex.getValidationMessages().get(2).getSourceClass());
+            assertEquals("noMatch1", ex.getValidationMessages().get(2).getFields().get(0).getName());
+            assertEquals("noMatch2", ex.getValidationMessages().get(2).getFields().get(1).getName());
+            assertEquals("noMatch3", ex.getValidationMessages().get(2).getFields().get(2).getName());
+        }
+    }
+
+    @Test(expected = BeanStrictMappingRequirementsException.class)
+    public void strictMappingConventionForForm() {
+        beanMapper.map(new SourceEForm(), TargetE.class);
+    }
+
+    @Test(expected = BeanStrictMappingRequirementsException.class)
+    public void strictMappingConventionForResult() {
+        beanMapper.map(new SourceF(), TargetFResult.class);
     }
 
     public Person createPerson(String name) {

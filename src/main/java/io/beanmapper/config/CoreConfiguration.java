@@ -48,11 +48,18 @@ public class CoreConfiguration implements Configuration {
     private List<BeanConverter> beanConverters = new ArrayList<BeanConverter>();
 
     /**
+     * The list of converters that should be checked for conversions.
+     */
+    private List<BeanPair> beanPairs = new ArrayList<BeanPair>();
+
+    /**
      * The value that decides whether a converter may be chosen, or direct mapping has to take place
      */
     private Boolean converterChoosable;
 
     private boolean addDefaultConverters = true;
+
+    private StrictMappingProperties strictMappingProperties = StrictMappingProperties.defaultConfig();
 
     @Override
     public List<String> getDownsizeTarget() { return null; }
@@ -109,6 +116,11 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
+    public List<BeanPair> getBeanPairs() {
+        return this.beanPairs;
+    }
+
+    @Override
     public Boolean isConverterChoosable() {
         return converterChoosable == null ? false : converterChoosable;
     }
@@ -119,8 +131,38 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
+    public String getStrictSourceSuffix() {
+        return strictMappingProperties.getStrictSourceSuffix();
+    }
+
+    @Override
+    public String getStrictTargetSuffix() {
+        return strictMappingProperties.getStrictTargetSuffix();
+    }
+
+    @Override
+    public Boolean isApplyStrictMappingConvention() {
+        return strictMappingProperties.isApplyStrictMappingConvention();
+    }
+
+    @Override
+    public StrictMappingProperties getStrictMappingProperties() {
+        return strictMappingProperties;
+    }
+
+    @Override
     public void addConverter(BeanConverter converter) {
         this.beanConverters.add(converter);
+    }
+
+    @Override
+    public void addBeanPairWithStrictSource(Class source, Class target) {
+        this.beanPairs.add(new BeanPair(source, target).withStrictSource());
+    }
+
+    @Override
+    public void addBeanPairWithStrictTarget(Class source, Class target) {
+        this.beanPairs.add(new BeanPair(source, target).withStrictTarget());
     }
 
     @Override
@@ -204,4 +246,20 @@ public class CoreConfiguration implements Configuration {
     public Class determineTargetClass() {
         return getTargetClass() == null ? getTarget().getClass() : getTargetClass();
     }
+
+    @Override
+    public void setStrictSourceSuffix(String strictSourceSuffix) {
+        this.strictMappingProperties.setStrictSourceSuffix(strictSourceSuffix);
+    }
+
+    @Override
+    public void setStrictTargetSuffix(String strictTargetSuffix) {
+        this.strictMappingProperties.setStrictTargetSuffix(strictTargetSuffix);
+    }
+
+    @Override
+    public void setApplyStrictMappingConvention(Boolean applyStrictMappingConvention) {
+        this.strictMappingProperties.setApplyStrictMappingConvention(applyStrictMappingConvention);
+    }
+
 }

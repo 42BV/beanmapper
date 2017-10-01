@@ -3,6 +3,7 @@ package io.beanmapper.dynclass;
 import java.util.Map;
 
 import io.beanmapper.annotations.BeanCollection;
+import io.beanmapper.config.StrictMappingProperties;
 import io.beanmapper.core.BeanField;
 import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
@@ -30,13 +31,19 @@ public class ClassGenerator {
         this.classPool = ClassPool.getDefault();
     }
 
-    public GeneratedClass createClass(Class<?> baseClass, Node displayNodes) throws Exception {
+    public GeneratedClass createClass(
+            Class<?> baseClass, Node displayNodes,
+            StrictMappingProperties strictMappingProperties) throws Exception {
         this.classPool.insertClassPath(new ClassClassPath(baseClass));
-        Map<String, BeanField> baseFields = beanMatchStore.getBeanMatch(baseClass, Object.class).getSourceNode();
-        return new GeneratedClass(createClass(baseClass, baseFields, displayNodes));
+        Map<String, BeanField> baseFields = beanMatchStore.getBeanMatch(
+                strictMappingProperties.createBeanPair(baseClass, Object.class)
+        ).getSourceNode();
+        return new GeneratedClass(createClass(baseClass, baseFields, displayNodes, strictMappingProperties));
     }
 
-    private synchronized CtClass createClass(Class<?> base, Map<String, BeanField> baseFields, Node displayNodes) throws Exception {
+    private synchronized CtClass createClass(
+            Class<?> base, Map<String, BeanField> baseFields,
+            Node displayNodes, StrictMappingProperties strictMappingProperties) throws Exception {
         CtClass baseClass = classPool.getCtClass(base.getName());
         CtClass dynClass = classPool.makeClass(base.getName() + "Dyn" + ++GENERATED_CLASS_PREFIX);
 
@@ -62,9 +69,10 @@ public class ClassGenerator {
 
                 if(displayNodes.getNode(key).hasNodes()) {
                     if(beanField.getCollectionInstructions() != null) {
-                        handleBeanCollection(generatedField, beanField.getCollectionInstructions(), displayNodes.getNode(key));
+                        handleBeanCollection(generatedField, beanField.getCollectionInstructions(), displayNodes.getNode(key), strictMappingProperties);
                     } else {
-                        GeneratedClass nestedClass = handleNestedClass(generatedField, beanField.getProperty().getType(), displayNodes.getNode(key));
+                        GeneratedClass nestedClass = handleNestedClass(generatedField, beanField.getProperty().getType(), displayNodes.getNode(key),
+                                strictMappingProperties);
                         if(readMethod != null) readMethod = changeReadMethod(readMethod, nestedClass.ctClass);
                         if(writeMethod != null) writeMethod = changeWriteMethod(writeMethod, baseField.getType(), nestedClass.ctClass);
                     }
@@ -77,14 +85,18 @@ public class ClassGenerator {
         return dynClass;
     }
 
-    private GeneratedClass handleNestedClass(CtField field, Class<?> type, Node displayNodes) throws Exception {
-        GeneratedClass nestedClass = createClass(type, displayNodes);
+    private GeneratedClass handleNestedClass(
+            CtField field, Class<?> type,
+            Node displayNodes, StrictMappingProperties strictMappingProperties) throws Exception {
+        GeneratedClass nestedClass = createClass(type, displayNodes, strictMappingProperties);
         field.setType(nestedClass.ctClass);
         return nestedClass;
     }
 
-    private void handleBeanCollection(CtField field, BeanCollectionInstructions collectionInstructions, Node displayNodes) throws Exception {
-        GeneratedClass elementClass = createClass(collectionInstructions.getCollectionMapsTo(), displayNodes);
+    private void handleBeanCollection(
+            CtField field, BeanCollectionInstructions collectionInstructions,
+            Node displayNodes, StrictMappingProperties strictMappingProperties) throws Exception {
+        GeneratedClass elementClass = createClass(collectionInstructions.getCollectionMapsTo(), displayNodes, strictMappingProperties);
 
         ConstPool constPool = field.getDeclaringClass().getClassFile().getConstPool();
         AnnotationsAttribute attr= new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);

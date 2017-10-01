@@ -9,6 +9,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.beanmapper.config.StrictMappingProperties;
 import io.beanmapper.dynclass.model.Person;
 
 public class ClassStoreTest extends AbstractConcurrentTest {
@@ -26,7 +27,10 @@ public class ClassStoreTest extends AbstractConcurrentTest {
         run(8, new Runnable() {
             @Override
             public void run() {
-                results.add(store.getOrCreateGeneratedClass(Person.class, Collections.singletonList("name")));
+                results.add(store.getOrCreateGeneratedClass(
+                        Person.class,
+                        Collections.singletonList("name"),
+                        StrictMappingProperties.defaultConfig()));
             }
         });
         assertEquals(1, results.size()); // A thread safe implementation should return one class.
