@@ -123,6 +123,12 @@ import io.beanmapper.testmodel.strict.TargetCNonStrict;
 import io.beanmapper.testmodel.strict.TargetDNonStrict;
 import io.beanmapper.testmodel.strict.TargetE;
 import io.beanmapper.testmodel.strict.TargetFResult;
+import io.beanmapper.testmodel.strictconvention.SCSourceAForm;
+import io.beanmapper.testmodel.strictconvention.SCSourceB;
+import io.beanmapper.testmodel.strictconvention.SCSourceCForm;
+import io.beanmapper.testmodel.strictconvention.SCTargetA;
+import io.beanmapper.testmodel.strictconvention.SCTargetBResult;
+import io.beanmapper.testmodel.strictconvention.SCTargetC;
 import io.beanmapper.testmodel.tostring.SourceWithNonString;
 import io.beanmapper.testmodel.tostring.TargetWithString;
 import mockit.Expectations;
@@ -1042,6 +1048,31 @@ public class BeanMapperTest {
     @Test(expected = BeanStrictMappingRequirementsException.class)
     public void strictMappingConventionForResult() {
         beanMapper.map(new SourceF(), TargetFResult.class);
+    }
+
+    @Test(expected = BeanStrictMappingRequirementsException.class)
+    public void strictMappingConventionMissingMatchForGetter() {
+        beanMapper.map(new SCSourceCForm(), SCTargetC.class);
+    }
+
+    @Test
+    public void strictMappingConventionWithPrivateFieldOnForm() {
+        SCSourceAForm source = new SCSourceAForm();
+        source.name = "Alpha";
+        source.setDoesNotExist("some value");
+        SCTargetA target = beanMapper.map(source, SCTargetA.class);
+        assertEquals("Alpha", target.name);
+        assertEquals("some value", target.doesExist);
+    }
+
+    @Test
+    public void strictMappingConventionWithPrivateFieldOnResult() {
+        SCSourceB source = new SCSourceB();
+        source.name = "Alpha";
+        source.doesExist = "some value";
+        SCTargetBResult target = beanMapper.map(source, SCTargetBResult.class);
+        assertEquals("Alpha", target.name);
+        assertEquals("some value", target.getDoesNotExist());
     }
 
     public Person createPerson(String name) {

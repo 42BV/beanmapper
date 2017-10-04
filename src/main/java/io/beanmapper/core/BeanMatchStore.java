@@ -78,18 +78,34 @@ public class BeanMatchStore {
                                          Map<String, BeanField> sourceNode, Map<String, BeanField> targetNode, Map<String, BeanField> aliases) {
         return new BeanMatch(
                 beanPair,
-                getAllFields(sourceNode, targetNode, aliases,
-                        beanPair.getSourceClass(), beanPair.getTargetClass(),null),
-                getAllFields(targetNode, sourceNode, aliases,
-                        beanPair.getTargetClass(), beanPair.getSourceClass(),null),
+                getAllFields(
+                        sourceNode,
+                        targetNode,
+                        aliases,
+                        beanPair.getSourceClass(),
+                        beanPair.getTargetClass(),
+                        null,
+                        PropertyMatchupDirection.SOURCE_TO_TARGET),
+                getAllFields(
+                        targetNode,
+                        sourceNode,
+                        aliases,
+                        beanPair.getTargetClass(),
+                        beanPair.getSourceClass(),
+                        null,
+                        PropertyMatchupDirection.TARGET_TO_SOURCE),
                 aliases);
     }
 
-    private Map<String, BeanField> getAllFields(Map<String, BeanField> ourNodes, Map<String, BeanField> otherNodes, Map<String, BeanField> aliases, Class<?> ourType, Class<?> otherType, BeanField prefixingBeanField) {
+    private Map<String, BeanField> getAllFields(Map<String, BeanField> ourNodes, Map<String, BeanField> otherNodes, Map<String, BeanField> aliases, Class<?> ourType, Class<?> otherType, BeanField prefixingBeanField, PropertyMatchupDirection matchupDirection) {
 
         Map<String, BeanField> ourCurrentNodes = ourNodes;
         List<PropertyAccessor> accessors = PropertyAccessors.getAll(ourType);
         for (PropertyAccessor accessor : accessors) {
+
+            if (!matchupDirection.validAccessor(accessor)) {
+                continue;
+            }
 
             // Ignore fields
             if (accessor.findAnnotation(BeanIgnore.class) != null) {
@@ -120,8 +136,13 @@ public class BeanMatchStore {
 
             if (accessor.findAnnotation(BeanUnwrap.class) != null) {
                 ourCurrentNodes = getAllFields(
-                        ourCurrentNodes, otherNodes, aliases,
-                        accessor.getType(), otherType, currentBeanField);
+                        ourCurrentNodes,
+                        otherNodes,
+                        aliases,
+                        accessor.getType(),
+                        otherType,
+                        currentBeanField,
+                        matchupDirection);
             } else {
                 ourCurrentNodes.put(name, currentBeanField);
             }

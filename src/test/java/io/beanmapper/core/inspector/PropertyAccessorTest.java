@@ -68,7 +68,6 @@ public class PropertyAccessorTest {
         accessor.setValue(bean, "test");
         
         Assert.assertEquals("test setter", bean.myPropertyWithSetter);
-        Assert.assertEquals("test setter", accessor.getValue(bean));
     }
     
     @Test
