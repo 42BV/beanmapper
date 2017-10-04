@@ -15,11 +15,12 @@ public class BeanFieldMatch {
     private BeanField targetBeanField;
     private String targetFieldName;
 
-    public BeanFieldMatch(Object source, Object target, BeanField sourceBeanField, BeanField targetBeanField, String targetFieldName, BeanMatch beanMatch) {
+    public BeanFieldMatch(Object source, Object target,
+            MatchedBeanPairField matchedBeanPairField, String targetFieldName, BeanMatch beanMatch) {
         this.source = source;
         this.target = target;
-        this.sourceBeanField = sourceBeanField;
-        this.targetBeanField = targetBeanField;
+        this.sourceBeanField = matchedBeanPairField.getSourceBeanField();
+        this.targetBeanField = matchedBeanPairField.getTargetBeanField();
         this.targetFieldName = targetFieldName;
         this.beanMatch = beanMatch;
     }

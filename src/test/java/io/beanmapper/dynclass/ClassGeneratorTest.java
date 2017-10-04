@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import io.beanmapper.config.StrictMappingProperties;
 import io.beanmapper.dynclass.model.Person;
 
 public class ClassGeneratorTest extends AbstractConcurrentTest {
@@ -22,7 +23,10 @@ public class ClassGeneratorTest extends AbstractConcurrentTest {
             public void run() {
                 try {
                     for (int t = 0; t < 1000; t++) {
-                        gen.createClass(Person.class, Node.createTree(Collections.singletonList("name")));
+                        gen.createClass(
+                                Person.class,
+                                Node.createTree(Collections.singletonList("name")),
+                                StrictMappingProperties.defaultConfig());
                         Thread.yield();
                     }
                 } catch (Exception ex) {

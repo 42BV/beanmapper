@@ -21,6 +21,8 @@ public class OverrideConfiguration implements Configuration {
     private List<String> packagePrefixes;
 
     private List<BeanConverter> beanConverters = new ArrayList<BeanConverter>();
+    
+    private List<BeanPair> beanPairs = new ArrayList<BeanPair>();
 
     private List<String> downsizeSourceFields;
 
@@ -35,6 +37,8 @@ public class OverrideConfiguration implements Configuration {
     private Class collectionClass;
 
     private Boolean converterChoosable = null;
+
+    private StrictMappingProperties strictMappingProperties = StrictMappingProperties.emptyConfig();
 
     public OverrideConfiguration(Configuration configuration) {
         if (configuration == null) {
@@ -107,6 +111,14 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
+    public List<BeanPair> getBeanPairs() {
+        List<BeanPair> beanPairs = new ArrayList<BeanPair>();
+        beanPairs.addAll(parentConfiguration.getBeanPairs());
+        beanPairs.addAll(this.beanPairs);
+        return beanPairs;
+    }
+
+    @Override
     public Boolean isConverterChoosable() {
         return converterChoosable == null ? parentConfiguration.isConverterChoosable() : converterChoosable;
     }
@@ -117,8 +129,48 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
+    public String getStrictSourceSuffix() {
+        return strictMappingProperties.getStrictSourceSuffix() == null ?
+                parentConfiguration.getStrictSourceSuffix() :
+                strictMappingProperties.getStrictSourceSuffix();
+    }
+
+    @Override
+    public String getStrictTargetSuffix() {
+        return strictMappingProperties.getStrictTargetSuffix() == null ?
+                parentConfiguration.getStrictTargetSuffix() :
+                strictMappingProperties.getStrictTargetSuffix();
+    }
+
+    @Override
+    public Boolean isApplyStrictMappingConvention() {
+        return strictMappingProperties.isApplyStrictMappingConvention() == null ?
+                parentConfiguration.isApplyStrictMappingConvention() :
+                strictMappingProperties.isApplyStrictMappingConvention();
+    }
+
+    @Override
+    public StrictMappingProperties getStrictMappingProperties() {
+        return new StrictMappingProperties(
+                getStrictSourceSuffix(),
+                getStrictTargetSuffix(),
+                isApplyStrictMappingConvention()
+        );
+    }
+
+    @Override
     public void addConverter(BeanConverter converter) {
         beanConverters.add(converter);
+    }
+
+    @Override
+    public void addBeanPairWithStrictSource(Class source, Class target) {
+        this.beanPairs.add(new BeanPair(source, target).withStrictSource());
+    }
+
+    @Override
+    public void addBeanPairWithStrictTarget(Class source, Class target) {
+        this.beanPairs.add(new BeanPair(source, target).withStrictTarget());
     }
 
     @Override
@@ -193,4 +245,20 @@ public class OverrideConfiguration implements Configuration {
     public Class determineTargetClass() {
         return getTargetClass() == null ? getTarget().getClass() : getTargetClass();
     }
+
+    @Override
+    public void setStrictSourceSuffix(String strictSourceSuffix) {
+        this.strictMappingProperties.setStrictSourceSuffix(strictSourceSuffix);
+    }
+
+    @Override
+    public void setStrictTargetSuffix(String strictTargetSuffix) {
+        this.strictMappingProperties.setStrictTargetSuffix(strictTargetSuffix);
+    }
+
+    @Override
+    public void setApplyStrictMappingConvention(Boolean applyStrictMappingConvention) {
+        this.strictMappingProperties.setApplyStrictMappingConvention(applyStrictMappingConvention);
+    }
+
 }

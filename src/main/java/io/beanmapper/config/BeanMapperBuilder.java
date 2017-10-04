@@ -49,6 +49,16 @@ public class BeanMapperBuilder {
         return this;
     }
 
+    public BeanMapperBuilder addBeanPairWithStrictSource(Class<?> sourceClass, Class<?> targetClass) {
+        this.configuration.addBeanPairWithStrictSource(sourceClass, targetClass);
+        return this;
+    }
+
+    public BeanMapperBuilder addBeanPairWithStrictTarget(Class<?> sourceClass, Class<?> targetClass) {
+        this.configuration.addBeanPairWithStrictTarget(sourceClass, targetClass);
+        return this;
+    }
+
     public BeanMapperBuilder addProxySkipClass(Class<?> clazz) {
         this.configuration.addProxySkipClass(clazz);
         return this;
@@ -75,11 +85,13 @@ public class BeanMapperBuilder {
     }
 
     public BeanMapperBuilder downsizeSource(List<String> includeFields) {
+        this.configuration.setApplyStrictMappingConvention(false);
         this.configuration.downsizeSource(includeFields);
         return this;
     }
 
     public BeanMapperBuilder downsizeTarget(List<String> includeFields) {
+        this.configuration.setApplyStrictMappingConvention(false);
         this.configuration.downsizeTarget(includeFields);
         return this;
     }
@@ -109,8 +121,25 @@ public class BeanMapperBuilder {
         return this;
     }
 
+    public BeanMapperBuilder setStrictSourceSuffix(String strictSourceSuffix) {
+        this.configuration.setStrictSourceSuffix(strictSourceSuffix);
+        return this;
+    }
+    
+    public BeanMapperBuilder setStrictTargetSuffix(String strictTargetSuffix) {
+        this.configuration.setStrictTargetSuffix(strictTargetSuffix);
+        return this;
+    }
+    
+    public BeanMapperBuilder setApplyStrictMappingConvention(Boolean applyStrictMappingConvention) {
+        this.configuration.setApplyStrictMappingConvention(applyStrictMappingConvention);
+        return this;
+    }
+    
     public BeanMapper build() {
         BeanMapper beanMapper = new BeanMapper(configuration);
+        // Make sure all strict bean classes have matching properties on the other side
+        configuration.getBeanMatchStore().validateStrictBeanPairs(configuration.getBeanPairs());
         // Custom bean converters must be registered before default ones
         addCustomConverters();
         if (configuration.isAddDefaultConverters()) {

@@ -98,6 +98,33 @@ public class BeanMapperBuilderTest {
     }
 
     @Test
+    public void strictMappingConventionForCoreConfig() {
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .setStrictSourceSuffix("Frm")
+                .setStrictTargetSuffix("Rslt")
+                .build(); // Core wrapConfig
+        Configuration currentConfiguration = beanMapper.getConfiguration();
+        assertEquals("Frm", currentConfiguration.getStrictSourceSuffix());
+        assertEquals("Rslt", currentConfiguration.getStrictTargetSuffix());
+    }
+
+    @Test
+    public void strictMappingConventionForOverrideConfig() {
+        BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrapConfig
+        beanMapper = beanMapper.config()
+                .setStrictSourceSuffix("Frm")
+                .build(); // Wrap in an override config
+
+        Configuration currentConfiguration = beanMapper.getConfiguration();
+        assertEquals("Frm",
+                currentConfiguration.getStrictMappingProperties().getStrictSourceSuffix());
+        assertEquals("Result",
+                currentConfiguration.getStrictMappingProperties().getStrictTargetSuffix());
+        assertEquals(true,
+                currentConfiguration.getStrictMappingProperties().isApplyStrictMappingConvention());
+    }
+
+    @Test
     public void cleanConfig() {
         BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrapConfig
         beanMapper = wrapAndSetFieldsForSingleRun(beanMapper);

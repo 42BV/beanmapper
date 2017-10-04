@@ -80,18 +80,71 @@ public interface Configuration {
 
     List<BeanConverter> getBeanConverters();
 
+    /**
+     * Returns the entire list of strict bean pairs. The properties on the strict side must
+     * have matching properties on the other, non-strict side.
+     * @return the entire list of strict bean pairs.
+     */
+    List<BeanPair> getBeanPairs();
+
     Boolean isConverterChoosable();
 
     void withoutDefaultConverters();
 
     /**
+     * Returns the classname suffix that determines a source class is to be treated as strict
+     * with regards to mapping. Default is "Form"
+     * @return the source classname suffix for a class to be treated as strict
+     */
+    String getStrictSourceSuffix();
+
+    /**
+     * Returns the classname suffix that determines a target class is to be treated as strict
+     * with regards to mapping. Default is "Result"
+     * @return the target classname suffix for a class to be treated as strict
+     */
+    String getStrictTargetSuffix();
+
+    /**
+     * Determines if strict mapping convention will be applied. This means that if a source
+     * class has the strict source suffix, or a target class has the strict target suffix,
+     * the classes will be treated as if they are strict. This implies that all of their
+     * properties will require matching properties on the other side. Default is true.
+     * @return if true, the strict mapping convention will be applied
+     */
+    Boolean isApplyStrictMappingConvention();
+
+    /**
+     * Returns the collection of strictSourceSuffix, strictTargetSuffix and
+     * applyStrictMappingConvention properties.
+     * @return all properties required for dealing with the strict mapping convention
+     */
+    StrictMappingProperties getStrictMappingProperties();
+
+    /**
      * Add a converter class (must inherit from abstract BeanConverter class) to the beanMapper.
      * On mapping, the beanMapper will check for a suitable converter and use its from and
      * to methods to convert the value of the fields to the correct new data type.
-     * @param converter an instance of the class that contains the conversion method implementations and inherits
-     *                  from the abstract BeanConverter class.
+     * @param converter an instance of the class that contains the conversion method implementations
+     *                  and inherits from the abstract BeanConverter class.
      */
     void addConverter(BeanConverter converter);
+
+    /**
+     * Adds a new pair of classes of which the source is strict. The strict side must match for all
+     * public fields and getter properties.
+     * @param source the source class that must match, also the strict side of the pair
+     * @param target the target class that must match
+     */
+    void addBeanPairWithStrictSource(Class source, Class target);
+
+    /**
+     * Adds a new pair of classes of which the target is strict. The strict side must match for all
+     * public fields and setter properties.
+     * @param source the source class that must match
+     * @param target the target class that must match, also the strict side of the pair
+     */
+    void addBeanPairWithStrictTarget(Class source, Class target);
 
     /**
      * Add classes to skip while unproxying to prevent failing of the BeanMapper while mapping
@@ -180,4 +233,28 @@ public interface Configuration {
     boolean canReuse();
 
     Class determineTargetClass();
+
+    /**
+     * Sets the classname suffix that determines a source class is to be treated as strict
+     * with regards to mapping. Default is "Form"
+     * @param strictSourceSuffix the source classname suffix for a class to be treated as strict
+     */
+    void setStrictSourceSuffix(String strictSourceSuffix);
+
+    /**
+     * Sets the classname suffix that determines a target class is to be treated as strict
+     * with regards to mapping. Default is "Result"
+     * @param strictTargetSuffix the target classname suffix for a class to be treated as strict
+     */
+    void setStrictTargetSuffix(String strictTargetSuffix);
+
+    /**
+     * Determines if strict mapping convention will be applied. This means that if a source
+     * class has the strict source suffix, or a target class has the strict target suffix,
+     * the classes will be treated as if they are strict. This implies that all of their
+     * properties will require matching properties on the other side. Default is true.
+     * @param applyStrictMappingConvention whether the strict mapping convention must be applied
+     */
+    void setApplyStrictMappingConvention(Boolean applyStrictMappingConvention);
+
 }

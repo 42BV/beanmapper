@@ -1,5 +1,6 @@
 package io.beanmapper.core;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -9,6 +10,7 @@ import io.beanmapper.annotations.BeanCollection;
 import io.beanmapper.annotations.BeanIgnore;
 import io.beanmapper.annotations.BeanProperty;
 import io.beanmapper.annotations.BeanUnwrap;
+import io.beanmapper.config.BeanPair;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
 import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessors;
@@ -19,30 +21,45 @@ public class BeanMatchStore {
 
     private Map<String, Map<String, BeanMatch>> store = new TreeMap<String, Map<String, BeanMatch>>();
 
-    public BeanMatch getBeanMatch(Class<?> sourceClass, Class<?> targetClass) {
-        Map<String, BeanMatch> targetsForSource = getTargetsForSource(sourceClass);
-        if (targetsForSource == null || !targetsForSource.containsKey(targetClass.getCanonicalName())) {
-            return addBeanMatch(determineBeanMatch(sourceClass, targetClass));
+    public void validateStrictBeanPairs(List<BeanPair> beanPairs) {
+        List<BeanMatchValidationMessage> validationMessages = new ArrayList<BeanMatchValidationMessage>();
+        for (BeanPair beanPair : beanPairs) {
+            try {
+                getBeanMatch(beanPair);
+            } catch (BeanStrictMappingRequirementsException ex) {
+                validationMessages.addAll(ex.getValidationMessages());
+            }
         }
-        return getTarget(targetsForSource, targetClass);
+
+        if (validationMessages.size() > 0) {
+            throw new BeanStrictMappingRequirementsException(validationMessages);
+        }
+    }
+
+    public BeanMatch getBeanMatch(BeanPair beanPair) {
+        Map<String, BeanMatch> targetsForSource = getTargetsForSource(beanPair.getSourceClass());
+        if (targetsForSource == null || !containsKeyForTargetClass(targetsForSource, beanPair)) {
+            return addBeanMatch(determineBeanMatch(beanPair));
+        }
+        return getTarget(targetsForSource, beanPair.getTargetClass());
+    }
+
+    private boolean containsKeyForTargetClass(Map<String, BeanMatch> targetsForSource, BeanPair beanPair) {
+        return targetsForSource.containsKey(beanPair.getTargetClass().getCanonicalName());
     }
 
     public BeanMatch addBeanMatch(BeanMatch beanMatch) {
         Map<String, BeanMatch> targetsForSource = getTargetsForSource(beanMatch.getSourceClass());
         if (targetsForSource == null) {
             targetsForSource = new TreeMap<String, BeanMatch>();
-            storeTargetsForSource(beanMatch.getSourceClass(), targetsForSource);
+            store.put(beanMatch.getSourceClass().getCanonicalName(), targetsForSource);
         }
         storeTarget(targetsForSource, beanMatch.getTargetClass(), beanMatch);
         return beanMatch;
     }
 
-    private void storeTargetsForSource(Class<?> source, Map<String, BeanMatch> targetsForSource) {
-        store.put(source.getCanonicalName(), targetsForSource);
-    }
-
-    private Map<String, BeanMatch> getTargetsForSource(Class<?> source) {
-        return store.get(source.getCanonicalName());
+    private Map<String, BeanMatch> getTargetsForSource(Class<?> sourceClass) {
+        return store.get(sourceClass.getCanonicalName());
     }
 
     private BeanMatch getTarget(Map<String, BeanMatch> targetsForSource, Class<?> target) {
@@ -53,21 +70,23 @@ public class BeanMatchStore {
         targetsForSource.put(target.getCanonicalName(), beanMatch);
     }
 
-    private BeanMatch determineBeanMatch(Class<?> source, Class<?> target) {
-        return determineBeanMatch(source, target, new TreeMap<String, BeanField>(), new TreeMap<String, BeanField>(), new TreeMap<String, BeanField>());
+    private BeanMatch determineBeanMatch(BeanPair beanPair) {
+        return determineBeanMatch(beanPair, new TreeMap<String, BeanField>(), new TreeMap<String, BeanField>(), new TreeMap<String, BeanField>());
     }
 
-    private BeanMatch determineBeanMatch(Class<?> source, Class<?> target,
+    private BeanMatch determineBeanMatch(BeanPair beanPair,
                                          Map<String, BeanField> sourceNode, Map<String, BeanField> targetNode, Map<String, BeanField> aliases) {
         return new BeanMatch(
-                source,
-                target,
-                getAllFields(sourceNode, targetNode, aliases, source, target, null),
-                getAllFields(targetNode, sourceNode, aliases, target, source, null),
+                beanPair,
+                getAllFields(sourceNode, targetNode, aliases,
+                        beanPair.getSourceClass(), beanPair.getTargetClass(),null),
+                getAllFields(targetNode, sourceNode, aliases,
+                        beanPair.getTargetClass(), beanPair.getSourceClass(),null),
                 aliases);
     }
 
     private Map<String, BeanField> getAllFields(Map<String, BeanField> ourNodes, Map<String, BeanField> otherNodes, Map<String, BeanField> aliases, Class<?> ourType, Class<?> otherType, BeanField prefixingBeanField) {
+
         Map<String, BeanField> ourCurrentNodes = ourNodes;
         List<PropertyAccessor> accessors = PropertyAccessors.getAll(ourType);
         for (PropertyAccessor accessor : accessors) {
@@ -100,7 +119,9 @@ public class BeanMatchStore {
             }
 
             if (accessor.findAnnotation(BeanUnwrap.class) != null) {
-                ourCurrentNodes = getAllFields(ourCurrentNodes, otherNodes, aliases, accessor.getType(), otherType, currentBeanField);
+                ourCurrentNodes = getAllFields(
+                        ourCurrentNodes, otherNodes, aliases,
+                        accessor.getType(), otherType, currentBeanField);
             } else {
                 ourCurrentNodes.put(name, currentBeanField);
             }
