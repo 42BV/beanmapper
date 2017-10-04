@@ -55,7 +55,7 @@ public class FieldPropertyAccessor implements PropertyAccessor {
      */
     @Override
     public boolean isReadable() {
-        return true;
+        return Modifier.isPublic(field.getModifiers());
     }
     
     /**
