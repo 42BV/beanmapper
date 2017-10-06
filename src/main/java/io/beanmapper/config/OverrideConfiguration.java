@@ -152,6 +152,7 @@ public class OverrideConfiguration implements Configuration {
     @Override
     public StrictMappingProperties getStrictMappingProperties() {
         return new StrictMappingProperties(
+                getBeanUnproxy(),
                 getStrictSourceSuffix(),
                 getStrictTargetSuffix(),
                 isApplyStrictMappingConvention()

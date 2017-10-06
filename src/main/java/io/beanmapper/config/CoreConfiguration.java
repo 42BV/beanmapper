@@ -147,7 +147,8 @@ public class CoreConfiguration implements Configuration {
 
     @Override
     public StrictMappingProperties getStrictMappingProperties() {
-        return strictMappingProperties;
+        this.strictMappingProperties.setBeanUnproxy(beanUnproxy);
+        return this.strictMappingProperties;
     }
 
     @Override

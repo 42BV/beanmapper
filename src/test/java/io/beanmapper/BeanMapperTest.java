@@ -23,6 +23,8 @@ import io.beanmapper.core.converter.impl.ObjectToStringConverter;
 import io.beanmapper.exceptions.BeanCollectionUnassignableTargetCollectionTypeException;
 import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanMappingException;
+import io.beanmapper.testmodel.anonymous.Book;
+import io.beanmapper.testmodel.anonymous.BookForm;
 import io.beanmapper.testmodel.beanAlias.NestedSourceWithAlias;
 import io.beanmapper.testmodel.beanAlias.SourceWithAlias;
 import io.beanmapper.testmodel.beanAlias.TargetWithAlias;
@@ -1073,6 +1075,19 @@ public class BeanMapperTest {
         SCTargetBResult target = beanMapper.map(source, SCTargetBResult.class);
         assertEquals("Alpha", target.name);
         assertEquals("some value", target.getDoesNotExist());
+    }
+
+    @Test
+    public void anonymousClass() {
+        BookForm bookForm = new BookForm() {{
+            name = "Henkie";
+            street = "Stationsplein 31";
+            city = "Brussel";
+        }};
+        Book book = beanMapper.map(bookForm, Book.class);
+        assertEquals(bookForm.name, book.getName());
+        assertEquals(bookForm.street, book.getStreet());
+        assertEquals(bookForm.city, book.getCity());
     }
 
     public Person createPerson(String name) {

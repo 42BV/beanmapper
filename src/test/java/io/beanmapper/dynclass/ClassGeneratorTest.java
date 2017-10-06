@@ -8,7 +8,11 @@ import java.util.List;
 
 import org.junit.Test;
 
+import io.beanmapper.BeanMapper;
+import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.config.StrictMappingProperties;
+import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
+import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
 import io.beanmapper.dynclass.model.Person;
 
 public class ClassGeneratorTest extends AbstractConcurrentTest {
@@ -26,7 +30,10 @@ public class ClassGeneratorTest extends AbstractConcurrentTest {
                         gen.createClass(
                                 Person.class,
                                 Node.createTree(Collections.singletonList("name")),
-                                StrictMappingProperties.defaultConfig());
+                                new BeanMapperBuilder()
+                                        .build()
+                                        .getConfiguration()
+                                        .getStrictMappingProperties());
                         Thread.yield();
                     }
                 } catch (Exception ex) {

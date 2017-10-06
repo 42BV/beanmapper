@@ -51,7 +51,6 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
                 .config()
                 .downsizeSource(null)
                 .setTargetClass(dynamicClass)
-//                .setApplyStrictMappingConvention(false)
                 .build()
                 .map(source);
 
@@ -60,7 +59,6 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
                 .wrapConfig()
                 .setTargetClass(targetClass)
                 .setTarget(target)
-//                .setApplyStrictMappingConvention(false)
                 .build()
                 .map(dynSource);
     }
@@ -74,7 +72,6 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
                 .config()
                 .downsizeTarget(null)
                 .setTargetClass(dynamicClass)
-//                .setApplyStrictMappingConvention(false)
                 .build()
                 .map(source);
     }

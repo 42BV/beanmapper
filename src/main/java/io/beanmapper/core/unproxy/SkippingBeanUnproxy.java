@@ -34,6 +34,9 @@ public class SkippingBeanUnproxy implements BeanUnproxy {
         if (isSkippedProxyClass(beanClass)) {
             return beanClass;
         }
+        if (beanClass.isAnonymousClass()) {
+            beanClass = beanClass.getSuperclass();
+        }
         return delegate.unproxy(beanClass);
     }
 

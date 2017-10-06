@@ -1,6 +1,11 @@
 package io.beanmapper.config;
 
+import io.beanmapper.core.unproxy.BeanUnproxy;
+import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
+
 public class StrictMappingProperties {
+
+    private BeanUnproxy beanUnproxy;
 
     /**
      * The classname suffix that determines a source class is to be treated as strict
@@ -23,12 +28,18 @@ public class StrictMappingProperties {
     private Boolean applyStrictMappingConvention = true;
 
     public StrictMappingProperties(
+            BeanUnproxy beanUnproxy,
             String strictSourceSuffix,
             String strictTargetSuffix,
             Boolean applyStrictMappingConvention) {
+        this.beanUnproxy = beanUnproxy;
         this.strictSourceSuffix = strictSourceSuffix;
         this.strictTargetSuffix = strictTargetSuffix;
         this.applyStrictMappingConvention = applyStrictMappingConvention;
+    }
+
+    public BeanUnproxy getBeanUnproxy() {
+        return beanUnproxy;
     }
 
     public String getStrictSourceSuffix() {
@@ -56,6 +67,8 @@ public class StrictMappingProperties {
     }
 
     public BeanPair createBeanPair(Class<?> sourceClass, Class<?> targetClass) {
+        sourceClass = beanUnproxy.unproxy(sourceClass);
+        targetClass = beanUnproxy.unproxy(targetClass);
         BeanPair beanPair = new BeanPair(sourceClass, targetClass);
         if (!isApplyStrictMappingConvention()) {
             return beanPair;
@@ -73,6 +86,7 @@ public class StrictMappingProperties {
 
     public static StrictMappingProperties defaultConfig() {
         return new StrictMappingProperties(
+                null,
                 "Form",
                 "Result",
                 true);
@@ -82,7 +96,11 @@ public class StrictMappingProperties {
         return new StrictMappingProperties(
                 null,
                 null,
+                null,
                 null);
     }
 
+    public void setBeanUnproxy(SkippingBeanUnproxy beanUnproxy) {
+        this.beanUnproxy = beanUnproxy;
+    }
 }
