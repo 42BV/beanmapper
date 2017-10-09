@@ -12,11 +12,11 @@ public enum BeanCollectionUsage {
      */
     CONSTRUCT,
     /**
-     * Reuse the target collection if it exists; construct if not. DEFAULT option
+     * Reuse the target collection if it exists; construct if not.
      */
     REUSE,
     /**
-     * Call clear on the target collection if it exists; construct if not
+     * Call clear on the target collection if it exists; construct if not. DEFAULT option
      */
     CLEAR
 
