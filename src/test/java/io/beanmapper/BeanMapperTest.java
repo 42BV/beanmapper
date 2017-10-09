@@ -1,6 +1,7 @@
 package io.beanmapper;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -28,6 +29,10 @@ import io.beanmapper.testmodel.anonymous.BookForm;
 import io.beanmapper.testmodel.beanAlias.NestedSourceWithAlias;
 import io.beanmapper.testmodel.beanAlias.SourceWithAlias;
 import io.beanmapper.testmodel.beanAlias.TargetWithAlias;
+import io.beanmapper.testmodel.collections.CollSourceClear;
+import io.beanmapper.testmodel.collections.CollSourceReuse;
+import io.beanmapper.testmodel.collections.CollSourceConstruct;
+import io.beanmapper.testmodel.collections.CollTarget;
 import io.beanmapper.testmodel.collections.CollectionListSource;
 import io.beanmapper.testmodel.collections.CollectionListTarget;
 import io.beanmapper.testmodel.collections.CollectionListTargetClear;
@@ -1075,6 +1080,76 @@ public class BeanMapperTest {
         SCTargetBResult target = beanMapper.map(source, SCTargetBResult.class);
         assertEquals("Alpha", target.name);
         assertEquals("some value", target.getDoesNotExist());
+    }
+
+    @Test
+    public void beanCollectionClearEmptySource() {
+        CollSourceClear source = new CollSourceClear();
+        source.items = null;
+        CollTarget target = beanMapper.map(source, CollTarget.class);
+        assertNull(target.items);
+    }
+
+    @Test
+    public void beanCollectionReuseEmptySource() {
+        CollSourceReuse source = new CollSourceReuse();
+        source.items = null;
+        CollTarget target = beanMapper.map(source, CollTarget.class);
+        assertNull(target.items);
+    }
+
+    @Test
+    public void beanCollectionConstructEmptySource() {
+        CollSourceConstruct source = new CollSourceConstruct();
+        source.items = null;
+        CollTarget target = beanMapper.map(source, CollTarget.class);
+        assertNull(target.items);
+    }
+
+    @Test
+    public void beanCollectionClear() {
+        CollSourceClear source = new CollSourceClear();
+        source.items.add("A");
+        source.items.add("B");
+        source.items.add("C");
+        CollTarget target = new CollTarget();
+        target.items = new ArrayList<>();
+        List<String> expectedList = target.items;
+        target.items.add("D");
+        target = beanMapper.map(source, target);
+        assertEquals(expectedList, target.items);
+        assertEquals(3, target.items.size());
+    }
+
+    @Test
+    public void beanCollectionReuse() {
+        CollSourceReuse source = new CollSourceReuse();
+        source.items.add("A");
+        source.items.add("B");
+        source.items.add("C");
+        CollTarget target = new CollTarget();
+        target.items = new ArrayList<>();
+        List<String> expectedList = target.items;
+        target.items.add("D");
+        target = beanMapper.map(source, target);
+        assertEquals(4, target.items.size());
+        assertEquals(expectedList, target.items);
+        assertEquals("D", target.items.get(0));
+    }
+
+    @Test
+    public void beanCollectionConstruct() {
+        CollSourceConstruct source = new CollSourceConstruct();
+        source.items.add("A");
+        source.items.add("B");
+        source.items.add("C");
+        CollTarget target = new CollTarget();
+        target.items = new ArrayList<>();
+        List<String> unexpectedList = target.items;
+        target.items.add("D");
+        target = beanMapper.map(source, target);
+        assertEquals(3, target.items.size());
+        assertNotSame(unexpectedList, target.items);
     }
 
     @Test
