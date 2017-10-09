@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Issue [#76](https://github.com/42BV/beanmapper/issues/78), **Support anonymous classes**; Instances that were created anonymously were not supported by the Unproxy. Now, it will check whether the class is anonymous. If this is the case, it will refer to its superclass and re-enter the unproxy process. 
 
 ## [1.0.1] - 2017-10-04
 ### Fixed
