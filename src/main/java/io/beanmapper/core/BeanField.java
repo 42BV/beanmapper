@@ -1,5 +1,7 @@
 package io.beanmapper.core;
 
+import java.util.Stack;
+
 import io.beanmapper.annotations.BeanConstruct;
 import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
@@ -9,8 +11,6 @@ import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
 import io.beanmapper.utils.ConstructorArguments;
 import io.beanmapper.utils.DefaultValues;
-
-import java.util.Stack;
 
 public class BeanField {
 

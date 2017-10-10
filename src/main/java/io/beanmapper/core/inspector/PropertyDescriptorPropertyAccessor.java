@@ -3,13 +3,13 @@
  */
 package io.beanmapper.core.inspector;
 
-import io.beanmapper.exceptions.BeanGetFieldException;
-import io.beanmapper.exceptions.BeanSetFieldException;
-
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import io.beanmapper.exceptions.BeanGetFieldException;
+import io.beanmapper.exceptions.BeanSetFieldException;
 
 /**
  * Property descriptor implementation of property accessor.

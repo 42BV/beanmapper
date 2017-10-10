@@ -1,6 +1,11 @@
 package io.beanmapper.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.core.BeanMatchStore;
+import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
@@ -9,9 +14,6 @@ import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
 import io.beanmapper.dynclass.ClassStore;
 import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class CoreConfiguration implements Configuration {
 
@@ -61,6 +63,8 @@ public class CoreConfiguration implements Configuration {
 
     private StrictMappingProperties strictMappingProperties = StrictMappingProperties.defaultConfig();
 
+    private List<CollectionHandler> collectionHandlers = new ArrayList<CollectionHandler>();
+
     @Override
     public List<String> getDownsizeTarget() { return null; }
 
@@ -82,6 +86,32 @@ public class CoreConfiguration implements Configuration {
 
     @Override
     public Class getCollectionClass() {
+        return null;
+    }
+
+    @Override
+    public CollectionHandler getCollectionHandlerForCollectionClass() {
+        return null;
+    }
+
+    @Override
+    public CollectionHandler getCollectionHandlerFor(Class<?> clazz) {
+        if (clazz == null) {
+            return null;
+        }
+        // First verify if the class already has parent types which match
+        for (CollectionHandler handler : getCollectionHandlers()) {
+            if (handler.isMatch(clazz)) {
+                return handler;
+            }
+        }
+        // Unproxy the collection class in case it was anonymous and try again
+        Class unproxiedCollectionClass = getBeanUnproxy().unproxy(clazz);
+        for (CollectionHandler handler : getCollectionHandlers()) {
+            if (handler.isMatch(unproxiedCollectionClass)) {
+                return handler;
+            }
+        }
         return null;
     }
 
@@ -113,6 +143,11 @@ public class CoreConfiguration implements Configuration {
     @Override
     public List<BeanConverter> getBeanConverters() {
         return this.beanConverters;
+    }
+
+    @Override
+    public List<CollectionHandler> getCollectionHandlers() {
+        return collectionHandlers;
     }
 
     @Override
@@ -152,8 +187,23 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
+    public BeanCollectionUsage getCollectionUsage() {
+        return BeanCollectionUsage.CLEAR;
+    }
+
+    @Override
+    public Class<?> getPreferredCollectionClass() {
+        return null;
+    }
+
+    @Override
     public void addConverter(BeanConverter converter) {
         this.beanConverters.add(converter);
+    }
+
+    @Override
+    public void addCollectionHandler(CollectionHandler collectionHandler) {
+        this.collectionHandlers.add(collectionHandler);
     }
 
     @Override
@@ -261,6 +311,18 @@ public class CoreConfiguration implements Configuration {
     @Override
     public void setApplyStrictMappingConvention(Boolean applyStrictMappingConvention) {
         this.strictMappingProperties.setApplyStrictMappingConvention(applyStrictMappingConvention);
+    }
+
+    @Override
+    public void setCollectionUsage(BeanCollectionUsage collectionUsage) {
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to set collection usage on the core configuration");
+    }
+
+    @Override
+    public void setPreferredCollectionClass(Class<?> preferredCollectionClass) {
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to set preferred collection class on the core configuration");
     }
 
 }

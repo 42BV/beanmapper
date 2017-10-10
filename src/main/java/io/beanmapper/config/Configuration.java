@@ -1,13 +1,15 @@
 package io.beanmapper.config;
 
+import java.util.List;
+
+import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.core.BeanMatchStore;
+import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
 import io.beanmapper.dynclass.ClassStore;
-
-import java.util.List;
 
 public interface Configuration {
 
@@ -81,6 +83,27 @@ public interface Configuration {
     List<BeanConverter> getBeanConverters();
 
     /**
+     * Returns the list of registered collection handlers. The handlers are used to deal
+     * with the complexities of mapping between collections. Methods for copying, clearing
+     * and construction are supplied.
+     * @return the list of registered collection handlers
+     */
+    List<CollectionHandler> getCollectionHandlers();
+
+    /**
+     * Finds the correction handler for the class. Null, if not found.
+     * @param clazz class to find the correct collection handler for
+     * @return collection handler for the class, or null if not found
+     */
+    CollectionHandler getCollectionHandlerFor(Class<?> clazz);
+
+    /**
+     * Finds the collection handler for the collection class, null if not exists
+     * @return the collection handler for the collection class, null if not exists
+     */
+    CollectionHandler getCollectionHandlerForCollectionClass();
+
+    /**
      * Returns the entire list of strict bean pairs. The properties on the strict side must
      * have matching properties on the other, non-strict side.
      * @return the entire list of strict bean pairs.
@@ -122,6 +145,19 @@ public interface Configuration {
     StrictMappingProperties getStrictMappingProperties();
 
     /**
+     * Returns the type of collection usage for the current collection mapping
+     * @return collection usage to apply
+     */
+    BeanCollectionUsage getCollectionUsage();
+
+    /**
+     * Gets the preferred collection class to be instantiated. If it has this choice,
+     * it will use this class over the one provided by the collection handler.
+     * @return the collection class to prefer for instantiation
+     */
+    Class<?> getPreferredCollectionClass();
+
+    /**
      * Add a converter class (must inherit from abstract BeanConverter class) to the beanMapper.
      * On mapping, the beanMapper will check for a suitable converter and use its from and
      * to methods to convert the value of the fields to the correct new data type.
@@ -129,6 +165,14 @@ public interface Configuration {
      *                  and inherits from the abstract BeanConverter class.
      */
     void addConverter(BeanConverter converter);
+
+    /**
+     * Registers a collection handler to the configuration. The Collection handlers supply the
+     * underlying mechanism for dealing with mapping from and to collections. They supply methods
+     * for copying, clearing and construction.
+     * @param collectionHandler the collection handler to register
+     */
+    void addCollectionHandler(CollectionHandler collectionHandler);
 
     /**
      * Adds a new pair of classes of which the source is strict. The strict side must match for all
@@ -256,5 +300,18 @@ public interface Configuration {
      * @param applyStrictMappingConvention whether the strict mapping convention must be applied
      */
     void setApplyStrictMappingConvention(Boolean applyStrictMappingConvention);
+
+    /**
+     * Sets the collection usage for the current collection mapping
+     * @param collectionUsage the collection usage to apply
+     */
+    void setCollectionUsage(BeanCollectionUsage collectionUsage);
+
+    /**
+     * Sets the preferred collection class to be instantiated. If it has this choice,
+     * it will use this class over the one provided by the collection handler.
+     * @param preferredCollectionClass the collection class to prefer for instantiation
+     */
+    void setPreferredCollectionClass(Class<?> preferredCollectionClass);
 
 }

@@ -1,6 +1,7 @@
 package io.beanmapper.exceptions;
 
 import static org.junit.Assert.assertTrue;
+
 import io.beanmapper.testmodel.defaults.SourceWithDefaults;
 
 import org.junit.Test;

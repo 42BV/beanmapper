@@ -21,13 +21,6 @@ public @interface BeanCollection {
     Class elementType();
 
     /**
-     * If the target collection is null, BeanMapper will attempt to instantiate a new
-     * one. The result of this method will determine the class to instantiate.
-     * @return
-     */
-    Class targetCollectionType() default void.class;
-
-    /**
      * Determines how BeanMapper must deal with the target collection. The default option
      * is to apply CLEAR, which means it will reuse the collection instance by calling clear()
      * on it. If it does not exist, it will be created. Others options are REUSE (if the
@@ -38,4 +31,13 @@ public @interface BeanCollection {
      * @return the way the target collection must be dealt with
      */
     BeanCollectionUsage beanCollectionUsage() default BeanCollectionUsage.CLEAR;
+
+    /**
+     * It is possible to set your own preferred instantiated class. BeanMapper will verify
+     * whether it conforms to the possibilities. If it does, this class will be instantiated
+     * instead of the default one provided by the collection handler
+     * @return the class to instantiate instead of the one provided by the collection handler
+     */
+    Class preferredCollectionClass() default void.class;
+
 }

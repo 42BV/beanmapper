@@ -6,9 +6,9 @@ public class BeanCollectionInstructions {
 
     private Class collectionMapsTo;
 
-    private Class<?> targetCollectionType;
-
     private BeanCollectionUsage beanCollectionUsage;
+
+    private Class<?> preferredInstantiatedClass;
 
     public Class getCollectionMapsTo() {
         return collectionMapsTo;
@@ -26,11 +26,15 @@ public class BeanCollectionInstructions {
         this.beanCollectionUsage = beanCollectionUsage;
     }
 
-    public Class<?> getTargetCollectionType() {
-        return targetCollectionType;
+    public Class<?> getPreferredInstantiatedClass() {
+        return preferredInstantiatedClass;
     }
 
-    public void setTargetCollectionType(Class<?> targetCollectionType) {
-        this.targetCollectionType = targetCollectionType;
+    public void setPreferredInstantiatedClass(Class<?> preferredInstantiatedClass) {
+        this.preferredInstantiatedClass =
+                preferredInstantiatedClass == null || preferredInstantiatedClass.equals(void.class) ?
+                null :
+                preferredInstantiatedClass;
     }
+
 }

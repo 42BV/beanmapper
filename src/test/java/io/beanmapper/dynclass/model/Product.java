@@ -1,8 +1,5 @@
 package io.beanmapper.dynclass.model;
 
-import io.beanmapper.dynclass.model.Artist;
-import io.beanmapper.dynclass.model.Asset;
-
 import java.util.List;
 
 public class Product {

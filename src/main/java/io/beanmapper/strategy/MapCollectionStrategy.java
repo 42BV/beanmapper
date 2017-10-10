@@ -1,9 +1,8 @@
 package io.beanmapper.strategy;
 
-import java.util.Collection;
-
 import io.beanmapper.BeanMapper;
 import io.beanmapper.config.Configuration;
+import io.beanmapper.core.collections.CollectionHandler;
 
 @SuppressWarnings("unchecked")
 public class MapCollectionStrategy extends AbstractMapStrategy {
@@ -15,23 +14,19 @@ public class MapCollectionStrategy extends AbstractMapStrategy {
     @Override
     public Object map(Object source) {
 
-        Collection targetItems = (Collection)getConfiguration()
-                .getBeanInitializer()
-                .instantiate(getConfiguration().getCollectionClass(), null);
+        CollectionHandler collectionHandler = getConfiguration().getCollectionHandlerForCollectionClass();
 
-        // When mapping a collection, a new target class must be passed. Therefore the current BeanMapper
-        // is wrapped in an override configuration containing i) a reference to the target class and ii)
-        // without a container class.
-        Class targetClass = getConfiguration().getTargetClass();
-        logger.debug("    [");
-        for (Object item : (Collection)source) {
-            BeanMapper nestedBeanMapper = getBeanMapper()
-                    .wrapConfig()
-                    .setTargetClass(targetClass)
-                    .build();
-            targetItems.add(nestedBeanMapper.map(item));
-        }
-        logger.debug("    ]");
+        Object targetItems = collectionHandler.getTargetCollection(
+            this.getConfiguration().getCollectionUsage(),
+            this.getConfiguration().getPreferredCollectionClass(),
+            this.getConfiguration().getTarget()
+        );
+
+        targetItems = collectionHandler.copy(
+                getBeanMapper(),
+                getConfiguration().getTargetClass(),
+                source,
+                targetItems);
 
         return targetItems;
     }

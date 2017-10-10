@@ -1,18 +1,20 @@
 package io.beanmapper.dynclass;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+import java.util.Arrays;
+
 import io.beanmapper.BeanMapper;
 import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.dynclass.model.Person;
 import io.beanmapper.dynclass.model.PersonDto;
 import io.beanmapper.dynclass.model.PersonForm;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PersonDtoTest {
 

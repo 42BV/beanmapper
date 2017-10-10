@@ -1,9 +1,9 @@
 package io.beanmapper.core.converter.impl;
 
-import io.beanmapper.core.converter.SimpleBeanConverter;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import io.beanmapper.core.converter.SimpleBeanConverter;
 
 public class LocalDateToLocalDateTime extends SimpleBeanConverter<LocalDate, LocalDateTime> {
 

@@ -3,9 +3,9 @@
  */
 package io.beanmapper.core.converter.impl;
 
-import io.beanmapper.core.converter.SimpleBeanConverter;
-
 import java.math.BigDecimal;
+
+import io.beanmapper.core.converter.SimpleBeanConverter;
 
 /**
  * Converts a string into a big decimal.
