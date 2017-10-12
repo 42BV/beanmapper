@@ -3,12 +3,12 @@
  */
 package io.beanmapper.core.converter.impl;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import io.beanmapper.BeanMapper;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.converter.BeanConverter;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Converts any number to another number type.
@@ -40,8 +40,16 @@ public class NumberToNumberConverter implements BeanConverter {
         if (source == null || source.getClass().equals(targetClass) || (beanFieldMatch != null && beanFieldMatch.getSourceClass().equals(targetClass))) {
             return source;
         }
-        Object sourceAsString = beanMapper.map(source, String.class, true);
-        return beanMapper.map(sourceAsString, targetClass, true);
+        Object sourceAsString = beanMapper
+                .config()
+                .setConverterChoosable(true)
+                .build()
+                .map(source, String.class);
+        return beanMapper
+                .config()
+                .setConverterChoosable(true)
+                .build()
+                .map(sourceAsString, targetClass);
     }
 
     /**

@@ -1,10 +1,10 @@
 package io.beanmapper.strategy;
 
-import io.beanmapper.BeanMapper;
-import io.beanmapper.config.Configuration;
-
 import java.util.Collection;
 import java.util.List;
+
+import io.beanmapper.BeanMapper;
+import io.beanmapper.config.Configuration;
 
 public class MapToDynamicClassStrategy extends AbstractMapStrategy {
 

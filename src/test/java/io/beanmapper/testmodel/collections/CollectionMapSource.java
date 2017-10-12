@@ -1,9 +1,9 @@
 package io.beanmapper.testmodel.collections;
 
-import io.beanmapper.testmodel.person.Person;
-
 import java.util.Map;
 import java.util.TreeMap;
+
+import io.beanmapper.testmodel.person.Person;
 
 public class CollectionMapSource {
 

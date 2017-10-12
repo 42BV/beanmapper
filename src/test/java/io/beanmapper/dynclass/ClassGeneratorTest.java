@@ -6,14 +6,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
-
-import io.beanmapper.BeanMapper;
 import io.beanmapper.config.BeanMapperBuilder;
-import io.beanmapper.config.StrictMappingProperties;
-import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
-import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
 import io.beanmapper.dynclass.model.Person;
+
+import org.junit.Test;
 
 public class ClassGeneratorTest extends AbstractConcurrentTest {
 

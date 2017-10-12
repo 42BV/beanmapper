@@ -1,8 +1,8 @@
 package io.beanmapper.dynclass.model;
 
-import io.beanmapper.annotations.BeanCollection;
-
 import java.util.List;
+
+import io.beanmapper.annotations.BeanCollection;
 
 public class ProductDto {
 

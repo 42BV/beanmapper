@@ -1,11 +1,11 @@
 package io.beanmapper.testmodel.collections;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.beanmapper.annotations.BeanCollection;
 import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.testmodel.person.PersonView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class CollectionListTargetClear {
 

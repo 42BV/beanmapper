@@ -1,11 +1,11 @@
 package io.beanmapper.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.beanmapper.core.BeanField;
 import io.beanmapper.core.BeanMatch;
 import io.beanmapper.exceptions.BeanInstantiationException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ConstructorArguments {
 

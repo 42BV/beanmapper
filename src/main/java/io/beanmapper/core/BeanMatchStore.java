@@ -157,7 +157,7 @@ public class BeanMatchStore {
         BeanCollectionInstructions collectionInstructions = new BeanCollectionInstructions();
         collectionInstructions.setCollectionMapsTo(beanCollection.elementType());
         collectionInstructions.setBeanCollectionUsage(beanCollection.beanCollectionUsage());
-        collectionInstructions.setTargetCollectionType(beanCollection.targetCollectionType() != void.class ? beanCollection.targetCollectionType() : null);
+        collectionInstructions.setPreferredInstantiatedClass(beanCollection.preferredCollectionClass());
         beanField.setCollectionInstructions(collectionInstructions);
     }
 

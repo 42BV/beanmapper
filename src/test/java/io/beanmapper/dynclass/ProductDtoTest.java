@@ -1,19 +1,26 @@
 package io.beanmapper.dynclass;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.beanmapper.BeanMapper;
-import io.beanmapper.config.BeanMapperBuilder;
-import io.beanmapper.dynclass.model.*;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import io.beanmapper.BeanMapper;
+import io.beanmapper.config.BeanMapperBuilder;
+import io.beanmapper.dynclass.model.Artist;
+import io.beanmapper.dynclass.model.ArtistDto;
+import io.beanmapper.dynclass.model.Asset;
+import io.beanmapper.dynclass.model.Organization;
+import io.beanmapper.dynclass.model.Product;
+import io.beanmapper.dynclass.model.ProductDto;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ProductDtoTest {
 
@@ -97,53 +104,59 @@ public class ProductDtoTest {
     }
 
     private Product createProduct(Long productId, boolean includeLists) {
-        Product product = new Product();
-        product.setId(productId);
-        product.setName("Aller menscher");
-        product.setUpc("12345678901");
-        product.setInternalMemo("Secret message, not to be let out");
+        Organization organization = new Organization() {{
+            setId(1143L);
+            setName("My Org");
+            setContact("Henk");
+        }};
+
+        Product product = new Product() {{
+            setId(productId);
+            setName("Aller menscher");
+            setUpc("12345678901");
+            setInternalMemo("Secret message, not to be let out");
+            setOrganization(organization);
+        }};
 
         if (includeLists) {
             product.setAssets(createAssets());
             product.setArtists(createArtists());
         }
 
-        Organization organization = new Organization();
-        organization.setId(1143L);
-        organization.setName("My Org");
-        organization.setContact("Henk");
-        product.setOrganization(organization);
-
         return product;
     }
 
     private List<Asset> createAssets() {
-        List<Asset> assets = new ArrayList<Asset>();
-        assets.add(createAsset(1138L, "Track 1", "NL-123-ABCDEFGH"));
-        assets.add(createAsset(1139L, "Track 2", "NL-123-ABCDEFGI"));
-        assets.add(createAsset(1140L, "Track 3", "NL-123-ABCDEFGJ"));
+        List<Asset> assets = new ArrayList<Asset>() {{
+            add(createAsset(1138L, "Track 1", "NL-123-ABCDEFGH"));
+            add(createAsset(1139L, "Track 2", "NL-123-ABCDEFGI"));
+            add(createAsset(1140L, "Track 3", "NL-123-ABCDEFGJ"));
+        }};
         return assets;
     }
 
     private List<Artist> createArtists() {
-        List<Artist> artists = new ArrayList<Artist>();
-        artists.add(createArtist(1141L, "Artist 1"));
-        artists.add(createArtist(1142L, "Artist 2"));
+        List<Artist> artists = new ArrayList<Artist>() {{
+            add(createArtist(1141L, "Artist 1"));
+            add(createArtist(1142L, "Artist 2"));
+        }};
         return artists;
     }
 
     private Asset createAsset(Long id, String name, String isrc) {
-        Asset asset = new Asset();
-        asset.setId(id);
-        asset.setName(name);
-        asset.setIsrc(isrc);
+        Asset asset = new Asset() {{
+            setId(id);
+            setName(name);
+            setIsrc(isrc);
+        }};
         return asset;
     }
 
     private Artist createArtist(long id, String name) {
-        Artist artist = new Artist();
-        artist.setId(id);
-        artist.setName(name);
+        Artist artist = new Artist() {{
+            setId(id);
+            setName(name);
+        }};
         return artist;
     }
 

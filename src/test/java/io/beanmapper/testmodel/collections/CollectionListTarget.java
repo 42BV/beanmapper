@@ -1,9 +1,9 @@
 package io.beanmapper.testmodel.collections;
 
+import java.util.List;
+
 import io.beanmapper.annotations.BeanCollection;
 import io.beanmapper.testmodel.person.PersonView;
-
-import java.util.List;
 
 public class CollectionListTarget {
 

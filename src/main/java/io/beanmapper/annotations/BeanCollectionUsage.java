@@ -10,14 +10,30 @@ public enum BeanCollectionUsage {
     /**
      * Always reconstruct the target collection
      */
-    CONSTRUCT,
+    CONSTRUCT(true, false),
     /**
      * Reuse the target collection if it exists; construct if not.
      */
-    REUSE,
+    REUSE(false, false),
     /**
      * Call clear on the target collection if it exists; construct if not. DEFAULT option
      */
-    CLEAR
+    CLEAR(false, true);
+
+    private final boolean construct;
+    private final boolean clear;
+
+    BeanCollectionUsage(boolean construct, boolean clear) {
+        this.construct = construct;
+        this.clear = clear;
+    }
+
+    public boolean mustClear() {
+        return this.clear;
+    }
+
+    public boolean mustConstruct(Object targetCollection) {
+        return this.construct || targetCollection == null;
+    }
 
 }

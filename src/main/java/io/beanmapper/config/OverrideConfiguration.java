@@ -1,14 +1,16 @@
 package io.beanmapper.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.core.BeanMatchStore;
+import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
 import io.beanmapper.dynclass.ClassStore;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class OverrideConfiguration implements Configuration {
 
@@ -28,6 +30,8 @@ public class OverrideConfiguration implements Configuration {
 
     private List<String> downsizeTargetFields;
 
+    private List<CollectionHandler> collectionsHandlers = new ArrayList<>();
+
     private Class targetClass;
 
     private Object target;
@@ -39,6 +43,10 @@ public class OverrideConfiguration implements Configuration {
     private Boolean converterChoosable = null;
 
     private StrictMappingProperties strictMappingProperties = StrictMappingProperties.emptyConfig();
+
+    private BeanCollectionUsage collectionUsage = null;
+
+    private Class<?> preferredCollectionClass = null;
 
     public OverrideConfiguration(Configuration configuration) {
         if (configuration == null) {
@@ -60,6 +68,16 @@ public class OverrideConfiguration implements Configuration {
     @Override
     public Class getCollectionClass() {
         return collectionClass;
+    }
+
+    @Override
+    public CollectionHandler getCollectionHandlerForCollectionClass() {
+        return getCollectionHandlerFor(getCollectionClass());
+    }
+
+    @Override
+    public CollectionHandler getCollectionHandlerFor(Class<?> clazz) {
+        return parentConfiguration.getCollectionHandlerFor(clazz);
     }
 
     @Override
@@ -108,6 +126,11 @@ public class OverrideConfiguration implements Configuration {
         converters.addAll(parentConfiguration.getBeanConverters());
         converters.addAll(beanConverters);
         return converters;
+    }
+
+    @Override
+    public List<CollectionHandler> getCollectionHandlers() {
+        return parentConfiguration.getCollectionHandlers();
     }
 
     @Override
@@ -160,8 +183,25 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
+    public BeanCollectionUsage getCollectionUsage() {
+        return this.collectionUsage == null ?
+                parentConfiguration.getCollectionUsage() :
+                this.collectionUsage;
+    }
+
+    @Override
+    public Class<?> getPreferredCollectionClass() {
+        return preferredCollectionClass;
+    }
+
+    @Override
     public void addConverter(BeanConverter converter) {
         beanConverters.add(converter);
+    }
+
+    @Override
+    public void addCollectionHandler(CollectionHandler collectionHandler) {
+        // not supported for override options
     }
 
     @Override
@@ -260,6 +300,16 @@ public class OverrideConfiguration implements Configuration {
     @Override
     public void setApplyStrictMappingConvention(Boolean applyStrictMappingConvention) {
         this.strictMappingProperties.setApplyStrictMappingConvention(applyStrictMappingConvention);
+    }
+
+    @Override
+    public void setCollectionUsage(BeanCollectionUsage collectionUsage) {
+        this.collectionUsage = collectionUsage;
+    }
+
+    @Override
+    public void setPreferredCollectionClass(Class<?> preferredCollectionClass) {
+        this.preferredCollectionClass = preferredCollectionClass;
     }
 
 }

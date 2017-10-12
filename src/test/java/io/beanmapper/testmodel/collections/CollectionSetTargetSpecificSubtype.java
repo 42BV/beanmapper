@@ -7,6 +7,7 @@ import io.beanmapper.annotations.BeanCollection;
 
 public class CollectionSetTargetSpecificSubtype {
 
-    @BeanCollection(elementType = Long.class, targetCollectionType = HashSet.class)
+    @BeanCollection(elementType = Long.class, preferredCollectionClass = HashSet.class)
     public Set<Long> items;
+
 }

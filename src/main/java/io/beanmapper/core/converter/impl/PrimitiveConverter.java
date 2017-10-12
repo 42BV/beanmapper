@@ -3,13 +3,13 @@
  */
 package io.beanmapper.core.converter.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import io.beanmapper.BeanMapper;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.utils.Check;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Converter between boxed and primitive type. 

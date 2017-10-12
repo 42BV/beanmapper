@@ -3,13 +3,13 @@
  */
 package io.beanmapper.core.inspector;
 
-import io.beanmapper.exceptions.BeanGetFieldException;
-import io.beanmapper.exceptions.BeanSetFieldException;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+
+import io.beanmapper.exceptions.BeanGetFieldException;
+import io.beanmapper.exceptions.BeanSetFieldException;
 
 /**
  * 

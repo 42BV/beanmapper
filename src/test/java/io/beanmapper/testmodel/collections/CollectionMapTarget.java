@@ -1,9 +1,9 @@
 package io.beanmapper.testmodel.collections;
 
+import java.util.Map;
+
 import io.beanmapper.annotations.BeanCollection;
 import io.beanmapper.testmodel.person.PersonView;
-
-import java.util.Map;
 
 public class CollectionMapTarget {
 

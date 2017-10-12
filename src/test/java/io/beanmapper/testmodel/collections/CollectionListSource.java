@@ -1,9 +1,9 @@
 package io.beanmapper.testmodel.collections;
 
-import io.beanmapper.testmodel.person.Person;
-
 import java.util.ArrayList;
 import java.util.Collection;
+
+import io.beanmapper.testmodel.person.Person;
 
 public class CollectionListSource {
 

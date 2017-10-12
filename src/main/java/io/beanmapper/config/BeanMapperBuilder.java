@@ -1,18 +1,35 @@
 package io.beanmapper.config;
 
-import io.beanmapper.BeanMapper;
-import io.beanmapper.core.constructor.BeanInitializer;
-import io.beanmapper.core.converter.BeanConverter;
-import io.beanmapper.core.converter.collections.CollectionListConverter;
-import io.beanmapper.core.converter.collections.CollectionMapConverter;
-import io.beanmapper.core.converter.collections.CollectionSetConverter;
-import io.beanmapper.core.converter.impl.*;
-import io.beanmapper.core.unproxy.BeanUnproxy;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import io.beanmapper.BeanMapper;
+import io.beanmapper.annotations.BeanCollectionUsage;
+import io.beanmapper.core.collections.CollectionHandler;
+import io.beanmapper.core.collections.ListCollectionHandler;
+import io.beanmapper.core.collections.MapCollectionHandler;
+import io.beanmapper.core.collections.SetCollectionHandler;
+import io.beanmapper.core.constructor.BeanInitializer;
+import io.beanmapper.core.converter.BeanConverter;
+import io.beanmapper.core.converter.collections.CollectionConverter;
+import io.beanmapper.core.converter.impl.NumberToNumberConverter;
+import io.beanmapper.core.converter.impl.ObjectToStringConverter;
+import io.beanmapper.core.converter.impl.PrimitiveConverter;
+import io.beanmapper.core.converter.impl.StringToBigDecimalConverter;
+import io.beanmapper.core.converter.impl.StringToBooleanConverter;
+import io.beanmapper.core.converter.impl.StringToEnumConverter;
+import io.beanmapper.core.converter.impl.StringToIntegerConverter;
+import io.beanmapper.core.converter.impl.StringToLongConverter;
+import io.beanmapper.core.unproxy.BeanUnproxy;
+
 public class BeanMapperBuilder {
+
+    private static final List<CollectionHandler> DEFAULT_COLLECTION_HANDLERS =
+            new ArrayList<CollectionHandler>() {{
+        add(new MapCollectionHandler());
+        add(new SetCollectionHandler());
+        add(new ListCollectionHandler());
+    }};
 
     private static final boolean REUSE_CONFIGURATION = true;
     private static final boolean WRAP_IN_NEW_CONFIGURATION = false;
@@ -20,6 +37,8 @@ public class BeanMapperBuilder {
     private final Configuration configuration;
 
     private List<BeanConverter> customBeanConverters = new ArrayList<BeanConverter>();
+
+    private List<CollectionHandler> customCollectionHandlers = new ArrayList<>();
 
     public BeanMapperBuilder() {
         this.configuration = new CoreConfiguration();
@@ -46,6 +65,11 @@ public class BeanMapperBuilder {
 
     public BeanMapperBuilder addConverter(BeanConverter converter) {
         this.customBeanConverters.add(converter);
+        return this;
+    }
+
+    public BeanMapperBuilder addCollectionHandler(CollectionHandler handler) {
+        this.customCollectionHandlers.add(handler);
         return this;
     }
 
@@ -135,17 +159,36 @@ public class BeanMapperBuilder {
         this.configuration.setApplyStrictMappingConvention(applyStrictMappingConvention);
         return this;
     }
-    
+
+    public BeanMapperBuilder setCollectionUsage(BeanCollectionUsage collectionUsage) {
+        this.configuration.setCollectionUsage(collectionUsage);
+        return this;
+    }
+
+    public BeanMapperBuilder setPreferredCollectionClass(Class<?> preferredCollectionClass) {
+        this.configuration.setPreferredCollectionClass(preferredCollectionClass);
+        return this;
+    }
+
     public BeanMapper build() {
         BeanMapper beanMapper = new BeanMapper(configuration);
         // Make sure all strict bean classes have matching properties on the other side
         configuration.getBeanMatchStore().validateStrictBeanPairs(configuration.getBeanPairs());
+        // Custom collection handlers must be registered before default ones
+        addCollectionHandlers(customCollectionHandlers);
+        addCollectionHandlers(DEFAULT_COLLECTION_HANDLERS);
         // Custom bean converters must be registered before default ones
         addCustomConverters();
         if (configuration.isAddDefaultConverters()) {
             addDefaultConverters();
         }
         return beanMapper;
+    }
+
+    private void addCollectionHandlers(List<CollectionHandler> collectionHandlers) {
+        for (CollectionHandler collectionHandler : collectionHandlers) {
+            attachCollectionHandler(collectionHandler);
+        }
     }
 
     private void addCustomConverters() {
@@ -164,9 +207,13 @@ public class BeanMapperBuilder {
         attachConverter(new NumberToNumberConverter());
         attachConverter(new ObjectToStringConverter());
 
-        attachConverter(new CollectionListConverter());
-        attachConverter(new CollectionSetConverter());
-        attachConverter(new CollectionMapConverter());
+        for (CollectionHandler collectionHandler : configuration.getCollectionHandlers()) {
+            attachConverter(new CollectionConverter(collectionHandler));
+        }
+    }
+
+    private void attachCollectionHandler(CollectionHandler collectionHandler) {
+        configuration.addCollectionHandler(collectionHandler);
     }
 
     private void attachConverter(BeanConverter customBeanConverter) {

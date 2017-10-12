@@ -1,12 +1,9 @@
 package io.beanmapper.strategy;
 
-import io.beanmapper.annotations.BeanParent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.beanmapper.BeanMapper;
 import io.beanmapper.annotations.BeanConstruct;
 import io.beanmapper.annotations.BeanDefault;
+import io.beanmapper.annotations.BeanParent;
 import io.beanmapper.annotations.BeanProperty;
 import io.beanmapper.config.Configuration;
 import io.beanmapper.core.BeanFieldMatch;
@@ -15,6 +12,9 @@ import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanFieldNoMatchException;
 import io.beanmapper.utils.ConstructorArguments;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractMapStrategy implements MapStrategy {
 

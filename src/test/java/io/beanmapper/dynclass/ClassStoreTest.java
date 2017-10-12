@@ -6,15 +6,11 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import io.beanmapper.config.BeanMapperBuilder;
+import io.beanmapper.dynclass.model.Person;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import io.beanmapper.BeanMapper;
-import io.beanmapper.config.BeanMapperBuilder;
-import io.beanmapper.config.StrictMappingProperties;
-import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
-import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
-import io.beanmapper.dynclass.model.Person;
 
 public class ClassStoreTest extends AbstractConcurrentTest {
 

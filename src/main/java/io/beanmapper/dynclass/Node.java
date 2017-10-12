@@ -1,11 +1,11 @@
 package io.beanmapper.dynclass;
 
-import io.beanmapper.core.Route;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+
+import io.beanmapper.core.Route;
 
 public class Node {
 

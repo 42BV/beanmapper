@@ -3,12 +3,13 @@
  */
 package io.beanmapper.core.converter;
 
-import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * 
