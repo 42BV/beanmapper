@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Fixed
+- Issue [#83](https://github.com/42BV/beanmapper/issues/83), **The name field from an enum is not mapped to target field**; in the resolution of issue [#78](https://github.com/42BV/beanmapper/issues/78) the definition of getter fields has been tightened, because previously all private fields were tagged as available as well. One project made use of this loophole by reading the name field of an enumeration class to a String field. With the new fix this is no longer possible, since the name field is private. This fix makes an exception for the name field of an enum class. It will be considered available for reading.
+
 ## [2.0.0] - 2017-10-12
 ### Fixed
 - **POSSIBLE BREAKING CHANGE!** Issue [#59](https://github.com/42BV/beanmapper/issues/59), **@BeanCollection usage should be CLEAR not REUSE**; the current collection usage is REUSE, which means the collection is used as is, keeping the target elements in the collection. In Hibernate, this will not trigger the deletion of orphans. The dominant option is to use CLEAR, which means that any target collection instance will be used, but its contents removed by calling clear(). By calling this method, a managed list (such as Hibernate does), will keep track of the removed elements (orphan deletion, if enabled).
