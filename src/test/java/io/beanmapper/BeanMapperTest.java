@@ -1,6 +1,7 @@
 package io.beanmapper;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import io.beanmapper.config.AfterClearFlusher;
 import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.core.BeanStrictMappingRequirementsException;
 import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
@@ -30,6 +32,7 @@ import io.beanmapper.testmodel.beanAlias.NestedSourceWithAlias;
 import io.beanmapper.testmodel.beanAlias.SourceWithAlias;
 import io.beanmapper.testmodel.beanAlias.TargetWithAlias;
 import io.beanmapper.testmodel.collections.CollSourceClear;
+import io.beanmapper.testmodel.collections.CollSourceClearFlush;
 import io.beanmapper.testmodel.collections.CollSourceConstruct;
 import io.beanmapper.testmodel.collections.CollSourceReuse;
 import io.beanmapper.testmodel.collections.CollTarget;
@@ -1155,6 +1158,54 @@ public class BeanMapperTest {
         target = beanMapper.map(source, target);
         assertEquals(expectedList, target.items);
         assertEquals(3, target.items.size());
+    }
+
+    @Test
+    public void beanCollectionClearCallsAfterClearFlusher() throws Exception {
+        AfterClearFlusher afterClearFlusher = createAfterClearFlusher();
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .addAfterClearFlusher(afterClearFlusher)
+                .build();
+        CollSourceClearFlush source = new CollSourceClearFlush() {{
+            items.add("A");
+        }};
+        CollTarget target = new CollTarget() {{
+            items = new ArrayList<>();
+            items.add("B");
+        }};
+        beanMapper.map(source, target);
+        assertTrue("Should have called the afterClearFlusher instance",
+                afterClearFlusher.getClass().getField("trigger").getBoolean(afterClearFlusher));
+    }
+
+    @Test
+    public void beanCollectionClearDoesNotCallFlusher() throws Exception {
+        AfterClearFlusher afterClearFlusher = createAfterClearFlusher();
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .addAfterClearFlusher(afterClearFlusher)
+                .build();
+        CollSourceClear source = new CollSourceClear() {{
+            items.add("A");
+        }};
+        CollTarget target = new CollTarget() {{
+            items = new ArrayList<>();
+            items.add("B");
+        }};
+        beanMapper.map(source, target);
+        assertFalse("Should NOT have called the afterClearFlusher instance",
+                afterClearFlusher.getClass().getField("trigger").getBoolean(afterClearFlusher));
+    }
+
+    private AfterClearFlusher createAfterClearFlusher() {
+        return new AfterClearFlusher() {
+
+            public boolean trigger = false;
+
+            @Override
+            public void flush() {
+                trigger = true;
+            }
+        };
     }
 
     @Test

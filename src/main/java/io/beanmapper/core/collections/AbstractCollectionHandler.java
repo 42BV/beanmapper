@@ -2,6 +2,7 @@ package io.beanmapper.core.collections;
 
 import io.beanmapper.BeanMapper;
 import io.beanmapper.annotations.BeanCollectionUsage;
+import io.beanmapper.config.CollectionFlusher;
 import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.exceptions.BeanCollectionUnassignableTargetCollectionTypeException;
 import io.beanmapper.utils.Classes;
@@ -44,14 +45,17 @@ public abstract class AbstractCollectionHandler<C> implements CollectionHandler<
     public C getTargetCollection(
             BeanCollectionUsage collectionUsage,
             Class<C> preferredCollectionClass,
-            C targetCollection) {
+            C targetCollection,
+            CollectionFlusher collectionFlusher,
+            Boolean flushAfterClear) {
 
         C useTargetCollection = collectionUsage.mustConstruct(targetCollection) ?
                 createCollection(preferredCollectionClass) :
                 targetCollection;
 
-        if (collectionUsage.mustClear()) {
+        if (collectionUsage.mustClear() && size(useTargetCollection) > 0) {
             clear(useTargetCollection);
+            collectionFlusher.flush(flushAfterClear);
         }
 
         return useTargetCollection;

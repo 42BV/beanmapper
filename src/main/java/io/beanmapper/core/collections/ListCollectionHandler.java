@@ -16,6 +16,11 @@ public class ListCollectionHandler extends AbstractCollectionHandler<List> {
     }
 
     @Override
+    public int size(List targetCollection) {
+        return targetCollection.size();
+    }
+
+    @Override
     protected void clear(List target) {
         target.clear();
     }

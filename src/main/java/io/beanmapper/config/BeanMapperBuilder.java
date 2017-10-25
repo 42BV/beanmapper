@@ -98,6 +98,11 @@ public class BeanMapperBuilder {
         return this;
     }
 
+    public BeanMapperBuilder addAfterClearFlusher(AfterClearFlusher afterClearFlusher) {
+        this.configuration.addAfterClearFlusher(afterClearFlusher);
+        return this;
+    }
+
     public BeanMapperBuilder setBeanInitializer(BeanInitializer beanInitializer) {
         this.configuration.setBeanInitializer(beanInitializer);
         return this;
@@ -167,6 +172,11 @@ public class BeanMapperBuilder {
 
     public BeanMapperBuilder setPreferredCollectionClass(Class<?> preferredCollectionClass) {
         this.configuration.setPreferredCollectionClass(preferredCollectionClass);
+        return this;
+    }
+
+    public BeanMapperBuilder setFlushAfterClear(Boolean flushAfterClear) {
+        this.configuration.setFlushAfterClear(flushAfterClear);
         return this;
     }
 

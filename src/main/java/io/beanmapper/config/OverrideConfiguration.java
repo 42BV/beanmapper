@@ -48,6 +48,8 @@ public class OverrideConfiguration implements Configuration {
 
     private Class<?> preferredCollectionClass = null;
 
+    private Boolean flushAfterClear = null;
+
     public OverrideConfiguration(Configuration configuration) {
         if (configuration == null) {
             throw new ParentConfigurationPossiblyNullException("Developer error: the parent configuration may not be null");
@@ -195,6 +197,18 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
+    public CollectionFlusher getCollectionFlusher() {
+        return parentConfiguration.getCollectionFlusher();
+    }
+
+    @Override
+    public Boolean isFlushAfterClear() {
+        return this.flushAfterClear == null ?
+                parentConfiguration.isFlushAfterClear() :
+                this.flushAfterClear;
+    }
+
+    @Override
     public void addConverter(BeanConverter converter) {
         beanConverters.add(converter);
     }
@@ -226,6 +240,11 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public void addPackagePrefix(String packagePrefix) {
+        // not supported for override options
+    }
+
+    @Override
+    public void addAfterClearFlusher(AfterClearFlusher afterClearFlusher) {
         // not supported for override options
     }
 
@@ -310,6 +329,11 @@ public class OverrideConfiguration implements Configuration {
     @Override
     public void setPreferredCollectionClass(Class<?> preferredCollectionClass) {
         this.preferredCollectionClass = preferredCollectionClass;
+    }
+
+    @Override
+    public void setFlushAfterClear(Boolean flushAfterClear) {
+        this.flushAfterClear = flushAfterClear;
     }
 
 }

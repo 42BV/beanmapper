@@ -16,6 +16,11 @@ public class SetCollectionHandler extends AbstractCollectionHandler<Set> {
     }
 
     @Override
+    public int size(Set targetCollection) {
+        return targetCollection.size();
+    }
+
+    @Override
     protected void clear(Set target) {
         target.clear();
     }

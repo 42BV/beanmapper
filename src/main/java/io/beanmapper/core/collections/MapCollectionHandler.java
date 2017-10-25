@@ -18,6 +18,11 @@ public class MapCollectionHandler extends AbstractCollectionHandler<Map> {
     }
 
     @Override
+    public int size(Map targetCollection) {
+        return targetCollection.size();
+    }
+
+    @Override
     protected void clear(Map target) {
         target.clear();
     }
