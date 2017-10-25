@@ -55,9 +55,13 @@ public class FieldPropertyAccessor implements PropertyAccessor {
      */
     @Override
     public boolean isReadable() {
-        return Modifier.isPublic(field.getModifiers());
+        return nameOfEnum() || Modifier.isPublic(field.getModifiers());
     }
-    
+
+    private boolean nameOfEnum() {
+        return "name".equals(field.getName()) && field.getDeclaringClass().equals(Enum.class);
+    }
+
     /**
      * {@inheritDoc}
      */

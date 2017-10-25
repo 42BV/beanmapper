@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +22,6 @@ import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
 import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
 import io.beanmapper.core.converter.impl.NestedSourceClassToNestedTargetClassConverter;
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
-import io.beanmapper.exceptions.BeanCollectionUnassignableTargetCollectionTypeException;
 import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.testmodel.anonymous.Book;
@@ -82,6 +80,8 @@ import io.beanmapper.testmodel.enums.ColorStringResult;
 import io.beanmapper.testmodel.enums.EnumSourceArraysAsList;
 import io.beanmapper.testmodel.enums.EnumTargetList;
 import io.beanmapper.testmodel.enums.RGB;
+import io.beanmapper.testmodel.enums.UserRole;
+import io.beanmapper.testmodel.enums.UserRoleResult;
 import io.beanmapper.testmodel.ignore.IgnoreSource;
 import io.beanmapper.testmodel.ignore.IgnoreTarget;
 import io.beanmapper.testmodel.initiallyunmatchedsource.SourceWithUnmatchedField;
@@ -1199,6 +1199,15 @@ public class BeanMapperTest {
         assertEquals(bookForm.name, book.getName());
         assertEquals(bookForm.street, book.getStreet());
         assertEquals(bookForm.city, book.getCity());
+    }
+
+    @Test
+    public void beanMapper_shouldMapFieldsFromSuperclass() {
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .setApplyStrictMappingConvention(false)
+                .build();
+        UserRoleResult result = beanMapper.map(UserRole.ADMIN, UserRoleResult.class);
+        assertEquals(UserRole.ADMIN.name(), result.name);
     }
 
     public Person createPerson(String name) {
