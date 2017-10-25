@@ -65,6 +65,8 @@ public class CoreConfiguration implements Configuration {
 
     private List<CollectionHandler> collectionHandlers = new ArrayList<CollectionHandler>();
 
+    private CollectionFlusher collectionFlusher = new CollectionFlusher();
+
     @Override
     public List<String> getDownsizeTarget() { return null; }
 
@@ -197,6 +199,16 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
+    public CollectionFlusher getCollectionFlusher() {
+        return this.collectionFlusher;
+    }
+
+    @Override
+    public Boolean isFlushAfterClear() {
+        return false;
+    }
+
+    @Override
     public void addConverter(BeanConverter converter) {
         this.beanConverters.add(converter);
     }
@@ -231,6 +243,11 @@ public class CoreConfiguration implements Configuration {
     @Override
     public void addPackagePrefix(String packagePrefix) {
         this.packagePrefixes.add(packagePrefix);
+    }
+
+    @Override
+    public void addAfterClearFlusher(AfterClearFlusher afterClearFlusher) {
+        this.collectionFlusher.addAfterClearFlusher(afterClearFlusher);
     }
 
     @Override
@@ -323,6 +340,12 @@ public class CoreConfiguration implements Configuration {
     public void setPreferredCollectionClass(Class<?> preferredCollectionClass) {
         throw new BeanConfigurationOperationNotAllowedException(
                 "Illegal to set preferred collection class on the core configuration");
+    }
+
+    @Override
+    public void setFlushAfterClear(Boolean flushAfterClear) {
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to set flush after clear on the core configuration");
     }
 
 }

@@ -10,6 +10,8 @@ public class BeanCollectionInstructions {
 
     private Class<?> preferredInstantiatedClass;
 
+    private Boolean flushAfterClear;
+
     public Class getCollectionMapsTo() {
         return collectionMapsTo;
     }
@@ -37,4 +39,11 @@ public class BeanCollectionInstructions {
                 preferredInstantiatedClass;
     }
 
+    public Boolean getFlushAfterClear() {
+        return flushAfterClear;
+    }
+
+    public void setFlushAfterClear(Boolean flushAfterClear) {
+        this.flushAfterClear = flushAfterClear;
+    }
 }

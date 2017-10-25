@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Unreleased
 ### Fixed
 - Issue [#83](https://github.com/42BV/beanmapper/issues/83), **The name field from an enum is not mapped to target field**; in the resolution of issue [#78](https://github.com/42BV/beanmapper/issues/78) the definition of getter fields has been tightened, because previously all private fields were tagged as available as well. One project made use of this loophole by reading the name field of an enumeration class to a String field. With the new fix this is no longer possible, since the name field is private. This fix makes an exception for the name field of an enum class. It will be considered available for reading.
+### Added
+- Issue [#84](https://github.com/42BV/beanmapper/issues/84), **BeanMapper executes the list of AfterClearFlusher instances**; when a clear method on a collection is called, BeanMapper makes sure to run down the list of registered AfterClearFlusher instances. On every instance, the flush method will be called. By default **no** AfterClearFlusher instances are added. BeanMapper has no notion of ORMs; this is left to [beanmapper-spring](https://github.com/42BV/beanmapper-spring) and [beanmapper-spring-boot-starter](https://github.com/42BV/beanmapper-spring-boot-starter). Note that the flusher chain is only called when it has been set to do so in the BeanCollection annotation or the override configuration (flushAfterClear).
 
 ## [2.0.0] - 2017-10-12
 ### Fixed

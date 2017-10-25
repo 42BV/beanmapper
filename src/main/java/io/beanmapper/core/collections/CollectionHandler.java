@@ -1,7 +1,11 @@
 package io.beanmapper.core.collections;
 
+import java.util.List;
+
 import io.beanmapper.BeanMapper;
 import io.beanmapper.annotations.BeanCollectionUsage;
+import io.beanmapper.config.AfterClearFlusher;
+import io.beanmapper.config.CollectionFlusher;
 
 /**
  * Deals with the basic collection manipulations required by BeanMapper
@@ -36,7 +40,9 @@ public interface CollectionHandler<C> {
     public C getTargetCollection(
             BeanCollectionUsage collectionUsage,
             Class<C> targetCollectionType,
-            C targetCollection);
+            C targetCollection,
+            CollectionFlusher collectionFlusher,
+            Boolean flushAfterClear);
 
     /**
      * The type of the collection class. This will be used to determine if the source
@@ -52,5 +58,7 @@ public interface CollectionHandler<C> {
      * @return true if the class can be upcast to the type
      */
     public boolean isMatch(Class<?> clazz);
+
+    public int size(C targetCollection);
 
 }

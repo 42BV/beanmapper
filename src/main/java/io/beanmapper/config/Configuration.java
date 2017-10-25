@@ -158,6 +158,21 @@ public interface Configuration {
     Class<?> getPreferredCollectionClass();
 
     /**
+     * Returns the collection clearer, which takes care of calling the clear method
+     * on a collection. If required, it will also call the list of flushers registered
+     * to it.
+     * @return the collection clearer
+     */
+    CollectionFlusher getCollectionFlusher();
+
+    /**
+     * Determines if the flush-chain must be called after a clear() operation on a
+     * collection has taken place.
+     * @return true if the flush-chain must be called after a clear
+     */
+    Boolean isFlushAfterClear();
+
+    /**
      * Add a converter class (must inherit from abstract BeanConverter class) to the beanMapper.
      * On mapping, the beanMapper will check for a suitable converter and use its from and
      * to methods to convert the value of the fields to the correct new data type.
@@ -214,6 +229,17 @@ public interface Configuration {
      * @param packagePrefix the String which sets the package prefix for all mappable classes
      */
     void addPackagePrefix(String packagePrefix);
+
+    /**
+     * After BeanMapper calls the clear() method on a collection, it will check for the
+     * presence of AfterClearFlusher instances. All instances found will be executed. The
+     * use case triggering this functionality is the fact that Hibernate's @OneToMany first
+     * executes insert SQL-statements, before the delete SQL statements. With constraints,
+     * this is an issue. By forcing the flush after a clear, Hibernate is forced to first
+     * execute its delete SQL-statements, before the inserts.
+     * @param afterClearFlusher the flusher to be added to the call stack after a clear call
+     */
+    void addAfterClearFlusher(AfterClearFlusher afterClearFlusher);
 
     void setBeanInitializer(BeanInitializer beanInitializer);
 
@@ -313,5 +339,11 @@ public interface Configuration {
      * @param preferredCollectionClass the collection class to prefer for instantiation
      */
     void setPreferredCollectionClass(Class<?> preferredCollectionClass);
+
+    /**
+     * Determines whether the flush-chain must be called after a clear has taken place.
+     * @param flushAfterClear true if the flush-chain must be called
+     */
+    void setFlushAfterClear(Boolean flushAfterClear);
 
 }

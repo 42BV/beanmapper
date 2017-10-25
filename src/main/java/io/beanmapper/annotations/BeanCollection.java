@@ -40,4 +40,18 @@ public @interface BeanCollection {
      */
     Class preferredCollectionClass() default void.class;
 
+    /**
+     * When usage is CLEAR and the target collection is being managed by, eg, Hibernate's
+     * OneToMany in combination with orphanRemoval=true, clearing the collection will trigger
+     * delete statements. The problem is that these statements are executed AFTER the insert
+     * statements. If a record is constrained by unicity, this might lead to a constraint
+     * violation. One way to solve this is by asking BeanMapper to flush after the call to
+     * clear. This will force Hibernate to perform the delete before the insert statements.
+     * Note that the flush also persists any merged entity. You are advised to use this
+     * functionality in combination with Lazy to make sure BeanMapper operates within the
+     * transaction scope. If you do, the flush action can be rolled back, resulting in the
+     * original state being preserved.
+     */
+    boolean flushAfterClear() default false;
+
 }
