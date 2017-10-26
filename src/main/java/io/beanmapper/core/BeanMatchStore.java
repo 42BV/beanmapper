@@ -76,7 +76,7 @@ public class BeanMatchStore {
 
     private BeanMatch determineBeanMatch(BeanPair beanPair,
                                          Map<String, BeanField> sourceNode, Map<String, BeanField> targetNode, Map<String, BeanField> aliases) {
-        return new BeanMatch(
+        BeanMatch beanMatch = new BeanMatch(
                 beanPair,
                 getAllFields(
                         sourceNode,
@@ -95,6 +95,7 @@ public class BeanMatchStore {
                         null,
                         PropertyMatchupDirection.TARGET_TO_SOURCE),
                 aliases);
+        return beanMatch;
     }
 
     private Map<String, BeanField> getAllFields(Map<String, BeanField> ourNodes, Map<String, BeanField> otherNodes, Map<String, BeanField> aliases, Class<?> ourType, Class<?> otherType, BeanField prefixingBeanField, PropertyMatchupDirection matchupDirection) {
@@ -114,12 +115,13 @@ public class BeanMatchStore {
 
             // BeanProperty allows the field to match with a field from the other side with a different name
             // and even a different nesting level.
-            String name = dealWithBeanProperty(otherNodes, otherType, accessor);
+            BeanPropertyWrapper beanPropertyWrapper = dealWithBeanProperty(otherNodes, otherType, accessor);
 
             // Unwrap the fields which exist in the unwrap class
             BeanField currentBeanField = null;
             try {
                 currentBeanField = BeanField.determineNodesForPath(ourType, accessor.getName(), prefixingBeanField);
+                currentBeanField.setMustMatch(beanPropertyWrapper.isMustMatch());
             } catch (BeanNoSuchPropertyException e) {
                 throw new BeanMissingPathException(ourType, accessor.getName(), e);
             }
@@ -144,7 +146,7 @@ public class BeanMatchStore {
                         currentBeanField,
                         matchupDirection);
             } else {
-                ourCurrentNodes.put(name, currentBeanField);
+                ourCurrentNodes.put(beanPropertyWrapper.getName(), currentBeanField);
             }
         }
         return ourCurrentNodes;
@@ -162,19 +164,25 @@ public class BeanMatchStore {
         beanField.setCollectionInstructions(collectionInstructions);
     }
 
-    private String dealWithBeanProperty(Map<String, BeanField> otherNodes, Class<?> otherType, PropertyAccessor accessor) {
-        String name = accessor.getName();
+    private BeanPropertyWrapper dealWithBeanProperty(Map<String, BeanField> otherNodes, Class<?> otherType, PropertyAccessor accessor) {
+        BeanPropertyWrapper wrapper = new BeanPropertyWrapper(accessor.getName());
         if (accessor.findAnnotation(BeanProperty.class) != null) {
-            name = accessor.findAnnotation(BeanProperty.class).name();
+            wrapper.setMustMatch();
+            wrapper.setName(accessor.findAnnotation(BeanProperty.class).name());
             // Get the other field from the location that is specified in the beanProperty annotation.
             // If the field is referred to by a path, store the custom field in the other map
             try {
-                otherNodes.put(name, BeanField.determineNodesForPath(otherType, name, null));
+                otherNodes.put(
+                        wrapper.getName(),
+                        BeanField.determineNodesForPath(
+                                otherType,
+                                wrapper.getName(),
+                                null));
             } catch (BeanNoSuchPropertyException err) {
                 // Acceptable, might have been tagged as @BeanProperty as well
             }
         }
-        return name;
+        return wrapper;
     }
 
 }
