@@ -22,6 +22,18 @@ public class BeanField {
 
     private BeanCollectionInstructions collectionInstructions;
 
+    private boolean mustMatch = false;
+
+    private boolean matched = false;
+
+    public boolean isMustMatch() {
+        return mustMatch;
+    }
+
+    public void setMustMatch(boolean mustMatch) {
+        this.mustMatch = mustMatch;
+    }
+
     public BeanField(String name, PropertyAccessor accessor) {
         this.name = name;
         this.accessor = accessor;
@@ -157,6 +169,14 @@ public class BeanField {
             beanFields.push(new BeanField(node, property));
             currentBaseClass = property.getType();
         }
+    }
+
+    public void setMatched() {
+        matched = true;
+    }
+
+    public boolean isUnmatched() {
+        return mustMatch && !matched;
     }
 
 }

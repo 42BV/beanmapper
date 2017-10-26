@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import io.beanmapper.config.BeanPair;
+import io.beanmapper.exceptions.BeanNoSuchPropertyException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BeanMatch {
 
@@ -15,6 +19,8 @@ public class BeanMatch {
     private final Map<String, BeanField> targetNode;
 
     private final Map<String, BeanField> aliases;
+
+    private boolean verified = false;
 
     public BeanMatch(BeanPair beanPair, Map<String, BeanField> sourceNode, Map<String, BeanField> targetNode, Map<String, BeanField> aliases) {
         this.beanPair = beanPair;
@@ -87,6 +93,24 @@ public class BeanMatch {
             }
         }
         return missingMatches;
+    }
+
+    public void checkForMandatoryUnmatchedNodes() {
+        if (verified) {
+            return;
+        }
+        verified = true;
+        checkForMandatoryUnmatchedNodes("source", beanPair.getSourceClass(), sourceNode);
+        checkForMandatoryUnmatchedNodes("target", beanPair.getTargetClass(), targetNode);
+    }
+
+    private void checkForMandatoryUnmatchedNodes(String side, Class<?> containingClass, Map<String, BeanField> nodes) {
+        for (String key : nodes.keySet()) {
+            BeanField currentField = nodes.get(key);
+            if (currentField.isUnmatched()) {
+                throw new BeanNoSuchPropertyException(side + " " + containingClass.getCanonicalName() + " has no match for property " + key);
+            }
+        }
     }
 
 }

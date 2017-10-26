@@ -164,6 +164,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
                     fieldName,
                     beanMatch));
         }
+        beanMatch.checkForMandatoryUnmatchedNodes();
         return target;
     }
 

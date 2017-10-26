@@ -9,6 +9,15 @@ public class MatchedBeanPairField {
     public MatchedBeanPairField(BeanField sourceBeanField, BeanField targetBeanField) {
         this.sourceBeanField = sourceBeanField;
         this.targetBeanField = targetBeanField;
+        setMatchedBeanField(sourceBeanField);
+        setMatchedBeanField(targetBeanField);
+    }
+
+    private void setMatchedBeanField(BeanField beanField) {
+        if (beanField == null) {
+            return;
+        }
+        beanField.setMatched();
     }
 
     public BeanField getSourceBeanField() {

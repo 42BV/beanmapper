@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -26,11 +27,16 @@ import io.beanmapper.core.converter.impl.NestedSourceClassToNestedTargetClassCon
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
 import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanMappingException;
+import io.beanmapper.exceptions.BeanNoSuchPropertyException;
 import io.beanmapper.testmodel.anonymous.Book;
 import io.beanmapper.testmodel.anonymous.BookForm;
 import io.beanmapper.testmodel.beanAlias.NestedSourceWithAlias;
 import io.beanmapper.testmodel.beanAlias.SourceWithAlias;
 import io.beanmapper.testmodel.beanAlias.TargetWithAlias;
+import io.beanmapper.testmodel.beanproperty.SourceBeanProperty;
+import io.beanmapper.testmodel.beanproperty.SourceNestedBeanProperty;
+import io.beanmapper.testmodel.beanproperty.TargetBeanProperty;
+import io.beanmapper.testmodel.beanproperty.TargetNestedBeanProperty;
 import io.beanmapper.testmodel.collections.CollSourceClear;
 import io.beanmapper.testmodel.collections.CollSourceClearFlush;
 import io.beanmapper.testmodel.collections.CollSourceConstruct;
@@ -1259,6 +1265,35 @@ public class BeanMapperTest {
                 .build();
         UserRoleResult result = beanMapper.map(UserRole.ADMIN, UserRoleResult.class);
         assertEquals(UserRole.ADMIN.name(), result.name);
+    }
+
+    @Test
+    public void unmodifiableRandomAccessList() {
+        List<Long> numbers = Collections.unmodifiableList(new ArrayList<Long>() {{
+            add(42L);
+            add(57L);
+            add(33L);
+        }});
+        List<String> numbersAsText = beanMapper.map(numbers, String.class);
+        assertEquals(3, numbersAsText.size());
+        assertEquals("42", numbersAsText.get(0));
+    }
+
+    @Test(expected = BeanNoSuchPropertyException.class)
+    public void beanPropertyMismatch() {
+        SourceBeanProperty source = new SourceBeanProperty() {{
+            age = 42;
+        }};
+        beanMapper.map(source, TargetBeanProperty.class);
+    }
+
+    @Test(expected = BeanNoSuchPropertyException.class)
+    public void beanPropertyNestedMismatch() {
+        SourceNestedBeanProperty source = new SourceNestedBeanProperty() {{
+            value1 = "42";
+            value2 = "33";
+        }};
+        beanMapper.map(source, TargetNestedBeanProperty.class);
     }
 
     public Person createPerson(String name) {

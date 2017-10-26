@@ -3,16 +3,19 @@
  */
 package io.beanmapper.exceptions;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Exception thrown when a property could not be found.
- *
- * @author Jeroen van Schagen
- * @since Jun 24, 2015
  */
 public class BeanNoSuchPropertyException extends IllegalArgumentException {
-    
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+
     public BeanNoSuchPropertyException(String message) {
         super(message);
+        logger.error(message);
     }
     
 }
