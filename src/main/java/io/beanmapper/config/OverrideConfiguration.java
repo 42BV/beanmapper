@@ -50,6 +50,8 @@ public class OverrideConfiguration implements Configuration {
 
     private Boolean flushAfterClear = null;
 
+    private Boolean flushEnabled = null;
+
     public OverrideConfiguration(Configuration configuration) {
         if (configuration == null) {
             throw new ParentConfigurationPossiblyNullException("Developer error: the parent configuration may not be null");
@@ -202,10 +204,22 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public Boolean isFlushAfterClear() {
+    public boolean isFlushAfterClear() {
         return this.flushAfterClear == null ?
                 parentConfiguration.isFlushAfterClear() :
                 this.flushAfterClear;
+    }
+
+    @Override
+    public boolean isFlushEnabled() {
+        return this.flushEnabled == null ?
+                parentConfiguration.isFlushEnabled() :
+                this.flushEnabled;
+    }
+
+    @Override
+    public boolean mustFlush() {
+        return isFlushEnabled() && isFlushAfterClear();
     }
 
     @Override
@@ -332,8 +346,13 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public void setFlushAfterClear(Boolean flushAfterClear) {
+    public void setFlushAfterClear(boolean flushAfterClear) {
         this.flushAfterClear = flushAfterClear;
+    }
+
+    @Override
+    public void setFlushEnabled(boolean flushEnabled) {
+        this.flushEnabled = flushEnabled;
     }
 
 }

@@ -7,7 +7,7 @@ import io.beanmapper.annotations.BeanCollection;
 
 public class CollSourceClearFlush {
 
-    @BeanCollection(elementType = CollTarget.class, flushAfterClear = true)
+    @BeanCollection(elementType = CollTarget.class)
     public List<String> items = new ArrayList<>();
 
 }

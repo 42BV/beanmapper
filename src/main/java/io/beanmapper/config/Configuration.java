@@ -170,7 +170,23 @@ public interface Configuration {
      * collection has taken place.
      * @return true if the flush-chain must be called after a clear
      */
-    Boolean isFlushAfterClear();
+    boolean isFlushAfterClear();
+
+    /**
+     * Determines if flushing has been enabled. Flushing is the calling of flush() on a collection
+     * after it has been cleared. This force an ORM to run its delete queries. Default setting is
+     * false, because flushing is tied closely to having a transaction context. If, this is not the
+     * case, the flush will throw an exception.
+     * @return whether flushing has been enabled
+     */
+    boolean isFlushEnabled();
+
+    /**
+     * Works on the combination of the global flush setting (flushEnabled) and the specific flush
+     * setting (flushAfterClear). If both are true, the flush will trigger.
+     * @return true if a flush after clear must take place
+     */
+    boolean mustFlush();
 
     /**
      * Add a converter class (must inherit from abstract BeanConverter class) to the beanMapper.
@@ -344,6 +360,15 @@ public interface Configuration {
      * Determines whether the flush-chain must be called after a clear has taken place.
      * @param flushAfterClear true if the flush-chain must be called
      */
-    void setFlushAfterClear(Boolean flushAfterClear);
+    void setFlushAfterClear(boolean flushAfterClear);
+
+    /**
+     * Set whether flushing must be enabled. Flushing is the calling of flush() on a collection
+     * after it has been cleared. This force an ORM to run its delete queries. Default setting is
+     * false, because flushing is tied closely to having a transaction context. If, this is not the
+     * case, the flush will throw an exception.
+     * @param flushEnabled whether flushing has been enabled
+     */
+    void setFlushEnabled(boolean flushEnabled);
 
 }

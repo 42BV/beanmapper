@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Unreleased
 ### Fixed
 - Issue [#60](https://github.com/42BV/beanmapper/issues/60), **Unmatched BeanProperty did not throw an exception**; properties annotated with BeanProperty must match. If they do not, an exception must be thrown. Due to a bug, this did not always occur (only with BeanProperty on the target side). The current mechanism keep tabs on matched properties and does a final verification. If unmatched properties remain that should have been matched, an exception is thrown.
+- Issue [#90](https://github.com/42BV/beanmapper/issues/90), **Introduce a global flushEnabled, BeanCollection.flushAfterClear default true**; a global flushEnabled setting has been introduced, which is false by default. The BeanCollection.flushAfterClear has changed from a default false to true. BeanMapper asserts that both settings must be true before flushing. BeanMapper Spring [#28](https://github.com/42BV/beanmapper-spring/issues/28) sets flushEnabled=true when Lazy is used, because this offers the best chance of the EntityManager running in a transaction context. 
 
 ## [2.1.0] - 2017-10-25
 ### Fixed

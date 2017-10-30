@@ -52,6 +52,6 @@ public @interface BeanCollection {
      * transaction scope. If you do, the flush action can be rolled back, resulting in the
      * original state being preserved.
      */
-    boolean flushAfterClear() default false;
+    boolean flushAfterClear() default true;
 
 }

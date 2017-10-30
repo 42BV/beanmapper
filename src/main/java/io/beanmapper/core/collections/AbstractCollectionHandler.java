@@ -47,7 +47,7 @@ public abstract class AbstractCollectionHandler<C> implements CollectionHandler<
             Class<C> preferredCollectionClass,
             C targetCollection,
             CollectionFlusher collectionFlusher,
-            Boolean flushAfterClear) {
+            Boolean mustFlush) {
 
         C useTargetCollection = collectionUsage.mustConstruct(targetCollection) ?
                 createCollection(preferredCollectionClass) :
@@ -55,7 +55,7 @@ public abstract class AbstractCollectionHandler<C> implements CollectionHandler<
 
         if (collectionUsage.mustClear() && size(useTargetCollection) > 0) {
             clear(useTargetCollection);
-            collectionFlusher.flush(flushAfterClear);
+            collectionFlusher.flush(mustFlush);
         }
 
         return useTargetCollection;

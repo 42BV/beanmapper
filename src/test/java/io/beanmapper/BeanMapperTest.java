@@ -1170,6 +1170,7 @@ public class BeanMapperTest {
     public void beanCollectionClearCallsAfterClearFlusher() throws Exception {
         AfterClearFlusher afterClearFlusher = createAfterClearFlusher();
         BeanMapper beanMapper = new BeanMapperBuilder()
+                .setFlushEnabled(true)
                 .addAfterClearFlusher(afterClearFlusher)
                 .build();
         CollSourceClearFlush source = new CollSourceClearFlush() {{

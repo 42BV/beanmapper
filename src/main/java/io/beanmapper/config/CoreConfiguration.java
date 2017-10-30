@@ -67,6 +67,8 @@ public class CoreConfiguration implements Configuration {
 
     private CollectionFlusher collectionFlusher = new CollectionFlusher();
 
+    private boolean flushEnabled = false;
+
     @Override
     public List<String> getDownsizeTarget() { return null; }
 
@@ -204,8 +206,18 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
-    public Boolean isFlushAfterClear() {
+    public boolean isFlushAfterClear() {
         return false;
+    }
+
+    @Override
+    public boolean isFlushEnabled() {
+        return this.flushEnabled;
+    }
+
+    @Override
+    public boolean mustFlush() {
+        return isFlushEnabled() && isFlushAfterClear();
     }
 
     @Override
@@ -343,9 +355,14 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
-    public void setFlushAfterClear(Boolean flushAfterClear) {
+    public void setFlushAfterClear(boolean flushAfterClear) {
         throw new BeanConfigurationOperationNotAllowedException(
                 "Illegal to set flush after clear on the core configuration");
+    }
+
+    @Override
+    public void setFlushEnabled(boolean flushEnabled) {
+        this.flushEnabled = flushEnabled;
     }
 
 }
