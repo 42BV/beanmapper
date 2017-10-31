@@ -42,7 +42,7 @@ public class PersonDtoTest {
     @Test
     public void mapToDynamic() throws Exception {
         beanMapper = beanMapper
-                .config()
+                .wrap()
                 .setTargetClass(PersonDto.class)
                 .downsizeTarget(Arrays.asList("id", "name")) // <<< this triggers the dynamic bean generation
                 .build();
@@ -57,7 +57,7 @@ public class PersonDtoTest {
     public void mapDynamicOverNewSource() {
         PersonForm personForm = new PersonForm(null, "Geellaan", "33", null);
 
-        Person person = beanMapper.config()
+        Person person = beanMapper.wrap()
                 //only map street & number to the new person.
                 .downsizeSource(Arrays.asList("street", "houseNumber"))
                 .build()
@@ -76,7 +76,7 @@ public class PersonDtoTest {
         PersonForm personForm = new PersonForm(null, "Geellaan", "33", null);
         Person person = createPerson();
 
-        person = beanMapper.config()
+        person = beanMapper.wrap()
                 //only map street & number over the existing person.
                 .downsizeSource(Arrays.asList("street", "houseNumber"))
                 .build()

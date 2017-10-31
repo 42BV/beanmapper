@@ -478,7 +478,7 @@ public class BeanMapperTest {
         Person person = createPerson();
         PersonForm form = createPersonForm();
         person = beanMapper
-                .wrapConfig()
+                .wrap()
                 .setApplyStrictMappingConvention(false)
                 .build()
                 .map(form, person);
@@ -914,7 +914,7 @@ public class BeanMapperTest {
         SourceWithRule source = createSourceWithRule();
         TargetWithRule target = createTargetWithRule();
 
-        beanMapper.wrapConfig()
+        beanMapper.wrap()
                 .downsizeSource(Arrays.asList("name", "nested", "nested.nestedName"))
                 .build()
                 .map(source, target);
@@ -965,7 +965,7 @@ public class BeanMapperTest {
         source.setDiffType(LocalDate.of(2015, 1, 1));
         source.setSameType(LocalDate.of(2000, 1, 1));
 
-        TargetWithDateTime target = beanMapper.wrapConfig()
+        TargetWithDateTime target = beanMapper.wrap()
                 .addConverter(new LocalDateToLocalDateTime())
                 .build()
                 .map(source, TargetWithDateTime.class);

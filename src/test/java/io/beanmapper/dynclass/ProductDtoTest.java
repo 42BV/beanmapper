@@ -36,7 +36,7 @@ public class ProductDtoTest {
     @Test
     public void mapToDynamicProductDtoOrgOnlyIdName() throws Exception {
         Product product = createProduct(false);
-        beanMapper = beanMapper.config()
+        beanMapper = beanMapper.wrap()
                 .setTargetClass(ProductDto.class)
                 .downsizeTarget(Arrays.asList("id", "name", "organization.id", "organization.name"))
                 .build();
@@ -48,7 +48,7 @@ public class ProductDtoTest {
     @Test
     public void mapToDynamicProductDtoWithLists() throws Exception {
         Product product = createProduct(true);
-        beanMapper = beanMapper.config()
+        beanMapper = beanMapper.wrap()
                 .setTargetClass(ProductDto.class)
                 .downsizeTarget(Arrays.asList("id", "name", "assets.id", "assets.name", "artists"))
                 .build();
@@ -72,7 +72,7 @@ public class ProductDtoTest {
     @Test
     public void mapList() throws Exception {
         List<Artist> artists = createArtists();
-        beanMapper = beanMapper.config()
+        beanMapper = beanMapper.wrap()
                 .setTargetClass(ArtistDto.class)
                 .downsizeTarget(Arrays.asList("id", "name"))
                 .build();
@@ -86,7 +86,7 @@ public class ProductDtoTest {
         List<Product> products = new ArrayList<Product>();
         products.add(createProduct(42L, true));
         products.add(createProduct(43L, true));
-        beanMapper = beanMapper.config()
+        beanMapper = beanMapper.wrap()
                 .setTargetClass(ProductDto.class)
                 .downsizeTarget(Arrays.asList("id", "assets.id"))
                 .build();

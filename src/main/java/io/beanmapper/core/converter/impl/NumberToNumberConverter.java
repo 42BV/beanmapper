@@ -41,15 +41,17 @@ public class NumberToNumberConverter implements BeanConverter {
             return source;
         }
         Object sourceAsString = beanMapper
-                .config()
+                .wrap()
                 .setConverterChoosable(true)
+                .setTargetClass(String.class)
                 .build()
-                .map(source, String.class);
+                .map(source);
         return beanMapper
-                .config()
+                .wrap()
                 .setConverterChoosable(true)
+                .setTargetClass(targetClass)
                 .build()
-                .map(sourceAsString, targetClass);
+                .map(sourceAsString);
     }
 
     /**

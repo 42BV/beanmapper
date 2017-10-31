@@ -64,7 +64,7 @@ public interface Configuration {
 
     BeanInitializer getBeanInitializer();
 
-    SkippingBeanUnproxy getBeanUnproxy();
+    BeanUnproxy getBeanUnproxy();
 
     /**
      * Always use the CoreConfiguration beanmatch store
@@ -312,9 +312,9 @@ public interface Configuration {
     void setParent(Object parent);
 
     /**
-     * Used to determine whether the configuration can be reused and modified (Override config)
-     * or whether it must be wrapped in a new configuration (Core config).
-     * @return true (Override config) if the configuration can be reused, false (Core config) if not.
+     * Used to determine whether the configuration can be reused and modified (Override wrap)
+     * or whether it must be wrapped in a new configuration (Core wrap).
+     * @return true (Override wrap) if the configuration can be reused, false (Core wrap) if not.
      */
     boolean canReuse();
 

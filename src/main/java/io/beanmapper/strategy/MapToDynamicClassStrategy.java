@@ -30,7 +30,7 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
         } else {
             // Force re-entry through the core map method, but disregard the include fields now
             return getBeanMapper()
-                    .config()
+                    .wrap()
                     .downsizeSource(null)
                     .downsizeTarget(null)
                     .build()
@@ -47,18 +47,20 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
                         getConfiguration().getStrictMappingProperties());
         Class<?> targetClass = getConfiguration().getTargetClass();
         Object target = getConfiguration().getTarget();
+
         Object dynSource = getBeanMapper()
-                .config()
+                .wrap()
                 .downsizeSource(null)
+                .setTarget(target)
                 .setTargetClass(dynamicClass)
                 .build()
                 .map(source);
 
-
         return getBeanMapper()
-                .wrapConfig()
-                .setTargetClass(targetClass)
+                .wrap()
+                .downsizeSource(null)
                 .setTarget(target)
+                .setTargetClass(targetClass)
                 .build()
                 .map(dynSource);
     }
@@ -69,7 +71,7 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
                         downsizeTargetFields,
                         getConfiguration().getStrictMappingProperties());
         return getBeanMapper()
-                .config()
+                .wrap()
                 .downsizeTarget(null)
                 .setTargetClass(dynamicClass)
                 .build()

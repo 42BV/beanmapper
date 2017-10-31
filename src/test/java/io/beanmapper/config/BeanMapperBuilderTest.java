@@ -65,11 +65,11 @@ public class BeanMapperBuilderTest {
 
     @Test
     public void isConverterChoosableCustomForOverrideConfig() {
-        BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrapConfig
+        BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrap
         beanMapper = beanMapper
-                .config()
+                .wrap()
                 .setConverterChoosable(false) // <<< override the converter choosable option here
-                .build(); // Override wrapConfig
+                .build(); // Override wrap
         assertFalse(
                 "The Override configuration has a custom override for the converter choosable option, which should be false",
                 beanMapper.getConfiguration().isConverterChoosable());
@@ -77,28 +77,18 @@ public class BeanMapperBuilderTest {
 
     @Test
     public void currentConfigOnCoreLeadsToOverrideConfig() {
-        BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrapConfig
-        beanMapper = beanMapper.config().build(); // Wrap in an override config
+        BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrap
+        beanMapper = beanMapper.wrap().build(); // Wrap in an override wrap
         Object parentConfiguration = Deencapsulation.getField(beanMapper.getConfiguration(), "parentConfiguration");
         assertNotNull(parentConfiguration);
     }
 
     @Test
-    public void currentConfigOnOverrideLeadsToExistingConfig() {
-        BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrapConfig
-        beanMapper = beanMapper.config().build(); // Wrap in an override config
-        Configuration currentConfiguration = beanMapper.getConfiguration();
-        beanMapper = beanMapper.config().build(); // <<< explicitly fetch the existing configu
-        assertEquals("The configuration must be the same as the one we already had",
-                currentConfiguration, beanMapper.getConfiguration());
-    }
-
-    @Test
     public void newConfigOnOverrideLeadsToExistingConfig() {
-        BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrapConfig
-        beanMapper = beanMapper.config().build(); // Wrap in an override config
+        BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrap
+        beanMapper = beanMapper.wrap().build(); // Wrap in an override wrap
         Configuration currentConfiguration = beanMapper.getConfiguration();
-        beanMapper = beanMapper.wrapConfig().build(); // <<< explicitly wrap in an override config
+        beanMapper = beanMapper.wrap().build(); // <<< explicitly wrap in an override wrap
         assertNotSame("The configuration must be a new one from the one we already had",
                 currentConfiguration, beanMapper.getConfiguration());
     }
@@ -108,7 +98,7 @@ public class BeanMapperBuilderTest {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .setStrictSourceSuffix("Frm")
                 .setStrictTargetSuffix("Rslt")
-                .build(); // Core wrapConfig
+                .build(); // Core wrap
         Configuration currentConfiguration = beanMapper.getConfiguration();
         assertEquals("Frm", currentConfiguration.getStrictSourceSuffix());
         assertEquals("Rslt", currentConfiguration.getStrictTargetSuffix());
@@ -116,10 +106,10 @@ public class BeanMapperBuilderTest {
 
     @Test
     public void strictMappingConventionForOverrideConfig() {
-        BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrapConfig
-        beanMapper = beanMapper.config()
+        BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrap
+        beanMapper = beanMapper.wrap()
                 .setStrictSourceSuffix("Frm")
-                .build(); // Wrap in an override config
+                .build(); // Wrap in an override wrap
 
         Configuration currentConfiguration = beanMapper.getConfiguration();
         assertEquals("Frm",
@@ -132,10 +122,10 @@ public class BeanMapperBuilderTest {
 
     @Test
     public void cleanConfig() {
-        BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrapConfig
+        BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrap
         beanMapper = wrapAndSetFieldsForSingleRun(beanMapper);
         beanMapper = wrapAndSetFieldsForSingleRun(beanMapper); // Wrap it twice to make sure we have a parent
-                                                               // override config with the fields all set
+                                                               // override wrap with the fields all set
         assertNotNull("Container class must be set", beanMapper.getConfiguration().getCollectionClass());
         assertNotNull("Target class must be set", beanMapper.getConfiguration().getTargetClass());
         assertNotNull("Target must be set", beanMapper.getConfiguration().getTarget());
@@ -148,11 +138,11 @@ public class BeanMapperBuilderTest {
 
     private BeanMapper wrapAndSetFieldsForSingleRun(BeanMapper beanMapper) {
         return beanMapper
-                .wrapConfig()
+                .wrap()
                 .setTargetClass(String.class)
                 .setTarget("Hello world!")
                 .setCollectionClass(String.class)
-                .build(); // Wrap in an override config
+                .build(); // Wrap in an override wrap
     }
 
 }

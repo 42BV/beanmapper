@@ -34,8 +34,9 @@ public abstract class AbstractCollectionHandler<C> implements CollectionHandler<
             Object source) {
 
         return beanMapper
-                .wrapConfig()
+                .wrap()
                 .setTargetClass(collectionElementClass)
+                .setCollectionClass(null)
                 .setConverterChoosable(true)
                 .build()
                 .map(source);
