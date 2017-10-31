@@ -34,7 +34,7 @@ public class OverrideConfiguration implements Configuration {
 
     private OverrideField<Object> parent;
 
-    private OverrideField<Class> collectionClass;
+    private Class collectionClass;
 
     private OverrideField<Boolean> converterChoosable;
 
@@ -55,7 +55,6 @@ public class OverrideConfiguration implements Configuration {
         this.parentConfiguration = configuration;
         this.downsizeSourceFields = new OverrideField<>(configuration::getDownsizeSource);
         this.downsizeTargetFields = new OverrideField<>(configuration::getDownsizeTarget);
-        this.collectionClass = new OverrideField<>(configuration::getCollectionClass);
         this.beanInitializer = new OverrideField<>(configuration::getBeanInitializer);
         this.beanUnproxy= new OverrideField<>(configuration::getBeanUnproxy);
         this.parent = new OverrideField<>(configuration::getParent);
@@ -74,7 +73,7 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public Class getCollectionClass() {
-        return collectionClass.get();
+        return collectionClass;
     }
 
     @Override
@@ -292,7 +291,7 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public void setCollectionClass(Class collectionClass) {
-        this.collectionClass.set(collectionClass);
+        this.collectionClass = collectionClass;
     }
 
     @Override

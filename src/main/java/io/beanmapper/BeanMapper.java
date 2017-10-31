@@ -109,16 +109,6 @@ public class BeanMapper {
         return configuration;
     }
 
-    public BeanMapperBuilder clear() {
-        return BeanMapperBuilder
-                .config(configuration)
-                .downsizeSource(null)
-                .downsizeTarget(null)
-                .setCollectionClass(null)
-                .setTargetClass(null)
-                .setTarget(null);
-    }
-
     /**
      * @deprecated use wrap() instead
      */
@@ -134,7 +124,7 @@ public class BeanMapper {
     }
 
     public BeanMapperBuilder wrap() {
-        return BeanMapperBuilder.wrapConfig(configuration);
+        return new BeanMapperBuilder(configuration);
     }
 
 }

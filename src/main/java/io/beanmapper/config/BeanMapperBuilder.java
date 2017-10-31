@@ -31,9 +31,6 @@ public class BeanMapperBuilder {
         add(new ListCollectionHandler());
     }};
 
-    private static final boolean REUSE_CONFIGURATION = true;
-    private static final boolean WRAP_IN_NEW_CONFIGURATION = false;
-
     private final Configuration configuration;
 
     private List<BeanConverter> customBeanConverters = new ArrayList<BeanConverter>();
@@ -44,18 +41,8 @@ public class BeanMapperBuilder {
         this.configuration = new CoreConfiguration();
     }
 
-    protected BeanMapperBuilder(Configuration configuration, boolean reuseConfiguration) {
-        this.configuration = reuseConfiguration && configuration.canReuse() ?
-                configuration :
-                new OverrideConfiguration(configuration);
-    }
-
-    public static BeanMapperBuilder config(Configuration configuration) {
-        return new BeanMapperBuilder(configuration, REUSE_CONFIGURATION);
-    }
-
-    public static BeanMapperBuilder wrapConfig(Configuration configuration) {
-        return new BeanMapperBuilder(configuration, WRAP_IN_NEW_CONFIGURATION);
+    public BeanMapperBuilder(Configuration configuration) {
+        this.configuration = new OverrideConfiguration(configuration);
     }
 
     public BeanMapperBuilder withoutDefaultConverters() {

@@ -130,7 +130,7 @@ public class BeanMapperBuilderTest {
         assertNotNull("Target class must be set", beanMapper.getConfiguration().getTargetClass());
         assertNotNull("Target must be set", beanMapper.getConfiguration().getTarget());
 
-        beanMapper = beanMapper.clear().build();
+        beanMapper = beanMapper.wrap().build();
         assertNull("Container class must be cleared", beanMapper.getConfiguration().getCollectionClass());
         assertNull("Target class must be cleared", beanMapper.getConfiguration().getTargetClass());
         assertNull("Target must be cleared", beanMapper.getConfiguration().getTarget());
