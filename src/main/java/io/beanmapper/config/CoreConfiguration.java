@@ -125,7 +125,7 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
-    public SkippingBeanUnproxy getBeanUnproxy() {
+    public BeanUnproxy getBeanUnproxy() {
         return this.beanUnproxy;
     }
 

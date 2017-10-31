@@ -10,7 +10,7 @@ public class NestedSourceClassToNestedTargetClassConverter extends SimpleBeanCon
     @Override
     protected NestedTargetAbstractClass doConvert(NestedSourceClass source) {
         NestedTargetClass target = beanMapper
-                .config()
+                .wrap()
                 .setConverterChoosable(false)
                 .build()
                 .map(source, NestedTargetClass.class);

@@ -16,31 +16,27 @@ public class OverrideConfiguration implements Configuration {
 
     private final Configuration parentConfiguration;
 
-    private BeanInitializer beanInitializer;
+    private OverrideField<BeanInitializer> beanInitializer;
 
-    private SkippingBeanUnproxy beanUnproxy;
-
-    private List<String> packagePrefixes;
+    private OverrideField<BeanUnproxy> beanUnproxy;
 
     private List<BeanConverter> beanConverters = new ArrayList<BeanConverter>();
     
     private List<BeanPair> beanPairs = new ArrayList<BeanPair>();
 
-    private List<String> downsizeSourceFields;
+    private OverrideField<List<String>> downsizeSourceFields;
 
-    private List<String> downsizeTargetFields;
-
-    private List<CollectionHandler> collectionsHandlers = new ArrayList<>();
+    private OverrideField<List<String>> downsizeTargetFields;
 
     private Class targetClass;
 
     private Object target;
 
-    private Object parent;
+    private OverrideField<Object> parent;
 
-    private Class collectionClass;
+    private OverrideField<Class> collectionClass;
 
-    private Boolean converterChoosable = null;
+    private OverrideField<Boolean> converterChoosable;
 
     private StrictMappingProperties strictMappingProperties = StrictMappingProperties.emptyConfig();
 
@@ -57,21 +53,28 @@ public class OverrideConfiguration implements Configuration {
             throw new ParentConfigurationPossiblyNullException("Developer error: the parent configuration may not be null");
         }
         this.parentConfiguration = configuration;
+        this.downsizeSourceFields = new OverrideField<>(configuration::getDownsizeSource);
+        this.downsizeTargetFields = new OverrideField<>(configuration::getDownsizeTarget);
+        this.collectionClass = new OverrideField<>(configuration::getCollectionClass);
+        this.beanInitializer = new OverrideField<>(configuration::getBeanInitializer);
+        this.beanUnproxy= new OverrideField<>(configuration::getBeanUnproxy);
+        this.parent = new OverrideField<>(configuration::getParent);
+        this.converterChoosable = new OverrideField<>(configuration::isConverterChoosable);
     }
 
     @Override
     public List<String> getDownsizeSource() {
-        return downsizeSourceFields;
+        return downsizeSourceFields.get();
     }
 
     @Override
     public List<String> getDownsizeTarget() {
-        return downsizeTargetFields;
+        return downsizeTargetFields.get();
     }
 
     @Override
     public Class getCollectionClass() {
-        return collectionClass;
+        return collectionClass.get();
     }
 
     @Override
@@ -96,17 +99,17 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public Object getParent() {
-        return parent == null ? parentConfiguration.getParent() : parent;
+        return parent.get();
     }
 
     @Override
     public BeanInitializer getBeanInitializer() {
-        return beanInitializer == null ? parentConfiguration.getBeanInitializer() : beanInitializer;
+        return beanInitializer.get();
     }
 
     @Override
-    public SkippingBeanUnproxy getBeanUnproxy() {
-        return beanUnproxy == null ? parentConfiguration.getBeanUnproxy() : beanUnproxy;
+    public BeanUnproxy getBeanUnproxy() {
+        return beanUnproxy.get();
     }
 
     @Override
@@ -121,7 +124,7 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public List<String> getPackagePrefixes() {
-        return packagePrefixes == null ? parentConfiguration.getPackagePrefixes() : packagePrefixes;
+        return parentConfiguration.getPackagePrefixes();
     }
 
     @Override
@@ -147,7 +150,7 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public Boolean isConverterChoosable() {
-        return converterChoosable == null ? parentConfiguration.isConverterChoosable() : converterChoosable;
+        return converterChoosable.get();
     }
 
     @Override
@@ -187,13 +190,6 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public BeanCollectionUsage getCollectionUsage() {
-        return this.collectionUsage == null ?
-                parentConfiguration.getCollectionUsage() :
-                this.collectionUsage;
-    }
-
-    @Override
     public Class<?> getPreferredCollectionClass() {
         return preferredCollectionClass;
     }
@@ -201,6 +197,13 @@ public class OverrideConfiguration implements Configuration {
     @Override
     public CollectionFlusher getCollectionFlusher() {
         return parentConfiguration.getCollectionFlusher();
+    }
+
+    @Override
+    public BeanCollectionUsage getCollectionUsage() {
+        return this.collectionUsage == null ?
+                parentConfiguration.getCollectionUsage() :
+                this.collectionUsage;
     }
 
     @Override
@@ -264,12 +267,12 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public void setBeanInitializer(BeanInitializer beanInitializer) {
-        this.beanInitializer = beanInitializer;
+        this.beanInitializer.set(beanInitializer);
     }
 
     @Override
     public void setBeanUnproxy(BeanUnproxy beanUnproxy) {
-        this.beanUnproxy = new SkippingBeanUnproxy(beanUnproxy);
+        this.beanUnproxy.set(beanUnproxy);
     }
 
     @Override
@@ -279,17 +282,17 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public void downsizeSource(List<String> includeFields) {
-        this.downsizeSourceFields = includeFields;
+        this.downsizeSourceFields.set(includeFields);
     }
 
     @Override
     public void downsizeTarget(List<String> includeFields) {
-        this.downsizeTargetFields = includeFields;
+        this.downsizeTargetFields.set(includeFields);
     }
 
     @Override
     public void setCollectionClass(Class collectionClass) {
-        this.collectionClass = collectionClass;
+        this.collectionClass.set(collectionClass);
     }
 
     @Override
@@ -303,11 +306,13 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public void setParent(Object parent) { this.parent = parent; }
+    public void setParent(Object parent) {
+        this.parent.set(parent);
+    }
 
     @Override
     public void setConverterChoosable(boolean converterChoosable) {
-        this.converterChoosable = converterChoosable;
+        this.converterChoosable.set(converterChoosable);
     }
 
     @Override

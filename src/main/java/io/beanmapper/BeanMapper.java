@@ -39,7 +39,7 @@ public class BeanMapper {
      * @return the original target instance containing all applicable properties
      */
     public <S, T> T map(S source, T target) {
-        return (T) config()
+        return (T) wrap()
                 .setTarget(target)
                 .build()
                 .map(source);
@@ -54,7 +54,7 @@ public class BeanMapper {
      * @return the target instance containing all applicable properties
      */
     public <S, T> T map(S source, Class<T> targetClass) {
-        return (T) config()
+        return (T) wrap()
                 .setTargetClass(targetClass)
                 .build()
                 .map(source);
@@ -98,7 +98,7 @@ public class BeanMapper {
     }
 
     private Object mapCollection(Object collection, Class<?> elementInCollection) {
-        return config()
+        return wrap()
                 .setCollectionClass(collection.getClass())
                 .setTargetClass(elementInCollection)
                 .build()
@@ -119,11 +119,21 @@ public class BeanMapper {
                 .setTarget(null);
     }
 
+    /**
+     * @deprecated use wrap() instead
+     */
     public BeanMapperBuilder config() {
-        return BeanMapperBuilder.config(configuration);
+        return wrap();
     }
 
+    /**
+     * @deprecated use wrap() instead
+     */
     public BeanMapperBuilder wrapConfig() {
+        return wrap();
+    }
+
+    public BeanMapperBuilder wrap() {
         return BeanMapperBuilder.wrapConfig(configuration);
     }
 

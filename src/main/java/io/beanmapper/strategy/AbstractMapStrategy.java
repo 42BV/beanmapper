@@ -97,7 +97,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
         if (encapsulatedSource != null) {
             logger.debug("    {");
             BeanMapper beanMapper = getBeanMapper()
-                    .wrapConfig()
+                    .wrap()
                     .setParent(beanFieldMatch.getTarget())
                     .build();
             if(beanFieldMatch.getTargetObject() == null){
@@ -129,7 +129,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
         if (converter != null) {
             logger.debug(INDENT + converter.getClass().getSimpleName() + ARROW);
             BeanMapper wrappedBeanMapper = beanMapper
-                    .wrapConfig()
+                    .wrap()
                     .setParent(beanFieldMatch.getTarget())
                     .build();
             return converter.convert(wrappedBeanMapper, value, targetClass, beanFieldMatch);
