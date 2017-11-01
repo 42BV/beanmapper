@@ -1,10 +1,7 @@
 package io.beanmapper.core.collections;
 
-import java.util.List;
-
 import io.beanmapper.BeanMapper;
 import io.beanmapper.annotations.BeanCollectionUsage;
-import io.beanmapper.config.AfterClearFlusher;
 import io.beanmapper.config.CollectionFlusher;
 
 /**
@@ -33,13 +30,19 @@ public interface CollectionHandler<C> {
      * options a new instance will only be created if the target collection is null.
      * If CLEAR is used, the target collection will have its clear() method called.
      * @param collectionUsage the type of collection usage to apply
-     * @param targetCollectionType the class type of the target collection
+     * @param preferredCollectionClass the class type of the target collection
+     * @param collectionElementClass the class type of an element within the target collection
      * @param targetCollection the actual target collection
+     * @param collectionFlusher the flusher to call after clear has been called on a filled
+     *                          collection
+     * @param flushAfterClear whether flush must be called after clear on a collection has been
+     *                        called
      * @return the target collection to copy the source collection to
      */
     public C getTargetCollection(
             BeanCollectionUsage collectionUsage,
-            Class<C> targetCollectionType,
+            Class<C> preferredCollectionClass,
+            Class<?> collectionElementClass,
             C targetCollection,
             CollectionFlusher collectionFlusher,
             Boolean flushAfterClear);

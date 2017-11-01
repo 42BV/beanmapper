@@ -46,12 +46,13 @@ public abstract class AbstractCollectionHandler<C> implements CollectionHandler<
     public C getTargetCollection(
             BeanCollectionUsage collectionUsage,
             Class<C> preferredCollectionClass,
+            Class<?> collectionElementClass,
             C targetCollection,
             CollectionFlusher collectionFlusher,
             Boolean mustFlush) {
 
         C useTargetCollection = collectionUsage.mustConstruct(targetCollection) ?
-                createCollection(preferredCollectionClass) :
+                createCollection(preferredCollectionClass, collectionElementClass) :
                 targetCollection;
 
         if (collectionUsage.mustClear() && size(useTargetCollection) > 0) {
@@ -67,9 +68,9 @@ public abstract class AbstractCollectionHandler<C> implements CollectionHandler<
         return type;
     }
 
-    private C createCollection(Class<C> preferredCollectionClass) {
+    private C createCollection(Class<C> preferredCollectionClass, Class<?> collectionElementClass) {
         if (preferredCollectionClass == null) {
-            return create();
+            return create(collectionElementClass);
         } else if (!type.isAssignableFrom(preferredCollectionClass)) {
             throw new BeanCollectionUnassignableTargetCollectionTypeException(type, preferredCollectionClass);
         }
@@ -79,6 +80,10 @@ public abstract class AbstractCollectionHandler<C> implements CollectionHandler<
     @Override
     public boolean isMatch(Class<?> clazz) {
         return getType().isAssignableFrom(clazz);
+    }
+
+    protected C create(Class<?> elementClass) {
+        return create();
     }
 
 }
