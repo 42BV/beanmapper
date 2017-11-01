@@ -1,5 +1,6 @@
 package io.beanmapper.core.collections;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -26,8 +27,16 @@ public class SetCollectionHandler extends AbstractCollectionHandler<Set> {
     }
 
     @Override
+    protected Set create(Class<?> collectionElementType) {
+        if (Comparable.class.isAssignableFrom(collectionElementType)) {
+            return new TreeSet();
+        }
+        return create();
+    }
+
+    @Override
     protected Set create() {
-        return new TreeSet();
+        return new HashSet();
     }
 
 }

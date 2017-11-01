@@ -19,6 +19,7 @@ public class MapCollectionStrategy extends AbstractMapStrategy {
         Object targetItems = collectionHandler.getTargetCollection(
             this.getConfiguration().getCollectionUsage(),
             this.getConfiguration().getPreferredCollectionClass(),
+            this.getConfiguration().getTargetClass(),
             this.getConfiguration().getTarget(),
             this.getConfiguration().getCollectionFlusher(),
             this.getConfiguration().mustFlush()
