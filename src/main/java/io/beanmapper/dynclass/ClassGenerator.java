@@ -27,7 +27,7 @@ public class ClassGenerator {
     private BeanMatchStore beanMatchStore;
 
     public ClassGenerator() {
-        this.beanMatchStore = new BeanMatchStore();
+        this.beanMatchStore = new BeanMatchStore(null, null);
         this.classPool = ClassPool.getDefault();
     }
 
@@ -96,7 +96,7 @@ public class ClassGenerator {
     private void handleBeanCollection(
             CtField field, BeanCollectionInstructions collectionInstructions,
             Node displayNodes, StrictMappingProperties strictMappingProperties) throws Exception {
-        GeneratedClass elementClass = createClass(collectionInstructions.getCollectionMapsTo(), displayNodes, strictMappingProperties);
+        GeneratedClass elementClass = createClass(collectionInstructions.getCollectionElementType(), displayNodes, strictMappingProperties);
 
         ConstPool constPool = field.getDeclaringClass().getClassFile().getConstPool();
         AnnotationsAttribute attr= new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);

@@ -9,13 +9,26 @@ public enum PropertyMatchupDirection {
         public boolean validAccessor(PropertyAccessor accessor) {
             return accessor.isReadable();
         }
+
+        @Override
+        public boolean checkFieldForCollectionProperty() {
+            return false;
+        }
     },
     TARGET_TO_SOURCE {
         @Override
         public boolean validAccessor(PropertyAccessor accessor) {
             return accessor.isWritable();
         }
+
+        @Override
+        public boolean checkFieldForCollectionProperty() {
+            return true;
+        }
     };
 
     public abstract boolean validAccessor(PropertyAccessor accessor);
+
+    public abstract boolean checkFieldForCollectionProperty();
+
 }

@@ -32,4 +32,14 @@ public class MapCollectionHandler extends AbstractCollectionHandler<Map> {
         return new TreeMap();
     }
 
+    /**
+     * The generic parameter type of the Map value must be determined, not the key. Therefore
+     * look at index position 1, not 0.
+     * @return the index of the generic parameter type of the map value
+     */
+    @Override
+    protected int getGenericParameterIndex() {
+        return 1;
+    }
+
 }

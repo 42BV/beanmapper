@@ -29,9 +29,9 @@ public class CollectionConverter<T> implements BeanConverter {
         return (T)beanMapper.wrap()
                 .setCollectionClass(collectionHandler.getType())
                 .setCollectionUsage(beanFieldMatch.getCollectionInstructions().getBeanCollectionUsage())
-                .setPreferredCollectionClass(beanFieldMatch.getCollectionInstructions().getPreferredInstantiatedClass())
+                .setPreferredCollectionClass(beanFieldMatch.getCollectionInstructions().getPreferredCollectionClass())
                 .setFlushAfterClear(beanFieldMatch.getCollectionInstructions().getFlushAfterClear())
-                .setTargetClass(beanFieldMatch.getCollectionInstructions().getCollectionMapsTo())
+                .setTargetClass(beanFieldMatch.getCollectionInstructions().getCollectionElementType())
                 .setTarget(beanFieldMatch.getTargetObject())
                 .build()
                 .map(sourceCollection);

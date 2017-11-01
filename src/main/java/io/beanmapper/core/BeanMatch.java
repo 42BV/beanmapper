@@ -7,9 +7,6 @@ import java.util.Map;
 import io.beanmapper.config.BeanPair;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class BeanMatch {
 
     private final BeanPair beanPair;

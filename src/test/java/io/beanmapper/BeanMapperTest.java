@@ -40,8 +40,13 @@ import io.beanmapper.testmodel.beanproperty.TargetNestedBeanProperty;
 import io.beanmapper.testmodel.collections.CollSourceClear;
 import io.beanmapper.testmodel.collections.CollSourceClearFlush;
 import io.beanmapper.testmodel.collections.CollSourceConstruct;
+import io.beanmapper.testmodel.collections.CollSourceListIncompleteAnnotation;
+import io.beanmapper.testmodel.collections.CollSourceListNotAnnotated;
+import io.beanmapper.testmodel.collections.CollSourceMapNotAnnotated;
 import io.beanmapper.testmodel.collections.CollSourceReuse;
 import io.beanmapper.testmodel.collections.CollTarget;
+import io.beanmapper.testmodel.collections.CollTargetListNotAnnotated;
+import io.beanmapper.testmodel.collections.CollTargetMapNotAnnotated;
 import io.beanmapper.testmodel.collections.CollectionListSource;
 import io.beanmapper.testmodel.collections.CollectionListTarget;
 import io.beanmapper.testmodel.collections.CollectionListTargetClear;
@@ -419,6 +424,45 @@ public class BeanMapperTest {
         List<RGB> collection = new ArrayList<>(Arrays.asList(RGB.values()));
         List<String> result = beanMapper.map(collection, String.class);
         assertEquals(RGB.values().length, result.size());
+    }
+
+    @Test
+    public void mapNonAnnotatedList() {
+        CollSourceListNotAnnotated source = new CollSourceListNotAnnotated() {{
+            list.add(42L);
+            list.add(33L);
+        }};
+        CollTargetListNotAnnotated target = beanMapper.map(source, CollTargetListNotAnnotated.class);
+        assertNotSame("Source and Target list may not be the same, must be copied", source.list, target.list);
+        assertEquals(2, target.list.size());
+        assertEquals("42", target.list.get(0));
+        assertEquals("33", target.list.get(1));
+    }
+
+    @Test
+    public void mapIncompletelyAnnotatedList() {
+        CollSourceListIncompleteAnnotation source = new CollSourceListIncompleteAnnotation() {{
+            list.add(42L);
+            list.add(33L);
+        }};
+        CollTargetListNotAnnotated target = beanMapper.map(source, CollTargetListNotAnnotated.class);
+        assertNotSame("Source and Target list may not be the same, must be copied", source.list, target.list);
+        assertEquals(2, target.list.size());
+        assertEquals("42", target.list.get(0));
+        assertEquals("33", target.list.get(1));
+    }
+
+    @Test
+    public void mapNonAnnotatedMap() {
+        CollSourceMapNotAnnotated source = new CollSourceMapNotAnnotated() {{
+            map.put("a", 42);
+            map.put("b", 33);
+        }};
+        CollTargetMapNotAnnotated target = beanMapper.map(source, CollTargetMapNotAnnotated.class);
+        assertNotSame("Source and Target list may not be the same, must be copied", source.map, target.map);
+        assertEquals(2, target.map.size());
+        assertEquals((Long)42L, target.map.get("a"));
+        assertEquals((Long)33L, target.map.get("b"));
     }
 
     @Test
