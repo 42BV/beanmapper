@@ -17,7 +17,7 @@ import io.beanmapper.core.converter.impl.ObjectToStringConverter;
 import io.beanmapper.core.converter.impl.PrimitiveConverter;
 import io.beanmapper.core.converter.impl.StringToBigDecimalConverter;
 import io.beanmapper.core.converter.impl.StringToBooleanConverter;
-import io.beanmapper.core.converter.impl.StringToEnumConverter;
+import io.beanmapper.core.converter.impl.AnyToEnumConverter;
 import io.beanmapper.core.converter.impl.StringToIntegerConverter;
 import io.beanmapper.core.converter.impl.StringToLongConverter;
 import io.beanmapper.core.unproxy.BeanUnproxy;
@@ -205,7 +205,7 @@ public class BeanMapperBuilder {
         attachConverter(new StringToIntegerConverter());
         attachConverter(new StringToLongConverter());
         attachConverter(new StringToBigDecimalConverter());
-        attachConverter(new StringToEnumConverter());
+        attachConverter(new AnyToEnumConverter());
         attachConverter(new NumberToNumberConverter());
         attachConverter(new ObjectToStringConverter());
 

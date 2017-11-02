@@ -11,26 +11,26 @@ import io.beanmapper.core.converter.AbstractBeanConverter;
  * @author Jeroen van Schagen
  * @since Jun 24, 2015
  */
-public class StringToEnumConverter extends AbstractBeanConverter<String, Enum<?>> {
+public class AnyToEnumConverter extends AbstractBeanConverter<Object, Enum<?>> {
 
-    public StringToEnumConverter() {
-        super(String.class, Enum.class);
+    public AnyToEnumConverter() {
+        super(Object.class, Enum.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected Object doConvert(String name, Class<? extends Enum<?>> targetClass) {
-        Object result = null;
-        if (isNotEmpty(name)) {
-            result = valueOf(targetClass, name);
+    protected Object doConvert(Object source, Class<? extends Enum<?>> targetClass) {
+        if (source == null) {
+            return null;
         }
-        return result;
+        String sourceText = source.toString();
+        if (isNotEmpty(sourceText)) {
+            return valueOf(targetClass, sourceText);
+        }
+        return null;
     }
-    
+
     private static boolean isNotEmpty(String name) {
-        return name.trim().length() > 0;
+        return name != null && name.trim().length() > 0;
     }
     
     /**
