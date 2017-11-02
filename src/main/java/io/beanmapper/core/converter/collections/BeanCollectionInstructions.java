@@ -5,7 +5,7 @@ import io.beanmapper.core.BeanField;
 
 public class BeanCollectionInstructions {
 
-    private Class<?> collectionElementType;
+    private CollectionElementType collectionElementType;
 
     private BeanCollectionUsage beanCollectionUsage;
 
@@ -13,11 +13,11 @@ public class BeanCollectionInstructions {
 
     private Boolean flushAfterClear;
 
-    public Class<?> getCollectionElementType() {
+    public CollectionElementType getCollectionElementType() {
         return collectionElementType;
     }
 
-    public void setCollectionElementType(Class<?> collectionElementType) {
+    public void setCollectionElementType(CollectionElementType collectionElementType) {
         this.collectionElementType = collectionElementType;
     }
 
@@ -80,15 +80,38 @@ public class BeanCollectionInstructions {
                 target.getBeanCollectionUsage(),
                 source == null ? null : source.getBeanCollectionUsage(),
                 BeanCollectionUsage.CLEAR));
-        merged.setCollectionElementType(chooseValue(
-                target.getCollectionElementType(),
-                source == null ? null : source.getCollectionElementType(),
-                null));
         merged.setPreferredCollectionClass(chooseValue(
                 target.getPreferredCollectionClass(),
                 source == null ? null : source.getPreferredCollectionClass(),
                 null));
+
+        merged.setCollectionElementType(determineCollectionElementType(target, source));
+
+        if (merged.getCollectionElementType() == null) {
+            return null;
+        }
+
         return merged;
+    }
+
+    private static CollectionElementType determineCollectionElementType(
+            BeanCollectionInstructions target, BeanCollectionInstructions source) {
+
+        CollectionElementType sourceCollectionElementType = source == null ? null : source.getCollectionElementType();
+        CollectionElementType targetCollectionElementType = target.getCollectionElementType();
+
+        if (
+                sourceCollectionElementType != null &&
+                targetCollectionElementType != null &&
+                !sourceCollectionElementType.isDerived() &&
+                targetCollectionElementType.isDerived()) {
+            targetCollectionElementType = null;
+        }
+
+        return chooseValue(
+                targetCollectionElementType,
+                sourceCollectionElementType,
+                null);
     }
 
     private static <C> C chooseValue(C target, C source, C defaultValue) {

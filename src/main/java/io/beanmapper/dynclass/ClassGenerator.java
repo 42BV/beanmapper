@@ -96,7 +96,7 @@ public class ClassGenerator {
     private void handleBeanCollection(
             CtField field, BeanCollectionInstructions collectionInstructions,
             Node displayNodes, StrictMappingProperties strictMappingProperties) throws Exception {
-        GeneratedClass elementClass = createClass(collectionInstructions.getCollectionElementType(), displayNodes, strictMappingProperties);
+        GeneratedClass elementClass = createClass(collectionInstructions.getCollectionElementType().getType(), displayNodes, strictMappingProperties);
 
         ConstPool constPool = field.getDeclaringClass().getClassFile().getConstPool();
         AnnotationsAttribute attr= new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);

@@ -33,6 +33,10 @@ public enum BeanCollectionUsage {
     }
 
     public boolean mustConstruct(Object targetCollection) {
+        if (    targetCollection != null &&
+                targetCollection.getClass().getCanonicalName().startsWith("java.util.Collections.")) {
+            return true;
+        }
         return this.construct || targetCollection == null;
     }
 
