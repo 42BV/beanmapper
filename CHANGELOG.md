@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+
+## [2.3.1] - 2017-11-02
 ### Fixed
 - Issue [#99](https://github.com/42BV/beanmapper/issues/99), **Collections in superclasses did not get their generic types read**; one of the attributes of getDeclaredField(field) is that it only works on the active class. The fix means that the superclasses will be checked for presence of the field. When found, it will call getDeclaredField on that class to get its generic type. Also, collection mapping instructions are not used when no collection element type can be determined; that is the one crucial element required for mapping collections. 
 - Issue [#100](https://github.com/42BV/beanmapper/issues/100), **Collections.EmptySet can not have add() called on**; BeanCollectionUsage will check the canonical classname of the collection. If it starts with "java.util.Collections.", it will be tagged as reconstructable.
