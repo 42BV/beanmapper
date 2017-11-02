@@ -5,11 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Fixed
+- Issue [#99](https://github.com/42BV/beanmapper/issues/99), **Collections in superclasses did not get their generic types read**; one of the attributes of getDeclaredField(field) is that it only works on the active class. The fix means that the superclasses will be checked for presence of the field. When found, it will call getDeclaredField on that class to get its generic type. Also, collection mapping instructions are not used when no collection element type can be determined; that is the one crucial element required for mapping collections. 
+- Issue [#100](https://github.com/42BV/beanmapper/issues/100), **Collections.EmptySet can not have add() called on**; BeanCollectionUsage will check the canonical classname of the collection. If it starts with "java.util.Collections.", it will be tagged as reconstructable.
 
 ## [2.3.0] - 2017-11-02
 ### Added
 - Issue [#92](https://github.com/42BV/beanmapper/issues/92), **BeanCollection no longer required for mapping collections**; BeanMapper is now capable of determining the collection element type of the target collection by examining the generic type. It will use this type as input for the mapping process. BeanCollection.elementType is no longer a required value. BeanMapper will merge collection information from target and source, giving preference to target information. 
-### Added
 - Issue [#97](https://github.com/42BV/beanmapper/issues/97), **StringToEnumConverter replaced with AnyToEnumConverter**; this makes it possible to convert enums to enums as well. Functionality is required because lists are no longer copied by reference by default. 
 
 ## [2.2.0] - 2017-11-01

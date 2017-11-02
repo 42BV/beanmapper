@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -43,10 +44,15 @@ import io.beanmapper.testmodel.collections.CollSourceConstruct;
 import io.beanmapper.testmodel.collections.CollSourceListIncompleteAnnotation;
 import io.beanmapper.testmodel.collections.CollSourceListNotAnnotated;
 import io.beanmapper.testmodel.collections.CollSourceMapNotAnnotated;
+import io.beanmapper.testmodel.collections.CollSourceNoGenerics;
 import io.beanmapper.testmodel.collections.CollSourceReuse;
+import io.beanmapper.testmodel.collections.CollSubTargetList;
 import io.beanmapper.testmodel.collections.CollTarget;
+import io.beanmapper.testmodel.collections.CollTargetEmptyList;
 import io.beanmapper.testmodel.collections.CollTargetListNotAnnotated;
+import io.beanmapper.testmodel.collections.CollTargetListNotAnnotatedUseSetter;
 import io.beanmapper.testmodel.collections.CollTargetMapNotAnnotated;
+import io.beanmapper.testmodel.collections.CollTargetNoGenerics;
 import io.beanmapper.testmodel.collections.CollectionListSource;
 import io.beanmapper.testmodel.collections.CollectionListTarget;
 import io.beanmapper.testmodel.collections.CollectionListTargetClear;
@@ -440,6 +446,19 @@ public class BeanMapperTest {
     }
 
     @Test
+    public void mapNonAnnotatedListUseSetter() {
+        CollSourceListNotAnnotated source = new CollSourceListNotAnnotated() {{
+            list.add(42L);
+            list.add(33L);
+        }};
+        CollTargetListNotAnnotatedUseSetter target = beanMapper.map(source, CollTargetListNotAnnotatedUseSetter.class);
+        assertNotSame("Source and Target list may not be the same, must be copied", source.list, target.getList());
+        assertEquals(2, target.getList().size());
+        assertEquals("42", target.getList().get(0));
+        assertEquals("33", target.getList().get(1));
+    }
+
+    @Test
     public void mapIncompletelyAnnotatedList() {
         CollSourceListIncompleteAnnotation source = new CollSourceListIncompleteAnnotation() {{
             list.add(42L);
@@ -463,6 +482,45 @@ public class BeanMapperTest {
         assertEquals(2, target.map.size());
         assertEquals((Long)42L, target.map.get("a"));
         assertEquals((Long)33L, target.map.get("b"));
+    }
+
+    @Test
+    public void mapNonAnnotatedListInSuperClass() {
+        CollSourceListNotAnnotated source = new CollSourceListNotAnnotated() {{
+            list.add(42L);
+            list.add(33L);
+        }};
+        CollSubTargetList target = beanMapper.map(source, CollSubTargetList.class);
+        assertNotSame("Source and Target list may not be the same, must be copied", source.list, target.list);
+        assertEquals(2, target.list.size());
+        assertEquals("42", target.list.get(0));
+        assertEquals("33", target.list.get(1));
+    }
+
+    @Test
+    public void mapListToCollectionEmptySet() {
+        CollSourceListNotAnnotated source = new CollSourceListNotAnnotated() {{
+            list.add(42L);
+            list.add(33L);
+        }};
+        CollTargetEmptyList target = beanMapper.map(source, CollTargetEmptyList.class);
+        assertNotSame("Source and Target list may not be the same, must be copied", source.list, target.list);
+        assertEquals(2, target.list.size());
+        assertEquals("42", target.list.get(0));
+        assertEquals("33", target.list.get(1));
+    }
+
+    @Test
+    public void mapNonAnnotatedListWithoutGenerics() {
+        CollSourceNoGenerics source = new CollSourceNoGenerics() {{
+            list.add("42");
+            list.add("33");
+        }};
+        CollTargetNoGenerics target = beanMapper.map(source, CollTargetNoGenerics.class);
+        assertSame("Source and Target list may not be the same, must be copied", source.list, target.list);
+        assertEquals(2, target.list.size());
+        assertEquals("42", target.list.get(0));
+        assertEquals("33", target.list.get(1));
     }
 
     @Test

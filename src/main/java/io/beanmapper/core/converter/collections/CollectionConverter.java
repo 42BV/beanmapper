@@ -31,7 +31,7 @@ public class CollectionConverter<T> implements BeanConverter {
                 .setCollectionUsage(beanFieldMatch.getCollectionInstructions().getBeanCollectionUsage())
                 .setPreferredCollectionClass(beanFieldMatch.getCollectionInstructions().getPreferredCollectionClass())
                 .setFlushAfterClear(beanFieldMatch.getCollectionInstructions().getFlushAfterClear())
-                .setTargetClass(beanFieldMatch.getCollectionInstructions().getCollectionElementType())
+                .setTargetClass(beanFieldMatch.getCollectionInstructions().getCollectionElementType().getType())
                 .setTarget(beanFieldMatch.getTargetObject())
                 .build()
                 .map(sourceCollection);
