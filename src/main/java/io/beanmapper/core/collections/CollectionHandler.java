@@ -1,5 +1,7 @@
 package io.beanmapper.core.collections;
 
+import java.lang.reflect.ParameterizedType;
+
 import io.beanmapper.BeanMapper;
 import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.config.CollectionFlusher;
@@ -64,4 +66,5 @@ public interface CollectionHandler<C> {
 
     public int size(C targetCollection);
 
+    Class<?> determineGenericParameterFromType(ParameterizedType type);
 }

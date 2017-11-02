@@ -14,6 +14,7 @@ public class BeanFieldMatch {
     private BeanField sourceBeanField;
     private BeanField targetBeanField;
     private String targetFieldName;
+    private BeanCollectionInstructions beanCollectionInstructions;
 
     public BeanFieldMatch(Object source, Object target,
             MatchedBeanPairField matchedBeanPairField, String targetFieldName, BeanMatch beanMatch) {
@@ -23,6 +24,9 @@ public class BeanFieldMatch {
         this.targetBeanField = matchedBeanPairField.getTargetBeanField();
         this.targetFieldName = targetFieldName;
         this.beanMatch = beanMatch;
+        this.beanCollectionInstructions = BeanCollectionInstructions.merge(
+                matchedBeanPairField.getSourceBeanField(),
+                matchedBeanPairField.getTargetBeanField());
     }
     public boolean hasSimilarClasses() {
         return sourceBeanField.getProperty().getType().equals(targetBeanField.getProperty().getType());
@@ -68,11 +72,7 @@ public class BeanFieldMatch {
         return targetBeanField.getObject(target);
     }
     public BeanCollectionInstructions getCollectionInstructions() {
-        return targetBeanField.getCollectionInstructions() != null ?
-                targetBeanField.getCollectionInstructions() :
-                sourceBeanField.getCollectionInstructions() != null ?
-                        sourceBeanField.getCollectionInstructions() :
-                        null;
+        return beanCollectionInstructions;
     }
 
     public String getSourceFieldName() {

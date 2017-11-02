@@ -9,7 +9,6 @@ import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.unproxy.BeanUnproxy;
-import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
 import io.beanmapper.dynclass.ClassStore;
 
 public class OverrideConfiguration implements Configuration {
@@ -17,8 +16,6 @@ public class OverrideConfiguration implements Configuration {
     private final Configuration parentConfiguration;
 
     private OverrideField<BeanInitializer> beanInitializer;
-
-    private OverrideField<BeanUnproxy> beanUnproxy;
 
     private List<BeanConverter> beanConverters = new ArrayList<BeanConverter>();
     
@@ -56,7 +53,6 @@ public class OverrideConfiguration implements Configuration {
         this.downsizeSourceFields = new OverrideField<>(configuration::getDownsizeSource);
         this.downsizeTargetFields = new OverrideField<>(configuration::getDownsizeTarget);
         this.beanInitializer = new OverrideField<>(configuration::getBeanInitializer);
-        this.beanUnproxy= new OverrideField<>(configuration::getBeanUnproxy);
         this.parent = new OverrideField<>(configuration::getParent);
         this.converterChoosable = new OverrideField<>(configuration::isConverterChoosable);
     }
@@ -108,7 +104,7 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public BeanUnproxy getBeanUnproxy() {
-        return beanUnproxy.get();
+        return parentConfiguration.getBeanUnproxy();
     }
 
     @Override
@@ -271,7 +267,7 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public void setBeanUnproxy(BeanUnproxy beanUnproxy) {
-        this.beanUnproxy.set(beanUnproxy);
+        // not supported for override options
     }
 
     @Override

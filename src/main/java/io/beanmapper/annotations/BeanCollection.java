@@ -18,7 +18,7 @@ public @interface BeanCollection {
      * type will be used by BeanMapper to pass the target class type.
      * @return the class type of a target element collection
      */
-    Class elementType();
+    Class elementType() default void.class;
 
     /**
      * Determines how BeanMapper must deal with the target collection. The default option
