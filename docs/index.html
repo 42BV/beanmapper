@@ -568,22 +568,51 @@ assertEquals("Henk", target.name);</code>
             <tr>
               <th>Arguments</th>
               <td>
-                elementType: the target collection element type<br>
-                beanCollectionUsage: determines how to deal with the target collection.
-                Below the possible options where REUSE is the default option.
                 <ul>
-                  <li>CONSTRUCT: always reconstruct the target collection</li>
-                  <li>REUSE: reuse the target collection if it exists; construct if not</li>
-                  <li>CLEAR: call clear on the target collection if it exists; construct if not</li>
+                  <li>
+                    <b>elementType</b>: the target collection element type. If not passed, BeanMapper will
+                    try to determine the type by checking the generic parameter type of the target collection.
+                  </li>
+                  <li>
+                    <b>beanCollectionUsage</b>: determines how to deal with the target collection. Below
+                    the possible options where <b>CLEAR</b> is the default option:
+                    <ul>
+                      <li><b>CONSTRUCT</b>: always reconstruct the target collection</li>
+                      <li><b>REUSE</b>: reuse the target collection if it exists; construct if not</li>
+                      <li><b>CLEAR</b>: call clear on the target collection if it exists; construct if not</li>
+                    </ul>
+                  </li>
+                  <li>
+                    <b>preferredCollectionClass</b>: collections have their own preferences for collection creation:
+                    <ul>
+                      <li><b>List</b> > ArrayList</li>
+                      <li><b>Map</b> > TreeMap</li>
+                      <li><b>Set</b> > if elementType is Comparable, TreeSet, otherwise HashSet</li>
+                    </ul>
+                    You can pass your own preferred collection class, if you wish to bypass the default.
+                  </li>
+                  <li>
+                    <b>flushAfterClear</b>: if a collection gets cleared, by default the flush method will be called
+                    if globally enabled (eg, when working with Lazy). The main reason for flush after clear is
+                    to force Hibernate to first delete elements in a managed collection, before inserting new
+                    ones. By default, this setting is enabled.
+                  </li>
                 </ul>
               </td>
             </tr>
             <tr>
               <th>Description</th>
               <td>
-                Use BeanCollection when you want to map a field of type Collection.
-                BeanCollection is only necessary if the element type of the collection differs from the other collection element type.
-                You can use this annotation on both sides.
+                <p>
+                  Use BeanCollection when you want to map a field of type Collection. If the BeanCollection
+                  annotation is not set, BeanMapper will try to determine the element type by checking the
+                  generic parameter type of the target collection. Therefore using the annotation is optional,
+                  mapping will always take place.
+                </p>
+                <p>
+                  Note that the collection instructions will be merged from both target and source side.
+                  BeanMapper prefers settings on the target side to settings on the source side.
+                </p>
               </td>
             </tr>
           </table>
