@@ -41,9 +41,9 @@ public class OverrideConfiguration implements Configuration {
 
     private Class<?> preferredCollectionClass = null;
 
-    private Boolean flushAfterClear = null;
+    private OverrideField<Boolean> flushAfterClear;
 
-    private Boolean flushEnabled = null;
+    private OverrideField<Boolean> flushEnabled;
 
     public OverrideConfiguration(Configuration configuration) {
         if (configuration == null) {
@@ -55,6 +55,8 @@ public class OverrideConfiguration implements Configuration {
         this.beanInitializer = new OverrideField<>(configuration::getBeanInitializer);
         this.parent = new OverrideField<>(configuration::getParent);
         this.converterChoosable = new OverrideField<>(configuration::isConverterChoosable);
+        this.flushAfterClear = new OverrideField<>(configuration::isFlushAfterClear);
+        this.flushEnabled = new OverrideField<>(configuration::isFlushEnabled);
     }
 
     @Override
@@ -202,21 +204,17 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public boolean isFlushAfterClear() {
-        return this.flushAfterClear == null ?
-                parentConfiguration.isFlushAfterClear() :
-                this.flushAfterClear;
+    public Boolean isFlushAfterClear() {
+        return flushAfterClear.get();
     }
 
     @Override
-    public boolean isFlushEnabled() {
-        return this.flushEnabled == null ?
-                parentConfiguration.isFlushEnabled() :
-                this.flushEnabled;
+    public Boolean isFlushEnabled() {
+        return flushEnabled.get();
     }
 
     @Override
-    public boolean mustFlush() {
+    public Boolean mustFlush() {
         return isFlushEnabled() && isFlushAfterClear();
     }
 
@@ -341,13 +339,13 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public void setFlushAfterClear(boolean flushAfterClear) {
-        this.flushAfterClear = flushAfterClear;
+    public void setFlushAfterClear(Boolean flushAfterClear) {
+        this.flushAfterClear.set(flushAfterClear);
     }
 
     @Override
-    public void setFlushEnabled(boolean flushEnabled) {
-        this.flushEnabled = flushEnabled;
+    public void setFlushEnabled(Boolean flushEnabled) {
+        this.flushEnabled.set(flushEnabled);
     }
 
 }

@@ -1,16 +1,11 @@
 package io.beanmapper;
 
-import io.beanmapper.annotations.BeanCollection;
-import io.beanmapper.annotations.BeanCollectionUsage;
+import static junit.framework.Assert.assertEquals;
+
 import io.beanmapper.annotations.BeanConstruct;
 import io.beanmapper.config.BeanMapperBuilder;
+
 import org.junit.Test;
-
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
-import static junit.framework.Assert.assertEquals;
 
 public class BeanConstructExample {
 

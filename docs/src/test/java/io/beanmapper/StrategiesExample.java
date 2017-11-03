@@ -1,15 +1,17 @@
 package io.beanmapper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.beanmapper.config.BeanMapperBuilder;
-import org.junit.Test;
+import static junit.framework.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
+import io.beanmapper.config.BeanMapperBuilder;
+
+import org.junit.Test;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class StrategiesExample {
 

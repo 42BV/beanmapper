@@ -152,8 +152,7 @@ public class PropertyAccessorTest {
         }
         
         @BeanProperty(name = "f")
-        public void setMySetter(String arg) {
-        }
+        public void setMySetter(String arg) { /* no action required */ }
 
     }
 

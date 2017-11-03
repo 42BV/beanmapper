@@ -169,7 +169,7 @@ public interface Configuration {
      * collection has taken place.
      * @return true if the flush-chain must be called after a clear
      */
-    boolean isFlushAfterClear();
+    Boolean isFlushAfterClear();
 
     /**
      * Determines if flushing has been enabled. Flushing is the calling of flush() on a collection
@@ -178,14 +178,14 @@ public interface Configuration {
      * case, the flush will throw an exception.
      * @return whether flushing has been enabled
      */
-    boolean isFlushEnabled();
+    Boolean isFlushEnabled();
 
     /**
      * Works on the combination of the global flush setting (flushEnabled) and the specific flush
      * setting (flushAfterClear). If both are true, the flush will trigger.
      * @return true if a flush after clear must take place
      */
-    boolean mustFlush();
+    Boolean mustFlush();
 
     /**
      * Add a converter class (must inherit from abstract BeanConverter class) to the beanMapper.
@@ -356,7 +356,7 @@ public interface Configuration {
      * Determines whether the flush-chain must be called after a clear has taken place.
      * @param flushAfterClear true if the flush-chain must be called
      */
-    void setFlushAfterClear(boolean flushAfterClear);
+    void setFlushAfterClear(Boolean flushAfterClear);
 
     /**
      * Set whether flushing must be enabled. Flushing is the calling of flush() on a collection
@@ -365,6 +365,6 @@ public interface Configuration {
      * case, the flush will throw an exception.
      * @param flushEnabled whether flushing has been enabled
      */
-    void setFlushEnabled(boolean flushEnabled);
+    void setFlushEnabled(Boolean flushEnabled);
 
 }

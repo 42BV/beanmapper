@@ -80,10 +80,8 @@ public class BeanField {
 
     public Object getObject(Object object) throws BeanMappingException {
         Object valueObject = getCurrentField().getValue(object);
-        if (hasNext()) {
-            if (valueObject != null) {
-                return getNext().getObject(valueObject);
-            }
+        if (hasNext() && valueObject != null) {
+            return getNext().getObject(valueObject);
         }
         return valueObject;
     }

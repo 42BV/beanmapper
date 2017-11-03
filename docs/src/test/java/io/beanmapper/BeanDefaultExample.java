@@ -1,12 +1,11 @@
 package io.beanmapper;
 
-import io.beanmapper.annotations.BeanDefault;
-import io.beanmapper.annotations.BeanIgnore;
-import io.beanmapper.config.BeanMapperBuilder;
-import org.junit.Test;
-
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
+
+import io.beanmapper.annotations.BeanDefault;
+import io.beanmapper.config.BeanMapperBuilder;
+
+import org.junit.Test;
 
 public class BeanDefaultExample {
 

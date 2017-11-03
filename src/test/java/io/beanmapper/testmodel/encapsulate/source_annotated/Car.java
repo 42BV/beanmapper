@@ -1,4 +1,4 @@
-package io.beanmapper.testmodel.encapsulate.sourceAnnotated;
+package io.beanmapper.testmodel.encapsulate.source_annotated;
 
 public class Car {
 

@@ -11,7 +11,7 @@ public class BeanSetFieldExceptionTest {
     @Test
     public void throwException() throws NoSuchFieldException {
         try {
-            throw new BeanSetFieldException(SourceWithDefaults.class, "bothDefault", null);
+            throw new BeanSetFieldException(SourceWithDefaults.class, "bothDefault");
         } catch (BeanMappingException e) {
             assertTrue("Must contain specific class and field name",
                     e.getMessage().contains("io.beanmapper.testmodel.defaults.SourceWithDefaults.bothDefault"));

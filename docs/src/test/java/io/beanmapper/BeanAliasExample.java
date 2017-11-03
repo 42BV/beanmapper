@@ -1,12 +1,11 @@
 package io.beanmapper;
 
-import io.beanmapper.annotations.BeanAlias;
-import io.beanmapper.annotations.BeanConstruct;
-import io.beanmapper.annotations.BeanUnwrap;
-import io.beanmapper.config.BeanMapperBuilder;
-import org.junit.Test;
-
 import static junit.framework.Assert.assertEquals;
+
+import io.beanmapper.annotations.BeanAlias;
+import io.beanmapper.config.BeanMapperBuilder;
+
+import org.junit.Test;
 
 public class BeanAliasExample {
 

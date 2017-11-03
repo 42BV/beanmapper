@@ -1,10 +1,11 @@
 package io.beanmapper;
 
+import static junit.framework.Assert.assertEquals;
+
 import io.beanmapper.annotations.BeanProperty;
 import io.beanmapper.config.BeanMapperBuilder;
-import org.junit.Test;
 
-import static junit.framework.Assert.assertEquals;
+import org.junit.Test;
 
 public class BeanPropertyExample {
 

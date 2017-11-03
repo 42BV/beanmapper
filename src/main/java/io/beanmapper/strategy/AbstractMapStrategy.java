@@ -202,7 +202,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
         if (beanFieldMatch.targetHasAnnotation(BeanDefault.class)) {
             beanFieldMatch.setTarget(beanFieldMatch.getTargetDefaultValue());
         } else if (beanFieldMatch.targetHasAnnotation(BeanProperty.class)) {
-            throw new BeanFieldNoMatchException("No source field found while attempting to map to " + beanFieldMatch.getTargetFieldName());
+            throw new BeanFieldNoMatchException(beanFieldMatch.getTargetClass(), beanFieldMatch.getTargetFieldName());
         }
     }
 

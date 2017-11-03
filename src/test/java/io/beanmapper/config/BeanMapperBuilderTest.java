@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 
 import io.beanmapper.BeanMapper;
-import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.collections.ListCollectionHandler;
 import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.unproxy.BeanUnproxy;

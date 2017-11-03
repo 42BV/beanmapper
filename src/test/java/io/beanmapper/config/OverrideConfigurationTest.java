@@ -1,8 +1,14 @@
 package io.beanmapper.config;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import io.beanmapper.BeanMapper;
+import io.beanmapper.core.constructor.DefaultBeanInitializer;
+import io.beanmapper.utils.ConstructorArguments;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +52,13 @@ public class OverrideConfigurationTest {
     }
 
     @Test
+    public void mustFlush_flushAfterClearIsFalse() {
+        overrideConfiguration.setFlushEnabled(true);
+        overrideConfiguration.setFlushAfterClear(false);
+        assertEquals(false, overrideConfiguration.mustFlush());
+    }
+
+    @Test
     public void strictTargetSuffix() {
         assertEquals("Result", overrideConfiguration.getStrictTargetSuffix());
         overrideConfiguration.setStrictTargetSuffix("Result2");
@@ -57,6 +70,47 @@ public class OverrideConfigurationTest {
         assertEquals("Form", overrideConfiguration.getStrictSourceSuffix());
         overrideConfiguration.setStrictSourceSuffix("Form2");
         assertEquals("Form2", overrideConfiguration.getStrictSourceSuffix());
+    }
+
+    @Test
+    public void getCollectionHandlers() {
+        assertEquals(coreConfiguration.getCollectionHandlers(), overrideConfiguration.getCollectionHandlers());
+    }
+
+    @Test
+    public void addBeanPairWithStrictSource() {
+        overrideConfiguration.addBeanPairWithStrictSource(Long.class, String.class);
+        List<BeanPair> beanPairs = overrideConfiguration.getBeanPairs();
+        assertEquals(1, beanPairs.size());
+        assertTrue(beanPairs.get(0).isSourceStrict());
+        assertFalse(beanPairs.get(0).isTargetStrict());
+    }
+
+    @Test
+    public void addBeanPairWithStrictTarget() {
+        overrideConfiguration.addBeanPairWithStrictTarget(Long.class, String.class);
+        List<BeanPair> beanPairs = overrideConfiguration.getBeanPairs();
+        assertEquals(1, beanPairs.size());
+        assertFalse(beanPairs.get(0).isSourceStrict());
+        assertTrue(beanPairs.get(0).isTargetStrict());
+    }
+
+    @Test
+    public void setBeanInitializer() {
+        final DefaultBeanInitializer expectedBeanInitializer = new DefaultBeanInitializer() {
+            @Override
+            public <T> T instantiate(Class<T> beanClass, ConstructorArguments arguments) {
+                return null;
+            }
+        };
+        overrideConfiguration.setBeanInitializer(expectedBeanInitializer);
+        assertEquals(expectedBeanInitializer, overrideConfiguration.getBeanInitializer());
+    }
+
+    @Test
+    public void determineTargetClass() {
+        overrideConfiguration.setTarget("Hello");
+        assertEquals(String.class, overrideConfiguration.determineTargetClass());
     }
 
 }

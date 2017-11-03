@@ -23,7 +23,7 @@ public class OverrideField<T> {
         }
     }
 
-    public void reset() {
+    public void block() {
         this.block = true;
     }
 

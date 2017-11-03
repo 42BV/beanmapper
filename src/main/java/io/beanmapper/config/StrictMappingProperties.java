@@ -38,10 +38,6 @@ public class StrictMappingProperties {
         this.applyStrictMappingConvention = applyStrictMappingConvention;
     }
 
-    public BeanUnproxy getBeanUnproxy() {
-        return beanUnproxy;
-    }
-
     public String getStrictSourceSuffix() {
         return strictSourceSuffix;
     }
