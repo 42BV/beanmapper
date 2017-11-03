@@ -306,11 +306,6 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
-    public boolean canReuse() {
-        return false;
-    }
-
-    @Override
     public Class determineTargetClass() {
         return getTargetClass() == null ? getTarget().getClass() : getTargetClass();
     }

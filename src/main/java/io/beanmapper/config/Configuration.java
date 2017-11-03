@@ -311,12 +311,9 @@ public interface Configuration {
     void setParent(Object parent);
 
     /**
-     * Used to determine whether the configuration can be reused and modified (Override wrap)
-     * or whether it must be wrapped in a new configuration (Core wrap).
-     * @return true (Override wrap) if the configuration can be reused, false (Core wrap) if not.
+     * On the basis of the target, the targetClass will be determined
+     * @return the class of the target
      */
-    boolean canReuse();
-
     Class determineTargetClass();
 
     /**

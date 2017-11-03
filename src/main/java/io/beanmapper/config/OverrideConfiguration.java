@@ -311,11 +311,6 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public boolean canReuse() {
-        return true;
-    }
-
-    @Override
     public Class determineTargetClass() {
         return getTargetClass() == null ? getTarget().getClass() : getTargetClass();
     }

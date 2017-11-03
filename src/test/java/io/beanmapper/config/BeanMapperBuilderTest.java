@@ -11,6 +11,8 @@ import java.util.Collections;
 import java.util.List;
 
 import io.beanmapper.BeanMapper;
+import io.beanmapper.core.collections.CollectionHandler;
+import io.beanmapper.core.collections.ListCollectionHandler;
 import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
@@ -25,6 +27,24 @@ public class BeanMapperBuilderTest {
     public void setTargetClassOnCoreThrowsException() {
         BeanMapperBuilder builder = new BeanMapperBuilder();
         builder.setTargetClass(null);
+    }
+
+    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
+    public void setCollectionUsage() {
+        BeanMapperBuilder builder = new BeanMapperBuilder();
+        builder.setCollectionUsage(null);
+    }
+
+    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
+    public void setPreferredCollectionClass() {
+        BeanMapperBuilder builder = new BeanMapperBuilder();
+        builder.setPreferredCollectionClass(null);
+    }
+
+    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
+    public void setFlushAfterClear() {
+        BeanMapperBuilder builder = new BeanMapperBuilder();
+        builder.setFlushAfterClear(true);
     }
 
     @Test(expected = BeanConfigurationOperationNotAllowedException.class)
@@ -57,6 +77,14 @@ public class BeanMapperBuilderTest {
                 .withoutDefaultConverters()
                 .build();
         assertEquals(0, beanMapper.getConfiguration().getBeanConverters().size());
+    }
+
+    @Test
+    public void addCollectionHandler() {
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .addCollectionHandler(new ListCollectionHandler())
+                .build();
+        assertEquals(4, beanMapper.getConfiguration().getCollectionHandlers().size());
     }
 
     @Test
