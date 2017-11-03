@@ -205,7 +205,7 @@ public class CoreConfiguration implements Configuration {
 
     @Override
     public boolean mustFlush() {
-        return isFlushEnabled() && isFlushAfterClear();
+        return false;
     }
 
     @Override
@@ -235,7 +235,7 @@ public class CoreConfiguration implements Configuration {
 
     @Override
     public void addPackagePrefix(Class<?> clazz) {
-        if (clazz != null && clazz.getPackage() != null) {
+        if (clazz != null) {
             addPackagePrefix(clazz.getPackage().getName());
         }
     }
@@ -307,7 +307,7 @@ public class CoreConfiguration implements Configuration {
 
     @Override
     public Class determineTargetClass() {
-        return getTargetClass() == null ? getTarget().getClass() : getTargetClass();
+        return null;
     }
 
     @Override

@@ -17,10 +17,15 @@ public class CoreConfigurationTest {
     }
 
     @Test(expected = BeanConfigurationOperationNotAllowedException.class)
-    public void determineTargetClass() {
+    public void setTarget() {
         CoreConfiguration configuration = new CoreConfiguration();
         configuration.setTarget("Hello world");
-        assertEquals(String.class, configuration.determineTargetClass());
+    }
+
+    @Test
+    public void determineTargetClass_noTargetSet() {
+        CoreConfiguration configuration = new CoreConfiguration();
+        assertNull(configuration.determineTargetClass());
     }
 
     @Test
@@ -46,6 +51,10 @@ public class CoreConfigurationTest {
         assertNull(configuration.getTarget());
         assertNull(configuration.getParent());
         assertNull(configuration.getCollectionClass());
+        assertNull(configuration.getPreferredCollectionClass());
+        assertNull(configuration.getCollectionHandlerForCollectionClass());
+        assertFalse(configuration.isFlushAfterClear());
+        assertFalse(configuration.mustFlush());
     }
 
 }

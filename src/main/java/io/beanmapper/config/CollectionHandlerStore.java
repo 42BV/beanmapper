@@ -23,15 +23,17 @@ public class CollectionHandlerStore {
             return null;
         }
         // First verify if the class already has parent types which match
-        for (CollectionHandler handler : getCollectionHandlers()) {
-            if (handler.isMatch(clazz)) {
-                return handler;
-            }
+        CollectionHandler collectionHandler = getCollectionHandlerFor(clazz);
+        if (collectionHandler != null) {
+            return collectionHandler;
         }
         // Unproxy the collection class in case it was anonymous and try again
-        Class unproxiedCollectionClass = beanUnproxy.unproxy(clazz);
+        return getCollectionHandlerFor(beanUnproxy.unproxy(clazz));
+    }
+
+    private CollectionHandler getCollectionHandlerFor(Class<?> clazz) {
         for (CollectionHandler handler : getCollectionHandlers()) {
-            if (handler.isMatch(unproxiedCollectionClass)) {
+            if (handler.isMatch(clazz)) {
                 return handler;
             }
         }
