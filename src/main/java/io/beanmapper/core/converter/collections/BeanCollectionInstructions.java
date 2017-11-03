@@ -1,5 +1,7 @@
 package io.beanmapper.core.converter.collections;
 
+import static io.beanmapper.core.converter.collections.AnnotationClass.EMPTY_ANNOTATION_CLASS;
+
 import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.core.BeanField;
 
@@ -9,7 +11,7 @@ public class BeanCollectionInstructions {
 
     private BeanCollectionUsage beanCollectionUsage;
 
-    private Class<?> preferredCollectionClass;
+    private AnnotationClass preferredCollectionClass = EMPTY_ANNOTATION_CLASS;
 
     private Boolean flushAfterClear;
 
@@ -29,15 +31,12 @@ public class BeanCollectionInstructions {
         this.beanCollectionUsage = beanCollectionUsage;
     }
 
-    public Class<?> getPreferredCollectionClass() {
+    public AnnotationClass getPreferredCollectionClass() {
         return preferredCollectionClass;
     }
 
-    public void setPreferredCollectionClass(Class<?> preferredCollectionClass) {
-        this.preferredCollectionClass =
-                preferredCollectionClass == null || preferredCollectionClass.equals(void.class) ?
-                null :
-                        preferredCollectionClass;
+    public void setPreferredCollectionClass(AnnotationClass preferredCollectionClass) {
+        this.preferredCollectionClass = preferredCollectionClass;
     }
 
     public Boolean getFlushAfterClear() {
@@ -83,11 +82,11 @@ public class BeanCollectionInstructions {
         merged.setPreferredCollectionClass(chooseValue(
                 target.getPreferredCollectionClass(),
                 source == null ? null : source.getPreferredCollectionClass(),
-                null));
+                EMPTY_ANNOTATION_CLASS));
 
         merged.setCollectionElementType(determineCollectionElementType(target, source));
 
-        if (merged.getCollectionElementType() == null) {
+        if (merged.getCollectionElementType().isEmpty()) {
             return null;
         }
 
@@ -111,7 +110,7 @@ public class BeanCollectionInstructions {
         return chooseValue(
                 targetCollectionElementType,
                 sourceCollectionElementType,
-                null);
+                CollectionElementType.EMPTY_COLLECTION_ELEMENT_TYPE);
     }
 
     private static <C> C chooseValue(C target, C source, C defaultValue) {

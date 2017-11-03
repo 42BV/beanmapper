@@ -42,7 +42,7 @@ public class AnyToEnumConverterTest {
     @Test
     public void objectToEnum() {
         NestedString source = new NestedString("ALPHA");
-        TargetSideEnum target = (TargetSideEnum)converter.convert(null, SourceSideEnum.ALPHA, TargetSideEnum.class, null);
+        TargetSideEnum target = (TargetSideEnum)converter.convert(null, source, TargetSideEnum.class, null);
         assertEquals(TargetSideEnum.ALPHA, target);
     }
 

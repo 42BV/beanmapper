@@ -1,10 +1,9 @@
 package io.beanmapper.core;
 
-import static io.beanmapper.core.converter.collections.CollectionElementType.derived;
+import static io.beanmapper.core.converter.collections.AnnotationClass.EMPTY_ANNOTATION_CLASS;
+import static io.beanmapper.core.converter.collections.CollectionElementType.EMPTY_COLLECTION_ELEMENT_TYPE;
 import static io.beanmapper.core.converter.collections.CollectionElementType.set;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +18,7 @@ import io.beanmapper.annotations.BeanUnwrap;
 import io.beanmapper.config.BeanPair;
 import io.beanmapper.config.CollectionHandlerStore;
 import io.beanmapper.core.collections.CollectionHandler;
+import io.beanmapper.core.converter.collections.AnnotationClass;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
 import io.beanmapper.core.converter.collections.CollectionElementType;
 import io.beanmapper.core.inspector.PropertyAccessor;
@@ -26,6 +26,7 @@ import io.beanmapper.core.inspector.PropertyAccessors;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.exceptions.BeanMissingPathException;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
+import io.beanmapper.utils.GenericTypeDeterminer;
 
 public class BeanMatchStore {
 
@@ -181,9 +182,9 @@ public class BeanMatchStore {
             BeanField beanField,
             PropertyMatchupDirection matchupDirection) {
 
-        CollectionElementType elementType = null;
+        CollectionElementType elementType = EMPTY_COLLECTION_ELEMENT_TYPE;
         BeanCollectionUsage beanCollectionUsage = null;
-        Class<?> preferredCollectionClass = null;
+        AnnotationClass preferredCollectionClass = EMPTY_ANNOTATION_CLASS;
         Boolean flushAfterClear = null;
 
         CollectionHandler collectionHandler = null;
@@ -201,18 +202,18 @@ public class BeanMatchStore {
         } else {
             elementType = set(beanCollection.elementType());
             beanCollectionUsage = beanCollection.beanCollectionUsage();
-            preferredCollectionClass = beanCollection.preferredCollectionClass();
+            preferredCollectionClass = new AnnotationClass(beanCollection.preferredCollectionClass());
             flushAfterClear = beanCollection.flushAfterClear();
         }
 
-        if (elementType == null || elementType.getType().equals(void.class)) {
+        if (elementType.isEmpty()) {
             if (collectionHandler == null) {
                 collectionHandler = getCollectionHandlerFor(beanField);
             }
-            elementType = determineTypeOfCollectionElement(
+            elementType = new GenericTypeDeterminer(
                     collectionHandler,
                     containingClass,
-                    beanField.getProperty().getName());
+                    beanField.getProperty().getName()).determineGenericType();
         }
 
         BeanCollectionInstructions collectionInstructions = new BeanCollectionInstructions();
@@ -225,44 +226,6 @@ public class BeanMatchStore {
 
     private CollectionHandler getCollectionHandlerFor(BeanField beanField) {
         return collectionHandlerStore.getCollectionHandlerFor(beanField.getProperty().getType(), beanUnproxy);
-    }
-
-    private CollectionElementType determineTypeOfCollectionElement(
-            CollectionHandler collectionHandler,
-            Class<?> containingClass,
-            String fieldName) {
-
-        try {
-            Class<?> classWithField = getFirstClassContainingField(containingClass, fieldName);
-            if (classWithField == null) {
-                return null;
-            }
-            ParameterizedType type = (ParameterizedType)classWithField.getDeclaredField(fieldName).getGenericType();
-            return derived(collectionHandler.determineGenericParameterFromType(type));
-        } catch (Exception err) {
-            return null;
-        }
-    }
-
-    private Class getFirstClassContainingField(Class<?> currentClass, String fieldName) {
-        Field[] allFields = currentClass.getDeclaredFields();
-        while (!containsField(fieldName, allFields)) {
-            currentClass = currentClass.getSuperclass();
-            if (Object.class.equals(currentClass)) {
-                return null;
-            }
-            allFields = currentClass.getDeclaredFields();
-        }
-        return currentClass;
-    }
-
-    private boolean containsField(String fieldName, Field[] fields) {
-        for (Field field : fields) {
-            if (field.getName().equals(fieldName)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private BeanPropertyWrapper dealWithBeanProperty(Map<String, BeanField> otherNodes, Class<?> otherType, PropertyAccessor accessor) {

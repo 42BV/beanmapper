@@ -2,12 +2,15 @@ package io.beanmapper.core.converter.collections;
 
 public class CollectionElementType {
 
-    private final Class<?> collectionElementType;
+    public final static CollectionElementType EMPTY_COLLECTION_ELEMENT_TYPE =
+            new CollectionElementType(null, true);
+
+    private final AnnotationClass collectionElementType;
 
     private final boolean derived;
 
     private CollectionElementType(Class<?> collectionElementType, boolean derived) {
-        this.collectionElementType = collectionElementType;
+        this.collectionElementType = new AnnotationClass(collectionElementType);
         this.derived = derived;
     }
 
@@ -24,7 +27,11 @@ public class CollectionElementType {
     }
 
     public Class<?> getType() {
-        return collectionElementType;
+        return collectionElementType.getAnnotationClass();
+    }
+
+    public boolean isEmpty() {
+        return collectionElementType.isEmpty();
     }
 
 }

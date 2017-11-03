@@ -3,8 +3,8 @@ package io.beanmapper.core;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import io.beanmapper.testmodel.nestedclasses.Layer1;
-import io.beanmapper.testmodel.nestedclasses.Layer1Result;
+import io.beanmapper.testmodel.nested_classes.Layer1;
+import io.beanmapper.testmodel.nested_classes.Layer1Result;
 
 import org.junit.Test;
 

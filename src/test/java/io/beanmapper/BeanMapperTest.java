@@ -31,9 +31,9 @@ import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
 import io.beanmapper.testmodel.anonymous.Book;
 import io.beanmapper.testmodel.anonymous.BookForm;
-import io.beanmapper.testmodel.beanAlias.NestedSourceWithAlias;
-import io.beanmapper.testmodel.beanAlias.SourceWithAlias;
-import io.beanmapper.testmodel.beanAlias.TargetWithAlias;
+import io.beanmapper.testmodel.beanalias.NestedSourceWithAlias;
+import io.beanmapper.testmodel.beanalias.SourceWithAlias;
+import io.beanmapper.testmodel.beanalias.TargetWithAlias;
 import io.beanmapper.testmodel.beanproperty.SourceBeanProperty;
 import io.beanmapper.testmodel.beanproperty.SourceNestedBeanProperty;
 import io.beanmapper.testmodel.beanproperty.TargetBeanProperty;
@@ -67,18 +67,18 @@ import io.beanmapper.testmodel.collections.TargetWithListPublicField;
 import io.beanmapper.testmodel.construct.NestedSourceWithoutConstruct;
 import io.beanmapper.testmodel.construct.SourceWithConstruct;
 import io.beanmapper.testmodel.construct.TargetWithoutConstruct;
-import io.beanmapper.testmodel.constructNotMatching.BigConstructTarget;
-import io.beanmapper.testmodel.constructNotMatching.BigConstructTarget2;
-import io.beanmapper.testmodel.constructNotMatching.FlatConstructSource;
-import io.beanmapper.testmodel.constructNotMatching.FlatConstructSource2;
+import io.beanmapper.testmodel.construct_not_matching.BigConstructTarget;
+import io.beanmapper.testmodel.construct_not_matching.BigConstructTarget2;
+import io.beanmapper.testmodel.construct_not_matching.FlatConstructSource;
+import io.beanmapper.testmodel.construct_not_matching.FlatConstructSource2;
 import io.beanmapper.testmodel.converter.SourceWithDate;
 import io.beanmapper.testmodel.converter.TargetWithDateTime;
-import io.beanmapper.testmodel.converterbetweennestedclasses.NestedSourceClass;
-import io.beanmapper.testmodel.converterbetweennestedclasses.NestedTargetClass;
-import io.beanmapper.testmodel.converterbetweennestedclasses.SourceWithNestedClass;
-import io.beanmapper.testmodel.converterbetweennestedclasses.TargetWithNestedClass;
-import io.beanmapper.testmodel.converterforclassesincollection.SourceWithCollection;
-import io.beanmapper.testmodel.converterforclassesincollection.TargetWithCollection;
+import io.beanmapper.testmodel.converter_between_nested_classes.NestedSourceClass;
+import io.beanmapper.testmodel.converter_between_nested_classes.NestedTargetClass;
+import io.beanmapper.testmodel.converter_between_nested_classes.SourceWithNestedClass;
+import io.beanmapper.testmodel.converter_between_nested_classes.TargetWithNestedClass;
+import io.beanmapper.testmodel.converter_for_classes_in_collection.SourceWithCollection;
+import io.beanmapper.testmodel.converter_for_classes_in_collection.TargetWithCollection;
 import io.beanmapper.testmodel.defaults.SourceWithDefaults;
 import io.beanmapper.testmodel.defaults.TargetWithDefaults;
 import io.beanmapper.testmodel.emptyobject.EmptySource;
@@ -104,16 +104,16 @@ import io.beanmapper.testmodel.enums.UserRole;
 import io.beanmapper.testmodel.enums.UserRoleResult;
 import io.beanmapper.testmodel.ignore.IgnoreSource;
 import io.beanmapper.testmodel.ignore.IgnoreTarget;
-import io.beanmapper.testmodel.initiallyunmatchedsource.SourceWithUnmatchedField;
-import io.beanmapper.testmodel.initiallyunmatchedsource.TargetWithoutUnmatchedField;
+import io.beanmapper.testmodel.initially_unmatched_source.SourceWithUnmatchedField;
+import io.beanmapper.testmodel.initially_unmatched_source.TargetWithoutUnmatchedField;
 import io.beanmapper.testmodel.innerclass.SourceWithInnerClass;
 import io.beanmapper.testmodel.innerclass.TargetWithInnerClass;
-import io.beanmapper.testmodel.multipleunwrap.AllTogether;
-import io.beanmapper.testmodel.multipleunwrap.LayerA;
-import io.beanmapper.testmodel.nestedclasses.Layer1;
-import io.beanmapper.testmodel.nestedclasses.Layer1Result;
-import io.beanmapper.testmodel.nestedclasses.Layer3;
-import io.beanmapper.testmodel.nestedclasses.Layer4;
+import io.beanmapper.testmodel.multiple_unwrap.AllTogether;
+import io.beanmapper.testmodel.multiple_unwrap.LayerA;
+import io.beanmapper.testmodel.nested_classes.Layer1;
+import io.beanmapper.testmodel.nested_classes.Layer1Result;
+import io.beanmapper.testmodel.nested_classes.Layer3;
+import io.beanmapper.testmodel.nested_classes.Layer4;
 import io.beanmapper.testmodel.numbers.ClassWithInteger;
 import io.beanmapper.testmodel.numbers.ClassWithLong;
 import io.beanmapper.testmodel.numbers.SourceWithDouble;
@@ -123,26 +123,26 @@ import io.beanmapper.testmodel.othername.TargetWithOtherName;
 import io.beanmapper.testmodel.parent.Player;
 import io.beanmapper.testmodel.parent.PlayerForm;
 import io.beanmapper.testmodel.parent.SkillForm;
-import io.beanmapper.testmodel.parentClass.Project;
-import io.beanmapper.testmodel.parentClass.Source;
-import io.beanmapper.testmodel.parentClass.Target;
+import io.beanmapper.testmodel.parentclass.Project;
+import io.beanmapper.testmodel.parentclass.Source;
+import io.beanmapper.testmodel.parentclass.Target;
 import io.beanmapper.testmodel.person.Person;
 import io.beanmapper.testmodel.person.PersonAo;
 import io.beanmapper.testmodel.person.PersonForm;
 import io.beanmapper.testmodel.person.PersonView;
 import io.beanmapper.testmodel.project.CodeProject;
 import io.beanmapper.testmodel.project.CodeProjectResult;
-import io.beanmapper.testmodel.publicfields.SourceWithPublicFields;
-import io.beanmapper.testmodel.publicfields.TargetWithPublicFields;
+import io.beanmapper.testmodel.public_fields.SourceWithPublicFields;
+import io.beanmapper.testmodel.public_fields.TargetWithPublicFields;
 import io.beanmapper.testmodel.rule.NestedWithRule;
 import io.beanmapper.testmodel.rule.SourceWithRule;
 import io.beanmapper.testmodel.rule.TargetWithRule;
-import io.beanmapper.testmodel.samesourcediffresults.Entity;
-import io.beanmapper.testmodel.samesourcediffresults.ResultOne;
-import io.beanmapper.testmodel.samesourcediffresults.ResultTwo;
-import io.beanmapper.testmodel.similarsubclasses.DifferentSource;
-import io.beanmapper.testmodel.similarsubclasses.DifferentTarget;
-import io.beanmapper.testmodel.similarsubclasses.SimilarSubclass;
+import io.beanmapper.testmodel.same_source_diff_results.Entity;
+import io.beanmapper.testmodel.same_source_diff_results.ResultOne;
+import io.beanmapper.testmodel.same_source_diff_results.ResultTwo;
+import io.beanmapper.testmodel.similar_subclasses.DifferentSource;
+import io.beanmapper.testmodel.similar_subclasses.DifferentTarget;
+import io.beanmapper.testmodel.similar_subclasses.SimilarSubclass;
 import io.beanmapper.testmodel.strict.SourceAStrict;
 import io.beanmapper.testmodel.strict.SourceBNonStrict;
 import io.beanmapper.testmodel.strict.SourceCStrict;
@@ -155,12 +155,12 @@ import io.beanmapper.testmodel.strict.TargetCNonStrict;
 import io.beanmapper.testmodel.strict.TargetDNonStrict;
 import io.beanmapper.testmodel.strict.TargetE;
 import io.beanmapper.testmodel.strict.TargetFResult;
-import io.beanmapper.testmodel.strictconvention.SCSourceAForm;
-import io.beanmapper.testmodel.strictconvention.SCSourceB;
-import io.beanmapper.testmodel.strictconvention.SCSourceCForm;
-import io.beanmapper.testmodel.strictconvention.SCTargetA;
-import io.beanmapper.testmodel.strictconvention.SCTargetBResult;
-import io.beanmapper.testmodel.strictconvention.SCTargetC;
+import io.beanmapper.testmodel.strict_convention.SCSourceAForm;
+import io.beanmapper.testmodel.strict_convention.SCSourceB;
+import io.beanmapper.testmodel.strict_convention.SCSourceCForm;
+import io.beanmapper.testmodel.strict_convention.SCTargetA;
+import io.beanmapper.testmodel.strict_convention.SCTargetBResult;
+import io.beanmapper.testmodel.strict_convention.SCTargetC;
 import io.beanmapper.testmodel.tostring.SourceWithNonString;
 import io.beanmapper.testmodel.tostring.TargetWithString;
 import mockit.Expectations;
@@ -705,7 +705,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void EncapsulateManyToMany() {
+    public void encapsulateManyToMany() {
         House house = createHouse();
 
         ResultManyToMany result = beanMapper.map(house, ResultManyToMany.class);
@@ -716,7 +716,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void EncapsulateManyToOne() {
+    public void encapsulateManyToOne() {
         House house = createHouse();
 
         ResultManyToOne result = beanMapper.map(house, ResultManyToOne.class);
@@ -727,7 +727,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void EncapsulateManyToOneWithNull() {
+    public void encapsulateManyToOneWithNull() {
         House house = createHouse();
         house.setAddress(null);
 
@@ -740,7 +740,7 @@ public class BeanMapperTest {
 
 
     @Test
-    public void EncapsulateOneToMany() {
+    public void encapsulateOneToMany() {
         Country country = new Country("Nederland");
 
         ResultOneToMany result = beanMapper.map(country, ResultOneToMany.class);

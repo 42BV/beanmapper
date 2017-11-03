@@ -1,9 +1,9 @@
 package io.beanmapper.core.converter.impl;
 
 import io.beanmapper.core.converter.SimpleBeanConverter;
-import io.beanmapper.testmodel.converterbetweennestedclasses.NestedSourceClass;
-import io.beanmapper.testmodel.converterbetweennestedclasses.NestedTargetAbstractClass;
-import io.beanmapper.testmodel.converterbetweennestedclasses.NestedTargetClass;
+import io.beanmapper.testmodel.converter_between_nested_classes.NestedSourceClass;
+import io.beanmapper.testmodel.converter_between_nested_classes.NestedTargetAbstractClass;
+import io.beanmapper.testmodel.converter_between_nested_classes.NestedTargetClass;
 
 public class NestedSourceClassToNestedTargetClassConverter extends SimpleBeanConverter<NestedSourceClass, NestedTargetAbstractClass> {
 
