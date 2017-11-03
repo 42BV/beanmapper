@@ -7,8 +7,14 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
+import java.util.List;
+
 import io.beanmapper.BeanMapper;
+import io.beanmapper.core.constructor.DefaultBeanInitializer;
+import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
+import io.beanmapper.utils.ConstructorArguments;
 import mockit.Deencapsulation;
 
 import org.junit.Test;
@@ -43,6 +49,61 @@ public class BeanMapperBuilderTest {
     public void setCollectionClassOnCoreThrowsException() {
         BeanMapperBuilder builder = new BeanMapperBuilder();
         builder.setCollectionClass(null);
+    }
+
+    @Test
+    public void withoutDefaultConverters() {
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .withoutDefaultConverters()
+                .build();
+        assertEquals(0, beanMapper.getConfiguration().getBeanConverters().size());
+    }
+
+    @Test
+    public void setProxySkipClass() {
+        Class expectedClass = Collections.EMPTY_LIST.getClass();
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .addProxySkipClass(expectedClass)
+                .build();
+        assertEquals(expectedClass, beanMapper.getConfiguration().getBeanUnproxy().unproxy(expectedClass));
+    }
+
+    @Test
+    public void addPackagePrefix() {
+        String expectedPackagePrefix = "io.beanmapper.dummie";
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .addPackagePrefix(expectedPackagePrefix)
+                .build();
+        List<String> packagePrefixes = beanMapper.getConfiguration().getPackagePrefixes();
+        assertEquals(expectedPackagePrefix, packagePrefixes.get(0));
+    }
+
+    @Test
+    public void setBeanInitializer() {
+        final DefaultBeanInitializer expectedBeanInitializer = new DefaultBeanInitializer() {
+            @Override
+            public <T> T instantiate(Class<T> beanClass, ConstructorArguments arguments) {
+                return null;
+            }
+        };
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .setBeanInitializer(expectedBeanInitializer)
+                .build();
+        assertEquals(expectedBeanInitializer, beanMapper.getConfiguration().getBeanInitializer());
+    }
+
+    @Test
+    public void setBeanUnproxy() {
+        final BeanUnproxy expectedBeanUnproxy = new BeanUnproxy() {
+            @Override
+            public Class<?> unproxy(Class<?> beanClass) {
+                return Long.class;
+            }
+        };
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .setBeanUnproxy(expectedBeanUnproxy)
+                .build();
+        assertEquals(Long.class, beanMapper.getConfiguration().getBeanUnproxy().unproxy(String.class));
     }
 
     @Test

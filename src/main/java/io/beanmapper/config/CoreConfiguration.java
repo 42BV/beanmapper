@@ -235,7 +235,7 @@ public class CoreConfiguration implements Configuration {
 
     @Override
     public void addPackagePrefix(Class<?> clazz) {
-        if (clazz.getPackage() != null) {
+        if (clazz != null && clazz.getPackage() != null) {
             addPackagePrefix(clazz.getPackage().getName());
         }
     }
