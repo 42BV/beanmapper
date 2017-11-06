@@ -11,7 +11,6 @@ import io.beanmapper.core.BeanMatch;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanFieldNoMatchException;
-import io.beanmapper.utils.ConstructorArguments;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

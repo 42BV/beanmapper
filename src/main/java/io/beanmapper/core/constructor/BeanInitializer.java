@@ -3,7 +3,7 @@
  */
 package io.beanmapper.core.constructor;
 
-import io.beanmapper.utils.ConstructorArguments;
+import io.beanmapper.strategy.ConstructorArguments;
 
 /**
  * Abstraction that initializes beans.

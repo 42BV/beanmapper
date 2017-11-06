@@ -8,7 +8,7 @@ import java.util.List;
 
 import io.beanmapper.BeanMapper;
 import io.beanmapper.core.constructor.DefaultBeanInitializer;
-import io.beanmapper.utils.ConstructorArguments;
+import io.beanmapper.strategy.ConstructorArguments;
 
 import org.junit.Before;
 import org.junit.Test;

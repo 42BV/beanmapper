@@ -1,4 +1,4 @@
-package io.beanmapper.utils;
+package io.beanmapper.core;
 
 import static io.beanmapper.core.converter.collections.CollectionElementType.derived;
 

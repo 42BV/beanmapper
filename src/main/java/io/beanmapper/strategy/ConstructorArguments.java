@@ -1,4 +1,4 @@
-package io.beanmapper.utils;
+package io.beanmapper.strategy;
 
 import java.util.ArrayList;
 import java.util.List;

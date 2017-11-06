@@ -26,7 +26,6 @@ import io.beanmapper.core.inspector.PropertyAccessors;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.exceptions.BeanMissingPathException;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
-import io.beanmapper.utils.GenericTypeDeterminer;
 
 public class BeanMatchStore {
 

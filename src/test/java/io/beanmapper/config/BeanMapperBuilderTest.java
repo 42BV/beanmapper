@@ -15,7 +15,7 @@ import io.beanmapper.core.collections.ListCollectionHandler;
 import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
-import io.beanmapper.utils.ConstructorArguments;
+import io.beanmapper.strategy.ConstructorArguments;
 import mockit.Deencapsulation;
 
 import org.junit.Test;

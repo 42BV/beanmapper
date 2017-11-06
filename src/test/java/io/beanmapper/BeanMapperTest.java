@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -129,6 +130,7 @@ import io.beanmapper.testmodel.parentclass.Target;
 import io.beanmapper.testmodel.person.Person;
 import io.beanmapper.testmodel.person.PersonAo;
 import io.beanmapper.testmodel.person.PersonForm;
+import io.beanmapper.testmodel.person.PersonResult;
 import io.beanmapper.testmodel.person.PersonView;
 import io.beanmapper.testmodel.project.CodeProject;
 import io.beanmapper.testmodel.project.CodeProjectResult;
@@ -408,6 +410,34 @@ public class BeanMapperTest {
         assertEquals("Piet", targetItems.get("piet").name);
         assertEquals("Joris", targetItems.get("joris").name);
         assertEquals("Korneel", targetItems.get("korneel").name);
+    }
+
+    @Test
+    public void direcltyMapSet_comparable() {
+        Set<Long> source = new TreeSet<Long>() {{
+            add(13L);
+            add(29L);
+            add(43L);
+        }};
+        Set<String> target = beanMapper.map(source, String.class);
+        assertEquals(TreeSet.class, target.getClass());
+        assertEquals(3, target.size());
+        assertTrue(target.contains("13"));
+        assertTrue(target.contains("29"));
+        assertTrue(target.contains("43"));
+    }
+
+    @Test
+    public void direcltyMapSet_nonComparable() {
+        Set<Person> source = new HashSet<Person>() {{
+            add(new Person() {{
+                this.setName("Henk");
+            }});
+        }};
+        Set<PersonResult> target = beanMapper.map(source, PersonResult.class);
+        assertEquals(HashSet.class, target.getClass());
+        assertEquals(1, target.size());
+        assertEquals("Henk", target.iterator().next().name);
     }
 
     @Test
@@ -1397,6 +1427,13 @@ public class BeanMapperTest {
             value2 = "33";
         }};
         beanMapper.map(source, TargetNestedBeanProperty.class);
+    }
+
+    @Test
+    public void wrap_mustAlwaysWrap() {
+        assertNotSame(beanMapper.getConfiguration(), beanMapper.wrapConfig().build().getConfiguration());
+        assertNotSame(beanMapper.getConfiguration(), beanMapper.config().build().getConfiguration());
+        assertNotSame(beanMapper.getConfiguration(), beanMapper.wrap().build().getConfiguration());
     }
 
     public Person createPerson(String name) {

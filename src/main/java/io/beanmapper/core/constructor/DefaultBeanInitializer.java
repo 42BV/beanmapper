@@ -5,7 +5,7 @@ package io.beanmapper.core.constructor;
 
 import io.beanmapper.exceptions.BeanConstructException;
 import io.beanmapper.exceptions.BeanInstantiationException;
-import io.beanmapper.utils.ConstructorArguments;
+import io.beanmapper.strategy.ConstructorArguments;
 
 public class DefaultBeanInitializer implements BeanInitializer {
     

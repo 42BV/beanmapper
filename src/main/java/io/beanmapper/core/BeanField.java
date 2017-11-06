@@ -9,7 +9,7 @@ import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessors;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
-import io.beanmapper.utils.ConstructorArguments;
+import io.beanmapper.strategy.ConstructorArguments;
 import io.beanmapper.utils.DefaultValues;
 
 public class BeanField {
