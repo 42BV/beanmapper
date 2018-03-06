@@ -23,7 +23,6 @@ public class FieldPropertyAccessor implements PropertyAccessor {
 
     public FieldPropertyAccessor(Field field) {
         this.field = field;
-        this.field.setAccessible(true);
     }
 
     /**
@@ -68,6 +67,7 @@ public class FieldPropertyAccessor implements PropertyAccessor {
     @Override
     public Object getValue(Object instance) {
         try {
+            field.setAccessible(true);
             return field.get(instance);
         } catch (IllegalAccessException e) {
             throw new BeanGetFieldException(instance.getClass(), field.getName(), e);
@@ -88,6 +88,7 @@ public class FieldPropertyAccessor implements PropertyAccessor {
     @Override
     public void setValue(Object instance, Object value) {
         try {
+            field.setAccessible(true);
             field.set(instance, value);
         } catch (IllegalAccessException e) {
             throw new BeanSetFieldException(instance.getClass(), field.getName(), e);
