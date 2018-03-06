@@ -23,14 +23,6 @@ public class PropertyDescriptorPropertyAccessor implements PropertyAccessor {
 
     public PropertyDescriptorPropertyAccessor(PropertyDescriptor descriptor) {
         this.descriptor = descriptor;
-        makeAccessable(descriptor.getReadMethod());
-        makeAccessable(descriptor.getWriteMethod());
-    }
-    
-    private void makeAccessable(Method method) {
-        if (method != null) {
-            method.setAccessible(true);
-        }
     }
 
     /**
@@ -82,10 +74,10 @@ public class PropertyDescriptorPropertyAccessor implements PropertyAccessor {
         }
 
         try {
-            return descriptor.getReadMethod().invoke(instance);
-        } catch (IllegalAccessException e) {
-            throw new BeanGetFieldException(instance.getClass(), getName(), e);
-        } catch (InvocationTargetException e) {
+            Method readMethod = descriptor.getReadMethod();
+            readMethod.setAccessible(true);
+            return readMethod.invoke(instance);
+        } catch (IllegalAccessException | InvocationTargetException e) {
             throw new BeanGetFieldException(instance.getClass(), getName(), e);
         }
     }
@@ -108,10 +100,10 @@ public class PropertyDescriptorPropertyAccessor implements PropertyAccessor {
         }
         
         try {
-            descriptor.getWriteMethod().invoke(instance, value);
-        } catch (IllegalAccessException e) {
-            throw new BeanSetFieldException(instance.getClass(), getName(), e);
-        } catch (InvocationTargetException e) {
+            Method writeMethod = descriptor.getWriteMethod();
+            writeMethod.setAccessible(true);
+            writeMethod.invoke(instance, value);
+        } catch (IllegalAccessException | InvocationTargetException e) {
             throw new BeanSetFieldException(instance.getClass(), getName(), e);
         }
     }
