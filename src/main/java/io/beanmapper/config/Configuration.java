@@ -188,6 +188,14 @@ public interface Configuration {
     Boolean mustFlush();
 
     /**
+     * The SecuredPropertyHandler is responsible for checking if a Principal may access
+     * a field or method annotated with @BeanSecuredProperty. Returns the SecuredPropertyHandler,
+     * if it has been configured.
+     * @return the active SecuredPropertyHandler, if set. Otherwise, null
+     */
+    SecuredPropertyHandler getSecuredPropertyHandler();
+
+    /**
      * Add a converter class (must inherit from abstract BeanConverter class) to the beanMapper.
      * On mapping, the beanMapper will check for a suitable converter and use its from and
      * to methods to convert the value of the fields to the correct new data type.
@@ -255,6 +263,13 @@ public interface Configuration {
      * @param afterClearFlusher the flusher to be added to the call stack after a clear call
      */
     void addAfterClearFlusher(AfterClearFlusher afterClearFlusher);
+
+    /**
+     * The SecuredPropertyHandler is responsible for checking if a Principal may access
+     * a field or method annotated with @BeanSecuredProperty.
+     * @param securedPropertyHandler the new active SecuredPropertyHandler
+     */
+    void setSecuredPropertyHandler(SecuredPropertyHandler securedPropertyHandler);
 
     void setBeanInitializer(BeanInitializer beanInitializer);
 

@@ -73,6 +73,12 @@ public class CoreConfiguration implements Configuration {
 
     private Boolean flushEnabled = false;
 
+    /**
+     * The SecuredPropertyHandler is responsible for checking if a Principal may access
+     * a field or method annotated with @BeanSecuredProperty.
+     */
+    private SecuredPropertyHandler securedPropertyHandler;
+
     @Override
     public List<String> getDownsizeTarget() { return null; }
 
@@ -209,6 +215,11 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
+    public SecuredPropertyHandler getSecuredPropertyHandler() {
+        return this.securedPropertyHandler;
+    }
+
+    @Override
     public void addConverter(BeanConverter converter) {
         this.beanConverters.add(converter);
     }
@@ -248,6 +259,11 @@ public class CoreConfiguration implements Configuration {
     @Override
     public void addAfterClearFlusher(AfterClearFlusher afterClearFlusher) {
         this.collectionFlusher.addAfterClearFlusher(afterClearFlusher);
+    }
+
+    @Override
+    public void setSecuredPropertyHandler(SecuredPropertyHandler securedPropertyHandler) {
+        this.securedPropertyHandler = securedPropertyHandler;
     }
 
     @Override

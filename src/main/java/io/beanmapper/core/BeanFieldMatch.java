@@ -3,10 +3,16 @@ package io.beanmapper.core;
 import java.lang.annotation.Annotation;
 
 import io.beanmapper.annotations.BeanDefault;
+import io.beanmapper.config.SecuredPropertyHandler;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
 import io.beanmapper.exceptions.BeanMappingException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class BeanFieldMatch {
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private BeanMatch beanMatch;
     private Object source;
@@ -28,6 +34,23 @@ public class BeanFieldMatch {
                 matchedBeanPairField.getSourceBeanField(),
                 matchedBeanPairField.getTargetBeanField());
     }
+    public boolean hasAccess(SecuredPropertyHandler securedPropertyHandler) {
+        if (securedPropertyHandler == null) {
+            warnIfSecuredFieldHandlerNotSet(sourceBeanField);
+            warnIfSecuredFieldHandlerNotSet(targetBeanField);
+            return true;
+        }
+        return
+            securedPropertyHandler.hasRole(sourceBeanField.getRequiredRoles()) &&
+            securedPropertyHandler.hasRole(targetBeanField.getRequiredRoles());
+    }
+
+    private void warnIfSecuredFieldHandlerNotSet(BeanField beanField) {
+        if (beanField.getRequiredRoles().length > 0) {
+            logger.warn("Property '" + beanField.getName() + "' has @BeanSecuredProperty annotation, but SecuredPropertyHandler is not set");
+        }
+    }
+
     public boolean hasSimilarClasses() {
         return sourceBeanField.getProperty().getType().equals(targetBeanField.getProperty().getType());
     }

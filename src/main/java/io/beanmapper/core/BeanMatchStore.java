@@ -14,6 +14,7 @@ import io.beanmapper.annotations.BeanCollection;
 import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.annotations.BeanIgnore;
 import io.beanmapper.annotations.BeanProperty;
+import io.beanmapper.annotations.BeanSecuredProperty;
 import io.beanmapper.annotations.BeanUnwrap;
 import io.beanmapper.config.BeanPair;
 import io.beanmapper.config.CollectionHandlerStore;
@@ -151,6 +152,10 @@ public class BeanMatchStore {
                     currentBeanField,
                     matchupDirection);
 
+            handleBeanSecuredFieldAnnotation(
+                    currentBeanField,
+                    accessor.findAnnotation(BeanSecuredProperty.class));
+
             if(accessor.findAnnotation(BeanAlias.class) != null) {
                 BeanAlias beanAlias = accessor.findAnnotation(BeanAlias.class);
                 if(aliases.containsKey(beanAlias.value())) {
@@ -173,6 +178,13 @@ public class BeanMatchStore {
             }
         }
         return ourCurrentNodes;
+    }
+
+    private void handleBeanSecuredFieldAnnotation(BeanField beanField, BeanSecuredProperty beanSecuredProperty) {
+        if (beanSecuredProperty == null) {
+            return;
+        }
+        beanField.setRequiredRoles(beanSecuredProperty.value());
     }
 
     private void handleBeanCollectionAnnotation(

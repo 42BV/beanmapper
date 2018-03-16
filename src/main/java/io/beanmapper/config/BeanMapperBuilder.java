@@ -90,6 +90,11 @@ public class BeanMapperBuilder {
         return this;
     }
 
+    public BeanMapperBuilder setSecuredPropertyHandler(SecuredPropertyHandler securedPropertyHandler) {
+        this.configuration.setSecuredPropertyHandler(securedPropertyHandler);
+        return this;
+    }
+
     public BeanMapperBuilder setBeanInitializer(BeanInitializer beanInitializer) {
         this.configuration.setBeanInitializer(beanInitializer);
         return this;

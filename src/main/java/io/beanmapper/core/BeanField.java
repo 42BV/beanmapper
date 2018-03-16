@@ -22,6 +22,8 @@ public class BeanField {
 
     private BeanCollectionInstructions collectionInstructions;
 
+    private String[] requiredRoles = new String[0];
+
     private boolean mustMatch = false;
 
     private boolean matched = false;
@@ -175,6 +177,14 @@ public class BeanField {
 
     public boolean isUnmatched() {
         return mustMatch && !matched;
+    }
+
+    public String[] getRequiredRoles() {
+        return requiredRoles;
+    }
+
+    public void setRequiredRoles(String[] requiredRoles) {
+        this.requiredRoles = requiredRoles;
     }
 
 }

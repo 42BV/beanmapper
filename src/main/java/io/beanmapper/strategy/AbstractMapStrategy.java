@@ -6,6 +6,7 @@ import io.beanmapper.annotations.BeanDefault;
 import io.beanmapper.annotations.BeanParent;
 import io.beanmapper.annotations.BeanProperty;
 import io.beanmapper.config.Configuration;
+import io.beanmapper.config.SecuredPropertyHandler;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.BeanMatch;
 import io.beanmapper.core.converter.BeanConverter;
@@ -176,6 +177,11 @@ public abstract class AbstractMapStrategy implements MapStrategy {
             dealWithNonMatchingNode(beanFieldMatch);
             return;
         }
+
+        if (!beanFieldMatch.hasAccess(configuration.getSecuredPropertyHandler())) {
+            return;
+        }
+
         if (!isConverterFor(beanFieldMatch.getSourceClass(), beanFieldMatch.getTargetClass()) &&
                 (!beanFieldMatch.hasSimilarClasses() || (beanFieldMatch.hasSimilarClasses() && beanFieldMatch.getTargetObject() != null)) &&
                 !(beanFieldMatch.getSourceClass().isEnum() || beanFieldMatch.getTargetClass().isEnum()) &&
@@ -190,6 +196,15 @@ public abstract class AbstractMapStrategy implements MapStrategy {
             copySourceToTarget(beanFieldMatch);
             logger.debug(INDENT + beanFieldMatch.targetToString());
         }
+    }
+
+    private boolean hasAccess(BeanFieldMatch beanFieldMatch) {
+        SecuredPropertyHandler securedPropertyHandler = configuration.getSecuredPropertyHandler();
+        if (securedPropertyHandler == null) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

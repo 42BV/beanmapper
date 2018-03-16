@@ -219,6 +219,11 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
+    public SecuredPropertyHandler getSecuredPropertyHandler() {
+        return parentConfiguration.getSecuredPropertyHandler();
+    }
+
+    @Override
     public void addConverter(BeanConverter converter) {
         beanConverters.add(converter);
     }
@@ -255,6 +260,11 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public void addAfterClearFlusher(AfterClearFlusher afterClearFlusher) {
+        // not supported for override options
+    }
+
+    @Override
+    public void setSecuredPropertyHandler(SecuredPropertyHandler securedPropertyHandler) {
         // not supported for override options
     }
 

@@ -22,6 +22,7 @@ import java.util.TreeSet;
 
 import io.beanmapper.config.AfterClearFlusher;
 import io.beanmapper.config.BeanMapperBuilder;
+import io.beanmapper.config.SecuredPropertyHandler;
 import io.beanmapper.core.BeanStrictMappingRequirementsException;
 import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
 import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
@@ -39,6 +40,11 @@ import io.beanmapper.testmodel.beanproperty.SourceBeanProperty;
 import io.beanmapper.testmodel.beanproperty.SourceNestedBeanProperty;
 import io.beanmapper.testmodel.beanproperty.TargetBeanProperty;
 import io.beanmapper.testmodel.beanproperty.TargetNestedBeanProperty;
+import io.beanmapper.testmodel.beansecuredfield.SFSourceAWithSecuredField;
+import io.beanmapper.testmodel.beansecuredfield.SFSourceB;
+import io.beanmapper.testmodel.beansecuredfield.SFSourceCWithSecuredMethod;
+import io.beanmapper.testmodel.beansecuredfield.SFTargetA;
+import io.beanmapper.testmodel.beansecuredfield.SFTargetBWithSecuredField;
 import io.beanmapper.testmodel.collections.CollSourceClear;
 import io.beanmapper.testmodel.collections.CollSourceClearFlush;
 import io.beanmapper.testmodel.collections.CollSourceConstruct;
@@ -1434,6 +1440,65 @@ public class BeanMapperTest {
         assertNotSame(beanMapper.getConfiguration(), beanMapper.wrapConfig().build().getConfiguration());
         assertNotSame(beanMapper.getConfiguration(), beanMapper.config().build().getConfiguration());
         assertNotSame(beanMapper.getConfiguration(), beanMapper.wrap().build().getConfiguration());
+    }
+
+    @Test
+    public void securedSourceFieldNoSecuredFieldHandler() {
+        assertSecuredSourceField(null, "Henk");
+    }
+
+    @Test
+    public void securedSourceFieldHasAccess() {
+        assertSecuredSourceField(roles -> true, "Henk");
+    }
+
+    @Test
+    public void securedSourceFieldNoAccess() {
+        assertSecuredSourceField(roles -> false, null);
+    }
+
+    @Test
+    public void securedTargetFieldHasAccess() {
+        assertSecuredTargetField(roles -> true, "Henk");
+    }
+
+    @Test
+    public void securedTargetFieldNoAccess() {
+        assertSecuredTargetField(roles -> false, null);
+    }
+
+    @Test
+    public void securedSourceMethodNoAccess() {
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .setSecuredPropertyHandler(roles -> false)
+                .build();
+        SFSourceCWithSecuredMethod source = new SFSourceCWithSecuredMethod() {{
+            setName("Henk");
+        }};
+        SFTargetA target = beanMapper.map(source, SFTargetA.class);
+        assertEquals(null, target.name);
+    }
+
+    private void assertSecuredSourceField(SecuredPropertyHandler securedPropertyHandler, String expectedName) {
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .setSecuredPropertyHandler(securedPropertyHandler)
+                .build();
+        SFSourceAWithSecuredField source = new SFSourceAWithSecuredField() {{
+            name = "Henk";
+        }};
+        SFTargetA target = beanMapper.map(source, SFTargetA.class);
+        assertEquals(expectedName, target.name);
+    }
+
+    private void assertSecuredTargetField(SecuredPropertyHandler securedPropertyHandler, String expectedName) {
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .setSecuredPropertyHandler(securedPropertyHandler)
+                .build();
+        SFSourceB source = new SFSourceB() {{
+            name = "Henk";
+        }};
+        SFTargetBWithSecuredField target = beanMapper.map(source, SFTargetBWithSecuredField.class);
+        assertEquals(expectedName, target.name);
     }
 
     public Person createPerson(String name) {
