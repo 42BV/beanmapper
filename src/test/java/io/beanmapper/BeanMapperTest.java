@@ -30,6 +30,7 @@ import io.beanmapper.core.converter.impl.NestedSourceClassToNestedTargetClassCon
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
 import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanMappingException;
+import io.beanmapper.exceptions.BeanNoSecuredPropertyHandlerSetException;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
 import io.beanmapper.testmodel.anonymous.Book;
 import io.beanmapper.testmodel.anonymous.BookForm;
@@ -1443,11 +1444,6 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void securedSourceFieldNoSecuredFieldHandler() {
-        assertSecuredSourceField(null, "Henk");
-    }
-
-    @Test
     public void securedSourceFieldHasAccess() {
         assertSecuredSourceField(roles -> true, "Henk");
     }
@@ -1499,6 +1495,26 @@ public class BeanMapperTest {
         }};
         SFTargetBWithSecuredField target = beanMapper.map(source, SFTargetBWithSecuredField.class);
         assertEquals(expectedName, target.name);
+    }
+
+    @Test(expected = BeanNoSecuredPropertyHandlerSetException.class)
+    public void throwExceptionWhenSecuredPropertyDoesNotHaveAHandler() {
+        SFSourceAWithSecuredField source = new SFSourceAWithSecuredField() {{
+            name = "Henk";
+        }};
+        beanMapper.map(source, SFTargetA.class);
+    }
+
+    @Test
+    public void allowSecuredPropertyDoesNotHaveAHandler() {
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .setEnforcedSecuredProperties(false)
+                .build();
+        SFSourceAWithSecuredField source = new SFSourceAWithSecuredField() {{
+            name = "Henk";
+        }};
+        SFTargetA target = beanMapper.map(source, SFTargetA.class);
+        assertEquals("Henk", target.name);
     }
 
     public Person createPerson(String name) {

@@ -196,6 +196,13 @@ public interface Configuration {
     SecuredPropertyHandler getSecuredPropertyHandler();
 
     /**
+     * Property that determines if secured properties must be handled. If this is set to true
+     * and the SecuredPropertyHandler has not been set, an exception will be thrown.
+     * @return whether the handling of secured properties is enforced
+     */
+    Boolean getEnforceSecuredProperties();
+
+    /**
      * Add a converter class (must inherit from abstract BeanConverter class) to the beanMapper.
      * On mapping, the beanMapper will check for a suitable converter and use its from and
      * to methods to convert the value of the fields to the correct new data type.
@@ -263,13 +270,6 @@ public interface Configuration {
      * @param afterClearFlusher the flusher to be added to the call stack after a clear call
      */
     void addAfterClearFlusher(AfterClearFlusher afterClearFlusher);
-
-    /**
-     * The SecuredPropertyHandler is responsible for checking if a Principal may access
-     * a field or method annotated with @BeanSecuredProperty.
-     * @param securedPropertyHandler the new active SecuredPropertyHandler
-     */
-    void setSecuredPropertyHandler(SecuredPropertyHandler securedPropertyHandler);
 
     void setBeanInitializer(BeanInitializer beanInitializer);
 
@@ -381,5 +381,19 @@ public interface Configuration {
      * @param flushEnabled whether flushing has been enabled
      */
     void setFlushEnabled(Boolean flushEnabled);
+
+    /**
+     * The SecuredPropertyHandler is responsible for checking if a Principal may access
+     * a field or method annotated with @BeanSecuredProperty.
+     * @param securedPropertyHandler the new active SecuredPropertyHandler
+     */
+    void setSecuredPropertyHandler(SecuredPropertyHandler securedPropertyHandler);
+
+    /**
+     * Property that determines if secured properties must be handled. If this is set to true
+     * and the SecuredPropertyHandler has not been set, an exception will be thrown.
+     * @param enforceSecuredProperties whether the handling of secured properties is enforced
+     */
+    void setEnforceSecuredProperties(Boolean enforceSecuredProperties);
 
 }

@@ -178,7 +178,9 @@ public abstract class AbstractMapStrategy implements MapStrategy {
             return;
         }
 
-        if (!beanFieldMatch.hasAccess(configuration.getSecuredPropertyHandler())) {
+        if (!beanFieldMatch.hasAccess(
+                configuration.getSecuredPropertyHandler(),
+                configuration.getEnforceSecuredProperties())) {
             return;
         }
 
@@ -196,15 +198,6 @@ public abstract class AbstractMapStrategy implements MapStrategy {
             copySourceToTarget(beanFieldMatch);
             logger.debug(INDENT + beanFieldMatch.targetToString());
         }
-    }
-
-    private boolean hasAccess(BeanFieldMatch beanFieldMatch) {
-        SecuredPropertyHandler securedPropertyHandler = configuration.getSecuredPropertyHandler();
-        if (securedPropertyHandler == null) {
-            return true;
-        }
-
-        return false;
     }
 
     /**

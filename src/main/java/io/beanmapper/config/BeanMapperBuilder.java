@@ -95,6 +95,11 @@ public class BeanMapperBuilder {
         return this;
     }
 
+    public BeanMapperBuilder setEnforcedSecuredProperties(Boolean enforcedSecuredProperties) {
+        this.configuration.setEnforceSecuredProperties(enforcedSecuredProperties);
+        return this;
+    }
+
     public BeanMapperBuilder setBeanInitializer(BeanInitializer beanInitializer) {
         this.configuration.setBeanInitializer(beanInitializer);
         return this;

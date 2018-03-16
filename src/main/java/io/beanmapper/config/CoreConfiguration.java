@@ -79,6 +79,12 @@ public class CoreConfiguration implements Configuration {
      */
     private SecuredPropertyHandler securedPropertyHandler;
 
+    /**
+     * Property that determines if secured properties must be handled. If this is set to true
+     * and the SecuredPropertyHandler has not been set, an exception will be thrown.
+     */
+    private Boolean enforceSecuredProperties = true;
+
     @Override
     public List<String> getDownsizeTarget() { return null; }
 
@@ -220,6 +226,11 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
+    public Boolean getEnforceSecuredProperties() {
+        return enforceSecuredProperties;
+    }
+
+    @Override
     public void addConverter(BeanConverter converter) {
         this.beanConverters.add(converter);
     }
@@ -259,11 +270,6 @@ public class CoreConfiguration implements Configuration {
     @Override
     public void addAfterClearFlusher(AfterClearFlusher afterClearFlusher) {
         this.collectionFlusher.addAfterClearFlusher(afterClearFlusher);
-    }
-
-    @Override
-    public void setSecuredPropertyHandler(SecuredPropertyHandler securedPropertyHandler) {
-        this.securedPropertyHandler = securedPropertyHandler;
     }
 
     @Override
@@ -362,6 +368,16 @@ public class CoreConfiguration implements Configuration {
     @Override
     public void setFlushEnabled(Boolean flushEnabled) {
         this.flushEnabled = flushEnabled;
+    }
+
+    @Override
+    public void setSecuredPropertyHandler(SecuredPropertyHandler securedPropertyHandler) {
+        this.securedPropertyHandler = securedPropertyHandler;
+    }
+
+    @Override
+    public void setEnforceSecuredProperties(Boolean enforceSecuredProperties) {
+        this.enforceSecuredProperties = enforceSecuredProperties;
     }
 
 }

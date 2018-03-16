@@ -41,6 +41,8 @@ public class OverrideConfiguration implements Configuration {
 
     private Class<?> preferredCollectionClass = null;
 
+    private Boolean enforcedSecuredProperties = null;
+
     private OverrideField<Boolean> flushAfterClear;
 
     private OverrideField<Boolean> flushEnabled;
@@ -224,6 +226,13 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
+    public Boolean getEnforceSecuredProperties() {
+        return this.enforcedSecuredProperties == null ?
+                parentConfiguration.getEnforceSecuredProperties() :
+                this.enforcedSecuredProperties;
+    }
+
+    @Override
     public void addConverter(BeanConverter converter) {
         beanConverters.add(converter);
     }
@@ -266,6 +275,11 @@ public class OverrideConfiguration implements Configuration {
     @Override
     public void setSecuredPropertyHandler(SecuredPropertyHandler securedPropertyHandler) {
         // not supported for override options
+    }
+
+    @Override
+    public void setEnforceSecuredProperties(Boolean enforceSecuredProperties) {
+        this.enforcedSecuredProperties = enforceSecuredProperties;
     }
 
     @Override

@@ -6,6 +6,7 @@ import io.beanmapper.annotations.BeanDefault;
 import io.beanmapper.config.SecuredPropertyHandler;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
 import io.beanmapper.exceptions.BeanMappingException;
+import io.beanmapper.exceptions.BeanNoSecuredPropertyHandlerSetException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,10 +35,13 @@ public class BeanFieldMatch {
                 matchedBeanPairField.getSourceBeanField(),
                 matchedBeanPairField.getTargetBeanField());
     }
-    public boolean hasAccess(SecuredPropertyHandler securedPropertyHandler) {
+    public boolean hasAccess(
+            SecuredPropertyHandler securedPropertyHandler,
+            Boolean enforcedSecuredProperties) {
+
         if (securedPropertyHandler == null) {
-            warnIfSecuredFieldHandlerNotSet(sourceBeanField);
-            warnIfSecuredFieldHandlerNotSet(targetBeanField);
+            checkIfSecuredFieldHandlerNotSet(sourceBeanField, enforcedSecuredProperties);
+            checkIfSecuredFieldHandlerNotSet(targetBeanField, enforcedSecuredProperties);
             return true;
         }
         return
@@ -45,10 +49,21 @@ public class BeanFieldMatch {
             securedPropertyHandler.hasRole(targetBeanField.getRequiredRoles());
     }
 
-    private void warnIfSecuredFieldHandlerNotSet(BeanField beanField) {
+    private void checkIfSecuredFieldHandlerNotSet(BeanField beanField, Boolean enforcedSecuredProperties) {
         if (beanField.getRequiredRoles().length > 0) {
-            logger.warn("Property '" + beanField.getName() + "' has @BeanSecuredProperty annotation, but SecuredPropertyHandler is not set");
+            String message = getBeanFieldSecuredPropertyMessage(beanField);
+            if (enforcedSecuredProperties) {
+                throw new BeanNoSecuredPropertyHandlerSetException(message);
+            }
+            logger.warn(message);
         }
+    }
+
+    private String getBeanFieldSecuredPropertyMessage(BeanField beanField) {
+        return
+                "Property '" +
+                beanField.getName() +
+                "' has @BeanSecuredProperty annotation, but SecuredPropertyHandler is not set";
     }
 
     public boolean hasSimilarClasses() {
