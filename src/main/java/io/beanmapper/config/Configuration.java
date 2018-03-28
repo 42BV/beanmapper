@@ -1,8 +1,10 @@
 package io.beanmapper.config;
 
 import java.util.List;
+import java.util.Map;
 
 import io.beanmapper.annotations.BeanCollectionUsage;
+import io.beanmapper.annotations.LogicSecuredCheck;
 import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.constructor.BeanInitializer;
@@ -80,6 +82,8 @@ public interface Configuration {
     List<String> getPackagePrefixes();
 
     List<BeanConverter> getBeanConverters();
+
+    Map<Class<? extends LogicSecuredCheck>, LogicSecuredCheck> getLogicSecuredChecks();
 
     /**
      * Returns the list of registered collection handlers. The handlers are used to deal
@@ -188,16 +192,16 @@ public interface Configuration {
     Boolean mustFlush();
 
     /**
-     * The SecuredPropertyHandler is responsible for checking if a Principal may access
-     * a field or method annotated with @BeanSecuredProperty. Returns the SecuredPropertyHandler,
+     * The RoleSecuredCheck is responsible for checking if a Principal may access
+     * a field or method annotated with @BeanRoleSecured. Returns the RoleSecuredCheck,
      * if it has been configured.
-     * @return the active SecuredPropertyHandler, if set. Otherwise, null
+     * @return the active RoleSecuredCheck, if set. Otherwise, null
      */
-    SecuredPropertyHandler getSecuredPropertyHandler();
+    RoleSecuredCheck getRoleSecuredCheck();
 
     /**
      * Property that determines if secured properties must be handled. If this is set to true
-     * and the SecuredPropertyHandler has not been set, an exception will be thrown.
+     * and the RoleSecuredCheck has not been set, an exception will be thrown.
      * @return whether the handling of secured properties is enforced
      */
     Boolean getEnforceSecuredProperties();
@@ -210,6 +214,13 @@ public interface Configuration {
      *                  and inherits from the abstract BeanConverter class.
      */
     void addConverter(BeanConverter converter);
+
+    /**
+     * Add a check instance that takes the source and target instances and on the basis of those
+     * two determines whether access must be provided
+     * @param logicSecuredCheck the check instance to register
+     */
+    void addLogicSecuredCheck(LogicSecuredCheck logicSecuredCheck);
 
     /**
      * Registers a collection handler to the configuration. The Collection handlers supply the
@@ -383,15 +394,15 @@ public interface Configuration {
     void setFlushEnabled(Boolean flushEnabled);
 
     /**
-     * The SecuredPropertyHandler is responsible for checking if a Principal may access
-     * a field or method annotated with @BeanSecuredProperty.
-     * @param securedPropertyHandler the new active SecuredPropertyHandler
+     * The RoleSecuredCheck is responsible for checking if a Principal may access
+     * a field or method annotated with @BeanRoleSecured.
+     * @param roleSecuredCheck the new active RoleSecuredCheck
      */
-    void setSecuredPropertyHandler(SecuredPropertyHandler securedPropertyHandler);
+    void setRoleSecuredCheck(RoleSecuredCheck roleSecuredCheck);
 
     /**
      * Property that determines if secured properties must be handled. If this is set to true
-     * and the SecuredPropertyHandler has not been set, an exception will be thrown.
+     * and the RoleSecuredCheck has not been set, an exception will be thrown.
      * @param enforceSecuredProperties whether the handling of secured properties is enforced
      */
     void setEnforceSecuredProperties(Boolean enforceSecuredProperties);

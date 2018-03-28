@@ -5,6 +5,7 @@ import java.util.List;
 
 import io.beanmapper.BeanMapper;
 import io.beanmapper.annotations.BeanCollectionUsage;
+import io.beanmapper.annotations.LogicSecuredCheck;
 import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.collections.ListCollectionHandler;
 import io.beanmapper.core.collections.MapCollectionHandler;
@@ -90,8 +91,13 @@ public class BeanMapperBuilder {
         return this;
     }
 
-    public BeanMapperBuilder setSecuredPropertyHandler(SecuredPropertyHandler securedPropertyHandler) {
-        this.configuration.setSecuredPropertyHandler(securedPropertyHandler);
+    public BeanMapperBuilder addLogicSecuredCheck(LogicSecuredCheck logicSecuredCheck) {
+        this.configuration.addLogicSecuredCheck(logicSecuredCheck);
+        return this;
+    }
+
+    public BeanMapperBuilder setSecuredPropertyHandler(RoleSecuredCheck roleSecuredCheck) {
+        this.configuration.setRoleSecuredCheck(roleSecuredCheck);
         return this;
     }
 

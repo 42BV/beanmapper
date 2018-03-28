@@ -2,8 +2,10 @@ package io.beanmapper.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import io.beanmapper.annotations.BeanCollectionUsage;
+import io.beanmapper.annotations.LogicSecuredCheck;
 import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.constructor.BeanInitializer;
@@ -135,6 +137,11 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
+    public Map<Class<? extends LogicSecuredCheck>, LogicSecuredCheck> getLogicSecuredChecks() {
+        return parentConfiguration.getLogicSecuredChecks();
+    }
+
+    @Override
     public List<CollectionHandler> getCollectionHandlers() {
         return parentConfiguration.getCollectionHandlers();
     }
@@ -221,8 +228,8 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public SecuredPropertyHandler getSecuredPropertyHandler() {
-        return parentConfiguration.getSecuredPropertyHandler();
+    public RoleSecuredCheck getRoleSecuredCheck() {
+        return parentConfiguration.getRoleSecuredCheck();
     }
 
     @Override
@@ -235,6 +242,11 @@ public class OverrideConfiguration implements Configuration {
     @Override
     public void addConverter(BeanConverter converter) {
         beanConverters.add(converter);
+    }
+
+    @Override
+    public void addLogicSecuredCheck(LogicSecuredCheck logicSecuredCheck) {
+        // not supported for override options
     }
 
     @Override
@@ -273,7 +285,7 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public void setSecuredPropertyHandler(SecuredPropertyHandler securedPropertyHandler) {
+    public void setRoleSecuredCheck(RoleSecuredCheck roleSecuredCheck) {
         // not supported for override options
     }
 

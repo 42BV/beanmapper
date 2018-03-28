@@ -3,6 +3,7 @@ package io.beanmapper.core;
 import java.util.Stack;
 
 import io.beanmapper.annotations.BeanConstruct;
+import io.beanmapper.annotations.LogicSecuredCheck;
 import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
 import io.beanmapper.core.inspector.PropertyAccessor;
@@ -23,6 +24,8 @@ public class BeanField {
     private BeanCollectionInstructions collectionInstructions;
 
     private String[] requiredRoles = new String[0];
+
+    private Class<? extends LogicSecuredCheck> logicSecuredCheck;
 
     private boolean mustMatch = false;
 
@@ -187,4 +190,11 @@ public class BeanField {
         this.requiredRoles = requiredRoles;
     }
 
+    public Class<? extends LogicSecuredCheck> getLogicSecuredCheck() {
+        return logicSecuredCheck;
+    }
+
+    public void setLogicSecuredCheck(Class<? extends LogicSecuredCheck> logicSecuredCheck) {
+        this.logicSecuredCheck = logicSecuredCheck;
+    }
 }

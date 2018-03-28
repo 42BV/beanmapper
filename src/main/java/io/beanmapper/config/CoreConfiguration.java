@@ -1,9 +1,12 @@
 package io.beanmapper.config;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.beanmapper.annotations.BeanCollectionUsage;
+import io.beanmapper.annotations.LogicSecuredCheck;
 import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.constructor.BeanInitializer;
@@ -56,6 +59,11 @@ public class CoreConfiguration implements Configuration {
     private List<BeanConverter> beanConverters = new ArrayList<BeanConverter>();
 
     /**
+     * The list of LogicSecuredCheck instances that verify whether access to a property is allowed.
+     */
+    private Map<Class<? extends LogicSecuredCheck>, LogicSecuredCheck> logicSecuredChecks = new HashMap<>();
+
+    /**
      * The list of converters that should be checked for conversions.
      */
     private List<BeanPair> beanPairs = new ArrayList<BeanPair>();
@@ -74,14 +82,14 @@ public class CoreConfiguration implements Configuration {
     private Boolean flushEnabled = false;
 
     /**
-     * The SecuredPropertyHandler is responsible for checking if a Principal may access
-     * a field or method annotated with @BeanSecuredProperty.
+     * The RoleSecuredCheck is responsible for checking if a Principal may access
+     * a field or method annotated with @BeanRoleSecured.
      */
-    private SecuredPropertyHandler securedPropertyHandler;
+    private RoleSecuredCheck roleSecuredCheck;
 
     /**
      * Property that determines if secured properties must be handled. If this is set to true
-     * and the SecuredPropertyHandler has not been set, an exception will be thrown.
+     * and the RoleSecuredCheck has not been set, an exception will be thrown.
      */
     private Boolean enforceSecuredProperties = true;
 
@@ -147,6 +155,11 @@ public class CoreConfiguration implements Configuration {
     @Override
     public List<BeanConverter> getBeanConverters() {
         return this.beanConverters;
+    }
+
+    @Override
+    public Map<Class<? extends LogicSecuredCheck>, LogicSecuredCheck> getLogicSecuredChecks() {
+        return this.logicSecuredChecks;
     }
 
     @Override
@@ -221,8 +234,8 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
-    public SecuredPropertyHandler getSecuredPropertyHandler() {
-        return this.securedPropertyHandler;
+    public RoleSecuredCheck getRoleSecuredCheck() {
+        return this.roleSecuredCheck;
     }
 
     @Override
@@ -233,6 +246,11 @@ public class CoreConfiguration implements Configuration {
     @Override
     public void addConverter(BeanConverter converter) {
         this.beanConverters.add(converter);
+    }
+
+    @Override
+    public void addLogicSecuredCheck(LogicSecuredCheck logicSecuredCheck) {
+        this.logicSecuredChecks.put(logicSecuredCheck.getClass(), logicSecuredCheck);
     }
 
     @Override
@@ -371,8 +389,8 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
-    public void setSecuredPropertyHandler(SecuredPropertyHandler securedPropertyHandler) {
-        this.securedPropertyHandler = securedPropertyHandler;
+    public void setRoleSecuredCheck(RoleSecuredCheck roleSecuredCheck) {
+        this.roleSecuredCheck = roleSecuredCheck;
     }
 
     @Override

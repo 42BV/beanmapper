@@ -6,7 +6,6 @@ import io.beanmapper.annotations.BeanDefault;
 import io.beanmapper.annotations.BeanParent;
 import io.beanmapper.annotations.BeanProperty;
 import io.beanmapper.config.Configuration;
-import io.beanmapper.config.SecuredPropertyHandler;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.BeanMatch;
 import io.beanmapper.core.converter.BeanConverter;
@@ -179,7 +178,8 @@ public abstract class AbstractMapStrategy implements MapStrategy {
         }
 
         if (!beanFieldMatch.hasAccess(
-                configuration.getSecuredPropertyHandler(),
+                configuration.getRoleSecuredCheck(),
+                configuration.getLogicSecuredChecks(),
                 configuration.getEnforceSecuredProperties())) {
             return;
         }

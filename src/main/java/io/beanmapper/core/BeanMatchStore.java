@@ -13,8 +13,9 @@ import io.beanmapper.annotations.BeanAlias;
 import io.beanmapper.annotations.BeanCollection;
 import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.annotations.BeanIgnore;
+import io.beanmapper.annotations.BeanLogicSecured;
 import io.beanmapper.annotations.BeanProperty;
-import io.beanmapper.annotations.BeanSecuredProperty;
+import io.beanmapper.annotations.BeanRoleSecured;
 import io.beanmapper.annotations.BeanUnwrap;
 import io.beanmapper.config.BeanPair;
 import io.beanmapper.config.CollectionHandlerStore;
@@ -152,9 +153,13 @@ public class BeanMatchStore {
                     currentBeanField,
                     matchupDirection);
 
-            handleBeanSecuredFieldAnnotation(
+            handleBeanRoleSecuredAnnotation(
                     currentBeanField,
-                    accessor.findAnnotation(BeanSecuredProperty.class));
+                    accessor.findAnnotation(BeanRoleSecured.class));
+
+            handleBeanLogicSecuredAnnotation(
+                    currentBeanField,
+                    accessor.findAnnotation(BeanLogicSecured.class));
 
             if(accessor.findAnnotation(BeanAlias.class) != null) {
                 BeanAlias beanAlias = accessor.findAnnotation(BeanAlias.class);
@@ -180,11 +185,18 @@ public class BeanMatchStore {
         return ourCurrentNodes;
     }
 
-    private void handleBeanSecuredFieldAnnotation(BeanField beanField, BeanSecuredProperty beanSecuredProperty) {
-        if (beanSecuredProperty == null) {
+    private void handleBeanLogicSecuredAnnotation(BeanField beanField, BeanLogicSecured beanLogicSecured) {
+        if (beanLogicSecured == null) {
             return;
         }
-        beanField.setRequiredRoles(beanSecuredProperty.value());
+        beanField.setLogicSecuredCheck(beanLogicSecured.value());
+    }
+
+    private void handleBeanRoleSecuredAnnotation(BeanField beanField, BeanRoleSecured beanRoleSecured) {
+        if (beanRoleSecured == null) {
+            return;
+        }
+        beanField.setRequiredRoles(beanRoleSecured.value());
     }
 
     private void handleBeanCollectionAnnotation(

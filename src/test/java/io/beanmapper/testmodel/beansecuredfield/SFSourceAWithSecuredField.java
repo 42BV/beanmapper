@@ -1,10 +1,10 @@
 package io.beanmapper.testmodel.beansecuredfield;
 
-import io.beanmapper.annotations.BeanSecuredProperty;
+import io.beanmapper.annotations.BeanRoleSecured;
 
 public class SFSourceAWithSecuredField {
 
-    @BeanSecuredProperty("ADMIN")
+    @BeanRoleSecured("ADMIN")
     public String name;
 
 }

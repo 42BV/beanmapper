@@ -22,7 +22,7 @@ import java.util.TreeSet;
 
 import io.beanmapper.config.AfterClearFlusher;
 import io.beanmapper.config.BeanMapperBuilder;
-import io.beanmapper.config.SecuredPropertyHandler;
+import io.beanmapper.config.RoleSecuredCheck;
 import io.beanmapper.core.BeanStrictMappingRequirementsException;
 import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
 import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
@@ -30,7 +30,8 @@ import io.beanmapper.core.converter.impl.NestedSourceClassToNestedTargetClassCon
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
 import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanMappingException;
-import io.beanmapper.exceptions.BeanNoSecuredPropertyHandlerSetException;
+import io.beanmapper.exceptions.BeanNoLogicSecuredCheckSetException;
+import io.beanmapper.exceptions.BeanNoRoleSecuredCheckSetException;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
 import io.beanmapper.testmodel.anonymous.Book;
 import io.beanmapper.testmodel.anonymous.BookForm;
@@ -41,9 +42,13 @@ import io.beanmapper.testmodel.beanproperty.SourceBeanProperty;
 import io.beanmapper.testmodel.beanproperty.SourceNestedBeanProperty;
 import io.beanmapper.testmodel.beanproperty.TargetBeanProperty;
 import io.beanmapper.testmodel.beanproperty.TargetNestedBeanProperty;
+import io.beanmapper.testmodel.beansecuredfield.CheckSameNameLogicCheck;
+import io.beanmapper.testmodel.beansecuredfield.NeverReturnTrueCheck;
 import io.beanmapper.testmodel.beansecuredfield.SFSourceAWithSecuredField;
 import io.beanmapper.testmodel.beansecuredfield.SFSourceB;
 import io.beanmapper.testmodel.beansecuredfield.SFSourceCWithSecuredMethod;
+import io.beanmapper.testmodel.beansecuredfield.SFSourceDLogicSecured;
+import io.beanmapper.testmodel.beansecuredfield.SFSourceELogicSecured;
 import io.beanmapper.testmodel.beansecuredfield.SFTargetA;
 import io.beanmapper.testmodel.beansecuredfield.SFTargetBWithSecuredField;
 import io.beanmapper.testmodel.collections.CollSourceClear;
@@ -1475,9 +1480,9 @@ public class BeanMapperTest {
         assertEquals(null, target.name);
     }
 
-    private void assertSecuredSourceField(SecuredPropertyHandler securedPropertyHandler, String expectedName) {
+    private void assertSecuredSourceField(RoleSecuredCheck roleSecuredCheck, String expectedName) {
         BeanMapper beanMapper = new BeanMapperBuilder()
-                .setSecuredPropertyHandler(securedPropertyHandler)
+                .setSecuredPropertyHandler(roleSecuredCheck)
                 .build();
         SFSourceAWithSecuredField source = new SFSourceAWithSecuredField() {{
             name = "Henk";
@@ -1486,9 +1491,9 @@ public class BeanMapperTest {
         assertEquals(expectedName, target.name);
     }
 
-    private void assertSecuredTargetField(SecuredPropertyHandler securedPropertyHandler, String expectedName) {
+    private void assertSecuredTargetField(RoleSecuredCheck roleSecuredCheck, String expectedName) {
         BeanMapper beanMapper = new BeanMapperBuilder()
-                .setSecuredPropertyHandler(securedPropertyHandler)
+                .setSecuredPropertyHandler(roleSecuredCheck)
                 .build();
         SFSourceB source = new SFSourceB() {{
             name = "Henk";
@@ -1497,7 +1502,7 @@ public class BeanMapperTest {
         assertEquals(expectedName, target.name);
     }
 
-    @Test(expected = BeanNoSecuredPropertyHandlerSetException.class)
+    @Test(expected = BeanNoRoleSecuredCheckSetException.class)
     public void throwExceptionWhenSecuredPropertyDoesNotHaveAHandler() {
         SFSourceAWithSecuredField source = new SFSourceAWithSecuredField() {{
             name = "Henk";
@@ -1515,6 +1520,47 @@ public class BeanMapperTest {
         }};
         SFTargetA target = beanMapper.map(source, SFTargetA.class);
         assertEquals("Henk", target.name);
+    }
+
+    @Test
+    public void logicSecuredCheckMustBlock() {
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .addLogicSecuredCheck(new NeverReturnTrueCheck())
+                .build();
+        SFSourceDLogicSecured source = new SFSourceDLogicSecured() {{
+            name = "Henk";
+        }};
+        SFTargetA target = beanMapper.map(source, SFTargetA.class);
+        assertNull(target.name);
+    }
+
+    @Test
+    public void logicSecuredCheckMustBlockBecauseInequalName() {
+        logicCheckForEqualName("Blake", null);
+    }
+
+    @Test
+    public void logicSecuredCheckMustAllowBecauseEqualName() {
+        logicCheckForEqualName("Henk", "Henk");
+    }
+
+    private void logicCheckForEqualName(String initialName, String expectedName) {
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .addLogicSecuredCheck(new CheckSameNameLogicCheck())
+                .build();
+        SFSourceELogicSecured source = new SFSourceELogicSecured() {{
+            name = initialName;
+        }};
+        SFTargetA target = beanMapper.map(source, SFTargetA.class);
+        assertEquals(expectedName, target.name);
+    }
+
+    @Test(expected = BeanNoLogicSecuredCheckSetException.class)
+    public void logicSecuredMissingCheck() {
+        SFSourceDLogicSecured source = new SFSourceDLogicSecured() {{
+            name = "Henk";
+        }};
+        beanMapper.map(source, SFTargetA.class);
     }
 
     public Person createPerson(String name) {

@@ -1,9 +1,9 @@
 package io.beanmapper.config;
 
 /**
- * The handler which is used to see if a Principal can have access to a @BeanSecuredProperty.
+ * The handler which is used to see if a Principal can have access to a @BeanRoleSecured.
  */
-public interface SecuredPropertyHandler {
+public interface RoleSecuredCheck {
 
     /**
      * Checks whether the Principal has any one of the roles

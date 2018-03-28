@@ -1,6 +1,6 @@
 package io.beanmapper.testmodel.beansecuredfield;
 
-import io.beanmapper.annotations.BeanSecuredProperty;
+import io.beanmapper.annotations.BeanRoleSecured;
 
 public class SFSourceCWithSecuredMethod {
 
@@ -10,7 +10,7 @@ public class SFSourceCWithSecuredMethod {
         this.name = name;
     }
 
-    @BeanSecuredProperty("ADMIN")
+    @BeanRoleSecured("ADMIN")
     public String getName() {
         return this.name;
     }

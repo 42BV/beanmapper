@@ -3,11 +3,11 @@ package io.beanmapper.exceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BeanNoSecuredPropertyHandlerSetException extends IllegalArgumentException {
+public class BeanNoLogicSecuredCheckSetException extends IllegalArgumentException {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public BeanNoSecuredPropertyHandlerSetException(String message) {
+    public BeanNoLogicSecuredCheckSetException(String message) {
         super(message);
         logger.error(message);
     }
