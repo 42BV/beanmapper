@@ -13,7 +13,9 @@ import io.beanmapper.annotations.BeanAlias;
 import io.beanmapper.annotations.BeanCollection;
 import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.annotations.BeanIgnore;
+import io.beanmapper.annotations.BeanLogicSecured;
 import io.beanmapper.annotations.BeanProperty;
+import io.beanmapper.annotations.BeanRoleSecured;
 import io.beanmapper.annotations.BeanUnwrap;
 import io.beanmapper.config.BeanPair;
 import io.beanmapper.config.CollectionHandlerStore;
@@ -151,6 +153,14 @@ public class BeanMatchStore {
                     currentBeanField,
                     matchupDirection);
 
+            handleBeanRoleSecuredAnnotation(
+                    currentBeanField,
+                    accessor.findAnnotation(BeanRoleSecured.class));
+
+            handleBeanLogicSecuredAnnotation(
+                    currentBeanField,
+                    accessor.findAnnotation(BeanLogicSecured.class));
+
             if(accessor.findAnnotation(BeanAlias.class) != null) {
                 BeanAlias beanAlias = accessor.findAnnotation(BeanAlias.class);
                 if(aliases.containsKey(beanAlias.value())) {
@@ -173,6 +183,20 @@ public class BeanMatchStore {
             }
         }
         return ourCurrentNodes;
+    }
+
+    private void handleBeanLogicSecuredAnnotation(BeanField beanField, BeanLogicSecured beanLogicSecured) {
+        if (beanLogicSecured == null) {
+            return;
+        }
+        beanField.setLogicSecuredCheck(beanLogicSecured.value());
+    }
+
+    private void handleBeanRoleSecuredAnnotation(BeanField beanField, BeanRoleSecured beanRoleSecured) {
+        if (beanRoleSecured == null) {
+            return;
+        }
+        beanField.setRequiredRoles(beanRoleSecured.value());
     }
 
     private void handleBeanCollectionAnnotation(

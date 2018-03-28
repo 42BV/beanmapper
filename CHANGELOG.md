@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Added
+- Issue [#107](https://github.com/42BV/beanmapper/issues/107), **Test for access by running against LogicSecuredCheck instance**; ability to add LogicSecuredCheck classes to BeanMapper's configuration. These classes can be called upon using the @BeanLogicSecured annotation. It allows for more complex interaction with the enveloping security system, such as not only checking against roles, but also comparing fields in the source or target against information known about the Principal.
+- Issue [#105](https://github.com/42BV/beanmapper/issues/105), **Ability to deal with @BeanRoleSecured by delegating to a RoleSecuredCheck**; when a field is tagged as @BeanSecuredProperty, BeanMapper will query its attached SecuredPropertyHandler. The handler will most likely be associated with a security implementation, such as Spring Security (not handled here). If no handler is present, access is granted by default.
+- Issue [#106](https://github.com/42BV/beanmapper/issues/106), **When a @BeanRoleSecured is found without a RoleSecuredCheck being set, throw an exception**; the absence of a RoleSecuredCheck is by default a reason to throw an exception when @BeanSecuredProperty is used anywhere within the application. 
 
 ## [2.3.2] - 2018-03-06
 ### Fixed

@@ -176,6 +176,14 @@ public abstract class AbstractMapStrategy implements MapStrategy {
             dealWithNonMatchingNode(beanFieldMatch);
             return;
         }
+
+        if (!beanFieldMatch.hasAccess(
+                configuration.getRoleSecuredCheck(),
+                configuration.getLogicSecuredChecks(),
+                configuration.getEnforceSecuredProperties())) {
+            return;
+        }
+
         if (!isConverterFor(beanFieldMatch.getSourceClass(), beanFieldMatch.getTargetClass()) &&
                 (!beanFieldMatch.hasSimilarClasses() || (beanFieldMatch.hasSimilarClasses() && beanFieldMatch.getTargetObject() != null)) &&
                 !(beanFieldMatch.getSourceClass().isEnum() || beanFieldMatch.getTargetClass().isEnum()) &&

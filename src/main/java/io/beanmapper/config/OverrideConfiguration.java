@@ -2,8 +2,10 @@ package io.beanmapper.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import io.beanmapper.annotations.BeanCollectionUsage;
+import io.beanmapper.annotations.LogicSecuredCheck;
 import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.constructor.BeanInitializer;
@@ -40,6 +42,8 @@ public class OverrideConfiguration implements Configuration {
     private BeanCollectionUsage collectionUsage = null;
 
     private Class<?> preferredCollectionClass = null;
+
+    private Boolean enforcedSecuredProperties = null;
 
     private OverrideField<Boolean> flushAfterClear;
 
@@ -133,6 +137,11 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
+    public Map<Class<? extends LogicSecuredCheck>, LogicSecuredCheck> getLogicSecuredChecks() {
+        return parentConfiguration.getLogicSecuredChecks();
+    }
+
+    @Override
     public List<CollectionHandler> getCollectionHandlers() {
         return parentConfiguration.getCollectionHandlers();
     }
@@ -219,8 +228,25 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
+    public RoleSecuredCheck getRoleSecuredCheck() {
+        return parentConfiguration.getRoleSecuredCheck();
+    }
+
+    @Override
+    public Boolean getEnforceSecuredProperties() {
+        return this.enforcedSecuredProperties == null ?
+                parentConfiguration.getEnforceSecuredProperties() :
+                this.enforcedSecuredProperties;
+    }
+
+    @Override
     public void addConverter(BeanConverter converter) {
         beanConverters.add(converter);
+    }
+
+    @Override
+    public void addLogicSecuredCheck(LogicSecuredCheck logicSecuredCheck) {
+        // not supported for override options
     }
 
     @Override
@@ -256,6 +282,16 @@ public class OverrideConfiguration implements Configuration {
     @Override
     public void addAfterClearFlusher(AfterClearFlusher afterClearFlusher) {
         // not supported for override options
+    }
+
+    @Override
+    public void setRoleSecuredCheck(RoleSecuredCheck roleSecuredCheck) {
+        // not supported for override options
+    }
+
+    @Override
+    public void setEnforceSecuredProperties(Boolean enforceSecuredProperties) {
+        this.enforcedSecuredProperties = enforceSecuredProperties;
     }
 
     @Override
