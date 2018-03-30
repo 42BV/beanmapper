@@ -71,6 +71,8 @@
         <li><a href="#beancollection">@BeanCollection</a></li>
         <li><a href="#beanconstruct">@BeanConstruct</a></li>
         <li><a href="#beanalias">@BeanAlias</a></li>
+        <li><a href="#beanrolesecured">@BeanRoleSecured</a></li>
+        <li><a href="#beanlogicsecured">@BeanLogicSecured</a></li>
         <li><a href="#beanconverter">BeanConverter</a></li>
       </ul>
       <ul class="nav nav-sidebar">
@@ -877,6 +879,136 @@ Target target = new BeanMapperBuilder().build()
         .map(source, Target.class);
 
 assertEquals("Henk", target.otherName);</code>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="beanrolesecured">
+        <h3 class="section-title">@BeanRoleSecured</h3>
+        <div class="section-body">
+          <table class="table table-condensed">
+            <tr>
+              <th>Annotation</th>
+              <td>@BeanRoleSecured</td>
+            </tr>
+            <tr>
+              <th>Arguments</th>
+              <td>Value: one or more roles</td>
+            </tr>
+            <tr>
+              <th>Description</th>
+              <td>
+                <p>
+                  Use BeanDefault when you want to BeanMapper to check whether the property may be
+                  copied from source to target. BeanMapper will query its attached RoleSecuredCheck
+                  instance to see if the security Principal has any one of the roles. If at least
+                  one role matches, the property will be mapped. If not, the property will be ignored.
+                </p>
+                <p>
+                  If the BeanMapper Spring Boot Starter is used, it will automatically register the
+                  SpringRoleSecuredCheck if an AuthenticationManager is found. When @BeanRoleSecured is
+                  used, but no RoleSecuredCheck has been attached, BeanMapper will throw an exception,
+                  unless enforceSecuredProperties is false.
+                </p>
+              </td>
+            </tr>
+          </table>
+          <br>
+          <div class="row">
+            <div class="col-xs-12 col-md-12">
+              <code>
+    @BeanRoleSecured("MANAGE_BSN")
+    public String bsn;
+              </code>
+            </div>
+          </div>
+          <div class="row">
+            <br>
+            <div class="col-xs-12 col-md-12">
+              <code>
+    @BeanRoleSecured("MANAGE_BSN")
+    public String getBsn() {
+        return this.bsn;
+    };
+              </code>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="beanlogicsecured">
+        <h3 class="section-title">@BeanLogicSecured</h3>
+        <div class="section-body">
+          <table class="table table-condensed">
+            <tr>
+              <th>Annotation</th>
+              <td>@BeanLogicSecured</td>
+            </tr>
+            <tr>
+              <th>Arguments</th>
+              <td>Value: a LogicSecuredCheck implementation</td>
+            </tr>
+            <tr>
+              <th>Description</th>
+              <td>
+                <p>
+                  Use BeanLogicSecured if you care to have BeanMapper query the attached LogicSecuredCheck
+                  to determine if the mapping may take place. If allowed, the property will be mapped. If
+                  not, the property will be ignored.
+                </p>
+                <p>
+                  If the BeanMapper Spring Boot Starter is used, it will automatically register the
+                  LogicSecuredCheck classes if an AuthenticationManager is found. When @BeanLogicSecured is
+                  used, but its LogicSecuredCheck class cannot be found, BeanMapper will throw an exception,
+                  unless enforceSecuredProperties is false.
+                </p>
+              </td>
+            </tr>
+          </table>
+          <br>
+          <div class="row">
+            <div class="col-xs-12 col-md-12">
+              <code>
+    @BeanLogicSecured(EmployeeIsOwnerOrMayReadBSNCheck.class)
+    public String bsn;
+              </code>
+            </div>
+          </div>
+          <br>
+          <p>
+            A class implementing LogicSecuredCheck will have to be implemented, clearly stating
+            the datatypes of the source and target classes. Tip: only specify the side you are
+            using for the check and keep the other as Object. BeanMapper will call on the class
+            passing both the source and the target instances.
+          </p>
+          <p>
+            If the class extends from AbstractSpringSecuredCheck, you will have access to
+            hasRole() and getUserDetails().
+          </p>
+          <div class="row">
+            <div class="col-xs-12 col-md-12">
+              <code>
+    public class EmployeeIsOwnerOrMayReadBSNCheck
+            extends AbstractSpringSecuredCheck
+            implements LogicSecuredCheck<Employee, Object> {
+
+        @Override
+        public boolean isAllowed(Employee source, Object target) {
+            return
+                    hasRole(READ_PERSONAL_DETAILS_BSN) ||
+                    isOwner(source);
+        }
+
+        private boolean isOwner(Employee employee) {
+            return getUserDetails()
+                .getUsername()
+                .equals(
+                    employee.getPerson().getCrowdUsername());
+        }
+
+    }
+              </code>
             </div>
           </div>
         </div>
