@@ -77,6 +77,11 @@ import io.beanmapper.testmodel.collections.CollectionSetTargetIncorrectSubtype;
 import io.beanmapper.testmodel.collections.CollectionSetTargetSpecificSubtype;
 import io.beanmapper.testmodel.collections.SourceWithListGetter;
 import io.beanmapper.testmodel.collections.TargetWithListPublicField;
+import io.beanmapper.testmodel.collections.target_is_wrapped.SourceWithUnwrappedItems;
+import io.beanmapper.testmodel.collections.target_is_wrapped.TargetWithWrappedItems;
+import io.beanmapper.testmodel.collections.target_is_wrapped.UnwrappedSource;
+import io.beanmapper.testmodel.collections.target_is_wrapped.UnwrappedToWrappedBeanConverter;
+import io.beanmapper.testmodel.collections.target_is_wrapped.WrappedTarget;
 import io.beanmapper.testmodel.construct.NestedSourceWithoutConstruct;
 import io.beanmapper.testmodel.construct.SourceWithConstruct;
 import io.beanmapper.testmodel.construct.TargetWithoutConstruct;
@@ -1561,6 +1566,24 @@ public class BeanMapperTest {
             name = "Henk";
         }};
         beanMapper.map(source, SFTargetA.class);
+    }
+
+    @Test
+    public void unwrappedToWrappedTest() {
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .addConverter(new UnwrappedToWrappedBeanConverter())
+                .build();
+        SourceWithUnwrappedItems source = new SourceWithUnwrappedItems();
+        source.items.add(UnwrappedSource.BETA);
+        source.items.add(UnwrappedSource.GAMMA);
+        source.items.add(UnwrappedSource.ALPHA);
+        TargetWithWrappedItems target = new TargetWithWrappedItems();
+        List<WrappedTarget> targetItems = target.getItems();
+        target = beanMapper.map(source, target);
+        assertEquals(targetItems, target.getItems());
+        assertEquals(source.items.get(0), target.getItems().get(0).getElement());
+        assertEquals(source.items.get(1), target.getItems().get(1).getElement());
+        assertEquals(source.items.get(2), target.getItems().get(2).getElement());
     }
 
     public Person createPerson(String name) {
