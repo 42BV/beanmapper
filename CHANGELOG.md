@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
+### Enhanced
+- Issue [#109](https://github.com/42BV/beanmapper/issues/109), **Specify the return type for AbstractBeanConverter.doConvert**; on extending AbstractBeanConverter, it is beneficial for the developer to immediately see the expected return type for the ```doConvert``` method.
 
 ## [2.4.0] - 2018-03-28
 ### Added

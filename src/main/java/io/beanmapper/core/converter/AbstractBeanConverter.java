@@ -63,7 +63,7 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
      * @param targetClass the class type to convert to
      * @return the converted source instance
      */
-    protected abstract Object doConvert(S source, Class<? extends T> targetClass);
+    protected abstract T doConvert(S source, Class<? extends T> targetClass);
 
     /**
      * {@inheritDoc}

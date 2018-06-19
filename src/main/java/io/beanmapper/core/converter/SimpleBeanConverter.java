@@ -34,7 +34,7 @@ public abstract class SimpleBeanConverter<S, T> extends AbstractBeanConverter<S,
      */
     @Override
     @SuppressWarnings("unchecked")
-    protected final Object doConvert(S source, Class<? extends T> targetClass) {
+    protected final T doConvert(S source, Class<? extends T> targetClass) {
         return doConvert(source); // No need to provide the target class
     }
     
