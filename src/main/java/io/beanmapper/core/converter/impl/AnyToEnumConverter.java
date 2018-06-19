@@ -18,7 +18,7 @@ public class AnyToEnumConverter extends AbstractBeanConverter<Object, Enum<?>> {
     }
 
     @Override
-    protected Object doConvert(Object source, Class<? extends Enum<?>> targetClass) {
+    protected Enum<?> doConvert(Object source, Class<? extends Enum<?>> targetClass) {
         if (source == null) {
             return null;
         }
