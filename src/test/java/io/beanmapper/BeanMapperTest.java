@@ -1279,25 +1279,37 @@ public class BeanMapperTest {
     @Test
     public void beanCollectionClearEmptySource() {
         CollSourceClear source = new CollSourceClear();
+        CollTarget target = new CollTarget();
+        List<String> targetItems = target.items;
+        targetItems.add("Alpha");
         source.items = null;
-        CollTarget target = beanMapper.map(source, CollTarget.class);
-        assertNull(target.items);
+        target = beanMapper.map(source, target);
+        assertEquals(targetItems, target.items);
+        assertEquals(0, target.items.size());
     }
 
     @Test
     public void beanCollectionReuseEmptySource() {
         CollSourceReuse source = new CollSourceReuse();
+        CollTarget target = new CollTarget();
+        List<String> targetItems = target.items;
+        targetItems.add("Alpha");
         source.items = null;
-        CollTarget target = beanMapper.map(source, CollTarget.class);
-        assertNull(target.items);
+        target = beanMapper.map(source, target);
+        assertEquals(targetItems, target.items);
+        assertEquals(1, target.items.size());
     }
 
     @Test
     public void beanCollectionConstructEmptySource() {
         CollSourceConstruct source = new CollSourceConstruct();
+        CollTarget target = new CollTarget();
+        List<String> targetItems = target.items;
+        targetItems.add("Alpha");
         source.items = null;
-        CollTarget target = beanMapper.map(source, CollTarget.class);
-        assertNull(target.items);
+        target = beanMapper.map(source, target);
+        assertNotSame(targetItems, target.items);
+        assertEquals(0, target.items.size());
     }
 
     @Test
@@ -1569,9 +1581,10 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void unwrappedToWrappedTest() {
+    public void unwrappedToWrapped() {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .addConverter(new UnwrappedToWrappedBeanConverter())
+                .addBeanPairWithStrictSource(SourceWithUnwrappedItems.class, TargetWithWrappedItems.class)
                 .build();
         SourceWithUnwrappedItems source = new SourceWithUnwrappedItems();
         source.items.add(UnwrappedSource.BETA);
@@ -1584,6 +1597,19 @@ public class BeanMapperTest {
         assertEquals(source.items.get(0), target.getItems().get(0).getElement());
         assertEquals(source.items.get(1), target.getItems().get(1).getElement());
         assertEquals(source.items.get(2), target.getItems().get(2).getElement());
+    }
+
+    @Test
+    public void emptyListToExistingList() {
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .addConverter(new UnwrappedToWrappedBeanConverter())
+                .build();
+        SourceWithUnwrappedItems source = new SourceWithUnwrappedItems();
+        source.items = null;
+        TargetWithWrappedItems target = new TargetWithWrappedItems();
+        List<WrappedTarget> targetItems = target.getItems();
+        target = beanMapper.map(source, target);
+        assertEquals(targetItems, target.getItems());
     }
 
     public Person createPerson(String name) {

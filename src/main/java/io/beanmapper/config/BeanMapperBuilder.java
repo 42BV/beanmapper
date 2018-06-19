@@ -188,10 +188,14 @@ public class BeanMapperBuilder {
         return this;
     }
 
+
+    public BeanMapperBuilder setUseNullValue() {
+        this.configuration.setUseNullValue(true);
+        return this;
+    }
+
     public BeanMapper build() {
         BeanMapper beanMapper = new BeanMapper(configuration);
-        // Make sure all strict bean classes have matching properties on the other side
-        configuration.getBeanMatchStore().validateStrictBeanPairs(configuration.getBeanPairs());
         // Custom collection handlers must be registered before default ones
         addCollectionHandlers(customCollectionHandlers);
         addCollectionHandlers(DEFAULT_COLLECTION_HANDLERS);
@@ -200,6 +204,8 @@ public class BeanMapperBuilder {
         if (configuration.isAddDefaultConverters()) {
             addDefaultConverters();
         }
+        // Make sure all strict bean classes have matching properties on the other side
+        configuration.getBeanMatchStore().validateStrictBeanPairs(configuration.getBeanPairs());
         return beanMapper;
     }
 

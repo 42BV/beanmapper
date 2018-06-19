@@ -93,6 +93,12 @@ public class CoreConfiguration implements Configuration {
      */
     private Boolean enforceSecuredProperties = true;
 
+    /**
+     * Property that determines if null values for the source will be used. Normal behaviour
+     * is to skip the mapping operation if a source value is null.
+     */
+    private Boolean useNullValue = false;
+
     @Override
     public List<String> getDownsizeTarget() { return null; }
 
@@ -231,6 +237,11 @@ public class CoreConfiguration implements Configuration {
     @Override
     public Boolean mustFlush() {
         return false;
+    }
+
+    @Override
+    public Boolean getUseNullValue() {
+        return this.useNullValue;
     }
 
     @Override
@@ -396,6 +407,11 @@ public class CoreConfiguration implements Configuration {
     @Override
     public void setEnforceSecuredProperties(Boolean enforceSecuredProperties) {
         this.enforceSecuredProperties = enforceSecuredProperties;
+    }
+
+    @Override
+    public void setUseNullValue(Boolean useNullValue) {
+        this.useNullValue = useNullValue;
     }
 
 }

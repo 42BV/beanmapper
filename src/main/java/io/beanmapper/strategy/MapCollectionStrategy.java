@@ -25,13 +25,15 @@ public class MapCollectionStrategy extends AbstractMapStrategy {
             this.getConfiguration().mustFlush()
         );
 
-        targetItems = collectionHandler.copy(
+        if (source == null) {
+            return targetItems;
+        }
+
+        return collectionHandler.copy(
                 getBeanMapper(),
                 getConfiguration().getTargetClass(),
                 source,
                 targetItems);
-
-        return targetItems;
     }
 
 }
