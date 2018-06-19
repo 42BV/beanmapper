@@ -192,6 +192,12 @@ public interface Configuration {
     Boolean mustFlush();
 
     /**
+     * Property that determines if null values for the source must be skipped or not
+     * @return determines if null values must be skipped or not
+     */
+    Boolean getUseNullValue();
+
+    /**
      * The RoleSecuredCheck is responsible for checking if a Principal may access
      * a field or method annotated with @BeanRoleSecured. Returns the RoleSecuredCheck,
      * if it has been configured.
@@ -406,5 +412,11 @@ public interface Configuration {
      * @param enforceSecuredProperties whether the handling of secured properties is enforced
      */
     void setEnforceSecuredProperties(Boolean enforceSecuredProperties);
+
+    /**
+     * Property that determines if null values for the source must be skipped or not
+     * @param useNullValue determines if null values must be skipped or not
+     */
+    void setUseNullValue(Boolean useNullValue);
 
 }

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Unreleased
 ### Enhanced
 - Issue [#109](https://github.com/42BV/beanmapper/issues/109), **Specify the return type for AbstractBeanConverter.doConvert**; on extending AbstractBeanConverter, it is beneficial for the developer to immediately see the expected return type for the ```doConvert``` method.
+- Bug [#111](https://github.com/42BV/beanmapper/issues/111), **BeanCollection null list overrides the existing list**; when a source and target have been assigned to a collection handler, it will now treat a null value for the source as special, subscribing it to the BeanCollectionUsage rules (default: CLEAR). That is, it will REUSE the target, CLEAR it, or CONSTRUCT a new one. This is the most logical behaviour with Hibernate on the other side. 
+- Bug [#112](https://github.com/42BV/beanmapper/issues/112), **Strict mapping messes up the build sequence**; The validation took place before all configuration was done, resulting in collection handlers not being available in some cases. The validation of strict classes is done as part of the last step of the ```BeanMapperBuilder.build()``` method, after all required steps have been taken.
 
 ## [2.4.0] - 2018-03-28
 ### Added

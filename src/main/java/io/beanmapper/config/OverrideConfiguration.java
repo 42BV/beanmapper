@@ -45,6 +45,8 @@ public class OverrideConfiguration implements Configuration {
 
     private Boolean enforcedSecuredProperties = null;
 
+    private OverrideField<Boolean> useNullValue;
+
     private OverrideField<Boolean> flushAfterClear;
 
     private OverrideField<Boolean> flushEnabled;
@@ -61,6 +63,7 @@ public class OverrideConfiguration implements Configuration {
         this.converterChoosable = new OverrideField<>(configuration::isConverterChoosable);
         this.flushAfterClear = new OverrideField<>(configuration::isFlushAfterClear);
         this.flushEnabled = new OverrideField<>(configuration::isFlushEnabled);
+        this.useNullValue = new OverrideField<>(configuration::getUseNullValue);
     }
 
     @Override
@@ -228,6 +231,11 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
+    public Boolean getUseNullValue() {
+        return useNullValue.get();
+    }
+
+    @Override
     public RoleSecuredCheck getRoleSecuredCheck() {
         return parentConfiguration.getRoleSecuredCheck();
     }
@@ -382,6 +390,11 @@ public class OverrideConfiguration implements Configuration {
     @Override
     public void setFlushEnabled(Boolean flushEnabled) {
         this.flushEnabled.set(flushEnabled);
+    }
+
+    @Override
+    public void setUseNullValue(Boolean useNullValue) {
+        this.useNullValue.set(useNullValue);
     }
 
 }

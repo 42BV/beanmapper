@@ -6,7 +6,6 @@ import java.util.Set;
 
 import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.config.Configuration;
-import io.beanmapper.config.CoreConfiguration;
 import io.beanmapper.strategy.MapStrategyType;
 
 /**
@@ -17,14 +16,14 @@ import io.beanmapper.strategy.MapStrategyType;
 @SuppressWarnings("unchecked")
 public class BeanMapper {
 
-    private Configuration configuration = new CoreConfiguration();
+    private final Configuration configuration;
 
     public BeanMapper(Configuration configuration) {
         this.configuration = configuration;
     }
 
     public Object map(Object source) {
-        if (source == null) {
+        if (source == null && !configuration.getUseNullValue()) {
             return null;
         }
         return MapStrategyType.getStrategy(this, configuration).map(source);

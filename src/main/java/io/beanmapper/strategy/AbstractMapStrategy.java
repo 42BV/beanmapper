@@ -9,6 +9,7 @@ import io.beanmapper.config.Configuration;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.BeanMatch;
 import io.beanmapper.core.converter.BeanConverter;
+import io.beanmapper.core.converter.collections.CollectionConverter;
 import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanFieldNoMatchException;
 
@@ -118,13 +119,15 @@ public abstract class AbstractMapStrategy implements MapStrategy {
      */
     @SuppressWarnings("unchecked")
     public Object convert(Object value, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
-        if (value == null) {
+
+        Class<?> valueClass = getConfiguration().getBeanUnproxy().unproxy(beanFieldMatch.getSourceClass());
+        BeanConverter converter = getConverterOptional(valueClass, targetClass);
+
+        // @TODO Consider removing the null check here and offering a null value to BeanConverters as well
+        if (value == null && !(converter instanceof CollectionConverter)) {
             return null;
         }
 
-        Class<?> valueClass = getConfiguration().getBeanUnproxy().unproxy(value.getClass());
-
-        BeanConverter converter = getConverterOptional(valueClass, targetClass);
         if (converter != null) {
             logger.debug(INDENT + converter.getClass().getSimpleName() + ARROW);
             BeanMapper wrappedBeanMapper = beanMapper
