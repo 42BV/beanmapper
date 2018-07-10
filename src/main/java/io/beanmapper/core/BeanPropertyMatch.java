@@ -14,29 +14,29 @@ import io.beanmapper.exceptions.BeanNoRoleSecuredCheckSetException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BeanFieldMatch {
+public class BeanPropertyMatch {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private BeanMatch beanMatch;
     private Object source;
     private Object target;
-    private BeanField sourceBeanField;
-    private BeanField targetBeanField;
+    private BeanProperty sourceBeanProperty;
+    private BeanProperty targetBeanProperty;
     private String targetFieldName;
     private BeanCollectionInstructions beanCollectionInstructions;
 
-    public BeanFieldMatch(Object source, Object target,
-            MatchedBeanPairField matchedBeanPairField, String targetFieldName, BeanMatch beanMatch) {
+    public BeanPropertyMatch(Object source, Object target,
+            MatchedBeanPropertyPair matchedBeanPropertyPair, String targetFieldName, BeanMatch beanMatch) {
         this.source = source;
         this.target = target;
-        this.sourceBeanField = matchedBeanPairField.getSourceBeanField();
-        this.targetBeanField = matchedBeanPairField.getTargetBeanField();
+        this.sourceBeanProperty = matchedBeanPropertyPair.getSourceBeanProperty();
+        this.targetBeanProperty = matchedBeanPropertyPair.getTargetBeanProperty();
         this.targetFieldName = targetFieldName;
         this.beanMatch = beanMatch;
         this.beanCollectionInstructions = BeanCollectionInstructions.merge(
-                matchedBeanPairField.getSourceBeanField(),
-                matchedBeanPairField.getTargetBeanField());
+                matchedBeanPropertyPair.getSourceBeanProperty(),
+                matchedBeanPropertyPair.getTargetBeanProperty());
     }
 
     public boolean hasAccess(
@@ -45,37 +45,37 @@ public class BeanFieldMatch {
             Boolean enforcedSecuredProperties) {
 
         boolean accessAllowed = checkForLogicSecured(
-                logicSecuredChecks, sourceBeanField, source, target, enforcedSecuredProperties);
+                logicSecuredChecks, sourceBeanProperty, source, target, enforcedSecuredProperties);
         accessAllowed = accessAllowed && checkForLogicSecured(
-                logicSecuredChecks, targetBeanField, source, target, enforcedSecuredProperties);
+                logicSecuredChecks, targetBeanProperty, source, target, enforcedSecuredProperties);
 
         return accessAllowed && checkForRoleSecured(roleSecuredCheck, enforcedSecuredProperties);
     }
 
     private boolean checkForRoleSecured(RoleSecuredCheck roleSecuredCheck, Boolean enforcedSecuredProperties) {
         if (roleSecuredCheck == null) {
-            checkIfSecuredFieldHandlerNotSet(sourceBeanField, enforcedSecuredProperties);
-            checkIfSecuredFieldHandlerNotSet(targetBeanField, enforcedSecuredProperties);
+            checkIfSecuredFieldHandlerNotSet(sourceBeanProperty, enforcedSecuredProperties);
+            checkIfSecuredFieldHandlerNotSet(targetBeanProperty, enforcedSecuredProperties);
             return true;
         }
         return
-            roleSecuredCheck.hasRole(sourceBeanField.getRequiredRoles()) &&
-            roleSecuredCheck.hasRole(targetBeanField.getRequiredRoles());
+            roleSecuredCheck.hasRole(sourceBeanProperty.getRequiredRoles()) &&
+            roleSecuredCheck.hasRole(targetBeanProperty.getRequiredRoles());
     }
 
     private boolean checkForLogicSecured(
             Map<Class<? extends LogicSecuredCheck>, LogicSecuredCheck> logicSecuredChecks,
-            BeanField beanField, Object source, Object target, Boolean enforcedSecuredProperties) {
+            BeanProperty beanProperty, Object source, Object target, Boolean enforcedSecuredProperties) {
 
-        Class<? extends LogicSecuredCheck> logicSecuredCheckClass = beanField.getLogicSecuredCheck();
+        Class<? extends LogicSecuredCheck> logicSecuredCheckClass = beanProperty.getLogicSecuredCheck();
         if (logicSecuredCheckClass == null) {
             return true;
         }
-        LogicSecuredCheck logicSecuredCheck = logicSecuredChecks.get(beanField.getLogicSecuredCheck());
+        LogicSecuredCheck logicSecuredCheck = logicSecuredChecks.get(beanProperty.getLogicSecuredCheck());
         if (logicSecuredCheck == null) {
             String message =
                     "Property '" +
-                    beanField.getName() +
+                    beanProperty.getName() +
                     "' has @BeanLogicSecured annotation, but bean for check is missing: " +
                     logicSecuredCheckClass.getName();
             if (enforcedSecuredProperties) {
@@ -87,11 +87,11 @@ public class BeanFieldMatch {
         return logicSecuredCheck.isAllowed(source, target);
     }
 
-    private void checkIfSecuredFieldHandlerNotSet(BeanField beanField, Boolean enforcedSecuredProperties) {
-        if (beanField.getRequiredRoles().length > 0) {
+    private void checkIfSecuredFieldHandlerNotSet(BeanProperty beanProperty, Boolean enforcedSecuredProperties) {
+        if (beanProperty.getRequiredRoles().length > 0) {
             String message =
                     "Property '" +
-                    beanField.getName() +
+                    beanProperty.getName() +
                     "' has @BeanRoleSecured annotation, but RoleSecuredCheck has not been set";
             if (enforcedSecuredProperties) {
                 throw new BeanNoRoleSecuredCheckSetException(message);
@@ -101,54 +101,56 @@ public class BeanFieldMatch {
     }
 
     public boolean hasSimilarClasses() {
-        return sourceBeanField.getProperty().getType().equals(targetBeanField.getProperty().getType());
+        return getSourceClass().equals(getTargetClass());
     }
     public Object getTarget() { return target; }
     public String getTargetFieldName() { return targetFieldName; }
-    public boolean hasMatchingSource() { return sourceBeanField != null; }
+    public boolean hasMatchingSource() { return sourceBeanProperty != null; }
     public boolean isMappable() {
-        return sourceBeanField.getProperty().isReadable() && targetBeanField.getProperty().isWritable();
+        return sourceBeanProperty.getAccessor().isReadable() && targetBeanProperty.getAccessor().isWritable();
     }
     public Class<?> getSourceClass() {
-        return sourceBeanField.getProperty().getType();
+        return sourceBeanProperty.getBeanClass();
     }
-    public Class<?> getTargetClass() { return targetBeanField.getProperty().getType(); }
+    public Class<?> getTargetClass() {
+        return targetBeanProperty.getBeanClass();
+    }
     public boolean targetHasAnnotation(Class<? extends Annotation> annotationClass) {
-        return hasAnnotation(targetBeanField, annotationClass);
+        return hasAnnotation(targetBeanProperty, annotationClass);
     }
     public boolean sourceHasAnnotation(Class<? extends Annotation> annotationClass) {
-        return hasAnnotation(sourceBeanField, annotationClass);
+        return hasAnnotation(sourceBeanProperty, annotationClass);
     }
-    protected boolean hasAnnotation(BeanField beanField, Class<? extends Annotation> annotationClass) {
-        return beanField.getProperty().findAnnotation(annotationClass) != null;
+    protected boolean hasAnnotation(BeanProperty beanProperty, Class<? extends Annotation> annotationClass) {
+        return beanProperty.getAccessor().findAnnotation(annotationClass) != null;
     }
     public Object getSourceDefaultValue() {
-        return getDefaultValue(sourceBeanField);
+        return getDefaultValue(sourceBeanProperty);
     }
     public Object getTargetDefaultValue() {
-        return getDefaultValue(targetBeanField);
+        return getDefaultValue(targetBeanProperty);
     }
-    protected Object getDefaultValue(BeanField beanField) {
-        return beanField.getProperty().findAnnotation(BeanDefault.class).value();
+    protected Object getDefaultValue(BeanProperty beanProperty) {
+        return beanProperty.getAccessor().findAnnotation(BeanDefault.class).value();
     }
     public void setTarget(Object value) throws BeanMappingException {
-        targetBeanField.getProperty().setValue(target, value);
+        targetBeanProperty.getAccessor().setValue(target, value);
     }
     public void writeObject(Object value) throws BeanMappingException {
-        targetBeanField.writeObject(value, target, source, beanMatch);
+        targetBeanProperty.writeObject(value, target, source, beanMatch);
     }
     public Object getSourceObject() throws BeanMappingException {
-        return sourceBeanField.getObject(source);
+        return sourceBeanProperty.getObject(source);
     }
     public Object getTargetObject() throws BeanMappingException {
-        return targetBeanField.getObject(target);
+        return targetBeanProperty.isBeanFieldAvailable() ? targetBeanProperty.getObject(target) : null;
     }
     public BeanCollectionInstructions getCollectionInstructions() {
         return beanCollectionInstructions;
     }
 
     public String getSourceFieldName() {
-        return sourceBeanField.getName();
+        return sourceBeanProperty.getName();
     }
 
     public BeanMatch getBeanMatch() {
@@ -156,11 +158,11 @@ public class BeanFieldMatch {
     }
 
     public String sourceToString() {
-        return source.getClass().getSimpleName() + (sourceBeanField == null ? "" : "." + sourceBeanField.getName());
+        return source.getClass().getSimpleName() + (sourceBeanProperty == null ? "" : "." + sourceBeanProperty.getName());
     }
 
     public String targetToString() {
-        return target.getClass().getSimpleName() + (targetBeanField == null ? "" : "." + targetBeanField.getName());
+        return target.getClass().getSimpleName() + (targetBeanProperty == null ? "" : "." + targetBeanProperty.getName());
     }
 
 }

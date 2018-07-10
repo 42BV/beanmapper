@@ -8,8 +8,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import io.beanmapper.exceptions.BeanGetFieldException;
-import io.beanmapper.exceptions.BeanSetFieldException;
+import io.beanmapper.exceptions.BeanPropertyReadException;
+import io.beanmapper.exceptions.BeanPropertyWriteException;
 
 /**
  * 
@@ -70,7 +70,7 @@ public class FieldPropertyAccessor implements PropertyAccessor {
             field.setAccessible(true);
             return field.get(instance);
         } catch (IllegalAccessException e) {
-            throw new BeanGetFieldException(instance.getClass(), field.getName(), e);
+            throw new BeanPropertyReadException(instance.getClass(), field.getName(), e);
         }
     }
     
@@ -91,7 +91,7 @@ public class FieldPropertyAccessor implements PropertyAccessor {
             field.setAccessible(true);
             field.set(instance, value);
         } catch (IllegalAccessException e) {
-            throw new BeanSetFieldException(instance.getClass(), field.getName(), e);
+            throw new BeanPropertyWriteException(instance.getClass(), field.getName(), e);
         }
     }
 

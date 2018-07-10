@@ -39,7 +39,7 @@ public class PropertyAccessorTest {
         Assert.assertEquals("test", bean.myField);
         Assert.assertEquals("test", accessor.getValue(bean));
     }
-    
+
     @Test
     public void testFieldWithGetter() {
         PropertyAccessor accessor = PropertyAccessors.findProperty(BeanWithProperties.class, "myPropertyWithGetter");
@@ -49,12 +49,12 @@ public class PropertyAccessorTest {
 
         Assert.assertNull(bean.myPropertyWithGetter);
         Assert.assertEquals("null getter", accessor.getValue(bean));
-        
+
         bean.myPropertyWithGetter = "test";
-        
+
         Assert.assertEquals("test getter", accessor.getValue(bean));
     }
-    
+
     @Test
     public void testFieldWithSetter() {
         PropertyAccessor accessor = PropertyAccessors.findProperty(BeanWithProperties.class, "myPropertyWithSetter");
@@ -64,12 +64,12 @@ public class PropertyAccessorTest {
 
         Assert.assertNull(bean.myPropertyWithSetter);
         Assert.assertNull(accessor.getValue(bean));
-        
+
         accessor.setValue(bean, "test");
-        
+
         Assert.assertEquals("test setter", bean.myPropertyWithSetter);
     }
-    
+
     @Test
     public void testFieldWithGetterAndSetter() {
         PropertyAccessor accessor = PropertyAccessors.findProperty(BeanWithProperties.class, "myPropertyWithGetterAndSetter");
@@ -79,13 +79,13 @@ public class PropertyAccessorTest {
 
         Assert.assertNull(bean.myPropertyWithGetterAndSetter);
         Assert.assertEquals("null getter", accessor.getValue(bean));
-        
+
         accessor.setValue(bean, "test");
-        
+
         Assert.assertEquals("test setter", bean.myPropertyWithGetterAndSetter);
         Assert.assertEquals("test setter getter", accessor.getValue(bean));
     }
-    
+
     @Test
     public void testGetter() {
         PropertyAccessor accessor = PropertyAccessors.findProperty(BeanWithProperties.class, "myGetter");
@@ -95,7 +95,7 @@ public class PropertyAccessorTest {
 
         Assert.assertEquals("result", accessor.getValue(bean));
     }
-    
+
     @Test
     public void testSetter() {
         PropertyAccessor accessor = PropertyAccessors.findProperty(BeanWithProperties.class, "mySetter");
@@ -105,7 +105,7 @@ public class PropertyAccessorTest {
 
         accessor.setValue(bean, "Bla");
     }
-    
+
     @Test
     public void testUnknownProperty() {
         Assert.assertNull(PropertyAccessors.findProperty(BeanWithProperties.class, "unknown"));

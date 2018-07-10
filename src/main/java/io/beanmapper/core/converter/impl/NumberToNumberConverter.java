@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import io.beanmapper.BeanMapper;
-import io.beanmapper.core.BeanFieldMatch;
+import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.core.converter.BeanConverter;
 
 /**
@@ -36,8 +36,8 @@ public class NumberToNumberConverter implements BeanConverter {
      * then converting that string back into the target number.
      */
     @Override
-    public Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
-        if (source == null || source.getClass().equals(targetClass) || (beanFieldMatch != null && beanFieldMatch.getSourceClass().equals(targetClass))) {
+    public Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanPropertyMatch beanPropertyMatch) {
+        if (source == null || source.getClass().equals(targetClass) || (beanPropertyMatch != null && beanPropertyMatch.getSourceClass().equals(targetClass))) {
             return source;
         }
         Object sourceAsString = beanMapper

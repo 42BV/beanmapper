@@ -5,8 +5,8 @@ import static org.junit.Assert.fail;
 
 import java.beans.PropertyDescriptor;
 
-import io.beanmapper.exceptions.BeanGetFieldException;
-import io.beanmapper.exceptions.BeanSetFieldException;
+import io.beanmapper.exceptions.BeanPropertyReadException;
+import io.beanmapper.exceptions.BeanPropertyWriteException;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
@@ -15,11 +15,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(JMockit.class)
-public class PropertyDescriptorPropertyAccessorTest {
+public class MethodPropertyAccessorTest {
 
     @Test
     public void getValueShouldThrowBeanGetFieldExceptionWhenFieldIsNotReadable(@Mocked PropertyDescriptor mockDescriptor) {
-        PropertyDescriptorPropertyAccessor accessor = new PropertyDescriptorPropertyAccessor(mockDescriptor);
+        MethodPropertyAccessor accessor = new MethodPropertyAccessor(mockDescriptor);
 
         new Expectations() {{
             mockDescriptor.getReadMethod();
@@ -32,14 +32,14 @@ public class PropertyDescriptorPropertyAccessorTest {
         try {
             accessor.getValue("Instance");
             fail();
-        } catch (BeanGetFieldException e) {
-            assertEquals("Not possible to get field java.lang.String.bla", e.getMessage());
+        } catch (BeanPropertyReadException e) {
+            assertEquals("Not possible to get property java.lang.String.bla", e.getMessage());
         }
     }
 
     @Test
     public void setValueShouldThrowBeanGetFieldExceptionWhenFieldIsNotReadable(@Mocked PropertyDescriptor mockDescriptor) {
-        PropertyDescriptorPropertyAccessor accessor = new PropertyDescriptorPropertyAccessor(mockDescriptor);
+        MethodPropertyAccessor accessor = new MethodPropertyAccessor(mockDescriptor);
 
         new Expectations() {{
             mockDescriptor.getWriteMethod();
@@ -52,8 +52,8 @@ public class PropertyDescriptorPropertyAccessorTest {
         try {
             accessor.setValue("Instance", "value");
             fail();
-        } catch (BeanSetFieldException e) {
-            assertEquals("Not possible to set field java.lang.String.bla", e.getMessage());
+        } catch (BeanPropertyWriteException e) {
+            assertEquals("Not possible to set property java.lang.String.bla", e.getMessage());
         }
     }
 }

@@ -6,12 +6,12 @@ import io.beanmapper.annotations.BeanDefault;
 import io.beanmapper.annotations.BeanParent;
 import io.beanmapper.annotations.BeanProperty;
 import io.beanmapper.config.Configuration;
-import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.BeanMatch;
+import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.converter.collections.CollectionConverter;
 import io.beanmapper.exceptions.BeanConversionException;
-import io.beanmapper.exceptions.BeanFieldNoMatchException;
+import io.beanmapper.exceptions.BeanPropertyNoMatchException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,49 +63,49 @@ public abstract class AbstractMapStrategy implements MapStrategy {
     /**
      * The copy action puts the source's value to the target. When @BeanDefault has been set and the
      * value to copy is empty, it will use the default.
-     * @param beanFieldMatch contains the fields belonging to the source/target field match
+     * @param beanPropertyMatch contains the fields belonging to the source/target field match
      */
-    private void copySourceToTarget(BeanFieldMatch beanFieldMatch) {
-        Object copyableSource = beanFieldMatch.getSourceObject();
+    private void copySourceToTarget(BeanPropertyMatch beanPropertyMatch) {
+        Object copyableSource = beanPropertyMatch.getSourceObject();
 
         if (copyableSource == null) {
-            if (beanFieldMatch.targetHasAnnotation(BeanDefault.class)) {
-                copyableSource = beanFieldMatch.getTargetDefaultValue();
-            } else if (beanFieldMatch.sourceHasAnnotation(BeanDefault.class)) {
-                copyableSource = beanFieldMatch.getSourceDefaultValue();
+            if (beanPropertyMatch.targetHasAnnotation(BeanDefault.class)) {
+                copyableSource = beanPropertyMatch.getTargetDefaultValue();
+            } else if (beanPropertyMatch.sourceHasAnnotation(BeanDefault.class)) {
+                copyableSource = beanPropertyMatch.getSourceDefaultValue();
             }
         }
 
         final Object convertedValue;
-        if (beanFieldMatch.sourceHasAnnotation(BeanParent.class) || beanFieldMatch.targetHasAnnotation(BeanParent.class)) {
+        if (beanPropertyMatch.sourceHasAnnotation(BeanParent.class) || beanPropertyMatch.targetHasAnnotation(BeanParent.class)) {
             convertedValue = beanMapper.getConfiguration().getParent();
         } else {
-            convertedValue = convert(copyableSource, beanFieldMatch.getTargetClass(), beanFieldMatch);
+            convertedValue = convert(copyableSource, beanPropertyMatch.getTargetClass(), beanPropertyMatch);
         }
 
-        beanFieldMatch.writeObject(convertedValue);
+        beanPropertyMatch.writeObject(convertedValue);
     }
 
     /**
      * If the field is a class which can itself be mapped to another class, it must be treated
      * as such. The matching process is called recursively to deal with this pair.
-     * @param beanFieldMatch contains the fields belonging to the source/target field match
+     * @param beanPropertyMatch contains the fields belonging to the source/target field match
      */
-    private void dealWithMappableNestedClass(BeanFieldMatch beanFieldMatch) {
-        Object encapsulatedSource = beanFieldMatch.getSourceObject();
+    private void dealWithMappableNestedClass(BeanPropertyMatch beanPropertyMatch) {
+        Object encapsulatedSource = beanPropertyMatch.getSourceObject();
         Object target;
         if (encapsulatedSource != null) {
             logger.debug("    {");
             BeanMapper beanMapper = getBeanMapper()
                     .wrap()
-                    .setParent(beanFieldMatch.getTarget())
+                    .setParent(beanPropertyMatch.getTarget())
                     .build();
-            if(beanFieldMatch.getTargetObject() == null){
-                target = beanMapper.map(encapsulatedSource, beanFieldMatch.getTargetClass());
+            if(beanPropertyMatch.getTargetObject() == null){
+                target = beanMapper.map(encapsulatedSource, beanPropertyMatch.getTargetClass());
             } else {
-                target = beanMapper.map(encapsulatedSource, beanFieldMatch.getTargetObject());
+                target = beanMapper.map(encapsulatedSource, beanPropertyMatch.getTargetObject());
             }
-            beanFieldMatch.writeObject(target);
+            beanPropertyMatch.writeObject(target);
             logger.debug("    }");
         }
     }
@@ -114,13 +114,13 @@ public abstract class AbstractMapStrategy implements MapStrategy {
      * Converts a value into the target class.
      * @param value the value to convert
      * @param targetClass the target class
-     * @param beanFieldMatch contains the fields belonging to the source/target field match
+     * @param beanPropertyMatch contains the fields belonging to the source/target field match
      * @return the converted value
      */
     @SuppressWarnings("unchecked")
-    public Object convert(Object value, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
+    public Object convert(Object value, Class<?> targetClass, BeanPropertyMatch beanPropertyMatch) {
 
-        Class<?> valueClass = getConfiguration().getBeanUnproxy().unproxy(beanFieldMatch.getSourceClass());
+        Class<?> valueClass = getConfiguration().getBeanUnproxy().unproxy(beanPropertyMatch.getSourceClass());
         BeanConverter converter = getConverterOptional(valueClass, targetClass);
 
         // @TODO Consider removing the null check here and offering a null value to BeanConverters as well
@@ -132,16 +132,16 @@ public abstract class AbstractMapStrategy implements MapStrategy {
             logger.debug(INDENT + converter.getClass().getSimpleName() + ARROW);
             BeanMapper wrappedBeanMapper = beanMapper
                     .wrap()
-                    .setParent(beanFieldMatch.getTarget())
+                    .setParent(beanPropertyMatch.getTarget())
                     .build();
-            return converter.convert(wrappedBeanMapper, value, targetClass, beanFieldMatch);
+            return converter.convert(wrappedBeanMapper, value, targetClass, beanPropertyMatch);
         }
 
         if (targetClass.isAssignableFrom(valueClass)) {
             return value;
         }
 
-        throw new BeanConversionException(beanFieldMatch.getSourceClass(), targetClass);
+        throw new BeanConversionException(beanPropertyMatch.getSourceClass(), targetClass);
     }
 
     /**
@@ -157,9 +157,9 @@ public abstract class AbstractMapStrategy implements MapStrategy {
      * @param beanMatch the matchup of source and target
      * @return A filled target object.
      */
-    public <S, T> T processFields(S source, T target, BeanMatch beanMatch) {
-        for (String fieldName : beanMatch.getTargetNode().keySet()) {
-            processField(new BeanFieldMatch(
+    public <S, T> T processProperties(S source, T target, BeanMatch beanMatch) {
+        for (String fieldName : beanMatch.getTargetNodes().keySet()) {
+            processProperty(new BeanPropertyMatch(
                     source,
                     target,
                     beanMatch.findBeanPairField(fieldName),
@@ -172,47 +172,71 @@ public abstract class AbstractMapStrategy implements MapStrategy {
 
     /**
      * Process a single combination of a source and a target field.
-     * @param beanFieldMatch contains the fields belonging to the source/target field match
+     * @param beanPropertyMatch contains the fields belonging to the source/target field match
      */
-    private void processField(BeanFieldMatch beanFieldMatch) {
-        if (!beanFieldMatch.hasMatchingSource()) {
-            dealWithNonMatchingNode(beanFieldMatch);
+    private void processProperty(BeanPropertyMatch beanPropertyMatch) {
+        if (!beanPropertyMatch.hasMatchingSource()) {
+            dealWithNonMatchingNode(beanPropertyMatch);
             return;
         }
 
-        if (!beanFieldMatch.hasAccess(
+        if (!beanPropertyMatch.hasAccess(
                 configuration.getRoleSecuredCheck(),
                 configuration.getLogicSecuredChecks(),
                 configuration.getEnforceSecuredProperties())) {
             return;
         }
 
-        if (!isConverterFor(beanFieldMatch.getSourceClass(), beanFieldMatch.getTargetClass()) &&
-                (!beanFieldMatch.hasSimilarClasses() || (beanFieldMatch.hasSimilarClasses() && beanFieldMatch.getTargetObject() != null)) &&
-                !(beanFieldMatch.getSourceClass().isEnum() || beanFieldMatch.getTargetClass().isEnum()) &&
-                isMappableClass(beanFieldMatch.getTargetClass()) &&
-                beanFieldMatch.getSourceObject() != null) {
+        if (    noConverterAvailable(beanPropertyMatch) &&
+                dissimilarOrSimilarWithExistingTarget(beanPropertyMatch) &&
+                neitherSourceNorTargetIsEnum(beanPropertyMatch) &&
+                beanMapperMayDeepMapClass(beanPropertyMatch) &&
+                thereIsASourceClassToMap(beanPropertyMatch)) {
 
-            dealWithMappableNestedClass(beanFieldMatch);
+            dealWithMappableNestedClass(beanPropertyMatch);
             return;
         }
-        if (beanFieldMatch.isMappable()) {
-            logger.debug(beanFieldMatch.sourceToString() + ARROW);
-            copySourceToTarget(beanFieldMatch);
-            logger.debug(INDENT + beanFieldMatch.targetToString());
+        if (beanPropertyMatch.isMappable()) {
+            logger.debug(beanPropertyMatch.sourceToString() + ARROW);
+            copySourceToTarget(beanPropertyMatch);
+            logger.debug(INDENT + beanPropertyMatch.targetToString());
         }
+    }
+
+    private boolean noConverterAvailable(BeanPropertyMatch beanPropertyMatch) {
+        return !isConverterFor(
+                beanPropertyMatch.getSourceClass(),
+                beanPropertyMatch.getTargetClass());
+    }
+
+    private boolean dissimilarOrSimilarWithExistingTarget(BeanPropertyMatch beanPropertyMatch) {
+        return !beanPropertyMatch.hasSimilarClasses() ||
+                (beanPropertyMatch.hasSimilarClasses() && beanPropertyMatch.getTargetObject() != null);
+    }
+
+    private boolean neitherSourceNorTargetIsEnum(BeanPropertyMatch beanPropertyMatch) {
+        return !(beanPropertyMatch.getSourceClass().isEnum() ||
+                beanPropertyMatch.getTargetClass().isEnum());
+    }
+
+    private boolean beanMapperMayDeepMapClass(BeanPropertyMatch beanPropertyMatch) {
+        return isMappableClass(beanPropertyMatch.getTargetClass());
+    }
+
+    private boolean thereIsASourceClassToMap(BeanPropertyMatch beanPropertyMatch) {
+        return beanPropertyMatch.getSourceObject() != null;
     }
 
     /**
      * This method is run when there is no matching source field for a target field. The result
      * could be that a default is set, or an exception is thrown when a BeanProperty has been set.
-     * @param beanFieldMatch contains the fields belonging to the source/target field match
+     * @param beanPropertyMatch contains the fields belonging to the source/target field match
      */
-    private void dealWithNonMatchingNode(BeanFieldMatch beanFieldMatch) {
-        if (beanFieldMatch.targetHasAnnotation(BeanDefault.class)) {
-            beanFieldMatch.setTarget(beanFieldMatch.getTargetDefaultValue());
-        } else if (beanFieldMatch.targetHasAnnotation(BeanProperty.class)) {
-            throw new BeanFieldNoMatchException(beanFieldMatch.getTargetClass(), beanFieldMatch.getTargetFieldName());
+    private void dealWithNonMatchingNode(BeanPropertyMatch beanPropertyMatch) {
+        if (beanPropertyMatch.targetHasAnnotation(BeanDefault.class)) {
+            beanPropertyMatch.setTarget(beanPropertyMatch.getTargetDefaultValue());
+        } else if (beanPropertyMatch.targetHasAnnotation(BeanProperty.class)) {
+            throw new BeanPropertyNoMatchException(beanPropertyMatch.getTargetClass(), beanPropertyMatch.getTargetFieldName());
         }
     }
 

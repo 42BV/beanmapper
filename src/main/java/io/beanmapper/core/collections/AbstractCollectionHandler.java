@@ -1,8 +1,5 @@
 package io.beanmapper.core.collections;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-
 import io.beanmapper.BeanMapper;
 import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.config.CollectionFlusher;
@@ -89,17 +86,7 @@ public abstract class AbstractCollectionHandler<C> implements CollectionHandler<
         return create();
     }
 
-    @Override
-    public Class<?> determineGenericParameterFromType(ParameterizedType type) {
-        Type genericParameter = type.getActualTypeArguments()[getGenericParameterIndex()];
-        try {
-            return Class.forName(genericParameter.getTypeName());
-        } catch (ClassNotFoundException e) {
-            return null;
-        }
-    }
-
-    protected int getGenericParameterIndex() {
+    public int getGenericParameterIndex() {
         return 0;
     }
 

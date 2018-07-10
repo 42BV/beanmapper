@@ -37,12 +37,12 @@ public class BeanStrictMappingRequirementsException extends RuntimeException {
                     (validationMessage.isTargetStrict() ? "*" : "") +
                     " for fields:"
             );
-            for (BeanField field : validationMessage.getFields()) {
+            for (BeanProperty field : validationMessage.getFields()) {
                 logger.error(
                         "> " +
                         validationMessage.getStrictClass().getSimpleName() +
                         "." +
-                        field.getProperty().getName());
+                        field.getAccessor().getName());
             }
             validationMessage.setLogged();
         }

@@ -4,7 +4,7 @@
 package io.beanmapper.core.converter;
 
 import io.beanmapper.BeanMapper;
-import io.beanmapper.core.BeanFieldMatch;
+import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.utils.Check;
 import io.beanmapper.utils.Classes;
 
@@ -46,7 +46,7 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public final Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
+    public final Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanPropertyMatch beanPropertyMatch) {
         this.beanMapper = beanMapper;
         if (source == null) {
             Check.argument(!targetClass.isPrimitive(), "Cannot convert null into primitive.");

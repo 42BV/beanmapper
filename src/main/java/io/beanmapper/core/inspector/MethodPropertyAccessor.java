@@ -8,8 +8,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import io.beanmapper.exceptions.BeanGetFieldException;
-import io.beanmapper.exceptions.BeanSetFieldException;
+import io.beanmapper.exceptions.BeanPropertyReadException;
+import io.beanmapper.exceptions.BeanPropertyWriteException;
 
 /**
  * Property descriptor implementation of property accessor.
@@ -17,11 +17,11 @@ import io.beanmapper.exceptions.BeanSetFieldException;
  * @author Jeroen van Schagen
  * @since Jun 24, 2015
  */
-public class PropertyDescriptorPropertyAccessor implements PropertyAccessor {
+public class MethodPropertyAccessor implements PropertyAccessor {
     
     private final PropertyDescriptor descriptor;
 
-    public PropertyDescriptorPropertyAccessor(PropertyDescriptor descriptor) {
+    public MethodPropertyAccessor(PropertyDescriptor descriptor) {
         this.descriptor = descriptor;
     }
 
@@ -70,7 +70,7 @@ public class PropertyDescriptorPropertyAccessor implements PropertyAccessor {
     @Override
     public Object getValue(Object instance) {
         if (!isReadable()) {
-            throw new BeanGetFieldException(instance.getClass(), getName());
+            throw new BeanPropertyReadException(instance.getClass(), getName());
         }
 
         try {
@@ -78,7 +78,7 @@ public class PropertyDescriptorPropertyAccessor implements PropertyAccessor {
             readMethod.setAccessible(true);
             return readMethod.invoke(instance);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new BeanGetFieldException(instance.getClass(), getName(), e);
+            throw new BeanPropertyReadException(instance.getClass(), getName(), e);
         }
     }
     
@@ -96,7 +96,7 @@ public class PropertyDescriptorPropertyAccessor implements PropertyAccessor {
     @Override
     public void setValue(Object instance, Object value) {
         if (!isWritable()) {
-            throw new BeanSetFieldException(instance.getClass(), getName());
+            throw new BeanPropertyWriteException(instance.getClass(), getName());
         }
         
         try {
@@ -104,7 +104,7 @@ public class PropertyDescriptorPropertyAccessor implements PropertyAccessor {
             writeMethod.setAccessible(true);
             writeMethod.invoke(instance, value);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new BeanSetFieldException(instance.getClass(), getName(), e);
+            throw new BeanPropertyWriteException(instance.getClass(), getName(), e);
         }
     }
 

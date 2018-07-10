@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.beanmapper.BeanMapper;
-import io.beanmapper.core.BeanFieldMatch;
+import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.utils.Check;
 
@@ -40,7 +40,7 @@ public class PrimitiveConverter implements BeanConverter {
      * {@inheritDoc}
      */
     @Override
-    public Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
+    public Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanPropertyMatch beanPropertyMatch) {
         Check.argument(source != null, "Cannot convert null into primitive value.");
         return source; // Value will automatically be boxed or unboxed
     }

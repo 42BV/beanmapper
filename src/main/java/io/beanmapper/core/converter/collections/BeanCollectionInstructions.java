@@ -3,7 +3,7 @@ package io.beanmapper.core.converter.collections;
 import static io.beanmapper.core.converter.collections.AnnotationClass.EMPTY_ANNOTATION_CLASS;
 
 import io.beanmapper.annotations.BeanCollectionUsage;
-import io.beanmapper.core.BeanField;
+import io.beanmapper.core.BeanProperty;
 
 public class BeanCollectionInstructions {
 
@@ -48,11 +48,11 @@ public class BeanCollectionInstructions {
     }
 
     public static BeanCollectionInstructions merge(
-            BeanField sourceBeanField,
-            BeanField targetBeanField) {
+            BeanProperty sourceBeanProperty,
+            BeanProperty targetBeanProperty) {
 
-        BeanCollectionInstructions source = sourceBeanField == null ? null : sourceBeanField.getCollectionInstructions();
-        BeanCollectionInstructions target = targetBeanField == null ? null : targetBeanField.getCollectionInstructions();
+        BeanCollectionInstructions source = sourceBeanProperty == null ? null : sourceBeanProperty.getCollectionInstructions();
+        BeanCollectionInstructions target = targetBeanProperty == null ? null : targetBeanProperty.getCollectionInstructions();
 
         if (source == null && target == null) {
             return null;

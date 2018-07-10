@@ -8,16 +8,16 @@ public class BeanMatchValidationMessage {
 
     private boolean logged = false;
 
-    private final List<BeanField> fields;
+    private final List<BeanProperty> fields;
 
     private final BeanPair beanPair;
 
-    public BeanMatchValidationMessage(BeanPair beanPair, List<BeanField> fields) {
+    public BeanMatchValidationMessage(BeanPair beanPair, List<BeanProperty> fields) {
         this.beanPair = beanPair;
         this.fields = fields;
     }
 
-    public List<BeanField> getFields() {
+    public List<BeanProperty> getFields() {
         return fields;
     }
 
