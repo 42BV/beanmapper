@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 ### Fixed
+
+## [3.0.0] - 2018-07-17
+### Fixed
 - **BREAKING CHANGE**: BeanConverter implementations no longer work with BeanField, but with BeanProperty. The name BeanField is no longer correct. A BeanProperty is the combination of BeanField and BeanMethod accessors (get/set).
 - Issue [#114](https://github.com/42BV/beanmapper/issues/114), **Bean property Class types are determined depending on the accessor that will be used**; previously the Class was determined on the basis of the bean field. Now, it will look at the way a property will be accessed (getter/setter/field) and use the proper Class, including generics (ie, Type). 
 
