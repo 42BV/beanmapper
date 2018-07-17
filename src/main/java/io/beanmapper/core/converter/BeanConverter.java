@@ -1,7 +1,7 @@
 package io.beanmapper.core.converter;
 
 import io.beanmapper.BeanMapper;
-import io.beanmapper.core.BeanFieldMatch;
+import io.beanmapper.core.BeanPropertyMatch;
 
 /**
  * This class can be inherited if you want to add your own converter to the beanMapper.
@@ -16,10 +16,10 @@ public interface BeanConverter {
      * @param beanMapper the instance of BeanMapper to use for further mappings
      * @param source the source instance
      * @param targetClass the desired target type
-     * @param beanFieldMatch information on the field pair (source / target)
+     * @param beanPropertyMatch information on the field pair (source / target)
      * @return the converted source instance
      */
-    Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch);
+    Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanPropertyMatch beanPropertyMatch);
 
     /**
      * Determines if the conversion of our source type to a 

@@ -4,13 +4,13 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class BeanFieldNoMatchExceptionTest {
+public class BeanPropertyNoMatchExceptionTest {
 
     @Test
     public void throwException() {
         try {
-            throw new BeanFieldNoMatchException(String.class, "name");
-        } catch (BeanFieldNoMatchException ex) {
+            throw new BeanPropertyNoMatchException(String.class, "name");
+        } catch (BeanPropertyNoMatchException ex) {
             assertTrue(ex.getMessage().contains("String.name"));
         }
     }

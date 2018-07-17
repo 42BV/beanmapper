@@ -3,8 +3,8 @@ package io.beanmapper.strategy;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.beanmapper.core.BeanField;
 import io.beanmapper.core.BeanMatch;
+import io.beanmapper.core.BeanProperty;
 import io.beanmapper.exceptions.BeanInstantiationException;
 
 public class ConstructorArguments {
@@ -16,11 +16,11 @@ public class ConstructorArguments {
 
         for (String constructorArg : constructorArgs) {
             if (constructorArgumentFoundInSource(beanMatch, constructorArg)) {
-                BeanField constructField = beanMatch.getSourceNode().get(constructorArg);
+                BeanProperty constructField = beanMatch.getSourceNodes().get(constructorArg);
                 if(constructField == null) {
                     constructField = beanMatch.getAliases().get(constructorArg);
                 }
-                types.add(constructField.getProperty().getType());
+                types.add(constructField.getAccessor().getType());
                 values.add(constructField.getObject(source));
             } else {
                 throw new BeanInstantiationException(beanMatch.getTargetClass(), null);
@@ -29,7 +29,7 @@ public class ConstructorArguments {
     }
 
     private boolean constructorArgumentFoundInSource(BeanMatch beanMatch, String constructorArg) {
-        return beanMatch.getSourceNode().containsKey(constructorArg) || beanMatch.getAliases().containsKey(constructorArg);
+        return beanMatch.getSourceNodes().containsKey(constructorArg) || beanMatch.getAliases().containsKey(constructorArg);
     }
 
     public Class[] getTypes() {

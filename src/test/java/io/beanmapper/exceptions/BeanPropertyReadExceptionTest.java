@@ -6,12 +6,12 @@ import io.beanmapper.testmodel.defaults.SourceWithDefaults;
 
 import org.junit.Test;
 
-public class BeanSetFieldExceptionTest {
+public class BeanPropertyReadExceptionTest {
 
     @Test
     public void throwException() throws NoSuchFieldException {
         try {
-            throw new BeanSetFieldException(SourceWithDefaults.class, "bothDefault");
+            throw new BeanPropertyReadException(SourceWithDefaults.class, "bothDefault");
         } catch (BeanMappingException e) {
             assertTrue("Must contain specific class and field name",
                     e.getMessage().contains("io.beanmapper.testmodel.defaults.SourceWithDefaults.bothDefault"));

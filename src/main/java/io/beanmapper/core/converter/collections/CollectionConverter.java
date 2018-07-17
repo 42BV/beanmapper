@@ -1,7 +1,7 @@
 package io.beanmapper.core.converter.collections;
 
 import io.beanmapper.BeanMapper;
-import io.beanmapper.core.BeanFieldMatch;
+import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.converter.BeanConverter;
 
@@ -18,21 +18,21 @@ public class CollectionConverter<T> implements BeanConverter {
             BeanMapper beanMapper,
             Object source,
             Class<?> targetClass,
-            BeanFieldMatch beanFieldMatch) {
+            BeanPropertyMatch beanPropertyMatch) {
 
         T sourceCollection = (T) source;
 
-        if (beanFieldMatch.getCollectionInstructions() == null) {
+        if (beanPropertyMatch.getCollectionInstructions() == null) {
             return sourceCollection;
         }
 
         return (T)beanMapper.wrap()
                 .setCollectionClass(collectionHandler.getType())
-                .setCollectionUsage(beanFieldMatch.getCollectionInstructions().getBeanCollectionUsage())
-                .setPreferredCollectionClass(beanFieldMatch.getCollectionInstructions().getPreferredCollectionClass().getAnnotationClass())
-                .setFlushAfterClear(beanFieldMatch.getCollectionInstructions().getFlushAfterClear())
-                .setTargetClass(beanFieldMatch.getCollectionInstructions().getCollectionElementType().getType())
-                .setTarget(beanFieldMatch.getTargetObject())
+                .setCollectionUsage(beanPropertyMatch.getCollectionInstructions().getBeanCollectionUsage())
+                .setPreferredCollectionClass(beanPropertyMatch.getCollectionInstructions().getPreferredCollectionClass().getAnnotationClass())
+                .setFlushAfterClear(beanPropertyMatch.getCollectionInstructions().getFlushAfterClear())
+                .setTargetClass(beanPropertyMatch.getCollectionInstructions().getCollectionElementType().getType())
+                .setTarget(beanPropertyMatch.getTargetObject())
                 .setUseNullValue()
                 .build()
                 .map(sourceCollection);

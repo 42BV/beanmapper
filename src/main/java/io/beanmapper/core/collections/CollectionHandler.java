@@ -1,7 +1,5 @@
 package io.beanmapper.core.collections;
 
-import java.lang.reflect.ParameterizedType;
-
 import io.beanmapper.BeanMapper;
 import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.config.CollectionFlusher;
@@ -20,7 +18,7 @@ public interface CollectionHandler<C> {
      * @param target the target collection where the mapped source items will end up
      * @return the target collection
      */
-    public C copy(
+    C copy(
             BeanMapper beanMapper,
             Class collectionElementClass,
             C source,
@@ -41,7 +39,7 @@ public interface CollectionHandler<C> {
      *                        called
      * @return the target collection to copy the source collection to
      */
-    public C getTargetCollection(
+    C getTargetCollection(
             BeanCollectionUsage collectionUsage,
             Class<C> preferredCollectionClass,
             Class<?> collectionElementClass,
@@ -54,7 +52,7 @@ public interface CollectionHandler<C> {
      * collection contains the type somewhere in its super classes or interfaces
      * @return the type of the collection class
      */
-    public Class<C> getType();
+    Class<C> getType();
 
     /**
      * Check if the sourceClass contains the matching class somewhere in its
@@ -62,9 +60,9 @@ public interface CollectionHandler<C> {
      * @param clazz the class to check for the type
      * @return true if the class can be upcast to the type
      */
-    public boolean isMatch(Class<?> clazz);
+    boolean isMatch(Class<?> clazz);
 
-    public int size(C targetCollection);
+    int size(C targetCollection);
 
-    Class<?> determineGenericParameterFromType(ParameterizedType type);
+    int getGenericParameterIndex();
 }

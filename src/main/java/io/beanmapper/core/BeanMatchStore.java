@@ -2,6 +2,7 @@ package io.beanmapper.core;
 
 import static io.beanmapper.core.converter.collections.AnnotationClass.EMPTY_ANNOTATION_CLASS;
 import static io.beanmapper.core.converter.collections.CollectionElementType.EMPTY_COLLECTION_ELEMENT_TYPE;
+import static io.beanmapper.core.converter.collections.CollectionElementType.derived;
 import static io.beanmapper.core.converter.collections.CollectionElementType.set;
 
 import java.util.ArrayList;
@@ -14,7 +15,6 @@ import io.beanmapper.annotations.BeanCollection;
 import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.annotations.BeanIgnore;
 import io.beanmapper.annotations.BeanLogicSecured;
-import io.beanmapper.annotations.BeanProperty;
 import io.beanmapper.annotations.BeanRoleSecured;
 import io.beanmapper.annotations.BeanUnwrap;
 import io.beanmapper.config.BeanPair;
@@ -92,11 +92,11 @@ public class BeanMatchStore {
     }
 
     private BeanMatch determineBeanMatch(BeanPair beanPair) {
-        return determineBeanMatch(beanPair, new TreeMap<String, BeanField>(), new TreeMap<String, BeanField>(), new TreeMap<String, BeanField>());
+        return determineBeanMatch(beanPair, new TreeMap<>(), new TreeMap<>(), new TreeMap<>());
     }
 
     private BeanMatch determineBeanMatch(BeanPair beanPair,
-                                         Map<String, BeanField> sourceNode, Map<String, BeanField> targetNode, Map<String, BeanField> aliases) {
+                                         Map<String, BeanProperty> sourceNode, Map<String, BeanProperty> targetNode, Map<String, BeanProperty> aliases) {
         BeanMatch beanMatch = new BeanMatch(
                 beanPair,
                 getAllFields(
@@ -106,7 +106,7 @@ public class BeanMatchStore {
                         beanPair.getSourceClass(),
                         beanPair.getTargetClass(),
                         null,
-                        PropertyMatchupDirection.SOURCE_TO_TARGET),
+                        BeanPropertyMatchupDirection.SOURCE_TO_TARGET),
                 getAllFields(
                         targetNode,
                         sourceNode,
@@ -114,18 +114,19 @@ public class BeanMatchStore {
                         beanPair.getTargetClass(),
                         beanPair.getSourceClass(),
                         null,
-                        PropertyMatchupDirection.TARGET_TO_SOURCE),
+                        BeanPropertyMatchupDirection.TARGET_TO_SOURCE),
                 aliases);
         return beanMatch;
     }
 
-    private Map<String, BeanField> getAllFields(Map<String, BeanField> ourNodes, Map<String, BeanField> otherNodes, Map<String, BeanField> aliases, Class<?> ourType, Class<?> otherType, BeanField prefixingBeanField, PropertyMatchupDirection matchupDirection) {
+    private Map<String, BeanProperty> getAllFields(Map<String, BeanProperty> ourNodes, Map<String, BeanProperty> otherNodes, Map<String, BeanProperty> aliases, Class<?> ourType, Class<?> otherType, BeanProperty precedingBeanProperty, BeanPropertyMatchupDirection matchupDirection) {
 
-        Map<String, BeanField> ourCurrentNodes = ourNodes;
+        Map<String, BeanProperty> ourCurrentNodes = ourNodes;
         List<PropertyAccessor> accessors = PropertyAccessors.getAll(ourType);
         for (PropertyAccessor accessor : accessors) {
 
-            if (!matchupDirection.validAccessor(accessor)) {
+            BeanPropertyAccessType accessType = matchupDirection.accessType(accessor);
+            if (accessType == BeanPropertyAccessType.NO_ACCESS) {
                 continue;
             }
 
@@ -136,29 +137,30 @@ public class BeanMatchStore {
 
             // BeanProperty allows the field to match with a field from the other side with a different name
             // and even a different nesting level.
-            BeanPropertyWrapper beanPropertyWrapper = dealWithBeanProperty(otherNodes, otherType, accessor);
+            BeanPropertyWrapper beanPropertyWrapper =
+                    dealWithBeanProperty(matchupDirection, otherNodes, otherType, accessor);
 
             // Unwrap the fields which exist in the unwrap class
-            BeanField currentBeanField = null;
+            BeanProperty currentBeanProperty = null;
             try {
-                currentBeanField = BeanField.determineNodesForPath(ourType, accessor.getName(), prefixingBeanField);
-                currentBeanField.setMustMatch(beanPropertyWrapper.isMustMatch());
+                currentBeanProperty = new BeanPropertyCreator(
+                        matchupDirection, ourType, accessor.getName()).determineNodesForPath(precedingBeanProperty);
+                currentBeanProperty.setMustMatch(beanPropertyWrapper.isMustMatch());
             } catch (BeanNoSuchPropertyException e) {
                 throw new BeanMissingPathException(ourType, accessor.getName(), e);
             }
 
             handleBeanCollectionAnnotation(
                     accessor.findAnnotation(BeanCollection.class),
-                    ourType,
-                    currentBeanField,
+                    currentBeanProperty,
                     matchupDirection);
 
             handleBeanRoleSecuredAnnotation(
-                    currentBeanField,
+                    currentBeanProperty,
                     accessor.findAnnotation(BeanRoleSecured.class));
 
             handleBeanLogicSecuredAnnotation(
-                    currentBeanField,
+                    currentBeanProperty,
                     accessor.findAnnotation(BeanLogicSecured.class));
 
             if(accessor.findAnnotation(BeanAlias.class) != null) {
@@ -166,7 +168,7 @@ public class BeanMatchStore {
                 if(aliases.containsKey(beanAlias.value())) {
                     throw new IllegalArgumentException("There is already a BeanAlias with key " + beanAlias.value());
                 }
-                aliases.put(beanAlias.value(), currentBeanField);
+                aliases.put(beanAlias.value(), currentBeanProperty);
             }
 
             if (accessor.findAnnotation(BeanUnwrap.class) != null) {
@@ -176,34 +178,33 @@ public class BeanMatchStore {
                         aliases,
                         accessor.getType(),
                         otherType,
-                        currentBeanField,
+                        currentBeanProperty,
                         matchupDirection);
             } else {
-                ourCurrentNodes.put(beanPropertyWrapper.getName(), currentBeanField);
+                ourCurrentNodes.put(beanPropertyWrapper.getName(), currentBeanProperty);
             }
         }
         return ourCurrentNodes;
     }
 
-    private void handleBeanLogicSecuredAnnotation(BeanField beanField, BeanLogicSecured beanLogicSecured) {
+    private void handleBeanLogicSecuredAnnotation(BeanProperty beanProperty, BeanLogicSecured beanLogicSecured) {
         if (beanLogicSecured == null) {
             return;
         }
-        beanField.setLogicSecuredCheck(beanLogicSecured.value());
+        beanProperty.setLogicSecuredCheck(beanLogicSecured.value());
     }
 
-    private void handleBeanRoleSecuredAnnotation(BeanField beanField, BeanRoleSecured beanRoleSecured) {
+    private void handleBeanRoleSecuredAnnotation(BeanProperty beanProperty, BeanRoleSecured beanRoleSecured) {
         if (beanRoleSecured == null) {
             return;
         }
-        beanField.setRequiredRoles(beanRoleSecured.value());
+        beanProperty.setRequiredRoles(beanRoleSecured.value());
     }
 
     private void handleBeanCollectionAnnotation(
             BeanCollection beanCollection,
-            Class<?> containingClass,
-            BeanField beanField,
-            PropertyMatchupDirection matchupDirection) {
+            BeanProperty beanProperty,
+            BeanPropertyMatchupDirection matchupDirection) {
 
         CollectionElementType elementType = EMPTY_COLLECTION_ELEMENT_TYPE;
         BeanCollectionUsage beanCollectionUsage = null;
@@ -218,7 +219,7 @@ public class BeanMatchStore {
             if (!matchupDirection.checkFieldForCollectionProperty()) { // Wrong side -- ignore
                 return;
             }
-            collectionHandler = getCollectionHandlerFor(beanField);
+            collectionHandler = getCollectionHandlerFor(beanProperty);
             if (collectionHandler == null) { // Not a collection, so not interesting
                 return;
             }
@@ -231,12 +232,13 @@ public class BeanMatchStore {
 
         if (elementType.isEmpty()) {
             if (collectionHandler == null) {
-                collectionHandler = getCollectionHandlerFor(beanField);
+                collectionHandler = getCollectionHandlerFor(beanProperty);
             }
-            elementType = new GenericTypeDeterminer(
-                    collectionHandler,
-                    containingClass,
-                    beanField.getProperty().getName()).determineGenericType();
+            Class<?> genericClassOfField =
+                    beanProperty.getGenericClassOfField(collectionHandler.getGenericParameterIndex());
+            if (genericClassOfField != null) {
+                elementType = derived(genericClassOfField);
+            }
         }
 
         BeanCollectionInstructions collectionInstructions = new BeanCollectionInstructions();
@@ -244,27 +246,27 @@ public class BeanMatchStore {
         collectionInstructions.setBeanCollectionUsage(beanCollectionUsage);
         collectionInstructions.setPreferredCollectionClass(preferredCollectionClass);
         collectionInstructions.setFlushAfterClear(flushAfterClear);
-        beanField.setCollectionInstructions(collectionInstructions);
+        beanProperty.setCollectionInstructions(collectionInstructions);
     }
 
-    private CollectionHandler getCollectionHandlerFor(BeanField beanField) {
-        return collectionHandlerStore.getCollectionHandlerFor(beanField.getProperty().getType(), beanUnproxy);
+    private CollectionHandler getCollectionHandlerFor(BeanProperty beanProperty) {
+        return collectionHandlerStore.getCollectionHandlerFor(beanProperty.getAccessor().getType(), beanUnproxy);
     }
 
-    private BeanPropertyWrapper dealWithBeanProperty(Map<String, BeanField> otherNodes, Class<?> otherType, PropertyAccessor accessor) {
+    private BeanPropertyWrapper dealWithBeanProperty(
+            BeanPropertyMatchupDirection matchupDirection, Map<String, BeanProperty> otherNodes,
+            Class<?> otherType, PropertyAccessor accessor) {
         BeanPropertyWrapper wrapper = new BeanPropertyWrapper(accessor.getName());
-        if (accessor.findAnnotation(BeanProperty.class) != null) {
+        if (accessor.findAnnotation(io.beanmapper.annotations.BeanProperty.class) != null) {
             wrapper.setMustMatch();
-            wrapper.setName(accessor.findAnnotation(BeanProperty.class).name());
+            wrapper.setName(accessor.findAnnotation(io.beanmapper.annotations.BeanProperty.class).name());
             // Get the other field from the location that is specified in the beanProperty annotation.
             // If the field is referred to by a path, store the custom field in the other map
             try {
                 otherNodes.put(
                         wrapper.getName(),
-                        BeanField.determineNodesForPath(
-                                otherType,
-                                wrapper.getName(),
-                                null));
+                        new BeanPropertyCreator(
+                                matchupDirection, otherType, wrapper.getName()).determineNodesForPath());
             } catch (BeanNoSuchPropertyException err) {
                 // Acceptable, might have been tagged as @BeanProperty as well
             }

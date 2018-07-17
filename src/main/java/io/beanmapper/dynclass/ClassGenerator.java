@@ -4,8 +4,8 @@ import java.util.Map;
 
 import io.beanmapper.annotations.BeanCollection;
 import io.beanmapper.config.StrictMappingProperties;
-import io.beanmapper.core.BeanField;
 import io.beanmapper.core.BeanMatchStore;
+import io.beanmapper.core.BeanProperty;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
@@ -35,22 +35,22 @@ public class ClassGenerator {
             Class<?> baseClass, Node displayNodes,
             StrictMappingProperties strictMappingProperties) throws Exception {
         this.classPool.insertClassPath(new ClassClassPath(baseClass));
-        Map<String, BeanField> baseFields = beanMatchStore.getBeanMatch(
+        Map<String, BeanProperty> baseFields = beanMatchStore.getBeanMatch(
                 strictMappingProperties.createBeanPair(baseClass, Object.class)
-        ).getSourceNode();
+        ).getSourceNodes();
         return new GeneratedClass(createClass(baseClass, baseFields, displayNodes, strictMappingProperties));
     }
 
     private synchronized CtClass createClass(
-            Class<?> base, Map<String, BeanField> baseFields,
+            Class<?> base, Map<String, BeanProperty> baseFields,
             Node displayNodes, StrictMappingProperties strictMappingProperties) throws Exception {
         CtClass baseClass = classPool.getCtClass(base.getName());
         CtClass dynClass = classPool.makeClass(base.getName() + "Dyn" + ++GENERATED_CLASS_PREFIX);
 
         for(String key : baseFields.keySet()) {
             if (displayNodes.getFields().contains(key)) {
-                BeanField beanField = baseFields.get(key);
-                CtField baseField = baseClass.getField(beanField.getName());
+                BeanProperty beanProperty = baseFields.get(key);
+                CtField baseField = baseClass.getField(beanProperty.getName());
 
                 // Field must be included -> copy field with related methods
                 CtField generatedField = new CtField(baseField, dynClass);
@@ -58,20 +58,20 @@ public class ClassGenerator {
 
                 CtMethod readMethod = null;
                 CtMethod writeMethod = null;
-                if (beanField.getProperty().getReadMethod() != null) {
-                    CtMethod baseReadMethod = getMethod(baseClass, beanField.getProperty().getReadMethod().getName());
+                if (beanProperty.getAccessor().getReadMethod() != null) {
+                    CtMethod baseReadMethod = getMethod(baseClass, beanProperty.getAccessor().getReadMethod().getName());
                     readMethod = new CtMethod(baseReadMethod, dynClass, null);
                 }
-                if (beanField.getProperty().getWriteMethod() != null) {
-                    CtMethod baseWriteMethod = getMethod(baseClass, beanField.getProperty().getWriteMethod().getName());
+                if (beanProperty.getAccessor().getWriteMethod() != null) {
+                    CtMethod baseWriteMethod = getMethod(baseClass, beanProperty.getAccessor().getWriteMethod().getName());
                     writeMethod = new CtMethod(baseWriteMethod, dynClass, null);
                 }
 
                 if(displayNodes.getNode(key).hasNodes()) {
-                    if(beanField.getCollectionInstructions() != null) {
-                        handleBeanCollection(generatedField, beanField.getCollectionInstructions(), displayNodes.getNode(key), strictMappingProperties);
+                    if(beanProperty.getCollectionInstructions() != null) {
+                        handleBeanCollection(generatedField, beanProperty.getCollectionInstructions(), displayNodes.getNode(key), strictMappingProperties);
                     } else {
-                        GeneratedClass nestedClass = handleNestedClass(generatedField, beanField.getProperty().getType(), displayNodes.getNode(key),
+                        GeneratedClass nestedClass = handleNestedClass(generatedField, beanProperty.getAccessor().getType(), displayNodes.getNode(key),
                                 strictMappingProperties);
                         if(readMethod != null) readMethod = changeReadMethod(readMethod, nestedClass.ctClass);
                         if(writeMethod != null) writeMethod = changeWriteMethod(writeMethod, baseField.getType(), nestedClass.ctClass);

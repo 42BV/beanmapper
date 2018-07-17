@@ -38,7 +38,7 @@ public class MapCollectionHandler extends AbstractCollectionHandler<Map> {
      * @return the index of the generic parameter type of the map value
      */
     @Override
-    protected int getGenericParameterIndex() {
+    public int getGenericParameterIndex() {
         return 1;
     }
 

@@ -6,9 +6,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.beanmapper.annotations.BeanCollectionUsage;
-import io.beanmapper.core.BeanField;
+import io.beanmapper.core.BeanProperty;
+import io.beanmapper.core.BeanPropertyCreator;
+import io.beanmapper.core.BeanPropertyMatchupDirection;
 
 import org.junit.Test;
 
@@ -21,16 +24,24 @@ public class BeanCollectionInstructionsTest {
 
     @Test
     public void onlyTargetSideGenericSupplied() {
-        BeanField sourceBeanField = new BeanField("alpha", null);
-        BeanField targetBeanField = new BeanField("alpha", null);
+        BeanProperty sourceBeanProperty = new BeanPropertyCreator(
+                BeanPropertyMatchupDirection.SOURCE_TO_TARGET,
+                SourceClassContainingList.class,
+                "list")
+                .determineNodesForPath();
+        BeanProperty targetBeanProperty = new BeanPropertyCreator(
+                BeanPropertyMatchupDirection.SOURCE_TO_TARGET,
+                TargetClassContainingList.class,
+                "list")
+                .determineNodesForPath();
 
-        targetBeanField.setCollectionInstructions(createBeanCollectionInstructions(
+        targetBeanProperty.setCollectionInstructions(createBeanCollectionInstructions(
                 CollectionElementType.derived(String.class),
                 null,
                 null,
                 null));
 
-        BeanCollectionInstructions merged = BeanCollectionInstructions.merge(sourceBeanField, targetBeanField);
+        BeanCollectionInstructions merged = BeanCollectionInstructions.merge(sourceBeanProperty, targetBeanProperty);
 
         assertEquals(String.class, merged.getCollectionElementType().getType());
         assertEquals(BeanCollectionUsage.CLEAR, merged.getBeanCollectionUsage());
@@ -40,27 +51,43 @@ public class BeanCollectionInstructionsTest {
 
     @Test
     public void sourceSideSuppliesInstructionsAndTargetSideGeneric() {
-        BeanField sourceBeanField = new BeanField("alpha", null);
-        BeanField targetBeanField = new BeanField("alpha", null);
+        BeanProperty sourceBeanProperty = new BeanPropertyCreator(
+                BeanPropertyMatchupDirection.SOURCE_TO_TARGET,
+                SourceClassContainingList.class,
+                "list")
+                .determineNodesForPath();
+        BeanProperty targetBeanProperty = new BeanPropertyCreator(
+                BeanPropertyMatchupDirection.SOURCE_TO_TARGET,
+                TargetClassContainingList.class,
+                "list")
+                .determineNodesForPath();
 
-        sourceBeanField.setCollectionInstructions(createBeanCollectionInstructions(
+        sourceBeanProperty.setCollectionInstructions(createBeanCollectionInstructions(
                 CollectionElementType.set(Long.class),
                 BeanCollectionUsage.REUSE,
                 new AnnotationClass(ArrayList.class),
                 false));
 
-        targetBeanField.setCollectionInstructions(createBeanCollectionInstructions(
+        targetBeanProperty.setCollectionInstructions(createBeanCollectionInstructions(
                 CollectionElementType.derived(String.class),
                 null,
                 null,
                 null));
 
-        BeanCollectionInstructions merged = BeanCollectionInstructions.merge(sourceBeanField, targetBeanField);
+        BeanCollectionInstructions merged = BeanCollectionInstructions.merge(sourceBeanProperty, targetBeanProperty);
 
         assertEquals(Long.class, merged.getCollectionElementType().getType());
         assertEquals(BeanCollectionUsage.REUSE, merged.getBeanCollectionUsage());
         assertEquals(ArrayList.class, merged.getPreferredCollectionClass().getAnnotationClass());
         assertFalse(merged.getFlushAfterClear());
+    }
+
+    public class SourceClassContainingList {
+        public List<String> list;
+    }
+
+    public class TargetClassContainingList {
+        public List<String> list;
     }
 
     private BeanCollectionInstructions createBeanCollectionInstructions(

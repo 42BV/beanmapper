@@ -20,16 +20,16 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
     /**
      * Method based property access.
      */
-    private final PropertyDescriptorPropertyAccessor descriptor;
+    private final MethodPropertyAccessor methodAccessor;
     
     /**
      * Field based property access.
      */
-    private final FieldPropertyAccessor field;
+    private final FieldPropertyAccessor fieldAccessor;
     
-    public CombinedPropertyAccessor(PropertyDescriptor descriptor, Field field) {
-        this.descriptor = descriptor != null ? new PropertyDescriptorPropertyAccessor(descriptor) : null;
-        this.field = field != null ? new FieldPropertyAccessor(field) : null;
+    public CombinedPropertyAccessor(PropertyDescriptor methodAccessor, Field fieldAccessor) {
+        this.methodAccessor = methodAccessor != null ? new MethodPropertyAccessor(methodAccessor) : null;
+        this.fieldAccessor = fieldAccessor != null ? new FieldPropertyAccessor(fieldAccessor) : null;
     }
 
     /**
@@ -37,7 +37,7 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
      */
     @Override
     public String getName() {
-        return field != null ? field.getName() : descriptor.getName();
+        return fieldAccessor != null ? fieldAccessor.getName() : methodAccessor.getName();
     }
     
     /**
@@ -45,7 +45,7 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
      */
     @Override
     public Class<?> getType() {
-        return field != null ? field.getType() : descriptor.getType();
+        return fieldAccessor != null ? fieldAccessor.getType() : methodAccessor.getType();
     }
     
     /**
@@ -54,11 +54,11 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
     @Override
     public <A extends Annotation> A findAnnotation(Class<A> annotationClass) {
         A annotation = null;
-        if (descriptor != null) {
-            annotation = descriptor.findAnnotation(annotationClass);
+        if (methodAccessor != null) {
+            annotation = methodAccessor.findAnnotation(annotationClass);
         }
-        if (field != null && annotation == null) {
-            annotation = field.findAnnotation(annotationClass);
+        if (fieldAccessor != null && annotation == null) {
+            annotation = fieldAccessor.findAnnotation(annotationClass);
         }
         return annotation;
     }
@@ -68,10 +68,10 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
      */
     @Override
     public Object getValue(Object instance) {
-        if (isReadable(descriptor)) {
-            return descriptor.getValue(instance);
-        } else if (isReadable(field)) {
-            return field.getValue(instance);
+        if (isReadable(methodAccessor)) {
+            return methodAccessor.getValue(instance);
+        } else if (isReadable(fieldAccessor)) {
+            return fieldAccessor.getValue(instance);
         }
         return null;
     }
@@ -81,7 +81,7 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
      */
     @Override
     public boolean isReadable() {
-        return isReadable(descriptor) || isReadable(field);
+        return isReadable(methodAccessor) || isReadable(fieldAccessor);
     }
 
     private boolean isReadable(PropertyAccessor accessor) {
@@ -93,10 +93,10 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
      */
     @Override
     public void setValue(Object instance, Object value) {
-        if (isWritable(descriptor)) {
-            descriptor.setValue(instance, value);
-        } else if (isWritable(field)) {
-            field.setValue(instance, value);
+        if (isWritable(methodAccessor)) {
+            methodAccessor.setValue(instance, value);
+        } else if (isWritable(fieldAccessor)) {
+            fieldAccessor.setValue(instance, value);
         }
     }
 
@@ -105,7 +105,7 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
      */
     @Override
     public boolean isWritable() {
-        return isWritable(descriptor) || isWritable(field);
+        return isWritable(methodAccessor) || isWritable(fieldAccessor);
     }
 
     private boolean isWritable(PropertyAccessor accessor) {
@@ -117,7 +117,7 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
      */
     @Override
     public Method getReadMethod() {
-        return descriptor != null ? descriptor.getReadMethod() : null;
+        return methodAccessor != null ? methodAccessor.getReadMethod() : null;
     }
 
     /**
@@ -125,6 +125,6 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
      */
     @Override
     public Method getWriteMethod() {
-        return descriptor != null ? descriptor.getWriteMethod() : null;
+        return methodAccessor != null ? methodAccessor.getWriteMethod() : null;
     }
 }
