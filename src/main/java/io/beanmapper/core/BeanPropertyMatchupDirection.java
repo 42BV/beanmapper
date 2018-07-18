@@ -29,6 +29,10 @@ public enum BeanPropertyMatchupDirection {
         }
     };
 
+    public BeanPropertyMatchupDirection getInverse() {
+        return values()[(values().length - 1) - ordinal()];
+    }
+
     public abstract BeanPropertyAccessType accessType(PropertyAccessor accessor);
 
     public abstract boolean checkFieldForCollectionProperty();

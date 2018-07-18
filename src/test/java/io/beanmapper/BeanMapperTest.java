@@ -132,6 +132,10 @@ import io.beanmapper.testmodel.nested_classes.Layer1;
 import io.beanmapper.testmodel.nested_classes.Layer1Result;
 import io.beanmapper.testmodel.nested_classes.Layer3;
 import io.beanmapper.testmodel.nested_classes.Layer4;
+import io.beanmapper.testmodel.not_accessible.source_contains_nested_class.TargetWithPersonName;
+import io.beanmapper.testmodel.not_accessible.source_contains_nested_class.SourceWithPerson;
+import io.beanmapper.testmodel.not_accessible.target_contains_nested_class.SourceWithPersonName;
+import io.beanmapper.testmodel.not_accessible.target_contains_nested_class.TargetWithPerson;
 import io.beanmapper.testmodel.numbers.ClassWithInteger;
 import io.beanmapper.testmodel.numbers.ClassWithLong;
 import io.beanmapper.testmodel.numbers.SourceWithDouble;
@@ -1610,6 +1614,21 @@ public class BeanMapperTest {
         List<WrappedTarget> targetItems = target.getItems();
         target = beanMapper.map(source, target);
         assertEquals(targetItems, target.getItems());
+    }
+
+    @Test
+    public void useBeanPropertyPathToAccessGetterOnly() {
+        SourceWithPerson source = new SourceWithPerson();
+        TargetWithPersonName target = beanMapper.map(source, TargetWithPersonName.class);
+        assertEquals(source.person.getFullName(), target.name);
+    }
+
+    @Test
+    public void useBeanPropertyPathToAccessSetterOnly() {
+        SourceWithPersonName source = new SourceWithPersonName();
+        source.name = "Zeefod Beeblebrox";
+        TargetWithPerson target = beanMapper.map(source, TargetWithPerson.class);
+        assertEquals(source.name, target.person.result);
     }
 
     public Person createPerson(String name) {
