@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 ### Fixed
+- Issue [#118](https://github.com/42BV/beanmapper/issues/118), **Nested ParameterizedTypes throws a ClassCastException**; when a type is a nested generic (eg, List<List<String>>) it threw a ClassCastException, even if no mapping took place. Fixed by checking the Type in ```AbstractBeanPropertyClass``` and calling for rawType if it concerns a ParameterizedType.
 - Issue [#116](https://github.com/42BV/beanmapper/issues/116), **Mappable nested classes analyzed for wrong direction**; when dealing with a mappable nested class, the applied direction is used as-is. This resulted in errors when the field could only be accessed through a method accessor and that the complementing method accessor was not available (ie, get and no set, or set and no get). The problem has been fixed by inverting the method direction on dealing with a mappable nested class.
 
 ## [3.0.0] - 2018-07-17
