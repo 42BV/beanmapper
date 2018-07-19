@@ -265,8 +265,8 @@ public class BeanMatchStore {
             try {
                 otherNodes.put(
                         wrapper.getName(),
-                        new BeanPropertyCreator(
-                                matchupDirection, otherType, wrapper.getName()).determineNodesForPath());
+                        new BeanPropertyCreator(matchupDirection.getInverse(), otherType, wrapper.getName())
+                            .determineNodesForPath());
             } catch (BeanNoSuchPropertyException err) {
                 // Acceptable, might have been tagged as @BeanProperty as well
             }
