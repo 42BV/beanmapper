@@ -2,6 +2,7 @@ package io.beanmapper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -132,6 +133,8 @@ import io.beanmapper.testmodel.nested_classes.Layer1;
 import io.beanmapper.testmodel.nested_classes.Layer1Result;
 import io.beanmapper.testmodel.nested_classes.Layer3;
 import io.beanmapper.testmodel.nested_classes.Layer4;
+import io.beanmapper.testmodel.nested_generics.SourceWithNestedGenerics;
+import io.beanmapper.testmodel.nested_generics.TargetWithNestedGenerics;
 import io.beanmapper.testmodel.not_accessible.source_contains_nested_class.TargetWithPersonName;
 import io.beanmapper.testmodel.not_accessible.source_contains_nested_class.SourceWithPerson;
 import io.beanmapper.testmodel.not_accessible.target_contains_nested_class.SourceWithPersonName;
@@ -1629,6 +1632,13 @@ public class BeanMapperTest {
         source.name = "Zeefod Beeblebrox";
         TargetWithPerson target = beanMapper.map(source, TargetWithPerson.class);
         assertEquals(source.name, target.person.result);
+    }
+
+    @Test
+    public void nestedGenericsEmptyList() {
+        SourceWithNestedGenerics source = new SourceWithNestedGenerics();
+        TargetWithNestedGenerics target = beanMapper.map(source, TargetWithNestedGenerics.class);
+        assertNotNull(target.names);
     }
 
     public Person createPerson(String name) {
