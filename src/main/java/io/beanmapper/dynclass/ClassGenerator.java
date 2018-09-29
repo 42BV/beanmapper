@@ -5,6 +5,7 @@ import java.util.Map;
 import io.beanmapper.annotations.BeanCollection;
 import io.beanmapper.config.StrictMappingProperties;
 import io.beanmapper.core.BeanMatchStore;
+import io.beanmapper.core.BeanMatchStoreFactory;
 import io.beanmapper.core.BeanProperty;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
 import javassist.CannotCompileException;
@@ -26,8 +27,8 @@ public class ClassGenerator {
     private static Integer GENERATED_CLASS_PREFIX = 0;
     private BeanMatchStore beanMatchStore;
 
-    public ClassGenerator() {
-        this.beanMatchStore = new BeanMatchStore(null, null);
+    public ClassGenerator(BeanMatchStoreFactory beanMatchStoreFactory) {
+        this.beanMatchStore = beanMatchStoreFactory.create(null, null);
         this.classPool = ClassPool.getDefault();
     }
 

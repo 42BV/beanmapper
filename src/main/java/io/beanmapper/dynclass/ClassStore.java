@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import io.beanmapper.config.StrictMappingProperties;
+import io.beanmapper.core.BeanMatchStoreFactory;
 import io.beanmapper.exceptions.BeanDynamicClassGenerationException;
 
 public class ClassStore {
@@ -16,8 +17,8 @@ public class ClassStore {
         CACHE = new TreeMap<String, Map<String, Class<?>>>();
     }
 
-    public ClassStore() {
-        this.classGenerator = new ClassGenerator();
+    public ClassStore(BeanMatchStoreFactory beanMatchStoreFactory) {
+        this.classGenerator = new ClassGenerator(beanMatchStoreFactory);
     }
 
     public Class<?> getOrCreateGeneratedClass(

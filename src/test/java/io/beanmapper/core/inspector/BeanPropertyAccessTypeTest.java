@@ -9,15 +9,17 @@ import org.junit.Test;
 
 public class BeanPropertyAccessTypeTest {
 
+    private PropertyAccessors propertyAccessors = new PropertyAccessors();
+
     @Test
     public void fieldInSourceCannotBeAccessed() {
-        PropertyAccessor accessor = PropertyAccessors.findProperty(NoAccessToField.class, "name");
+        PropertyAccessor accessor = propertyAccessors.findProperty(NoAccessToField.class, "name");
         assertEquals(BeanPropertyAccessType.NO_ACCESS, BeanPropertyMatchupDirection.SOURCE_TO_TARGET.accessType(accessor));
     }
 
     @Test
     public void fieldInTargetCannotBeAccessed() {
-        PropertyAccessor accessor = PropertyAccessors.findProperty(NoAccessToField.class, "name");
+        PropertyAccessor accessor = propertyAccessors.findProperty(NoAccessToField.class, "name");
         assertEquals(BeanPropertyAccessType.NO_ACCESS, BeanPropertyMatchupDirection.TARGET_TO_SOURCE.accessType(accessor));
     }
 
@@ -27,13 +29,13 @@ public class BeanPropertyAccessTypeTest {
 
     @Test
     public void fieldInSourceAccessedByGetter() {
-        PropertyAccessor accessor = PropertyAccessors.findProperty(GetterSetterAccessToField.class, "name");
+        PropertyAccessor accessor = propertyAccessors.findProperty(GetterSetterAccessToField.class, "name");
         assertEquals(BeanPropertyAccessType.GETTER, BeanPropertyMatchupDirection.SOURCE_TO_TARGET.accessType(accessor));
     }
 
     @Test
     public void fieldInTargetAccessedBySetter() {
-        PropertyAccessor accessor = PropertyAccessors.findProperty(GetterSetterAccessToField.class, "name");
+        PropertyAccessor accessor = propertyAccessors.findProperty(GetterSetterAccessToField.class, "name");
         assertEquals(BeanPropertyAccessType.SETTER, BeanPropertyMatchupDirection.TARGET_TO_SOURCE.accessType(accessor));
     }
 
@@ -45,13 +47,13 @@ public class BeanPropertyAccessTypeTest {
 
     @Test
     public void fieldInSourceAccessedByField() {
-        PropertyAccessor accessor = PropertyAccessors.findProperty(FieldAccessToField.class, "name");
+        PropertyAccessor accessor = propertyAccessors.findProperty(FieldAccessToField.class, "name");
         assertEquals(BeanPropertyAccessType.FIELD, BeanPropertyMatchupDirection.SOURCE_TO_TARGET.accessType(accessor));
     }
 
     @Test
     public void fieldInTargetAccessedByField() {
-        PropertyAccessor accessor = PropertyAccessors.findProperty(FieldAccessToField.class, "name");
+        PropertyAccessor accessor = propertyAccessors.findProperty(FieldAccessToField.class, "name");
         assertEquals(BeanPropertyAccessType.FIELD, BeanPropertyMatchupDirection.TARGET_TO_SOURCE.accessType(accessor));
     }
 
@@ -61,13 +63,13 @@ public class BeanPropertyAccessTypeTest {
 
     @Test
     public void getterInSourceAccessed() {
-        PropertyAccessor accessor = PropertyAccessors.findProperty(OnlyGetterSetterNoField.class, "name");
+        PropertyAccessor accessor = propertyAccessors.findProperty(OnlyGetterSetterNoField.class, "name");
         assertEquals(BeanPropertyAccessType.GETTER, BeanPropertyMatchupDirection.SOURCE_TO_TARGET.accessType(accessor));
     }
 
     @Test
     public void setterInTargetAccessed() {
-        PropertyAccessor accessor = PropertyAccessors.findProperty(OnlyGetterSetterNoField.class, "name");
+        PropertyAccessor accessor = propertyAccessors.findProperty(OnlyGetterSetterNoField.class, "name");
         assertEquals(BeanPropertyAccessType.SETTER, BeanPropertyMatchupDirection.TARGET_TO_SOURCE.accessType(accessor));
     }
 

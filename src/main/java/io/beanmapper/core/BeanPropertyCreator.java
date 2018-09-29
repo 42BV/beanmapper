@@ -14,9 +14,12 @@ public class BeanPropertyCreator {
 
     private final Route route;
 
-    public BeanPropertyCreator(BeanPropertyMatchupDirection matchupDirection, Class<?> baseClass, String path) {
+    private final PropertyAccessors propertyAccessors;
+
+    public BeanPropertyCreator(BeanPropertyMatchupDirection matchupDirection, Class<?> baseClass, PropertyAccessors propertyAccessors, String path) {
         this.matchupDirection = matchupDirection;
         this.baseClass = baseClass;
+        this.propertyAccessors = propertyAccessors;
         this.route = new Route(path);
     }
 
@@ -66,7 +69,7 @@ public class BeanPropertyCreator {
     private void traversePath(Stack<BeanProperty> beanProperties) {
         Class<?> currentBaseClass = baseClass;
         for (String node : route.getRoute()) {
-            final PropertyAccessor property = PropertyAccessors.findProperty(currentBaseClass, node);
+            final PropertyAccessor property = propertyAccessors.findProperty(currentBaseClass, node);
             if (property == null) {
                 throw new BeanNoSuchPropertyException("Property '" + node + "' does not exist in: " + currentBaseClass.getSimpleName());
             }

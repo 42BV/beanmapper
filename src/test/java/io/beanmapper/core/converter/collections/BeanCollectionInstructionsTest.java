@@ -13,6 +13,7 @@ import io.beanmapper.core.BeanProperty;
 import io.beanmapper.core.BeanPropertyCreator;
 import io.beanmapper.core.BeanPropertyMatchupDirection;
 
+import io.beanmapper.core.inspector.PropertyAccessors;
 import org.junit.Test;
 
 public class BeanCollectionInstructionsTest {
@@ -27,11 +28,13 @@ public class BeanCollectionInstructionsTest {
         BeanProperty sourceBeanProperty = new BeanPropertyCreator(
                 BeanPropertyMatchupDirection.SOURCE_TO_TARGET,
                 SourceClassContainingList.class,
+                new PropertyAccessors(),
                 "list")
                 .determineNodesForPath();
         BeanProperty targetBeanProperty = new BeanPropertyCreator(
                 BeanPropertyMatchupDirection.SOURCE_TO_TARGET,
                 TargetClassContainingList.class,
+                new PropertyAccessors(),
                 "list")
                 .determineNodesForPath();
 
@@ -54,11 +57,13 @@ public class BeanCollectionInstructionsTest {
         BeanProperty sourceBeanProperty = new BeanPropertyCreator(
                 BeanPropertyMatchupDirection.SOURCE_TO_TARGET,
                 SourceClassContainingList.class,
+                new PropertyAccessors(),
                 "list")
                 .determineNodesForPath();
         BeanProperty targetBeanProperty = new BeanPropertyCreator(
                 BeanPropertyMatchupDirection.SOURCE_TO_TARGET,
                 TargetClassContainingList.class,
+                new PropertyAccessors(),
                 "list")
                 .determineNodesForPath();
 

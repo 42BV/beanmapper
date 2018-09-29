@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import io.beanmapper.config.BeanMapperBuilder;
+import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.dynclass.model.Person;
 
 import org.junit.Before;
@@ -18,7 +19,7 @@ public class ClassStoreTest extends AbstractConcurrentTest {
 
     @Before
     public void init() {
-        store = new ClassStore();
+        store = new ClassStore(BeanMatchStore::new);
     }
 
     @Test
