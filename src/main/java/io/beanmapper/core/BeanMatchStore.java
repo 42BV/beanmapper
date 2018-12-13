@@ -259,7 +259,7 @@ public class BeanMatchStore {
         BeanPropertyWrapper wrapper = new BeanPropertyWrapper(accessor.getName());
         if (accessor.findAnnotation(io.beanmapper.annotations.BeanProperty.class) != null) {
             wrapper.setMustMatch();
-            wrapper.setName(accessor.findAnnotation(io.beanmapper.annotations.BeanProperty.class).name());
+            wrapper.setName(getBeanPropertyName(accessor.findAnnotation(io.beanmapper.annotations.BeanProperty.class)));
             // Get the other field from the location that is specified in the beanProperty annotation.
             // If the field is referred to by a path, store the custom field in the other map
             try {
@@ -272,6 +272,16 @@ public class BeanMatchStore {
             }
         }
         return wrapper;
+    }
+
+    private String getBeanPropertyName(io.beanmapper.annotations.BeanProperty annotation) {
+        String beanPropertyName = annotation.value();
+
+        if (beanPropertyName.isEmpty()) {
+            beanPropertyName = annotation.name();
+        }
+
+        return beanPropertyName;
     }
 
 }

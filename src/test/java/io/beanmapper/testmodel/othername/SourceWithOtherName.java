@@ -4,7 +4,7 @@ import io.beanmapper.annotations.BeanProperty;
 
 public class SourceWithOtherName {
 
-    @BeanProperty(name = "bothOtherName")
+    @BeanProperty("bothOtherName")
     private String bothOtherName1;
     @BeanProperty(name = "sourceOtherName")
     private String sourceOtherName1;

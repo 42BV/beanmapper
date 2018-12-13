@@ -51,6 +51,7 @@ public @interface BeanCollection {
      * functionality in combination with Lazy to make sure BeanMapper operates within the
      * transaction scope. If you do, the flush action can be rolled back, resulting in the
      * original state being preserved.
+     * @return Whether to flush the collection after clearing or not.
      */
     boolean flushAfterClear() default true;
 

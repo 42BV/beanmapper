@@ -24,7 +24,7 @@ public abstract class AbstractCollectionHandler<C> implements CollectionHandler<
 
     /**
      * Creates a new instance of the collection class
-     * @return
+     * @return new instance of the collection class
      */
     abstract protected C create();
 
