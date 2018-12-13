@@ -15,6 +15,7 @@ public @interface BeanRoleSecured {
 
     /**
      * The role the Principal must have to be allowed access to the field or method
+     * @return Role required to access the field or method
      */
     String[] value();
 

@@ -110,6 +110,7 @@ public class BeanMapper {
 
     /**
      * @deprecated use wrap() instead
+     * @return BeanMapperBuilder
      */
     public BeanMapperBuilder config() {
         return wrap();
@@ -117,6 +118,7 @@ public class BeanMapper {
 
     /**
      * @deprecated use wrap() instead
+     * @return BeanMapperBuilder
      */
     public BeanMapperBuilder wrapConfig() {
         return wrap();
