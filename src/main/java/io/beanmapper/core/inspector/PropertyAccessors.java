@@ -30,7 +30,7 @@ public class PropertyAccessors {
      * @param beanClass the bean class
      * @return the property accessors of that bean
      */
-    public static List<PropertyAccessor> getAll(Class<?> beanClass) {
+    public List<PropertyAccessor> getAll(Class<?> beanClass) {
         Map<String, PropertyDescriptor> descriptors = findPropertyDescriptors(beanClass);
         Map<String, Field> fields = findAllFields(beanClass);
         
@@ -47,11 +47,11 @@ public class PropertyAccessors {
         return accessors;
     }
     
-    private static Map<String, PropertyDescriptor> findPropertyDescriptors(Class<?> clazz) {
+    private Map<String, PropertyDescriptor> findPropertyDescriptors(Class<?> clazz) {
         try {
-            BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
             Map<String, PropertyDescriptor> result = new HashMap<String, PropertyDescriptor>();
-            for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
+            PropertyDescriptor[] propertyDescriptors = extractPropertyDescriptors(clazz);
+            for (PropertyDescriptor descriptor : propertyDescriptors) {
                 result.put(descriptor.getName(), descriptor);
             }
             result.remove(CLASS_PROPERTY);
@@ -64,7 +64,12 @@ public class PropertyAccessors {
         }
     }
 
-    private static void addParentInterfaceProperties(Class<?> clazz, Map<String, PropertyDescriptor> result) {
+    protected PropertyDescriptor[] extractPropertyDescriptors(Class<?> clazz) throws IntrospectionException {
+        BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
+        return beanInfo.getPropertyDescriptors();
+    }
+
+    private void addParentInterfaceProperties(Class<?> clazz, Map<String, PropertyDescriptor> result) {
         for (Class<?> parent : clazz.getInterfaces()) {
             result.putAll(findPropertyDescriptors(parent));
         }
@@ -87,7 +92,7 @@ public class PropertyAccessors {
      * @param propertyName the property name
      * @return the accessor that can manage the property
      */
-    public static PropertyAccessor findProperty(Class<?> beanClass, String propertyName) {
+    public PropertyAccessor findProperty(Class<?> beanClass, String propertyName) {
         PropertyAccessor result = null;
         PropertyDescriptor descriptor = findPropertyDescriptor(beanClass, propertyName);
         Field field = findField(beanClass, propertyName);
@@ -97,7 +102,7 @@ public class PropertyAccessors {
         return result;
     }
     
-    private static PropertyDescriptor findPropertyDescriptor(Class<?> beanClass, String propertyName) {
+    private PropertyDescriptor findPropertyDescriptor(Class<?> beanClass, String propertyName) {
         Map<String, PropertyDescriptor> descriptors = findPropertyDescriptors(beanClass);
         return descriptors.get(propertyName);
     }

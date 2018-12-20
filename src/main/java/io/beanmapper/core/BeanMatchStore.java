@@ -35,11 +35,18 @@ public class BeanMatchStore {
 
     private final BeanUnproxy beanUnproxy;
 
+    private final PropertyAccessors propertyAccessors;
+
     private Map<String, Map<String, BeanMatch>> store = new TreeMap<String, Map<String, BeanMatch>>();
 
     public BeanMatchStore(CollectionHandlerStore collectionHandlerStore, BeanUnproxy beanUnproxy) {
         this.collectionHandlerStore = collectionHandlerStore;
         this.beanUnproxy = beanUnproxy;
+        this.propertyAccessors = createPropertyAccessors();
+    }
+
+    protected PropertyAccessors createPropertyAccessors() {
+        return new PropertyAccessors();
     }
 
     public void validateStrictBeanPairs(List<BeanPair> beanPairs) {
@@ -122,7 +129,7 @@ public class BeanMatchStore {
     private Map<String, BeanProperty> getAllFields(Map<String, BeanProperty> ourNodes, Map<String, BeanProperty> otherNodes, Map<String, BeanProperty> aliases, Class<?> ourType, Class<?> otherType, BeanProperty precedingBeanProperty, BeanPropertyMatchupDirection matchupDirection) {
 
         Map<String, BeanProperty> ourCurrentNodes = ourNodes;
-        List<PropertyAccessor> accessors = PropertyAccessors.getAll(ourType);
+        List<PropertyAccessor> accessors = propertyAccessors.getAll(ourType);
         for (PropertyAccessor accessor : accessors) {
 
             BeanPropertyAccessType accessType = matchupDirection.accessType(accessor);
@@ -144,7 +151,7 @@ public class BeanMatchStore {
             BeanProperty currentBeanProperty = null;
             try {
                 currentBeanProperty = new BeanPropertyCreator(
-                        matchupDirection, ourType, accessor.getName()).determineNodesForPath(precedingBeanProperty);
+                        matchupDirection, ourType, propertyAccessors, accessor.getName()).determineNodesForPath(precedingBeanProperty);
                 currentBeanProperty.setMustMatch(beanPropertyWrapper.isMustMatch());
             } catch (BeanNoSuchPropertyException e) {
                 throw new BeanMissingPathException(ourType, accessor.getName(), e);
@@ -186,6 +193,8 @@ public class BeanMatchStore {
         }
         return ourCurrentNodes;
     }
+
+
 
     private void handleBeanLogicSecuredAnnotation(BeanProperty beanProperty, BeanLogicSecured beanLogicSecured) {
         if (beanLogicSecured == null) {
@@ -265,7 +274,7 @@ public class BeanMatchStore {
             try {
                 otherNodes.put(
                         wrapper.getName(),
-                        new BeanPropertyCreator(matchupDirection.getInverse(), otherType, wrapper.getName())
+                        new BeanPropertyCreator(matchupDirection.getInverse(), otherType, propertyAccessors, wrapper.getName())
                             .determineNodesForPath());
             } catch (BeanNoSuchPropertyException err) {
                 // Acceptable, might have been tagged as @BeanProperty as well

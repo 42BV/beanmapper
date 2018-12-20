@@ -18,6 +18,8 @@ import org.junit.Test;
 public class PropertyAccessorTest {
     
     private BeanWithProperties bean;
+
+    private PropertyAccessors propertyAccessors = new PropertyAccessors();
     
     @Before
     public void setUp() {
@@ -26,7 +28,7 @@ public class PropertyAccessorTest {
 
     @Test
     public void testField() {
-        PropertyAccessor accessor = PropertyAccessors.findProperty(BeanWithProperties.class, "myField");
+        PropertyAccessor accessor = propertyAccessors.findProperty(BeanWithProperties.class, "myField");
         Assert.assertEquals("myField", accessor.getName());
         Assert.assertEquals(String.class, accessor.getType());
         Assert.assertEquals("a", accessor.findAnnotation(BeanProperty.class).name());
@@ -42,7 +44,7 @@ public class PropertyAccessorTest {
 
     @Test
     public void testFieldWithGetter() {
-        PropertyAccessor accessor = PropertyAccessors.findProperty(BeanWithProperties.class, "myPropertyWithGetter");
+        PropertyAccessor accessor = propertyAccessors.findProperty(BeanWithProperties.class, "myPropertyWithGetter");
         Assert.assertEquals("myPropertyWithGetter", accessor.getName());
         Assert.assertEquals(String.class, accessor.getType());
         Assert.assertEquals("bb", accessor.findAnnotation(BeanProperty.class).name());
@@ -57,7 +59,7 @@ public class PropertyAccessorTest {
 
     @Test
     public void testFieldWithSetter() {
-        PropertyAccessor accessor = PropertyAccessors.findProperty(BeanWithProperties.class, "myPropertyWithSetter");
+        PropertyAccessor accessor = propertyAccessors.findProperty(BeanWithProperties.class, "myPropertyWithSetter");
         Assert.assertEquals("myPropertyWithSetter", accessor.getName());
         Assert.assertEquals(String.class, accessor.getType());
         Assert.assertEquals("cc", accessor.findAnnotation(BeanProperty.class).name());
@@ -72,7 +74,7 @@ public class PropertyAccessorTest {
 
     @Test
     public void testFieldWithGetterAndSetter() {
-        PropertyAccessor accessor = PropertyAccessors.findProperty(BeanWithProperties.class, "myPropertyWithGetterAndSetter");
+        PropertyAccessor accessor = propertyAccessors.findProperty(BeanWithProperties.class, "myPropertyWithGetterAndSetter");
         Assert.assertEquals("myPropertyWithGetterAndSetter", accessor.getName());
         Assert.assertEquals(String.class, accessor.getType());
         Assert.assertEquals("dd", accessor.findAnnotation(BeanProperty.class).name());
@@ -88,7 +90,7 @@ public class PropertyAccessorTest {
 
     @Test
     public void testGetter() {
-        PropertyAccessor accessor = PropertyAccessors.findProperty(BeanWithProperties.class, "myGetter");
+        PropertyAccessor accessor = propertyAccessors.findProperty(BeanWithProperties.class, "myGetter");
         Assert.assertEquals("myGetter", accessor.getName());
         Assert.assertEquals(String.class, accessor.getType());
         Assert.assertEquals("e", accessor.findAnnotation(BeanProperty.class).name());
@@ -98,7 +100,7 @@ public class PropertyAccessorTest {
 
     @Test
     public void testSetter() {
-        PropertyAccessor accessor = PropertyAccessors.findProperty(BeanWithProperties.class, "mySetter");
+        PropertyAccessor accessor = propertyAccessors.findProperty(BeanWithProperties.class, "mySetter");
         Assert.assertEquals("mySetter", accessor.getName());
         Assert.assertEquals(String.class, accessor.getType());
         Assert.assertEquals("f", accessor.findAnnotation(BeanProperty.class).name());
@@ -108,7 +110,7 @@ public class PropertyAccessorTest {
 
     @Test
     public void testUnknownProperty() {
-        Assert.assertNull(PropertyAccessors.findProperty(BeanWithProperties.class, "unknown"));
+        Assert.assertNull(propertyAccessors.findProperty(BeanWithProperties.class, "unknown"));
     }
 
     @SuppressWarnings("unused")

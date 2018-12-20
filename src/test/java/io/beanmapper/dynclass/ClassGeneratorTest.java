@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import io.beanmapper.config.BeanMapperBuilder;
+import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.dynclass.model.Person;
 
 import org.junit.Test;
@@ -15,7 +16,7 @@ public class ClassGeneratorTest extends AbstractConcurrentTest {
 
     @Test
     public void shouldNotFailConcurrently() throws Exception {
-        final ClassGenerator gen = new ClassGenerator();
+        final ClassGenerator gen = new ClassGenerator(BeanMatchStore::new);
         final List<Exception> results = Collections.synchronizedList(new ArrayList<Exception>());
         final Runnable r = new Runnable() {
 

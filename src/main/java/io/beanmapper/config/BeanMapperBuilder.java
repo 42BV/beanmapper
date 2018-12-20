@@ -6,6 +6,8 @@ import java.util.List;
 import io.beanmapper.BeanMapper;
 import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.annotations.LogicSecuredCheck;
+import io.beanmapper.core.BeanMatchStore;
+import io.beanmapper.core.BeanMatchStoreFactory;
 import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.collections.ListCollectionHandler;
 import io.beanmapper.core.collections.MapCollectionHandler;
@@ -39,7 +41,11 @@ public class BeanMapperBuilder {
     private List<CollectionHandler> customCollectionHandlers = new ArrayList<>();
 
     public BeanMapperBuilder() {
-        this.configuration = new CoreConfiguration();
+        this(BeanMatchStore::new);
+    }
+
+    public BeanMapperBuilder(BeanMatchStoreFactory beanMatchStoreFactory) {
+        this.configuration = new CoreConfiguration(beanMatchStoreFactory);
     }
 
     public BeanMapperBuilder(Configuration configuration) {

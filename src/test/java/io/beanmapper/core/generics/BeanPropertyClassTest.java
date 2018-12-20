@@ -95,7 +95,7 @@ public class BeanPropertyClassTest {
             BeanPropertyMatchupDirection direction,
             Class containingClass,
             String property) {
-        PropertyAccessor sourceAccessor = PropertyAccessors.findProperty(containingClass, property);
+        PropertyAccessor sourceAccessor = new PropertyAccessors().findProperty(containingClass, property);
         DirectedBeanProperty directedBeanProperty = new DirectedBeanProperty(
                 direction,
                 sourceAccessor,
