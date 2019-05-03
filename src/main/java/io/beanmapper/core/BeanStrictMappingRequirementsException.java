@@ -13,10 +13,15 @@ public class BeanStrictMappingRequirementsException extends RuntimeException {
     private final List<BeanMatchValidationMessage> validationMessages;
 
     public BeanStrictMappingRequirementsException(BeanMatchValidationMessage validationMessage) {
-        this(Collections.<BeanMatchValidationMessage>singletonList(validationMessage));
+        this(Collections.singletonList(validationMessage));
     }
 
     public BeanStrictMappingRequirementsException(List<BeanMatchValidationMessage> validationMessages) {
+        super(
+          "One or more property mismatches between a mapped source and target type. " +
+          "Read the error logging above for more details."
+        );
+
         this.validationMessages = validationMessages;
         logErrors(validationMessages);
     }
