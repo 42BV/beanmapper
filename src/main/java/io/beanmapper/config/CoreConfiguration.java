@@ -99,6 +99,12 @@ public class CoreConfiguration implements Configuration {
      */
     private Boolean useNullValue = false;
 
+    /**
+     * Property that determines if null collections should be mapped to an empty collection or a null value. Normal
+     * behaviour is to create an empty list if a source value is null.
+     */
+    private Boolean useCollectionNullValues = true;
+
     @Override
     public List<String> getDownsizeTarget() { return null; }
 
@@ -242,6 +248,11 @@ public class CoreConfiguration implements Configuration {
     @Override
     public Boolean getUseNullValue() {
         return this.useNullValue;
+    }
+
+    @Override
+    public Boolean getUseCollectionNullValue() {
+        return this.useCollectionNullValues;
     }
 
     @Override
@@ -414,4 +425,8 @@ public class CoreConfiguration implements Configuration {
         this.useNullValue = useNullValue;
     }
 
+    @Override
+    public void setUseCollectionNullValue(Boolean useNullValue) {
+        this.useCollectionNullValues = useNullValue;
+    }
 }

@@ -194,6 +194,16 @@ public class BeanMapperBuilder {
         return this;
     }
 
+    public BeanMapperBuilder setUseNullValue(boolean useNullValue) {
+        this.configuration.setUseNullValue(useNullValue);
+        return this;
+    }
+
+    public BeanMapperBuilder setUseCollectionNullValue(boolean useCollectionNullValue) {
+        this.configuration.setUseCollectionNullValue(useCollectionNullValue);
+        return this;
+    }
+
     public BeanMapper build() {
         BeanMapper beanMapper = new BeanMapper(configuration);
         // Custom collection handlers must be registered before default ones

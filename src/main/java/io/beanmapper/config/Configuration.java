@@ -198,6 +198,12 @@ public interface Configuration {
     Boolean getUseNullValue();
 
     /**
+     * Property that determines if null values for the source collection must be skipped or not
+     * @return determines if null values must be skipped or not
+     */
+    Boolean getUseCollectionNullValue();
+
+    /**
      * The RoleSecuredCheck is responsible for checking if a Principal may access
      * a field or method annotated with @BeanRoleSecured. Returns the RoleSecuredCheck,
      * if it has been configured.
@@ -419,4 +425,9 @@ public interface Configuration {
      */
     void setUseNullValue(Boolean useNullValue);
 
+    /**
+     * Property that determines if null values for the source collections must be skipped or not
+     * @param useNullValue determines if null values must be skipped or not
+     */
+    void setUseCollectionNullValue(Boolean useNullValue);
 }

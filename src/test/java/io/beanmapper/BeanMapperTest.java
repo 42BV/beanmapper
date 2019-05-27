@@ -1620,6 +1620,17 @@ public class BeanMapperTest {
     }
 
     @Test
+    public void nullListToNullList() {
+        BeanMapper beanMapper = new BeanMapperBuilder()
+                .setUseCollectionNullValue(false)
+                .build();
+        CollectionListSource source = new CollectionListSource();
+        source.items = null;
+        CollectionListTarget target = beanMapper.map(source, CollectionListTarget.class);
+        assertNull(target.items);
+    }
+
+    @Test
     public void useBeanPropertyPathToAccessGetterOnly() {
         SourceWithPerson source = new SourceWithPerson();
         TargetWithPersonName target = beanMapper.map(source, TargetWithPersonName.class);
