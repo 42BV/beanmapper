@@ -34,7 +34,7 @@ In order to use Beanmapper in your project, simply add the following Maven depen
 You want to map two dissimilar classes with no hierarchical relation (save java.lang.Object), 
 but with a fairly similar naming schema for the fields.
 
-![Basic use case for Beanmapper](docs/images/01-basic-use-case.png)
+![Basic use case for Beanmapper](docs/images/beanmapper-usecase.png)
 
 ```java
 public class SourceClass {
