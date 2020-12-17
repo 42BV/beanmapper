@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/42BV/beanmapper.svg?branch=master)](https://travis-ci.org/42BV/beanmapper)
+[![Build Status](https://github.com/42BV/beanmapper/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/42BV/beanmapper/actions?query=workflow%3A%22Java+CI+with+Maven%22)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/a78e3521eb2e4de48679b21d27a36458)](https://www.codacy.com/app/42bv/beanmapper)
 [![BCH compliance](https://bettercodehub.com/edge/badge/42BV/beanmapper?branch=master)](https://bettercodehub.com/)
 [![codecov](https://codecov.io/gh/42BV/beanmapper/branch/master/graph/badge.svg)](https://codecov.io/gh/42BV/beanmapper)
