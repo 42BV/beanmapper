@@ -30,6 +30,6 @@ jobs:
     - name: OWASP dependency checks
       run: mvn dependency-check:check
     - name: Build with Maven
-      run: mvn clean verify
+      run: mvn clean verify -Dgpg.skip
     - name: Code coverage with Codecov  
       uses: codecov/codecov-action@v1
