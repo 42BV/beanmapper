@@ -1,26 +1,5 @@
 package io.beanmapper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
 import io.beanmapper.config.AfterClearFlusher;
 import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.config.RoleSecuredCheck;
@@ -135,8 +114,8 @@ import io.beanmapper.testmodel.nested_classes.Layer3;
 import io.beanmapper.testmodel.nested_classes.Layer4;
 import io.beanmapper.testmodel.nested_generics.SourceWithNestedGenerics;
 import io.beanmapper.testmodel.nested_generics.TargetWithNestedGenerics;
-import io.beanmapper.testmodel.not_accessible.source_contains_nested_class.TargetWithPersonName;
 import io.beanmapper.testmodel.not_accessible.source_contains_nested_class.SourceWithPerson;
+import io.beanmapper.testmodel.not_accessible.source_contains_nested_class.TargetWithPersonName;
 import io.beanmapper.testmodel.not_accessible.target_contains_nested_class.SourceWithPersonName;
 import io.beanmapper.testmodel.not_accessible.target_contains_nested_class.TargetWithPerson;
 import io.beanmapper.testmodel.numbers.ClassWithInteger;
@@ -192,11 +171,32 @@ import io.beanmapper.testmodel.tostring.TargetWithString;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class BeanMapperTest {
 
@@ -283,6 +283,21 @@ public class BeanMapperTest {
         PersonView personView = beanMapper.map(person, PersonView.class);
         assertEquals("Henk", personView.name);
         assertEquals("Zoetermeer", personView.place);
+    }
+
+    @Test
+    public void mapToOptional() {
+        Optional<Person> person = Optional.of(createPerson());
+        PersonView personView = beanMapper.map(person, PersonView.class).get();
+        assertEquals("Henk", personView.name);
+        assertEquals("Zoetermeer", personView.place);
+    }
+
+    @Test
+    public void mapToOptionalEmpty() {
+        Optional<Person> person = Optional.empty();
+        Optional<PersonView> personView = beanMapper.map(person, PersonView.class);
+        assertFalse(personView.isPresent());
     }
 
     @Test
