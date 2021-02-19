@@ -33,7 +33,7 @@ public class CollectionConverter<T> implements BeanConverter {
                 .setFlushAfterClear(beanPropertyMatch.getCollectionInstructions().getFlushAfterClear())
                 .setTargetClass(beanPropertyMatch.getCollectionInstructions().getCollectionElementType().getType())
                 .setTarget(beanPropertyMatch.getTargetObject())
-                .setUseNullValue()
+                .setUseNullValue(beanMapper.getConfiguration().getUseCollectionNullValue())
                 .build()
                 .map(sourceCollection);
     }
