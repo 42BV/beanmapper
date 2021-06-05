@@ -16,7 +16,6 @@ import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
 import io.beanmapper.strategy.ConstructorArguments;
-import mockit.Deencapsulation;
 
 import org.junit.Test;
 
@@ -161,14 +160,6 @@ public class BeanMapperBuilderTest {
         assertFalse(
                 "The Override configuration has a custom override for the converter choosable option, which should be false",
                 beanMapper.getConfiguration().isConverterChoosable());
-    }
-
-    @Test
-    public void currentConfigOnCoreLeadsToOverrideConfig() {
-        BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrap
-        beanMapper = beanMapper.wrap().build(); // Wrap in an override wrap
-        Object parentConfiguration = Deencapsulation.getField(beanMapper.getConfiguration(), "parentConfiguration");
-        assertNotNull(parentConfiguration);
     }
 
     @Test

@@ -44,7 +44,6 @@
         <slf4j.version>1.7.2</slf4j.version>
 
         <junit.version>4.10</junit.version>
-        <jmockit.version>1.17</jmockit.version>
     </properties>
 
     <distributionManagement>
@@ -61,12 +60,6 @@
     <dependencies>
     
         <!-- Used for unit testing -->
-        <dependency>
-            <groupId>org.jmockit</groupId>
-            <artifactId>jmockit</artifactId>
-            <version>${jmockit.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit-dep</artifactId>
@@ -115,11 +108,6 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
-                <configuration>
-                    <argLine>
-                        ${argLine} -javaagent:"${settings.localRepository}"/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar
-                    </argLine>
-                </configuration>
             </plugin>
 
             <plugin>

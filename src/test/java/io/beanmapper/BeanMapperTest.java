@@ -127,6 +127,10 @@ import io.beanmapper.testmodel.initially_unmatched_source.SourceWithUnmatchedFie
 import io.beanmapper.testmodel.initially_unmatched_source.TargetWithoutUnmatchedField;
 import io.beanmapper.testmodel.innerclass.SourceWithInnerClass;
 import io.beanmapper.testmodel.innerclass.TargetWithInnerClass;
+import io.beanmapper.testmodel.mappable_enum.CountryEnum;
+import io.beanmapper.testmodel.mappable_enum.CountryHolder;
+import io.beanmapper.testmodel.mappable_enum.CountryResult;
+import io.beanmapper.testmodel.mappable_enum.CountryResultHolder;
 import io.beanmapper.testmodel.multiple_unwrap.AllTogether;
 import io.beanmapper.testmodel.multiple_unwrap.LayerA;
 import io.beanmapper.testmodel.nested_classes.Layer1;
@@ -189,9 +193,6 @@ import io.beanmapper.testmodel.strict_convention.SCTargetBResult;
 import io.beanmapper.testmodel.strict_convention.SCTargetC;
 import io.beanmapper.testmodel.tostring.SourceWithNonString;
 import io.beanmapper.testmodel.tostring.TargetWithString;
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.Verifications;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -242,41 +243,6 @@ public class BeanMapperTest {
         assertEquals("GREEN", colorStringResult.currentColor);
     }
 
-    @Test
-    public void mapFromInterface(@Mocked final PersonAo source) {
-        new Expectations() {
-            {
-                source.getId();
-                result = Long.valueOf(42);
-                
-                source.getName();
-                result = "Jan";
-            }
-        };
-        
-        Person person = beanMapper.map(source, Person.class);
-        assertEquals(Long.valueOf(42), person.getId());
-        assertEquals("Jan", person.getName());
-        assertNull(person.getPlace());
-        assertNull(person.getBankAccount());
-    }
-    
-    @Test
-    public void mapToInterface(@Mocked final PersonAo target) {
-        Person person = new Person();
-        person.setId(Long.valueOf(42));
-        person.setName("Jan");
-        
-        beanMapper.map(person, target);
-
-        new Verifications() {
-            {
-                target.setId(Long.valueOf(42));
-                target.setName("Jan");
-            }
-        };
-    }
-    
     @Test
     public void copyToNewTargetInstance() {
         Person person = createPerson();
@@ -1639,6 +1605,25 @@ public class BeanMapperTest {
         SourceWithNestedGenerics source = new SourceWithNestedGenerics();
         TargetWithNestedGenerics target = beanMapper.map(source, TargetWithNestedGenerics.class);
         assertNotNull(target.names);
+    }
+
+    @Test
+    public void deepMapEnum() {
+        CountryEnum source = CountryEnum.NL;
+        CountryResult target = beanMapper.map(source, CountryResult.class);
+        assertEquals(CountryEnum.NL.getCode(), target.code);
+        assertEquals(CountryEnum.NL.getDisplayName(), target.displayName);
+        assertEquals(CountryEnum.NL.getImage(), target.image);
+    }
+
+    @Test
+    public void deepMapEnumInHolder() {
+        CountryHolder sourceHolder = new CountryHolder();
+        sourceHolder.country = CountryEnum.NL;
+        CountryResultHolder target = beanMapper.map(sourceHolder, CountryResultHolder.class);
+        assertEquals(CountryEnum.NL.getCode(), target.country.code);
+        assertEquals(CountryEnum.NL.getDisplayName(), target.country.displayName);
+        assertEquals(CountryEnum.NL.getImage(), target.country.image);
     }
 
     public Person createPerson(String name) {

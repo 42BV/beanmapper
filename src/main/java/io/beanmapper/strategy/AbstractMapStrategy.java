@@ -1,10 +1,7 @@
 package io.beanmapper.strategy;
 
 import io.beanmapper.BeanMapper;
-import io.beanmapper.annotations.BeanConstruct;
-import io.beanmapper.annotations.BeanDefault;
-import io.beanmapper.annotations.BeanParent;
-import io.beanmapper.annotations.BeanProperty;
+import io.beanmapper.annotations.*;
 import io.beanmapper.config.Configuration;
 import io.beanmapper.core.BeanMatch;
 import io.beanmapper.core.BeanPropertyMatch;
@@ -215,7 +212,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
     }
 
     private boolean neitherSourceNorTargetIsEnum(BeanPropertyMatch beanPropertyMatch) {
-        return !(beanPropertyMatch.getSourceClass().isEnum() ||
+        return !((beanPropertyMatch.getSourceClass().isEnum() && !beanPropertyMatch.getSourceClass().isAnnotationPresent(BeanMappableEnum.class)) ||
                 beanPropertyMatch.getTargetClass().isEnum());
     }
 
