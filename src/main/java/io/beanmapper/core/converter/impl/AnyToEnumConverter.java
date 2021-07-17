@@ -22,6 +22,9 @@ public class AnyToEnumConverter extends AbstractBeanConverter<Object, Enum<?>> {
         if (source == null) {
             return null;
         }
+        if (targetClass.isInstance(source)) {
+            return (Enum<?>)source;
+        }
         String sourceText = source.toString();
         if (isNotEmpty(sourceText)) {
             return valueOf(targetClass, sourceText);

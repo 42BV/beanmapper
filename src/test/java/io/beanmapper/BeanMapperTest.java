@@ -113,14 +113,7 @@ import io.beanmapper.testmodel.encapsulate.ResultOneToMany;
 import io.beanmapper.testmodel.encapsulate.source_annotated.Car;
 import io.beanmapper.testmodel.encapsulate.source_annotated.CarDriver;
 import io.beanmapper.testmodel.encapsulate.source_annotated.Driver;
-import io.beanmapper.testmodel.enums.ColorEntity;
-import io.beanmapper.testmodel.enums.ColorResult;
-import io.beanmapper.testmodel.enums.ColorStringResult;
-import io.beanmapper.testmodel.enums.EnumSourceArraysAsList;
-import io.beanmapper.testmodel.enums.EnumTargetList;
-import io.beanmapper.testmodel.enums.RGB;
-import io.beanmapper.testmodel.enums.UserRole;
-import io.beanmapper.testmodel.enums.UserRoleResult;
+import io.beanmapper.testmodel.enums.*;
 import io.beanmapper.testmodel.ignore.IgnoreSource;
 import io.beanmapper.testmodel.ignore.IgnoreTarget;
 import io.beanmapper.testmodel.initially_unmatched_source.SourceWithUnmatchedField;
@@ -1624,6 +1617,14 @@ public class BeanMapperTest {
         assertEquals(CountryEnum.NL.getCode(), target.country.code);
         assertEquals(CountryEnum.NL.getDisplayName(), target.country.displayName);
         assertEquals(CountryEnum.NL.getImage(), target.country.image);
+    }
+
+    @Test
+    public void mapEnumWithToString() {
+        SourceWithEnumWithToString source = new SourceWithEnumWithToString();
+        source.myEnum = EnumWithToString.SOME_VALUE;
+        TargetWithEnumWithToString target = beanMapper.map(source, TargetWithEnumWithToString.class);
+        assertEquals(EnumWithToString.SOME_VALUE, target.myEnum);
     }
 
     public Person createPerson(String name) {
