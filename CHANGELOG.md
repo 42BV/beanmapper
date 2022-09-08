@@ -4,11 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [3.1.2] - 2022-09-08
 ### Changed
 - Replaced travis build with Github actions workflow
 - Upgraded jackson-databind dependency which had an owasp error
 - Upgraded to Java 17, from Java 8
+- Upgraded JUnit
+- Upgraded 
 ### Fixed
 - Issue [#141](https://github.com/42BV/beanmapper/issues/141), **Dynamic Mapping throws InaccessibleObjectException in Java 16+**; when a form is dynamically mapped to a class, an InaccessibleObjectException would be thrown, due to updated Reflection requirements. Fixed by updating ```GeneratedClass``` to make use of ```CtClass#toClass(Class)```, rather than ```CtClass#toClass()```.
 
