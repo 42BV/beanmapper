@@ -14,7 +14,7 @@ public class GeneratedClass {
     
     public GeneratedClass(CtClass ctClass) throws CannotCompileException {
         this.ctClass = ctClass;
-        this.generatedClass = ctClass.toClass();
+        this.generatedClass = ctClass.toClass(DynamicClassGeneratorHelper.getNeighbourClass(ctClass));
     }
 
 }

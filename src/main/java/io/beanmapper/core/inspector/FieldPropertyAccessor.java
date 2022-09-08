@@ -67,6 +67,9 @@ public class FieldPropertyAccessor implements PropertyAccessor {
     @Override
     public Object getValue(Object instance) {
         try {
+            if (instance instanceof Enum && field.getName().equals("name")) {
+                return ((Enum<?>) instance).name();
+            }
             field.setAccessible(true);
             return field.get(instance);
         } catch (IllegalAccessException e) {
