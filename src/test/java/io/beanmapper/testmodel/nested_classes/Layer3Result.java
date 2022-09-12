@@ -5,7 +5,7 @@ import io.beanmapper.annotations.BeanProperty;
 public class Layer3Result {
 
     private String name3;
-    @BeanProperty(name="layer4.id")
+    @BeanProperty(name = "layer4.id")
     private Long id4;
 
     public String getName3() {

@@ -5,12 +5,12 @@ import static junit.framework.Assert.assertEquals;
 import io.beanmapper.annotations.BeanConstruct;
 import io.beanmapper.config.BeanMapperBuilder;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class BeanConstructExample {
 
     @Test
-    public void mapWithBeanConstruct() {
+    void mapWithBeanConstruct() {
         Person person = new Person(1L, "Henk", "de", "Vries");
 
         PersonResult target = new BeanMapperBuilder().build()

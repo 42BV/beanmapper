@@ -1,29 +1,30 @@
 package io.beanmapper.core.converter.collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class AnnotationClassTest {
+class AnnotationClassTest {
 
     @Test
-    public void nullClass() {
+    void nullClass() {
         AnnotationClass annotationClass = new AnnotationClass(null);
-        assertEquals(null, annotationClass.getAnnotationClass());
+        assertNull(annotationClass.getAnnotationClass());
         assertTrue(annotationClass.isEmpty());
     }
 
     @Test
-    public void voidClass() {
+    void voidClass() {
         AnnotationClass annotationClass = new AnnotationClass(void.class);
-        assertEquals(null, annotationClass.getAnnotationClass());
+        assertNull(annotationClass.getAnnotationClass());
         assertTrue(annotationClass.isEmpty());
     }
 
     @Test
-    public void normalClass() {
+    void normalClass() {
         AnnotationClass annotationClass = new AnnotationClass(String.class);
         assertEquals(String.class, annotationClass.getAnnotationClass());
         assertFalse(annotationClass.isEmpty());

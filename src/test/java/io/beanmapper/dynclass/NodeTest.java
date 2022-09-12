@@ -1,28 +1,28 @@
 package io.beanmapper.dynclass;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class NodeTest {
+class NodeTest {
 
     @Test
-    public void key() {
+    void key() {
         Node node = Node.createTree(Arrays.asList("id", "name", "assets.id", "assets.name"));
         assertEquals("assets(id,name),id,name", node.getKey());
     }
 
     @Test
-    public void emptyKey() {
-        Node node = Node.createTree(Collections.<String> emptyList());
+    void emptyKey() {
+        Node node = Node.createTree(Collections.emptyList());
         assertEquals("", node.getKey());
     }
 
     @Test
-    public void complexKey() {
+    void complexKey() {
         Node node = Node.createTree(
                 Arrays.asList("id", "name", "assets.id", "assets.name", "assets.artists",
                         "assets.artists.id", "assets.artists.name"));

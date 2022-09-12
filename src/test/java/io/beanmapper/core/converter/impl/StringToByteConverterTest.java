@@ -3,29 +3,31 @@
  */
 package io.beanmapper.core.converter.impl;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class StringToByteConverterTest {
-    
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+class StringToByteConverterTest {
+
     private StringToByteConverter converter;
-    
-    @Before
-    public void setUp() {
+
+    @BeforeEach
+    void setUp() {
         converter = new StringToByteConverter();
     }
-    
+
     @Test
-    public void testConvertBoxed() {
-        Assert.assertTrue(converter.match(String.class, Byte.class));
-        Assert.assertEquals(Byte.valueOf((byte) 42), converter.convert(null,"42", Byte.class, null));
+    void testConvertBoxed() {
+        assertTrue(converter.match(String.class, Byte.class));
+        assertEquals(Byte.valueOf((byte) 42), converter.convert(null, "42", Byte.class, null));
     }
-    
+
     @Test
-    public void testConvertPrimitive() {
-        Assert.assertTrue(converter.match(String.class, byte.class));
-        Assert.assertEquals(Byte.valueOf((byte) 42), converter.convert(null,"42", byte.class, null));
+    void testConvertPrimitive() {
+        assertTrue(converter.match(String.class, byte.class));
+        assertEquals(Byte.valueOf((byte) 42), converter.convert(null, "42", byte.class, null));
     }
 
 }

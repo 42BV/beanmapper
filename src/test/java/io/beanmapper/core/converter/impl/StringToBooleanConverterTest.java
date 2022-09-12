@@ -3,29 +3,31 @@
  */
 package io.beanmapper.core.converter.impl;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class StringToBooleanConverterTest {
-    
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+class StringToBooleanConverterTest {
+
     private StringToBooleanConverter converter;
-    
-    @Before
-    public void setUp() {
+
+    @BeforeEach
+    void setUp() {
         converter = new StringToBooleanConverter();
     }
-    
+
     @Test
-    public void testConvertBoxed() {
-        Assert.assertTrue(converter.match(String.class, Boolean.class));
-        Assert.assertEquals(Boolean.TRUE, converter.convert(null,"true", Boolean.class, null));
+    void testConvertBoxed() {
+        assertTrue(converter.match(String.class, Boolean.class));
+        assertEquals(Boolean.TRUE, converter.convert(null, "true", Boolean.class, null));
     }
-    
+
     @Test
-    public void testConvertPrimitive() {
-        Assert.assertTrue(converter.match(String.class, boolean.class));
-        Assert.assertEquals(Boolean.TRUE, converter.convert(null,"true", boolean.class, null));
+    void testConvertPrimitive() {
+        assertTrue(converter.match(String.class, boolean.class));
+        assertEquals(Boolean.TRUE, converter.convert(null, "true", boolean.class, null));
     }
 
 }

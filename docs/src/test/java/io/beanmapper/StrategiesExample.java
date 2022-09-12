@@ -8,7 +8,7 @@ import java.util.List;
 
 import io.beanmapper.config.BeanMapperBuilder;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class StrategiesExample {
 
     @Test
-    public void mapToClass() {
+    void mapToClass() {
         Source source = new Source(1L, "Henk", 42);
 
         Target target = new BeanMapperBuilder().build()
@@ -27,7 +27,7 @@ public class StrategiesExample {
     }
 
     @Test
-    public void mapToInstance() {
+    void mapToInstance() {
         Source source = new Source(1L, "Henk", 42);
 
         Target target = new BeanMapperBuilder().build()
@@ -38,7 +38,7 @@ public class StrategiesExample {
     }
 
     @Test
-    public void mapToCollection() {
+    void mapToCollection() {
         List<Source> sources = new ArrayList<Source>();
         sources.add(new Source(1L, "Henk", 42));
         sources.add(new Source(2L, "Piet", 50));
@@ -54,7 +54,7 @@ public class StrategiesExample {
     }
 
     @Test
-    public void downsizeSource() {
+    void downsizeSource() {
         BeanMapper beanMapper = new BeanMapperBuilder().build();
         Source source = new Source(1L, "Henk", 42);
         Target target = new Target("Piet", 12);
@@ -69,7 +69,7 @@ public class StrategiesExample {
     }
 
     @Test
-    public void downsizeTarget() throws JsonProcessingException {
+    void downsizeTarget() throws JsonProcessingException {
         BeanMapper beanMapper = new BeanMapperBuilder().build();
         Source source = new Source(1L, "Henk", 42);
 

@@ -4,7 +4,7 @@ import io.beanmapper.annotations.BeanRoleSecured;
 
 public class SFTargetBWithSecuredField {
 
-    @BeanRoleSecured({"ADMIN", "DEV"})
+    @BeanRoleSecured({ "ADMIN", "DEV" })
     public String name;
 
 }

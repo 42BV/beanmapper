@@ -1,7 +1,7 @@
 package io.beanmapper.dynclass;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Arrays;
 
@@ -11,28 +11,28 @@ import io.beanmapper.dynclass.model.Person;
 import io.beanmapper.dynclass.model.PersonDto;
 import io.beanmapper.dynclass.model.PersonForm;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class PersonDtoTest {
+class PersonDtoTest {
 
     private BeanMapper beanMapper;
 
-    @Before
-    public void prepareBeanmapper() {
+    @BeforeEach
+    void prepareBeanmapper() {
         beanMapper = new BeanMapperBuilder()
                 .addPackagePrefix(BeanMapper.class)
                 .build();
     }
 
     @Test
-    public void mapToStatic() {
+    void mapToStatic() {
         Person person = createPerson();
         PersonDto personDto = beanMapper.map(person, PersonDto.class);
 
-        assertEquals((Long)42L, personDto.id);
+        assertEquals((Long) 42L, personDto.id);
         assertEquals("Henk", personDto.getName());
         assertEquals("Koraalrood", personDto.street);
         assertEquals("11f", personDto.number);
@@ -40,7 +40,7 @@ public class PersonDtoTest {
     }
 
     @Test
-    public void mapToDynamic() throws Exception {
+    void mapToDynamic() throws Exception {
         beanMapper = beanMapper
                 .wrap()
                 .setTargetClass(PersonDto.class)
@@ -54,7 +54,7 @@ public class PersonDtoTest {
     }
 
     @Test
-    public void mapDynamicOverNewSource() {
+    void mapDynamicOverNewSource() {
         PersonForm personForm = new PersonForm(null, "Geellaan", "33", null);
 
         Person person = beanMapper.wrap()
@@ -72,7 +72,7 @@ public class PersonDtoTest {
     }
 
     @Test
-    public void mapDynamicOverExistingSource() {
+    void mapDynamicOverExistingSource() {
         PersonForm personForm = new PersonForm(null, "Geellaan", "33", null);
         Person person = createPerson();
 

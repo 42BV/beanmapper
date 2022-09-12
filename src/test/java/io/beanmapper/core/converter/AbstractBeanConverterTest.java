@@ -3,43 +3,44 @@
  */
 package io.beanmapper.core.converter;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
- * 
- *
  * @author Jeroen van Schagen
  * @since Jun 18, 2015
  */
-public class AbstractBeanConverterTest {
-    
+class AbstractBeanConverterTest {
+
     private LocalDateTimeToLocalDate converter = new LocalDateTimeToLocalDate();
-    
+
     @Test
-    public void testConvert() {
+    void testConvert() {
         LocalDateTime time = LocalDateTime.now();
-        Assert.assertEquals(time.toLocalDate(), converter.convert(null,time, LocalDate.class, null));
+        assertEquals(time.toLocalDate(), converter.convert(null, time, LocalDate.class, null));
     }
-    
+
     @Test
-    public void testNullSource() {
-        Assert.assertNull(converter.convert(null,null, LocalDate.class, null));
+    void testNullSource() {
+        assertNull(converter.convert(null, null, LocalDate.class, null));
     }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void testInvalidSource() {
-        converter.convert(null,"Test", LocalDate.class, null);
+
+    @Test
+    void testInvalidSource() {
+        assertThrows(IllegalArgumentException.class, () -> converter.convert(null, "Test", LocalDate.class, null));
     }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void testInvalidTarget() {
-        converter.convert(null,LocalDateTime.now(), String.class, null);
+
+    @Test
+    void testInvalidTarget() {
+        assertThrows(IllegalArgumentException.class, () -> converter.convert(null, LocalDateTime.now(), String.class, null));
     }
 
 }

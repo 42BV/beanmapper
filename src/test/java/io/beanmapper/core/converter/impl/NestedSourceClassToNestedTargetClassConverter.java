@@ -17,5 +17,5 @@ public class NestedSourceClassToNestedTargetClassConverter extends SimpleBeanCon
         target.laptopNumber = "[" + target.laptopNumber + "]";
         return target;
     }
-    
+
 }

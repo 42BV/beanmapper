@@ -1,13 +1,13 @@
 package io.beanmapper.exceptions;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class BeanNoNeighboursExceptionTest {
+class BeanNoNeighboursExceptionTest {
 
     @Test
-    public void throwException() {
+    void throwException() {
         try {
             throw new BeanNoNeighboursException();
         } catch (BeanNoNeighboursException ex) {

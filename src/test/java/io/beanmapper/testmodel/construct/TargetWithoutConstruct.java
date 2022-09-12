@@ -6,7 +6,7 @@ public class TargetWithoutConstruct {
     private String fullName;
     public NestedTargetWithConstruct nestedClass;
 
-    public TargetWithoutConstruct(String firstName, String infix, String lastName){
+    public TargetWithoutConstruct(String firstName, String infix, String lastName) {
         this.fullName = firstName + infix + lastName;
     }
 

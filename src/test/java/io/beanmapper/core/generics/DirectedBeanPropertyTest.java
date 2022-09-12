@@ -1,6 +1,6 @@
 package io.beanmapper.core.generics;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,12 +9,12 @@ import io.beanmapper.core.BeanPropertyMatchupDirection;
 import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessors;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class DirectedBeanPropertyTest {
+class DirectedBeanPropertyTest {
 
     @Test
-    public void verifyInSourceRole() {
+    void verifyInSourceRole() {
         DirectedBeanProperty directedBeanProperty = getDirectedBeanProperty(
                 ClassContainingTypedList.class,
                 BeanPropertyMatchupDirection.SOURCE_TO_TARGET,
@@ -26,7 +26,7 @@ public class DirectedBeanPropertyTest {
     }
 
     @Test
-    public void verifyInTargetRole() {
+    void verifyInTargetRole() {
         DirectedBeanProperty directedBeanProperty = getDirectedBeanProperty(
                 ClassContainingTypedList.class,
                 BeanPropertyMatchupDirection.TARGET_TO_SOURCE,
@@ -37,9 +37,46 @@ public class DirectedBeanPropertyTest {
         assertEquals(String.class, directedBeanProperty.getBeanFieldClass().getParameterizedType(0));
     }
 
+    @Test
+    void containsNoFieldInSourceRole() {
+        DirectedBeanProperty directedBeanProperty = getDirectedBeanProperty(
+                ClassContainingNoField.class,
+                BeanPropertyMatchupDirection.SOURCE_TO_TARGET,
+                "list");
+        assertEquals(Integer.class, directedBeanProperty.getGenericClassOfProperty(0));
+    }
+
+    @Test
+    void containsNoFieldInTargetRole() {
+        DirectedBeanProperty directedBeanProperty = getDirectedBeanProperty(
+                ClassContainingNoField.class,
+                BeanPropertyMatchupDirection.TARGET_TO_SOURCE,
+                "list");
+        assertEquals(Long.class, directedBeanProperty.getGenericClassOfProperty(0));
+    }
+
+    @Test
+    void theGetterHasADifferentTypeFromTheField() {
+        DirectedBeanProperty directedBeanProperty = getDirectedBeanProperty(
+                ClassContainingAllDifferentTypes.class,
+                BeanPropertyMatchupDirection.SOURCE_TO_TARGET,
+                "list");
+        assertEquals(String.class, directedBeanProperty.getGenericClassOfProperty(0));
+    }
+
+    @Test
+    void theSetterHasADifferentTypeFromTheField() {
+        DirectedBeanProperty directedBeanProperty = getDirectedBeanProperty(
+                ClassContainingAllDifferentTypes.class,
+                BeanPropertyMatchupDirection.TARGET_TO_SOURCE,
+                "list");
+        assertEquals(Long.class, directedBeanProperty.getGenericClassOfProperty(0));
+    }
+
     public class ClassContainingTypedList {
 
         private List<String> list;
+
         public List<Integer> getList() {
             return this.list.stream().map(Integer::parseInt).collect(Collectors.toList());
         }
@@ -50,51 +87,18 @@ public class DirectedBeanPropertyTest {
 
     }
 
-    @Test
-    public void containsNoFieldInSourceRole() {
-        DirectedBeanProperty directedBeanProperty = getDirectedBeanProperty(
-                ClassContainingNoField.class,
-                BeanPropertyMatchupDirection.SOURCE_TO_TARGET,
-                "list");
-        assertEquals(Integer.class, directedBeanProperty.getGenericClassOfProperty(0));
-    }
-
-    @Test
-    public void containsNoFieldInTargetRole() {
-        DirectedBeanProperty directedBeanProperty = getDirectedBeanProperty(
-                ClassContainingNoField.class,
-                BeanPropertyMatchupDirection.TARGET_TO_SOURCE,
-                "list");
-        assertEquals(Long.class, directedBeanProperty.getGenericClassOfProperty(0));
-    }
-
     public class ClassContainingNoField {
-        public List<Integer> getList() { return null; }
+        public List<Integer> getList() {return null;}
+
         public void setList(List<Long> list) {}
-    }
-
-    @Test
-    public void theGetterHasADifferentTypeFromTheField() {
-        DirectedBeanProperty directedBeanProperty = getDirectedBeanProperty(
-                ClassContainingAllDifferentTypes.class,
-                BeanPropertyMatchupDirection.SOURCE_TO_TARGET,
-                "list");
-        assertEquals(String.class, directedBeanProperty.getGenericClassOfProperty(0));
-    }
-
-    @Test
-    public void theSetterHasADifferentTypeFromTheField() {
-        DirectedBeanProperty directedBeanProperty = getDirectedBeanProperty(
-                ClassContainingAllDifferentTypes.class,
-                BeanPropertyMatchupDirection.TARGET_TO_SOURCE,
-                "list");
-        assertEquals(Long.class, directedBeanProperty.getGenericClassOfProperty(0));
     }
 
     public class ClassContainingAllDifferentTypes {
         private List<Integer> list;
-        public List<String> getList() { return null; }
-        public void setList(List<Long> list) { }
+
+        public List<String> getList() {return null;}
+
+        public void setList(List<Long> list) {}
     }
 
     private DirectedBeanProperty getDirectedBeanProperty(

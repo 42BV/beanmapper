@@ -3,29 +3,31 @@
  */
 package io.beanmapper.core.converter.impl;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class StringToShortConverterTest {
-    
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+class StringToShortConverterTest {
+
     private StringToShortConverter converter;
-    
-    @Before
-    public void setUp() {
+
+    @BeforeEach
+    void setUp() {
         converter = new StringToShortConverter();
     }
-    
+
     @Test
-    public void testConvertBoxed() {
-        Assert.assertTrue(converter.match(String.class, Short.class));
-        Assert.assertEquals(Short.valueOf((short) 42), converter.convert(null, "42", Short.class, null));
+    void testConvertBoxed() {
+        assertTrue(converter.match(String.class, Short.class));
+        assertEquals(Short.valueOf((short) 42), converter.convert(null, "42", Short.class, null));
     }
-    
+
     @Test
-    public void testConvertPrimitive() {
-        Assert.assertTrue(converter.match(String.class, short.class));
-        Assert.assertEquals(Short.valueOf((short) 42), converter.convert(null, "42", short.class, null));
+    void testConvertPrimitive() {
+        assertTrue(converter.match(String.class, short.class));
+        assertEquals(Short.valueOf((short) 42), converter.convert(null, "42", short.class, null));
     }
 
 }

@@ -7,5 +7,4 @@ public class TargetWithPersonName {
     @BeanProperty(name = "person.fullName")
     public String name;
 
-
 }

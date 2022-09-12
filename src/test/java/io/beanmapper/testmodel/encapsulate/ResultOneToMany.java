@@ -1,6 +1,5 @@
 package io.beanmapper.testmodel.encapsulate;
 
-
 import io.beanmapper.annotations.BeanUnwrap;
 
 public class ResultOneToMany {
