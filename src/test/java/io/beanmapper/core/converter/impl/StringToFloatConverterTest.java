@@ -3,29 +3,31 @@
  */
 package io.beanmapper.core.converter.impl;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class StringToFloatConverterTest {
-    
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+class StringToFloatConverterTest {
+
     private StringToFloatConverter converter;
-    
-    @Before
-    public void setUp() {
+
+    @BeforeEach
+    void setUp() {
         converter = new StringToFloatConverter();
     }
-    
+
     @Test
-    public void testConvertBoxed() {
-        Assert.assertTrue(converter.match(String.class, Float.class));
-        Assert.assertEquals(Float.valueOf((float) 42), converter.convert(null,"42", Float.class, null));
+    void testConvertBoxed() {
+        assertTrue(converter.match(String.class, Float.class));
+        assertEquals(Float.valueOf((float) 42), converter.convert(null, "42", Float.class, null));
     }
-    
+
     @Test
-    public void testConvertPrimitive() {
-        Assert.assertTrue(converter.match(String.class, float.class));
-        Assert.assertEquals(Float.valueOf((float) 42), converter.convert(null,"42", float.class, null));
+    void testConvertPrimitive() {
+        assertTrue(converter.match(String.class, float.class));
+        assertEquals(Float.valueOf((float) 42), converter.convert(null, "42", float.class, null));
     }
 
 }

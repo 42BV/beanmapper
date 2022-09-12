@@ -1,29 +1,29 @@
 package io.beanmapper.config;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.beanmapper.BeanMapper;
 import io.beanmapper.testmodel.person.Person;
 import io.beanmapper.testmodel.person.PersonForm;
 import io.beanmapper.testmodel.person.PersonResult;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class StrictMappingPropertiesTest {
+class StrictMappingPropertiesTest {
 
     private CoreConfiguration coreConfiguration;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .build();
-        coreConfiguration = (CoreConfiguration)beanMapper.getConfiguration();
+        coreConfiguration = (CoreConfiguration) beanMapper.getConfiguration();
     }
 
     @Test
-    public void setSourceAsStrict() {
+    void setSourceAsStrict() {
         StrictMappingProperties properties = new StrictMappingProperties(
                 coreConfiguration.getBeanUnproxy(),
                 coreConfiguration.getStrictSourceSuffix(),
@@ -35,7 +35,7 @@ public class StrictMappingPropertiesTest {
     }
 
     @Test
-    public void setTargetAsStrict() {
+    void setTargetAsStrict() {
         StrictMappingProperties properties = new StrictMappingProperties(
                 coreConfiguration.getBeanUnproxy(),
                 coreConfiguration.getStrictSourceSuffix(),
@@ -47,7 +47,7 @@ public class StrictMappingPropertiesTest {
     }
 
     @Test
-    public void doNotApplyStrictMapping() {
+    void doNotApplyStrictMapping() {
         StrictMappingProperties properties = new StrictMappingProperties(
                 coreConfiguration.getBeanUnproxy(),
                 coreConfiguration.getStrictSourceSuffix(),
@@ -59,7 +59,7 @@ public class StrictMappingPropertiesTest {
     }
 
     @Test
-    public void noSuffixesToUse() {
+    void noSuffixesToUse() {
         StrictMappingProperties properties = new StrictMappingProperties(
                 coreConfiguration.getBeanUnproxy(),
                 null,

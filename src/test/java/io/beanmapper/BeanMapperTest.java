@@ -1,13 +1,14 @@
 package io.beanmapper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -139,8 +140,8 @@ import io.beanmapper.testmodel.nested_classes.Layer3;
 import io.beanmapper.testmodel.nested_classes.Layer4;
 import io.beanmapper.testmodel.nested_generics.SourceWithNestedGenerics;
 import io.beanmapper.testmodel.nested_generics.TargetWithNestedGenerics;
-import io.beanmapper.testmodel.not_accessible.source_contains_nested_class.TargetWithPersonName;
 import io.beanmapper.testmodel.not_accessible.source_contains_nested_class.SourceWithPerson;
+import io.beanmapper.testmodel.not_accessible.source_contains_nested_class.TargetWithPersonName;
 import io.beanmapper.testmodel.not_accessible.target_contains_nested_class.SourceWithPersonName;
 import io.beanmapper.testmodel.not_accessible.target_contains_nested_class.TargetWithPerson;
 import io.beanmapper.testmodel.numbers.ClassWithInteger;
@@ -156,7 +157,6 @@ import io.beanmapper.testmodel.parentclass.Project;
 import io.beanmapper.testmodel.parentclass.Source;
 import io.beanmapper.testmodel.parentclass.Target;
 import io.beanmapper.testmodel.person.Person;
-import io.beanmapper.testmodel.person.PersonAo;
 import io.beanmapper.testmodel.person.PersonForm;
 import io.beanmapper.testmodel.person.PersonResult;
 import io.beanmapper.testmodel.person.PersonView;
@@ -194,18 +194,15 @@ import io.beanmapper.testmodel.strict_convention.SCTargetC;
 import io.beanmapper.testmodel.tostring.SourceWithNonString;
 import io.beanmapper.testmodel.tostring.TargetWithString;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class BeanMapperTest {
+class BeanMapperTest {
 
     private BeanMapper beanMapper;
-    @Rule public ExpectedException exception = ExpectedException.none();
 
-    @Before
-    public void prepareBeanMapper() {
+    @BeforeEach
+    void prepareBeanMapper() {
         beanMapper = new BeanMapperBuilder()
                 .addPackagePrefix(BeanMapper.class)
                 .addConverter(new LocalDateTimeToLocalDate())
@@ -216,7 +213,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void mapEnum() throws BeanMappingException {
+    void mapEnum() throws BeanMappingException {
         ColorEntity colorEntity = new ColorEntity();
         colorEntity.setCurrentColor(RGB.BLUE);
         ColorResult colorResult = beanMapper.map(colorEntity, ColorResult.class);
@@ -224,7 +221,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void mapEnumWithExistingTarget() throws BeanMappingException {
+    void mapEnumWithExistingTarget() throws BeanMappingException {
         ColorEntity source = new ColorEntity();
         source.setCurrentColor(RGB.BLUE);
 
@@ -236,7 +233,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void mapEnumToString() throws BeanMappingException {
+    void mapEnumToString() throws BeanMappingException {
         ColorEntity colorEntity = new ColorEntity();
         colorEntity.setCurrentColor(RGB.GREEN);
         ColorStringResult colorStringResult = beanMapper.map(colorEntity, ColorStringResult.class);
@@ -244,7 +241,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void copyToNewTargetInstance() {
+    void copyToNewTargetInstance() {
         Person person = createPerson();
         PersonView personView = beanMapper.map(person, PersonView.class);
         assertEquals("Henk", personView.name);
@@ -252,7 +249,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void mapMapCollectionInContainer() {
+    void mapMapCollectionInContainer() {
         CollectionMapSource source = new CollectionMapSource() {{
             items.put("Jan", createPerson("Jan"));
             items.put("Piet", createPerson("Piet"));
@@ -268,7 +265,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void mapListCollectionInContainer() {
+    void mapListCollectionInContainer() {
         CollectionListSource source = new CollectionListSource() {{
             items = new ArrayList<Person>();
             items.add(createPerson("Jan"));
@@ -285,7 +282,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void mapListCollectionWithNested() {
+    void mapListCollectionWithNested() {
         List<Address> sourceItems = new ArrayList<Address>() {{
             add(new Address("Koraalrood", 1, "Nederland"));
             add(new Address("ComputerStraat", 1, "Duitsland"));
@@ -293,7 +290,7 @@ public class BeanMapperTest {
             add(new Address("MuisLaan", 1, "Frankrijk"));
         }};
         List<ResultAddress> targetItems =
-                (List<ResultAddress>) beanMapper.map(sourceItems, ResultAddress.class);
+                beanMapper.map(sourceItems, ResultAddress.class);
         assertEquals("Koraalrood", targetItems.get(0).getStreet());
         assertEquals("ComputerStraat", targetItems.get(1).getStreet());
         assertEquals("InternetWeg", targetItems.get(2).getStreet());
@@ -306,7 +303,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void mapListCollectionInContainerAndClearTheContainer() {
+    void mapListCollectionInContainerAndClearTheContainer() {
         CollectionListSource source = new CollectionListSource() {{
             items.add(createPerson("Jan"));
             items.add(createPerson("Piet"));
@@ -318,8 +315,8 @@ public class BeanMapperTest {
         target.items.add(new PersonView()); // This entry must be cleared
 
         target = beanMapper.map(source, target);
-        assertEquals("The target ArrayList must have been cleared, not re-constructed", expectedTargetList, target.items);
-        assertEquals("The number of entries must be 4, not 5, because the list has been cleared", 4, target.items.size());
+        assertEquals(expectedTargetList, target.items, "The target ArrayList must have been cleared, not re-constructed");
+        assertEquals(4, target.items.size(), "The number of entries must be 4, not 5, because the list has been cleared");
         assertEquals("Jan", target.items.get(0).name);
         assertEquals("Piet", target.items.get(1).name);
         assertEquals("Joris", target.items.get(2).name);
@@ -327,24 +324,24 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void mapSetCollectionInContainer() {
+    void mapSetCollectionInContainer() {
         CollectionSetSource source = new CollectionSetSource();
-        source.items = new TreeSet<String>() {{
+        source.items = new TreeSet<>() {{
             add("13");
             add("29");
             add("43");
         }};
         CollectionSetTarget target = beanMapper.map(source, CollectionSetTarget.class);
         assertEquals(TreeSet.class, target.items.getClass());
-        assertTrue("Must contain 13", target.items.contains(13L));
-        assertTrue("Must contain 29", target.items.contains(29L));
-        assertTrue("Must contain 43", target.items.contains(43L));
+        assertTrue(target.items.contains(13L), "Must contain 13");
+        assertTrue(target.items.contains(29L), "Must contain 29");
+        assertTrue(target.items.contains(43L), "Must contain 43");
     }
 
     @Test
-    public void mapSetCollectionsToIncorrectSubTypeIgnoreCollectionType() {
+    void mapSetCollectionsToIncorrectSubTypeIgnoreCollectionType() {
         CollectionSetSource source = new CollectionSetSource();
-        source.items = new TreeSet<String>() {{
+        source.items = new TreeSet<>() {{
             add("13");
             add("29");
             add("43");
@@ -358,23 +355,23 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void mapSetCollectionsToSpecificSubType() {
+    void mapSetCollectionsToSpecificSubType() {
         CollectionSetSource source = new CollectionSetSource();
-        source.items = new TreeSet<String>();
+        source.items = new TreeSet<>();
         source.items.add("13");
         source.items.add("29");
         source.items.add("43");
 
         CollectionSetTargetSpecificSubtype target = beanMapper.map(source, CollectionSetTargetSpecificSubtype.class);
         assertEquals(HashSet.class, target.items.getClass());
-        assertTrue("Must contain 13", target.items.contains(13L));
-        assertTrue("Must contain 29", target.items.contains(29L));
-        assertTrue("Must contain 43", target.items.contains(43L));
+        assertTrue(target.items.contains(13L), "Must contain 13");
+        assertTrue(target.items.contains(29L), "Must contain 29");
+        assertTrue(target.items.contains(43L), "Must contain 43");
     }
 
     @Test
-    public void mapArrayList() {
-        List<Person> sourceItems = new ArrayList<Person>() {{
+    void mapArrayList() {
+        List<Person> sourceItems = new ArrayList<>() {{
             add(createPerson("Jan"));
             add(createPerson("Piet"));
             add(createPerson("Joris"));
@@ -388,8 +385,8 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void mapTreeMap() {
-        Map<String, Person> sourceItems = new TreeMap<String, Person>() {{
+    void mapTreeMap() {
+        Map<String, Person> sourceItems = new TreeMap<>() {{
             put("jan", createPerson("Jan"));
             put("piet", createPerson("Piet"));
             put("joris", createPerson("Joris"));
@@ -403,8 +400,8 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void direcltyMapSet_comparable() {
-        Set<Long> source = new TreeSet<Long>() {{
+    void direcltyMapSet_comparable() {
+        Set<Long> source = new TreeSet<>() {{
             add(13L);
             add(29L);
             add(43L);
@@ -418,8 +415,8 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void direcltyMapSet_nonComparable() {
-        Set<Person> source = new HashSet<Person>() {{
+    void direcltyMapSet_nonComparable() {
+        Set<Person> source = new HashSet<>() {{
             add(new Person() {{
                 this.setName("Henk");
             }});
@@ -431,120 +428,120 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void mapToCollectionArraysAsList() {
+    void mapToCollectionArraysAsList() {
         List<RGB> collection = Arrays.asList(RGB.values());
         List<String> result = beanMapper.map(collection, String.class);
         assertEquals(RGB.values().length, result.size());
     }
 
     @Test
-    public void mapToNestedCollectionArraysAsList() {
+    void mapToNestedCollectionArraysAsList() {
         EnumSourceArraysAsList source = new EnumSourceArraysAsList();
-        EnumTargetList target =  beanMapper.map(source, EnumTargetList.class);
+        EnumTargetList target = beanMapper.map(source, EnumTargetList.class);
         assertEquals(RGB.values().length, target.items.size());
         assertEquals("RED", target.items.get(0));
     }
 
     @Test
-    public void mapToCollectionNewArrayList() {
+    void mapToCollectionNewArrayList() {
         List<RGB> collection = new ArrayList<>(Arrays.asList(RGB.values()));
         List<String> result = beanMapper.map(collection, String.class);
         assertEquals(RGB.values().length, result.size());
     }
 
     @Test
-    public void mapNonAnnotatedList() {
+    void mapNonAnnotatedList() {
         CollSourceListNotAnnotated source = new CollSourceListNotAnnotated() {{
             list.add(42L);
             list.add(33L);
         }};
         CollTargetListNotAnnotated target = beanMapper.map(source, CollTargetListNotAnnotated.class);
-        assertNotSame("Source and Target list may not be the same, must be copied", source.list, target.list);
+        assertNotSame(source.list, target.list, "Source and Target list may not be the same, must be copied");
         assertEquals(2, target.list.size());
         assertEquals("42", target.list.get(0));
         assertEquals("33", target.list.get(1));
     }
 
     @Test
-    public void mapNonAnnotatedListUseSetter() {
+    void mapNonAnnotatedListUseSetter() {
         CollSourceListNotAnnotated source = new CollSourceListNotAnnotated() {{
             list.add(42L);
             list.add(33L);
         }};
         CollTargetListNotAnnotatedUseSetter target = beanMapper.map(source, CollTargetListNotAnnotatedUseSetter.class);
-        assertNotSame("Source and Target list may not be the same, must be copied", source.list, target.getList());
+        assertNotSame(source.list, target.getList(), "Source and Target list may not be the same, must be copied");
         assertEquals(2, target.getList().size());
         assertEquals("42", target.getList().get(0));
         assertEquals("33", target.getList().get(1));
     }
 
     @Test
-    public void mapIncompletelyAnnotatedList() {
+    void mapIncompletelyAnnotatedList() {
         CollSourceListIncompleteAnnotation source = new CollSourceListIncompleteAnnotation() {{
             list.add(42L);
             list.add(33L);
         }};
         CollTargetListNotAnnotated target = beanMapper.map(source, CollTargetListNotAnnotated.class);
-        assertNotSame("Source and Target list may not be the same, must be copied", source.list, target.list);
+        assertNotSame(source.list, target.list, "Source and Target list may not be the same, must be copied");
         assertEquals(2, target.list.size());
         assertEquals("42", target.list.get(0));
         assertEquals("33", target.list.get(1));
     }
 
     @Test
-    public void mapNonAnnotatedMap() {
+    void mapNonAnnotatedMap() {
         CollSourceMapNotAnnotated source = new CollSourceMapNotAnnotated() {{
             map.put("a", 42);
             map.put("b", 33);
         }};
         CollTargetMapNotAnnotated target = beanMapper.map(source, CollTargetMapNotAnnotated.class);
-        assertNotSame("Source and Target list may not be the same, must be copied", source.map, target.map);
+        assertNotSame(source.map, target.map, "Source and Target list may not be the same, must be copied");
         assertEquals(2, target.map.size());
-        assertEquals((Long)42L, target.map.get("a"));
-        assertEquals((Long)33L, target.map.get("b"));
+        assertEquals((Long) 42L, target.map.get("a"));
+        assertEquals((Long) 33L, target.map.get("b"));
     }
 
     @Test
-    public void mapNonAnnotatedListInSuperClass() {
+    void mapNonAnnotatedListInSuperClass() {
         CollSourceListNotAnnotated source = new CollSourceListNotAnnotated() {{
             list.add(42L);
             list.add(33L);
         }};
         CollSubTargetList target = beanMapper.map(source, CollSubTargetList.class);
-        assertNotSame("Source and Target list may not be the same, must be copied", source.list, target.list);
+        assertNotSame(source.list, target.list, "Source and Target list may not be the same, must be copied");
         assertEquals(2, target.list.size());
         assertEquals("42", target.list.get(0));
         assertEquals("33", target.list.get(1));
     }
 
     @Test
-    public void mapListToCollectionEmptySet() {
+    void mapListToCollectionEmptySet() {
         CollSourceListNotAnnotated source = new CollSourceListNotAnnotated() {{
             list.add(42L);
             list.add(33L);
         }};
         CollTargetEmptyList target = beanMapper.map(source, CollTargetEmptyList.class);
-        assertNotSame("Source and Target list may not be the same, must be copied", source.list, target.list);
+        assertNotSame(source.list, target.list, "Source and Target list may not be the same, must be copied");
         assertEquals(2, target.list.size());
         assertEquals("42", target.list.get(0));
         assertEquals("33", target.list.get(1));
     }
 
     @Test
-    public void mapNonAnnotatedListWithoutGenerics() {
+    void mapNonAnnotatedListWithoutGenerics() {
         CollSourceNoGenerics source = new CollSourceNoGenerics() {{
             list.add("42");
             list.add("33");
         }};
         CollTargetNoGenerics target = beanMapper.map(source, CollTargetNoGenerics.class);
-        assertSame("Source and Target list may not be the same, must be copied", source.list, target.list);
+        assertSame(source.list, target.list, "Source and Target list may not be the same, must be copied");
         assertEquals(2, target.list.size());
         assertEquals("42", target.list.get(0));
         assertEquals("33", target.list.get(1));
     }
 
     @Test
-    public void emptySource() {
+    void emptySource() {
         // Test of correctly mapping
         EmptySource source = new EmptySource() {{
             id = 42;
@@ -564,11 +561,11 @@ public class BeanMapperTest {
         assertNull(emptyTarget.name);
         assertNull(emptyTarget.nestedEmptyClass);
         assertNull(emptyTarget.nestedEmpty);
-        assertEquals(false, emptyTarget.bool); // Default for primitive boolean is false
+        assertFalse(emptyTarget.bool); // Default for primitive boolean is false
     }
 
     @Test
-    public void emptySourceToExistingTarget() {
+    void emptySourceToExistingTarget() {
         EmptySource source = new EmptySource();
 
         EmptyTarget existingTarget = new EmptyTarget() {{
@@ -583,20 +580,20 @@ public class BeanMapperTest {
         EmptyTarget mappedTarget = beanMapper.map(source, existingTarget);
         assertEquals(0, mappedTarget.id, 0);// Default for primitive int is 0
         assertNull(mappedTarget.name);
-        assertEquals(false, mappedTarget.bool);// Default for primitive boolean is false
+        assertFalse(mappedTarget.bool);// Default for primitive boolean is false
         assertNull(mappedTarget.nestedEmptyClass.name);
         assertNull(mappedTarget.nestedEmpty);
     }
 
     @Test
-    public void mapNull() {
+    void mapNull() {
         EmptySource source = null;
         EmptyTarget target = beanMapper.map(source, EmptyTarget.class);
         assertNull(target);
     }
 
     @Test
-    public void copyToExistingTargetInstance() {
+    void copyToExistingTargetInstance() {
         Person person = createPerson();
         PersonForm form = createPersonForm();
         person = beanMapper
@@ -611,31 +608,31 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void mapDouble() {
+    void mapDouble() {
         SourceWithDouble source = new SourceWithDouble();
         source.number = 13.5;
         TargetWithDouble target = beanMapper.map(source, TargetWithDouble.class);
-        assertEquals((Double)13.5, target.number);
+        assertEquals((Double) 13.5, target.number);
     }
 
     @Test
-    public void mapLongToInteger() {
+    void mapLongToInteger() {
         ClassWithLong source = new ClassWithLong();
         source.number = 42L;
         ClassWithInteger target = beanMapper.map(source, ClassWithInteger.class);
-        assertEquals((Integer)42, target.number);
+        assertEquals((Integer) 42, target.number);
     }
 
     @Test
-    public void mapIntegerToLong() {
+    void mapIntegerToLong() {
         ClassWithInteger source = new ClassWithInteger();
         source.number = 42;
         ClassWithLong target = beanMapper.map(source, ClassWithLong.class);
-        assertEquals((Long)42L, target.number);
+        assertEquals((Long) 42L, target.number);
     }
 
     @Test
-    public void beanIgnore() {
+    void beanIgnore() {
         IgnoreSource ignoreSource = new IgnoreSource() {{
             setBothIgnore("bothIgnore");
             setSourceIgnore("sourceIgnore");
@@ -643,14 +640,14 @@ public class BeanMapperTest {
             setNoIgnore("noIgnore");
         }};
         IgnoreTarget ignoreTarget = beanMapper.map(ignoreSource, IgnoreTarget.class);
-        assertNull("bothIgnore -> target should be empty", ignoreTarget.getBothIgnore());
-        assertNull("sourceIgnore -> target should be empty", ignoreTarget.getSourceIgnore());
-        assertNull("targetIgnore -> target should be empty", ignoreTarget.getTargetIgnore());
+        assertNull(ignoreTarget.getBothIgnore(), "bothIgnore -> target should be empty");
+        assertNull(ignoreTarget.getSourceIgnore(), "sourceIgnore -> target should be empty");
+        assertNull(ignoreTarget.getTargetIgnore(), "targetIgnore -> target should be empty");
         assertEquals("noIgnore", ignoreTarget.getNoIgnore());
     }
 
     @Test
-    public void mappingToOtherNames() {
+    void mappingToOtherNames() {
         SourceWithOtherName source = new SourceWithOtherName() {{
             setBothOtherName1("bothOtherName");
             setSourceOtherName1("sourceOtherName");
@@ -665,7 +662,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void nonStringToString() {
+    void nonStringToString() {
         SourceWithNonString obj = new SourceWithNonString();
         obj.setDate(LocalDate.of(2015, 4, 1));
         TargetWithString view = beanMapper.map(obj, TargetWithString.class);
@@ -673,7 +670,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void beanDefault() {
+    void beanDefault() {
         SourceWithDefaults source = new SourceWithDefaults();
         source.setNoDefault("value1");
         source.setTargetDefaultWithValue("value2");
@@ -688,7 +685,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void testParentClass() {
+    void testParentClass() {
         Project project = new Project();
         project.setProjectName("projectName");
         project.setId(42L);
@@ -708,7 +705,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void testParentClassReversed() {
+    void testParentClassReversed() {
         Target target = new Target() {{
             setProjectId(42L);
             setId(1L);
@@ -725,7 +722,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void encapsulateManyToMany() {
+    void encapsulateManyToMany() {
         House house = createHouse();
 
         ResultManyToMany result = beanMapper.map(house, ResultManyToMany.class);
@@ -736,7 +733,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void encapsulateManyToOne() {
+    void encapsulateManyToOne() {
         House house = createHouse();
 
         ResultManyToOne result = beanMapper.map(house, ResultManyToOne.class);
@@ -747,20 +744,19 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void encapsulateManyToOneWithNull() {
+    void encapsulateManyToOneWithNull() {
         House house = createHouse();
         house.setAddress(null);
 
         ResultManyToOne result = beanMapper.map(house, ResultManyToOne.class);
         assertEquals("housename", result.getName());
-        assertEquals(null, result.getStreet());
+        assertNull(result.getStreet());
         assertEquals(0, result.getNumber());
-        assertEquals(null, result.getCountryName());
+        assertNull(result.getCountryName());
     }
 
-
     @Test
-    public void encapsulateOneToMany() {
+    void encapsulateOneToMany() {
         Country country = new Country("Nederland");
 
         ResultOneToMany result = beanMapper.map(country, ResultOneToMany.class);
@@ -768,7 +764,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void sourceAnnotated() {
+    void sourceAnnotated() {
         // One to Many & Many to One
         Driver driver = new Driver("driverName");
         Car car = new Car("Opel", 4);
@@ -783,7 +779,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void initiallyUnmatchedSourceMustBeUsed() {
+    void initiallyUnmatchedSourceMustBeUsed() {
         SourceWithUnmatchedField swuf = new SourceWithUnmatchedField();
         swuf.setName("Henk");
         swuf.setCountry("NL");
@@ -793,17 +789,17 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void nestedClasses() {
+    void nestedClasses() {
         Layer1 layer1 = Layer1.createNestedClassObject();
         Layer1Result result = beanMapper.map(layer1, Layer1Result.class);
         assertEquals("layer1", result.getName1());
         assertEquals("layer2", result.getLayer2().getName2());
         assertEquals("name3", result.getLayer2().getLayer3().getName3());
-        assertEquals(null, result.getLayer2().getLayer3().getId4());
+        assertNull(result.getLayer2().getLayer3().getId4());
     }
 
     @Test
-    public void multipleUnwrap() {
+    void multipleUnwrap() {
         LayerA source = LayerA.create();
         AllTogether target = beanMapper.map(source, AllTogether.class);
         assertEquals("name1", target.getName1());
@@ -812,7 +808,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void multipleUnwrapReversed() {
+    void multipleUnwrapReversed() {
         AllTogether source = new AllTogether();
         source.setName1("name1");
         source.setName2("name2");
@@ -825,7 +821,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void publicFields() {
+    void publicFields() {
         SourceWithPublicFields source = new SourceWithPublicFields() {{
             name = "Henk";
             id = 42L;
@@ -833,12 +829,12 @@ public class BeanMapperTest {
         }};
         TargetWithPublicFields target = beanMapper.map(source, TargetWithPublicFields.class);
         assertEquals("Henk", target.name);
-        assertEquals(42L, (long)target.id);
+        assertEquals(42L, (long) target.id);
         assertEquals(LocalDate.of(2015, 5, 4), target.date);
     }
 
     @Test
-    public void similarSubclasses() {
+    void similarSubclasses() {
         SimilarSubclass subclass = new SimilarSubclass();
         subclass.name = "Henk";
         DifferentSource source = new DifferentSource();
@@ -848,7 +844,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void converterDateToDateTime() {
+    void converterDateToDateTime() {
         SourceWithDate source = new SourceWithDate();
         source.setDiffType(LocalDate.of(2015, 1, 1));
         source.setSameType(LocalDate.of(2000, 1, 1));
@@ -859,7 +855,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void converterDateTimeToDate() {
+    void converterDateTimeToDate() {
         TargetWithDateTime source = new TargetWithDateTime();
         source.setDiffType(LocalDateTime.of(2015, 1, 1, 0, 0));
         source.setSameType(LocalDate.of(2000, 1, 1));
@@ -870,7 +866,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void converterBetweenClasses() {
+    void converterBetweenClasses() {
         SourceWithNestedClass source = new SourceWithNestedClass();
         source.number = 42;
         NestedSourceClass nestedSourceClass = new NestedSourceClass();
@@ -881,11 +877,11 @@ public class BeanMapperTest {
         TargetWithNestedClass target = beanMapper.map(source, TargetWithNestedClass.class);
         assertEquals(source.number, target.number, 0);
         assertEquals(source.nestedClass.name, target.nestedClass.name);
-        assertEquals("[" + source.nestedClass.laptopNumber + "]", ((NestedTargetClass)target.nestedClass).laptopNumber);
+        assertEquals("[" + source.nestedClass.laptopNumber + "]", ((NestedTargetClass) target.nestedClass).laptopNumber);
     }
 
     @Test
-    public void converterForClassesInCollection() {
+    void converterForClassesInCollection() {
         SourceWithCollection source = new SourceWithCollection();
         NestedSourceClass nestedSourceClass = new NestedSourceClass();
         nestedSourceClass.name = "42BV";
@@ -898,7 +894,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void sameSourceTwoDiffResults() {
+    void sameSourceTwoDiffResults() {
         Entity entity = new Entity() {{
             setId(1L);
             setName("name");
@@ -914,7 +910,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void testIgnoreWhenNotWritable() {
+    void testIgnoreWhenNotWritable() {
         CodeProject masterProject = new CodeProject() {{
             id = 42L;
             name = "master";
@@ -925,17 +921,17 @@ public class BeanMapperTest {
             master = masterProject;
         }};
         CodeProjectResult result = beanMapper.map(project, CodeProjectResult.class);
-        
+
         assertEquals(Long.valueOf(24), result.id);
         assertEquals(Long.valueOf(42), result.masterId);
-        
+
         assertNull(result.name); // Ignored because final field and no setter
         assertNull(result.getMasterName()); // Ignored because private field and no setter
         // Ignored isMaster() because no setter
     }
 
     @Test
-    public void convertGetterListToPublicFieldList() {
+    void convertGetterListToPublicFieldList() {
         SourceWithListGetter source = new SourceWithListGetter() {{
             lines.add("alpha");
             lines.add("beta");
@@ -946,7 +942,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void beanAliasTest() {
+    void beanAliasTest() {
         // Nested class variables
         NestedSourceWithAlias nested = new NestedSourceWithAlias() {{
             x = "100";
@@ -968,7 +964,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void beanConstructTest() {
+    void beanConstructTest() {
         SourceWithConstruct source = new SourceWithConstruct() {{
             id = 238L;
             firstName = "Piet";
@@ -984,11 +980,11 @@ public class BeanMapperTest {
         TargetWithoutConstruct target = beanMapper.map(source, TargetWithoutConstruct.class);
         assertEquals(source.id, target.id, 0);
         assertEquals(source.firstName + source.infix + source.lastName, target.getFullName());
-        assertEquals(source.nestedClass.street+source.nestedClass.number, target.nestedClass.streetWithNumber);
+        assertEquals(source.nestedClass.street + source.nestedClass.number, target.nestedClass.streetWithNumber);
     }
 
     @Test
-    public void nestedConstructorAtTargetSideWithBeanUnwrap() {
+    void nestedConstructorAtTargetSideWithBeanUnwrap() {
         FlatConstructSource source = new FlatConstructSource() {{
             id = 2901L;
             street = "boomweg";
@@ -1004,7 +1000,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void nestedConstructorAtTargetSideWithBeanProperty() {
+    void nestedConstructorAtTargetSideWithBeanProperty() {
         FlatConstructSource2 source = new FlatConstructSource2() {{
             id = 2901L;
             street = "boomweg";
@@ -1020,7 +1016,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void sourceToTargetWithRule() {
+    void sourceToTargetWithRule() {
         SourceWithRule source = createSourceWithRule();
         TargetWithRule target = createTargetWithRule();
         beanMapper.map(source, target);
@@ -1031,7 +1027,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void sourceToTargetWithRuleOnlyNames() {
+    void sourceToTargetWithRuleOnlyNames() {
         // Second only names mapping
         SourceWithRule source = createSourceWithRule();
         TargetWithRule target = createTargetWithRule();
@@ -1067,7 +1063,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void mapWithInnerClass() {
+    void mapWithInnerClass() {
         SourceWithInnerClass source = new SourceWithInnerClass(1L, "42BV");
         source.innerClass = new SourceWithInnerClass.SourceInnerClass("IT Company");
 
@@ -1078,30 +1074,31 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void overrideConverterTest() {
-        BeanMapper beanMapper = new BeanMapperBuilder()
-                .addPackagePrefix(BeanMapper.class)
-                .build();
+    void overrideConverterTest() {
+        var exception = assertThrows(BeanConversionException.class, () -> {
+            BeanMapper beanMapper = new BeanMapperBuilder()
+                    .addPackagePrefix(BeanMapper.class)
+                    .build();
 
-        SourceWithDate source = new SourceWithDate();
-        source.setDiffType(LocalDate.of(2015, 1, 1));
-        source.setSameType(LocalDate.of(2000, 1, 1));
+            SourceWithDate source = new SourceWithDate();
+            source.setDiffType(LocalDate.of(2015, 1, 1));
+            source.setSameType(LocalDate.of(2000, 1, 1));
 
-        TargetWithDateTime target = beanMapper.wrap()
-                .addConverter(new LocalDateToLocalDateTime())
-                .build()
-                .map(source, TargetWithDateTime.class);
+            TargetWithDateTime target = beanMapper.wrap()
+                    .addConverter(new LocalDateToLocalDateTime())
+                    .build()
+                    .map(source, TargetWithDateTime.class);
 
-        assertEquals(target.getDiffType(), LocalDateTime.of(2015, 1, 1, 0, 0));
-        assertEquals(target.getSameType(), LocalDate.of(2000, 1, 1));
+            assertEquals(target.getDiffType(), LocalDateTime.of(2015, 1, 1, 0, 0));
+            assertEquals(target.getSameType(), LocalDate.of(2000, 1, 1));
 
-        exception.expect(BeanConversionException.class);
-        exception.expectMessage("Could not convert LocalDate to LocalDateTime.");
-        beanMapper.map(source, TargetWithDateTime.class);
+            beanMapper.map(source, TargetWithDateTime.class);
+        });
+        assertEquals("Could not convert LocalDate to LocalDateTime.", exception.getMessage());
     }
 
     @Test
-    public void beanParentDirectDescendantAnnotationOnSource() {
+    void beanParentDirectDescendantAnnotationOnSource() {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .addPackagePrefix(BeanMapper.class)
                 .build();
@@ -1113,12 +1110,12 @@ public class BeanMapperTest {
 
         Player player = beanMapper.map(form, Player.class);
 
-        assertEquals("@BeanParent on source side was not triggered", form.name, player.getSkill().getPlayer1().getName());
-        assertEquals("@BeanParent on target side was not triggered", form.name, player.getSkill().getPlayer2().getName());
+        assertEquals(form.name, player.getSkill().getPlayer1().getName(), "@BeanParent on source side was not triggered");
+        assertEquals(form.name, player.getSkill().getPlayer2().getName(), "@BeanParent on target side was not triggered");
     }
 
     @Test
-    public void beanParentThroughCollection() {
+    void beanParentThroughCollection() {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .addPackagePrefix(BeanMapper.class)
                 .build();
@@ -1141,18 +1138,18 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void numberToNumberInList() {
+    void numberToNumberInList() {
         BeanMapper beanMapper = new BeanMapperBuilder().build();
 
         List<String> numberStrings = new ArrayList<>();
         numberStrings.add("1");
 
         List<Integer> numbers = beanMapper.map(numberStrings, Integer.class);
-        assertEquals((Integer)1, numbers.get(0));
+        assertEquals((Integer) 1, numbers.get(0));
     }
 
     @Test
-    public void referenceCopy() {
+    void referenceCopy() {
         Layer3 source = new Layer3();
         Layer4 nestedInSource = new Layer4();
         nestedInSource.setId(42L);
@@ -1164,36 +1161,42 @@ public class BeanMapperTest {
         assertEquals(source.getLayer4(), target.getLayer4());
     }
 
-    @Test(expected = BeanStrictMappingRequirementsException.class)
-    public void strictSource() {
-        new BeanMapperBuilder()
-                .addBeanPairWithStrictSource(SourceAStrict.class, TargetANonStrict.class)
-                .build();
-    }
-
-    @Test(expected = BeanStrictMappingRequirementsException.class)
-    public void strictTarget() {
-        new BeanMapperBuilder()
-                .addBeanPairWithStrictTarget(SourceBNonStrict.class, TargetBStrict.class)
-                .build();
-    }
-
-    @Test(expected = BeanStrictMappingRequirementsException.class)
-    public void strictSourceUseAlias() {
-        new BeanMapperBuilder()
-                .addBeanPairWithStrictSource(SourceCStrict.class, TargetCNonStrict.class)
-                .build();
+    @Test
+    void strictSource() {
+        assertThrows(BeanStrictMappingRequirementsException.class, () ->
+                new BeanMapperBuilder()
+                        .addBeanPairWithStrictSource(SourceAStrict.class, TargetANonStrict.class)
+                        .build()
+        );
     }
 
     @Test
-    public void strictSourceAllIsFine() {
+    void strictTarget() {
+        assertThrows(BeanStrictMappingRequirementsException.class, () ->
+                new BeanMapperBuilder()
+                        .addBeanPairWithStrictTarget(SourceBNonStrict.class, TargetBStrict.class)
+                        .build()
+        );
+    }
+
+    @Test
+    void strictSourceUseAlias() {
+        assertThrows(BeanStrictMappingRequirementsException.class, () ->
+                new BeanMapperBuilder()
+                        .addBeanPairWithStrictSource(SourceCStrict.class, TargetCNonStrict.class)
+                        .build()
+        );
+    }
+
+    @Test
+    void strictSourceAllIsFine() {
         new BeanMapperBuilder()
                 .addBeanPairWithStrictSource(SourceDStrict.class, TargetDNonStrict.class)
                 .build();
     }
 
     @Test
-    public void strictMultipleBeanMismatches() {
+    void strictMultipleBeanMismatches() {
         try {
             new BeanMapperBuilder()
                     .addBeanPairWithStrictSource(SourceAStrict.class, TargetANonStrict.class)
@@ -1214,23 +1217,23 @@ public class BeanMapperTest {
         }
     }
 
-    @Test(expected = BeanStrictMappingRequirementsException.class)
-    public void strictMappingConventionForForm() {
-        beanMapper.map(new SourceEForm(), TargetE.class);
-    }
-
-    @Test(expected = BeanStrictMappingRequirementsException.class)
-    public void strictMappingConventionForResult() {
-        beanMapper.map(new SourceF(), TargetFResult.class);
-    }
-
-    @Test(expected = BeanStrictMappingRequirementsException.class)
-    public void strictMappingConventionMissingMatchForGetter() {
-        beanMapper.map(new SCSourceCForm(), SCTargetC.class);
+    @Test
+    void strictMappingConventionForForm() {
+        assertThrows(BeanStrictMappingRequirementsException.class, () -> beanMapper.map(new SourceEForm(), TargetE.class));
     }
 
     @Test
-    public void strictMappingConventionWithPrivateFieldOnForm() {
+    void strictMappingConventionForResult() {
+        assertThrows(BeanStrictMappingRequirementsException.class, () -> beanMapper.map(new SourceF(), TargetFResult.class));
+    }
+
+    @Test
+    void strictMappingConventionMissingMatchForGetter() {
+        assertThrows(BeanStrictMappingRequirementsException.class, () -> beanMapper.map(new SCSourceCForm(), SCTargetC.class));
+    }
+
+    @Test
+    void strictMappingConventionWithPrivateFieldOnForm() {
         SCSourceAForm source = new SCSourceAForm();
         source.name = "Alpha";
         source.setDoesNotExist("some value");
@@ -1240,7 +1243,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void strictMappingConventionWithPrivateFieldOnResult() {
+    void strictMappingConventionWithPrivateFieldOnResult() {
         SCSourceB source = new SCSourceB();
         source.name = "Alpha";
         source.doesExist = "some value";
@@ -1250,7 +1253,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void beanCollectionClearEmptySource() {
+    void beanCollectionClearEmptySource() {
         CollSourceClear source = new CollSourceClear();
         CollTarget target = new CollTarget();
         List<String> targetItems = target.items;
@@ -1262,7 +1265,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void beanCollectionReuseEmptySource() {
+    void beanCollectionReuseEmptySource() {
         CollSourceReuse source = new CollSourceReuse();
         CollTarget target = new CollTarget();
         List<String> targetItems = target.items;
@@ -1274,7 +1277,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void beanCollectionConstructEmptySource() {
+    void beanCollectionConstructEmptySource() {
         CollSourceConstruct source = new CollSourceConstruct();
         CollTarget target = new CollTarget();
         List<String> targetItems = target.items;
@@ -1286,7 +1289,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void beanCollectionClear() {
+    void beanCollectionClear() {
         CollSourceClear source = new CollSourceClear();
         source.items.add("A");
         source.items.add("B");
@@ -1301,7 +1304,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void beanCollectionClearCallsAfterClearFlusher() throws Exception {
+    void beanCollectionClearCallsAfterClearFlusher() throws Exception {
         AfterClearFlusher afterClearFlusher = createAfterClearFlusher();
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .setFlushEnabled(true)
@@ -1315,12 +1318,12 @@ public class BeanMapperTest {
             items.add("B");
         }};
         beanMapper.map(source, target);
-        assertTrue("Should have called the afterClearFlusher instance",
-                afterClearFlusher.getClass().getField("trigger").getBoolean(afterClearFlusher));
+        assertTrue(afterClearFlusher.getClass().getField("trigger").getBoolean(afterClearFlusher),
+                "Should have called the afterClearFlusher instance");
     }
 
     @Test
-    public void beanCollectionClearDoesNotCallFlusher() throws Exception {
+    void beanCollectionClearDoesNotCallFlusher() throws Exception {
         AfterClearFlusher afterClearFlusher = createAfterClearFlusher();
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .addAfterClearFlusher(afterClearFlusher)
@@ -1333,8 +1336,8 @@ public class BeanMapperTest {
             items.add("B");
         }};
         beanMapper.map(source, target);
-        assertFalse("Should NOT have called the afterClearFlusher instance",
-                afterClearFlusher.getClass().getField("trigger").getBoolean(afterClearFlusher));
+        assertFalse(afterClearFlusher.getClass().getField("trigger").getBoolean(afterClearFlusher),
+                "Should NOT have called the afterClearFlusher instance");
     }
 
     private AfterClearFlusher createAfterClearFlusher() {
@@ -1350,7 +1353,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void beanCollectionReuse() {
+    void beanCollectionReuse() {
         CollSourceReuse source = new CollSourceReuse();
         source.items.add("A");
         source.items.add("B");
@@ -1366,7 +1369,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void beanCollectionConstruct() {
+    void beanCollectionConstruct() {
         CollSourceConstruct source = new CollSourceConstruct();
         source.items.add("A");
         source.items.add("B");
@@ -1381,7 +1384,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void anonymousClass() {
+    void anonymousClass() {
         BookForm bookForm = new BookForm() {{
             name = "Henkie";
             street = "Stationsplein 31";
@@ -1394,7 +1397,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void beanMapper_shouldMapFieldsFromSuperclass() {
+    void beanMapper_shouldMapFieldsFromSuperclass() {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .setApplyStrictMappingConvention(false)
                 .build();
@@ -1403,8 +1406,8 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void unmodifiableRandomAccessList() {
-        List<Long> numbers = Collections.unmodifiableList(new ArrayList<Long>() {{
+    void unmodifiableRandomAccessList() {
+        List<Long> numbers = Collections.unmodifiableList(new ArrayList<>() {{
             add(42L);
             add(57L);
             add(33L);
@@ -1414,52 +1417,56 @@ public class BeanMapperTest {
         assertEquals("42", numbersAsText.get(0));
     }
 
-    @Test(expected = BeanNoSuchPropertyException.class)
-    public void beanPropertyMismatch() {
-        SourceBeanProperty source = new SourceBeanProperty() {{
-            age = 42;
-        }};
-        beanMapper.map(source, TargetBeanProperty.class);
-    }
-
-    @Test(expected = BeanNoSuchPropertyException.class)
-    public void beanPropertyNestedMismatch() {
-        SourceNestedBeanProperty source = new SourceNestedBeanProperty() {{
-            value1 = "42";
-            value2 = "33";
-        }};
-        beanMapper.map(source, TargetNestedBeanProperty.class);
+    @Test
+    void beanPropertyMismatch() {
+        assertThrows(BeanNoSuchPropertyException.class, () -> {
+            SourceBeanProperty source = new SourceBeanProperty() {{
+                age = 42;
+            }};
+            beanMapper.map(source, TargetBeanProperty.class);
+        });
     }
 
     @Test
-    public void wrap_mustAlwaysWrap() {
+    void beanPropertyNestedMismatch() {
+        assertThrows(BeanNoSuchPropertyException.class, () -> {
+            SourceNestedBeanProperty source = new SourceNestedBeanProperty() {{
+                value1 = "42";
+                value2 = "33";
+            }};
+            beanMapper.map(source, TargetNestedBeanProperty.class);
+        });
+    }
+
+    @Test
+    void wrap_mustAlwaysWrap() {
         assertNotSame(beanMapper.getConfiguration(), beanMapper.wrapConfig().build().getConfiguration());
         assertNotSame(beanMapper.getConfiguration(), beanMapper.config().build().getConfiguration());
         assertNotSame(beanMapper.getConfiguration(), beanMapper.wrap().build().getConfiguration());
     }
 
     @Test
-    public void securedSourceFieldHasAccess() {
+    void securedSourceFieldHasAccess() {
         assertSecuredSourceField(roles -> true, "Henk");
     }
 
     @Test
-    public void securedSourceFieldNoAccess() {
+    void securedSourceFieldNoAccess() {
         assertSecuredSourceField(roles -> false, null);
     }
 
     @Test
-    public void securedTargetFieldHasAccess() {
+    void securedTargetFieldHasAccess() {
         assertSecuredTargetField(roles -> true, "Henk");
     }
 
     @Test
-    public void securedTargetFieldNoAccess() {
+    void securedTargetFieldNoAccess() {
         assertSecuredTargetField(roles -> false, null);
     }
 
     @Test
-    public void securedSourceMethodNoAccess() {
+    void securedSourceMethodNoAccess() {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .setSecuredPropertyHandler(roles -> false)
                 .build();
@@ -1467,7 +1474,7 @@ public class BeanMapperTest {
             setName("Henk");
         }};
         SFTargetA target = beanMapper.map(source, SFTargetA.class);
-        assertEquals(null, target.name);
+        assertNull(target.name);
     }
 
     private void assertSecuredSourceField(RoleSecuredCheck roleSecuredCheck, String expectedName) {
@@ -1492,16 +1499,18 @@ public class BeanMapperTest {
         assertEquals(expectedName, target.name);
     }
 
-    @Test(expected = BeanNoRoleSecuredCheckSetException.class)
-    public void throwExceptionWhenSecuredPropertyDoesNotHaveAHandler() {
-        SFSourceAWithSecuredField source = new SFSourceAWithSecuredField() {{
-            name = "Henk";
-        }};
-        beanMapper.map(source, SFTargetA.class);
+    @Test
+    void throwExceptionWhenSecuredPropertyDoesNotHaveAHandler() {
+        assertThrows(BeanNoRoleSecuredCheckSetException.class, () -> {
+            SFSourceAWithSecuredField source = new SFSourceAWithSecuredField() {{
+                name = "Henk";
+            }};
+            beanMapper.map(source, SFTargetA.class);
+        });
     }
 
     @Test
-    public void allowSecuredPropertyDoesNotHaveAHandler() {
+    void allowSecuredPropertyDoesNotHaveAHandler() {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .setEnforcedSecuredProperties(false)
                 .build();
@@ -1513,7 +1522,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void logicSecuredCheckMustBlock() {
+    void logicSecuredCheckMustBlock() {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .addLogicSecuredCheck(new NeverReturnTrueCheck())
                 .build();
@@ -1525,12 +1534,12 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void logicSecuredCheckMustBlockBecauseInequalName() {
+    void logicSecuredCheckMustBlockBecauseInequalName() {
         logicCheckForEqualName("Blake", null);
     }
 
     @Test
-    public void logicSecuredCheckMustAllowBecauseEqualName() {
+    void logicSecuredCheckMustAllowBecauseEqualName() {
         logicCheckForEqualName("Henk", "Henk");
     }
 
@@ -1545,16 +1554,18 @@ public class BeanMapperTest {
         assertEquals(expectedName, target.name);
     }
 
-    @Test(expected = BeanNoLogicSecuredCheckSetException.class)
-    public void logicSecuredMissingCheck() {
-        SFSourceDLogicSecured source = new SFSourceDLogicSecured() {{
-            name = "Henk";
-        }};
-        beanMapper.map(source, SFTargetA.class);
+    @Test
+    void logicSecuredMissingCheck() {
+        assertThrows(BeanNoLogicSecuredCheckSetException.class, () -> {
+            SFSourceDLogicSecured source = new SFSourceDLogicSecured() {{
+                name = "Henk";
+            }};
+            beanMapper.map(source, SFTargetA.class);
+        });
     }
 
     @Test
-    public void unwrappedToWrapped() {
+    void unwrappedToWrapped() {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .addConverter(new UnwrappedToWrappedBeanConverter())
                 .addBeanPairWithStrictSource(SourceWithUnwrappedItems.class, TargetWithWrappedItems.class)
@@ -1573,7 +1584,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void emptyListToExistingList() {
+    void emptyListToExistingList() {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .addConverter(new UnwrappedToWrappedBeanConverter())
                 .build();
@@ -1586,14 +1597,14 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void useBeanPropertyPathToAccessGetterOnly() {
+    void useBeanPropertyPathToAccessGetterOnly() {
         SourceWithPerson source = new SourceWithPerson();
         TargetWithPersonName target = beanMapper.map(source, TargetWithPersonName.class);
         assertEquals(source.person.getFullName(), target.name);
     }
 
     @Test
-    public void useBeanPropertyPathToAccessSetterOnly() {
+    void useBeanPropertyPathToAccessSetterOnly() {
         SourceWithPersonName source = new SourceWithPersonName();
         source.name = "Zeefod Beeblebrox";
         TargetWithPerson target = beanMapper.map(source, TargetWithPerson.class);
@@ -1601,14 +1612,14 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void nestedGenericsEmptyList() {
+    void nestedGenericsEmptyList() {
         SourceWithNestedGenerics source = new SourceWithNestedGenerics();
         TargetWithNestedGenerics target = beanMapper.map(source, TargetWithNestedGenerics.class);
         assertNotNull(target.names);
     }
 
     @Test
-    public void deepMapEnum() {
+    void deepMapEnum() {
         CountryEnum source = CountryEnum.NL;
         CountryResult target = beanMapper.map(source, CountryResult.class);
         assertEquals(CountryEnum.NL.getCode(), target.code);
@@ -1617,7 +1628,7 @@ public class BeanMapperTest {
     }
 
     @Test
-    public void deepMapEnumInHolder() {
+    void deepMapEnumInHolder() {
         CountryHolder sourceHolder = new CountryHolder();
         sourceHolder.country = CountryEnum.NL;
         CountryResultHolder target = beanMapper.map(sourceHolder, CountryResultHolder.class);

@@ -19,7 +19,7 @@ public class ComparableClass implements Comparable {
         if (!(o instanceof ComparableClass)) {
             return -1;
         }
-        ComparableClass other = (ComparableClass)o;
+        ComparableClass other = (ComparableClass) o;
         return name.compareTo(other.name);
     }
 

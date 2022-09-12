@@ -3,29 +3,31 @@
  */
 package io.beanmapper.core.converter.impl;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class StringToLongConverterTest {
-    
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+class StringToLongConverterTest {
+
     private StringToLongConverter converter;
-    
-    @Before
-    public void setUp() {
+
+    @BeforeEach
+    void setUp() {
         converter = new StringToLongConverter();
     }
-    
+
     @Test
-    public void testConvertBoxed() {
-        Assert.assertTrue(converter.match(String.class, Long.class));
-        Assert.assertEquals(Long.valueOf(42), converter.convert(null,"42", Long.class, null));
+    void testConvertBoxed() {
+        assertTrue(converter.match(String.class, Long.class));
+        assertEquals(Long.valueOf(42), converter.convert(null, "42", Long.class, null));
     }
-    
+
     @Test
-    public void testConvertPrimitive() {
-        Assert.assertTrue(converter.match(String.class, long.class));
-        Assert.assertEquals(Long.valueOf(42), converter.convert(null,"42", long.class, null));
+    void testConvertPrimitive() {
+        assertTrue(converter.match(String.class, long.class));
+        assertEquals(Long.valueOf(42), converter.convert(null, "42", long.class, null));
     }
 
 }

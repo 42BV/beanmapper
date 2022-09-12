@@ -1,6 +1,6 @@
 package io.beanmapper.dynclass;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,25 +16,25 @@ import io.beanmapper.dynclass.model.Organization;
 import io.beanmapper.dynclass.model.Product;
 import io.beanmapper.dynclass.model.ProductDto;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class ProductDtoTest {
+class ProductDtoTest {
 
     private BeanMapper beanMapper;
 
-    @Before
-    public void prepareBeanmapper() {
+    @BeforeEach
+    void prepareBeanmapper() {
         beanMapper = new BeanMapperBuilder()
                 .addPackagePrefix(BeanMapper.class)
                 .build();
     }
 
     @Test
-    public void mapToDynamicProductDtoOrgOnlyIdName() throws Exception {
+    void mapToDynamicProductDtoOrgOnlyIdName() throws Exception {
         Product product = createProduct(false);
         beanMapper = beanMapper.wrap()
                 .setTargetClass(ProductDto.class)
@@ -46,7 +46,7 @@ public class ProductDtoTest {
     }
 
     @Test
-    public void mapToDynamicProductDtoWithLists() throws Exception {
+    void mapToDynamicProductDtoWithLists() throws Exception {
         Product product = createProduct(true);
         beanMapper = beanMapper.wrap()
                 .setTargetClass(ProductDto.class)
@@ -56,21 +56,21 @@ public class ProductDtoTest {
 
         String expectedJson =
                 "{\"id\":42,\"name\":\"Aller menscher\"," +
-                     "\"assets\":[" +
+                        "\"assets\":[" +
                         "{\"id\":1138,\"name\":\"Track 1\"}," +
                         "{\"id\":1139,\"name\":\"Track 2\"}," +
                         "{\"id\":1140,\"name\":\"Track 3\"}" +
-                    "]," +
-                    "\"artists\":[" +
+                        "]," +
+                        "\"artists\":[" +
                         "{\"id\":1141,\"name\":\"Artist 1\"}," +
                         "{\"id\":1142,\"name\":\"Artist 2\"}" +
-                    "]" +
-                "}";
+                        "]" +
+                        "}";
         compareJson(productDto, expectedJson);
     }
 
     @Test
-    public void mapList() throws Exception {
+    void mapList() throws Exception {
         List<Artist> artists = createArtists();
         beanMapper = beanMapper.wrap()
                 .setTargetClass(ArtistDto.class)
@@ -82,7 +82,7 @@ public class ProductDtoTest {
     }
 
     @Test
-    public void mapListWithNestedEntries() throws Exception {
+    void mapListWithNestedEntries() throws Exception {
         List<Product> products = new ArrayList<Product>();
         products.add(createProduct(42L, true));
         products.add(createProduct(43L, true));
@@ -93,9 +93,9 @@ public class ProductDtoTest {
         Object dto = beanMapper.map(products);
         String expectedJson =
                 "[" +
-                    "{\"id\":42,\"assets\":[{\"id\":1138},{\"id\":1139},{\"id\":1140}]}," +
-                    "{\"id\":43,\"assets\":[{\"id\":1138},{\"id\":1139},{\"id\":1140}]}" +
-                "]";
+                        "{\"id\":42,\"assets\":[{\"id\":1138},{\"id\":1139},{\"id\":1140}]}," +
+                        "{\"id\":43,\"assets\":[{\"id\":1138},{\"id\":1139},{\"id\":1140}]}" +
+                        "]";
         compareJson(dto, expectedJson);
     }
 

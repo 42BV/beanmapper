@@ -5,12 +5,12 @@ import static junit.framework.Assert.assertEquals;
 import io.beanmapper.annotations.BeanProperty;
 import io.beanmapper.config.BeanMapperBuilder;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class BeanPropertyExample {
 
     @Test
-    public void mapOtherNames() {
+    void mapOtherNames() {
         Source source = new Source(1L, "Henk", 42);
         Target target = new BeanMapperBuilder().build()
                 .map(source, Target.class);

@@ -1,11 +1,11 @@
 package io.beanmapper.utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class CheckTest {
+class CheckTest {
 
     @Test
-    public void construct() {
+    void construct() {
         // codecov expects a util class to be constructed
         new Check();
         new Classes();

@@ -3,24 +3,25 @@
  */
 package io.beanmapper.core.converter.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.math.BigDecimal;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class StringToBigDecimalConverterTest {
-    
+class StringToBigDecimalConverterTest {
+
     private StringToBigDecimalConverter converter;
-    
-    @Before
-    public void setUp() {
+
+    @BeforeEach
+    void setUp() {
         converter = new StringToBigDecimalConverter();
     }
-    
+
     @Test
-    public void testConvert() {
-        Assert.assertEquals("42.24", converter.convert(null,"42.24", BigDecimal.class, null).toString());
+    void testConvert() {
+        assertEquals("42.24", converter.convert(null, "42.24", BigDecimal.class, null).toString());
     }
 
 }

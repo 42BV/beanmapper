@@ -7,5 +7,4 @@ public class SourceWithPersonName {
     @BeanProperty(name = "person.fullName")
     public String name;
 
-
 }

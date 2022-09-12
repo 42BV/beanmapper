@@ -1,18 +1,18 @@
 package io.beanmapper;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 
 import io.beanmapper.annotations.BeanProperty;
 import io.beanmapper.config.BeanMapperBuilder;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class NestedToNestedExample {
 
     @Test
-    public void mapNestedToNested() {
+    void mapNestedToNested() {
         Pet pet = new Pet("Loebas", LocalDate.now(), 1L, "Dog");
 
         PetResult petResult = new BeanMapperBuilder()

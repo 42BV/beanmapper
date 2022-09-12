@@ -5,12 +5,12 @@ import static junit.framework.Assert.assertEquals;
 import io.beanmapper.annotations.BeanAlias;
 import io.beanmapper.config.BeanMapperBuilder;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class BeanAliasExample {
 
     @Test
-    public void mapWithAlias() {
+    void mapWithAlias() {
         Source source = new Source(1L, "Henk");
 
         Target target = new BeanMapperBuilder().build()

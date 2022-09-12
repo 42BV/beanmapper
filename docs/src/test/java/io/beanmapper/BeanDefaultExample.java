@@ -5,12 +5,12 @@ import static junit.framework.Assert.assertEquals;
 import io.beanmapper.annotations.BeanDefault;
 import io.beanmapper.config.BeanMapperBuilder;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class BeanDefaultExample {
 
     @Test
-    public void mapWithDefaults() {
+    void mapWithDefaults() {
         Source source = new Source(null, null, null);
         Target target = new BeanMapperBuilder()
                 .build()

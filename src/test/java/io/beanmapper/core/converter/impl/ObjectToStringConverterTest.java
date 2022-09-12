@@ -3,14 +3,15 @@
  */
 package io.beanmapper.core.converter.impl;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ObjectToStringConverterTest {
-    
+import org.junit.jupiter.api.Test;
+
+class ObjectToStringConverterTest {
+
     @Test
-    public void testConvert() {
-        Assert.assertEquals("42", new ObjectToStringConverter().convert(null,42, String.class, null));
+    void testConvert() {
+        assertEquals("42", new ObjectToStringConverter().convert(null, 42, String.class, null));
     }
 
 }

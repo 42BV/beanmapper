@@ -5,12 +5,12 @@ import static junit.framework.Assert.assertNull;
 import io.beanmapper.annotations.BeanIgnore;
 import io.beanmapper.config.BeanMapperBuilder;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class BeanIgnoreExample {
 
     @Test
-    public void mapAndIgnore() {
+    void mapAndIgnore() {
         Source source = new Source(1L, "Henk", 42);
         Target target = new BeanMapperBuilder().build()
                 .map(source, Target.class);

@@ -1,8 +1,9 @@
 package io.beanmapper.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -10,8 +11,8 @@ import io.beanmapper.BeanMapper;
 import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.strategy.ConstructorArguments;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class OverrideConfigurationTest {
 
@@ -19,31 +20,31 @@ public class OverrideConfigurationTest {
 
     private OverrideConfiguration overrideConfiguration;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .build();
-        coreConfiguration = (CoreConfiguration)beanMapper.getConfiguration();
+        coreConfiguration = (CoreConfiguration) beanMapper.getConfiguration();
         overrideConfiguration = new OverrideConfiguration(coreConfiguration);
     }
 
-    @Test(expected = ParentConfigurationPossiblyNullException.class)
-    public void noParentConfig() {
-        new OverrideConfiguration(null);
+    @Test
+    void noParentConfig() {
+        assertThrows(ParentConfigurationPossiblyNullException.class, () -> new OverrideConfiguration(null));
     }
 
     @Test
-    public void unsupportedCalls() {
+    void unsupportedCalls() {
         overrideConfiguration.withoutDefaultConverters();
         overrideConfiguration.addProxySkipClass(null);
-        overrideConfiguration.addPackagePrefix((String)null);
-        overrideConfiguration.addPackagePrefix((Class)null);
+        overrideConfiguration.addPackagePrefix((String) null);
+        overrideConfiguration.addPackagePrefix((Class) null);
         overrideConfiguration.addAfterClearFlusher(null);
         overrideConfiguration.setBeanUnproxy(null);
     }
 
     @Test
-    public void mustFlush() {
+    void mustFlush() {
         overrideConfiguration.setFlushEnabled(true);
         overrideConfiguration.setFlushAfterClear(true);
         assertEquals(true, overrideConfiguration.isFlushEnabled());
@@ -52,33 +53,33 @@ public class OverrideConfigurationTest {
     }
 
     @Test
-    public void mustFlush_flushAfterClearIsFalse() {
+    void mustFlush_flushAfterClearIsFalse() {
         overrideConfiguration.setFlushEnabled(true);
         overrideConfiguration.setFlushAfterClear(false);
         assertEquals(false, overrideConfiguration.mustFlush());
     }
 
     @Test
-    public void strictTargetSuffix() {
+    void strictTargetSuffix() {
         assertEquals("Result", overrideConfiguration.getStrictTargetSuffix());
         overrideConfiguration.setStrictTargetSuffix("Result2");
         assertEquals("Result2", overrideConfiguration.getStrictTargetSuffix());
     }
 
     @Test
-    public void strictSourceSuffix() {
+    void strictSourceSuffix() {
         assertEquals("Form", overrideConfiguration.getStrictSourceSuffix());
         overrideConfiguration.setStrictSourceSuffix("Form2");
         assertEquals("Form2", overrideConfiguration.getStrictSourceSuffix());
     }
 
     @Test
-    public void getCollectionHandlers() {
+    void getCollectionHandlers() {
         assertEquals(coreConfiguration.getCollectionHandlers(), overrideConfiguration.getCollectionHandlers());
     }
 
     @Test
-    public void addBeanPairWithStrictSource() {
+    void addBeanPairWithStrictSource() {
         overrideConfiguration.addBeanPairWithStrictSource(Long.class, String.class);
         List<BeanPair> beanPairs = overrideConfiguration.getBeanPairs();
         assertEquals(1, beanPairs.size());
@@ -87,7 +88,7 @@ public class OverrideConfigurationTest {
     }
 
     @Test
-    public void addBeanPairWithStrictTarget() {
+    void addBeanPairWithStrictTarget() {
         overrideConfiguration.addBeanPairWithStrictTarget(Long.class, String.class);
         List<BeanPair> beanPairs = overrideConfiguration.getBeanPairs();
         assertEquals(1, beanPairs.size());
@@ -96,7 +97,7 @@ public class OverrideConfigurationTest {
     }
 
     @Test
-    public void setBeanInitializer() {
+    void setBeanInitializer() {
         final DefaultBeanInitializer expectedBeanInitializer = new DefaultBeanInitializer() {
             @Override
             public <T> T instantiate(Class<T> beanClass, ConstructorArguments arguments) {
@@ -108,7 +109,7 @@ public class OverrideConfigurationTest {
     }
 
     @Test
-    public void determineTargetClass() {
+    void determineTargetClass() {
         overrideConfiguration.setTarget("Hello");
         assertEquals(String.class, overrideConfiguration.determineTargetClass());
     }

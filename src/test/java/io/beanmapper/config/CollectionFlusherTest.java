@@ -1,21 +1,21 @@
 package io.beanmapper.config;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class CollectionFlusherTest {
 
     private Counter counter;
 
-    @Before
+    @BeforeEach
     public void setup() {
         counter = new Counter();
     }
 
     @Test
-    public void createAndAddFlushersCallFlush() {
+    void createAndAddFlushersCallFlush() {
         CollectionFlusher flusher = new CollectionFlusher();
         flusher.addAfterClearFlusher(new MyAfterClearFlusher(counter));
         flusher.addAfterClearFlusher(new MyAfterClearFlusher(counter));
@@ -25,7 +25,7 @@ public class CollectionFlusherTest {
     }
 
     @Test
-    public void createAndAddFlushersCallFlushNotToBeCalled() {
+    void createAndAddFlushersCallFlushNotToBeCalled() {
         CollectionFlusher flusher = new CollectionFlusher();
         flusher.addAfterClearFlusher(new MyAfterClearFlusher(counter));
         flusher.addAfterClearFlusher(new MyAfterClearFlusher(counter));
@@ -36,8 +36,10 @@ public class CollectionFlusherTest {
 
     class Counter {
         private int count = 0;
-        public void add() { count++; }
-        public int get() { return count; }
+
+        public void add() {count++;}
+
+        public int get() {return count;}
     }
 
     class MyAfterClearFlusher implements AfterClearFlusher {
@@ -47,7 +49,8 @@ public class CollectionFlusherTest {
             this.counter = counter;
         }
 
-        @Override public void flush() {
+        @Override
+        public void flush() {
             counter.add();
         }
     }
