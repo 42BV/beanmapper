@@ -11,12 +11,12 @@ import io.beanmapper.annotations.BeanCollection;
 import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.config.BeanMapperBuilder;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class BeanCollectionExample {
 
     @Test
-    public void mapCollectionWithConstruct() {
+    void mapCollectionWithConstruct() {
         Source source = new Source();
         source.items = new LinkedHashSet<Person>();
         source.items.add(new Person(1L, "Henk", 42));
@@ -38,7 +38,7 @@ public class BeanCollectionExample {
     }
 
     @Test
-    public void mapCollectionWithReuse() {
+    void mapCollectionWithReuse() {
         Source source = new Source();
         source.items = new LinkedHashSet<Person>();
         source.items.add(new Person(1L, "Henk", 42));
@@ -62,7 +62,7 @@ public class BeanCollectionExample {
     }
 
     @Test
-    public void mapCollectionWithClear() {
+    void mapCollectionWithClear() {
         Source source = new Source();
         source.items = new LinkedHashSet<Person>();
         source.items.add(new Person(1L, "Henk", 42));

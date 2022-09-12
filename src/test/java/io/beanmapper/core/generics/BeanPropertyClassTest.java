@@ -1,7 +1,7 @@
 package io.beanmapper.core.generics;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 import java.util.List;
 import java.util.Map;
@@ -11,26 +11,26 @@ import io.beanmapper.core.BeanPropertyMatchupDirection;
 import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessors;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class BeanPropertyClassTest {
+class BeanPropertyClassTest {
 
     @Test
-    public void basicList() {
+    void basicList() {
         assertEquals(
                 new BeanPropertyClassNormal(List.class),
                 new BeanPropertyClassNormal(List.class));
     }
 
     @Test
-    public void basicListAndSetAreNotTheSame() {
+    void basicListAndSetAreNotTheSame() {
         assertNotSame(
                 new BeanPropertyClassNormal(List.class),
                 new BeanPropertyClassNormal(Set.class));
     }
 
     @Test
-    public void parameterizedAndNonParameterizedAreNeverTheSame() {
+    void parameterizedAndNonParameterizedAreNeverTheSame() {
         assertNotSame(
                 extractBeanPropertyClass(
                         BeanPropertyMatchupDirection.SOURCE_TO_TARGET,
@@ -40,7 +40,7 @@ public class BeanPropertyClassTest {
     }
 
     @Test
-    public void sameListString() {
+    void sameListString() {
         assertEquals(
                 extractBeanPropertyClass(
                         BeanPropertyMatchupDirection.SOURCE_TO_TARGET,
@@ -53,7 +53,7 @@ public class BeanPropertyClassTest {
     }
 
     @Test
-    public void listStringAndListLongAreNotTheSame() {
+    void listStringAndListLongAreNotTheSame() {
         assertNotSame(
                 extractBeanPropertyClass(
                         BeanPropertyMatchupDirection.SOURCE_TO_TARGET,
@@ -66,7 +66,7 @@ public class BeanPropertyClassTest {
     }
 
     @Test
-    public void complexTypesWithASlightDifferenceInTheGenerics() {
+    void complexTypesWithASlightDifferenceInTheGenerics() {
         assertNotSame(
                 extractBeanPropertyClass(
                         BeanPropertyMatchupDirection.SOURCE_TO_TARGET,
@@ -79,7 +79,7 @@ public class BeanPropertyClassTest {
     }
 
     @Test
-    public void exactSameComplexTypes() {
+    void exactSameComplexTypes() {
         assertEquals(
                 extractBeanPropertyClass(
                         BeanPropertyMatchupDirection.SOURCE_TO_TARGET,
@@ -123,7 +123,7 @@ public class BeanPropertyClassTest {
         public List<Map<String, String>> list;
     }
 
-    public class TargetClassWithComplexListLong{
+    public class TargetClassWithComplexListLong {
         public List<Map<String, Long>> list;
     }
 

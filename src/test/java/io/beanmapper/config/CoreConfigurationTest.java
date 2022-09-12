@@ -1,49 +1,54 @@
 package io.beanmapper.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class CoreConfigurationTest {
+class CoreConfigurationTest {
 
-    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
-    public void setParent() {
-        CoreConfiguration configuration = new CoreConfiguration();
-        configuration.setParent(null);
-    }
-
-    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
-    public void setTarget() {
-        CoreConfiguration configuration = new CoreConfiguration();
-        configuration.setTarget("Hello world");
+    @Test
+    void setParent() {
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
+            CoreConfiguration configuration = new CoreConfiguration();
+            configuration.setParent(null);
+        });
     }
 
     @Test
-    public void determineTargetClass_noTargetSet() {
+    void setTarget() {
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
+            CoreConfiguration configuration = new CoreConfiguration();
+            configuration.setTarget("Hello world");
+        });
+    }
+
+    @Test
+    void determineTargetClass_noTargetSet() {
         CoreConfiguration configuration = new CoreConfiguration();
         assertNull(configuration.determineTargetClass());
     }
 
     @Test
-    public void addNullPackagePrefix() {
+    void addNullPackagePrefix() {
         CoreConfiguration configuration = new CoreConfiguration();
-        configuration.addPackagePrefix((Class<?>)null);
+        configuration.addPackagePrefix((Class<?>) null);
         assertEquals(0, configuration.getPackagePrefixes().size());
     }
 
     @Test
-    public void addWithoutDefaultConverters() {
+    void addWithoutDefaultConverters() {
         CoreConfiguration configuration = new CoreConfiguration();
         configuration.withoutDefaultConverters();
         assertFalse(configuration.isAddDefaultConverters());
     }
 
     @Test
-    public void singleMapRunProperties() {
+    void singleMapRunProperties() {
         CoreConfiguration configuration = new CoreConfiguration();
         assertNull(configuration.getDownsizeSource());
         assertNull(configuration.getDownsizeTarget());

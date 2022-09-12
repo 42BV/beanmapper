@@ -1550,23 +1550,24 @@ assertEquals(LocalDate.of(2016,1,1), petFromId.getBirthDate());</code>
                 .build();
     }
 
-    public BeanMapper beanMapper() {
-        return mockMvcBeanMapper.getBeanMapper();
-    }
+  public BeanMapper beanMapper() {
+  return mockMvcBeanMapper.getBeanMapper();
+  }
 
-    public void registerRepository(CrudRepository&lt;? extends BaseEntity, Long> repository, Class<?> entityClass) {
-        mockMvcBeanMapper.registerRepository(repository, entityClass);
-    }
-}</code>
+  public void registerRepository(CrudRepository&lt;? extends BaseEntity, Long> repository, Class<?> entityClass) {
+  mockMvcBeanMapper.registerRepository(repository, entityClass);
+  }
+  }</code>
           <br>
-          <p>In your controller test, you will have to register all the repositories (presumably mock classes) that need to be added, ostensibly in a @Before method.</p>
+          <p>In your controller test, you will have to register all the repositories (presumably mock classes) that need to be added, ostensibly in a
+            @BeforeEach method.</p>
           <code>registerRepository(ownerRepository, Owner.class);</code>
           <br>
           <p>You can take program your mock repositories as you normally would, for example in JMockit:</p>
-<code>new NonStrictExpectations() {{
-    ownerRepository.findOne(1138L);
-    result = new Owner();
-}};</code>
+          <code>new NonStrictExpectations() {{
+            ownerRepository.findOne(1138L);
+            result = new Owner();
+            }};</code>
         </div>
       </section>
     </div>

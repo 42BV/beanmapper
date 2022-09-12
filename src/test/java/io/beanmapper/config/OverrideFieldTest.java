@@ -1,18 +1,18 @@
 package io.beanmapper.config;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class OverrideFieldTest {
+class OverrideFieldTest {
 
     @Test
-    public void block() {
+    void block() {
         OverrideField<String> text = new OverrideField<>(this::get);
         text.block();
         assertNull(text.get());
     }
 
-    private String get() { return "Hello world!"; }
+    private String get() {return "Hello world!";}
 
 }

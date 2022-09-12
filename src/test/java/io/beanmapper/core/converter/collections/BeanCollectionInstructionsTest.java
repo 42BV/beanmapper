@@ -1,9 +1,9 @@
 package io.beanmapper.core.converter.collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,17 +13,17 @@ import io.beanmapper.core.BeanProperty;
 import io.beanmapper.core.BeanPropertyCreator;
 import io.beanmapper.core.BeanPropertyMatchupDirection;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class BeanCollectionInstructionsTest {
+class BeanCollectionInstructionsTest {
 
     @Test
-    public void bothSidesHaveNoInstructions() {
+    void bothSidesHaveNoInstructions() {
         assertNull(BeanCollectionInstructions.merge(null, null));
     }
 
     @Test
-    public void onlyTargetSideGenericSupplied() {
+    void onlyTargetSideGenericSupplied() {
         BeanProperty sourceBeanProperty = new BeanPropertyCreator(
                 BeanPropertyMatchupDirection.SOURCE_TO_TARGET,
                 SourceClassContainingList.class,
@@ -50,7 +50,7 @@ public class BeanCollectionInstructionsTest {
     }
 
     @Test
-    public void sourceSideSuppliesInstructionsAndTargetSideGeneric() {
+    void sourceSideSuppliesInstructionsAndTargetSideGeneric() {
         BeanProperty sourceBeanProperty = new BeanPropertyCreator(
                 BeanPropertyMatchupDirection.SOURCE_TO_TARGET,
                 SourceClassContainingList.class,

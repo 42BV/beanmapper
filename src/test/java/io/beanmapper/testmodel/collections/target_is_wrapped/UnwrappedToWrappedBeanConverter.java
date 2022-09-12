@@ -8,7 +8,7 @@ public class UnwrappedToWrappedBeanConverter implements BeanConverter {
 
     @Override
     public Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanPropertyMatch beanPropertyMatch) {
-        UnwrappedSource unwrappedSource = (UnwrappedSource)source;
+        UnwrappedSource unwrappedSource = (UnwrappedSource) source;
         return new WrappedTarget(unwrappedSource);
     }
 

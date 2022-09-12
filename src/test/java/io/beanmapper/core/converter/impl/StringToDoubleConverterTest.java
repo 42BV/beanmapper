@@ -3,29 +3,31 @@
  */
 package io.beanmapper.core.converter.impl;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class StringToDoubleConverterTest {
-    
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+class StringToDoubleConverterTest {
+
     private StringToDoubleConverter converter;
-    
-    @Before
-    public void setUp() {
+
+    @BeforeEach
+    void setUp() {
         converter = new StringToDoubleConverter();
     }
-    
+
     @Test
-    public void testConvertBoxed() {
-        Assert.assertTrue(converter.match(String.class, Double.class));
-        Assert.assertEquals(Double.valueOf((double) 42), converter.convert(null,"42", Double.class, null));
+    void testConvertBoxed() {
+        assertTrue(converter.match(String.class, Double.class));
+        assertEquals((double) 42, converter.convert(null, "42", Double.class, null));
     }
-    
+
     @Test
-    public void testConvertPrimitive() {
-        Assert.assertTrue(converter.match(String.class, double.class));
-        Assert.assertEquals(Double.valueOf((double) 42), converter.convert(null,"42", double.class, null));
+    void testConvertPrimitive() {
+        assertTrue(converter.match(String.class, double.class));
+        assertEquals((double) 42, converter.convert(null, "42", double.class, null));
     }
 
 }

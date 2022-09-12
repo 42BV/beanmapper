@@ -1,11 +1,12 @@
 package io.beanmapper.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,60 +18,76 @@ import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
 import io.beanmapper.strategy.ConstructorArguments;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class BeanMapperBuilderTest {
+class BeanMapperBuilderTest {
 
-    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
-    public void setTargetClassOnCoreThrowsException() {
-        BeanMapperBuilder builder = new BeanMapperBuilder();
-        builder.setTargetClass(null);
-    }
-
-    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
-    public void setCollectionUsage() {
-        BeanMapperBuilder builder = new BeanMapperBuilder();
-        builder.setCollectionUsage(null);
-    }
-
-    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
-    public void setPreferredCollectionClass() {
-        BeanMapperBuilder builder = new BeanMapperBuilder();
-        builder.setPreferredCollectionClass(null);
-    }
-
-    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
-    public void setFlushAfterClear() {
-        BeanMapperBuilder builder = new BeanMapperBuilder();
-        builder.setFlushAfterClear(true);
-    }
-
-    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
-    public void setTargetOnCoreThrowsException() {
-        BeanMapperBuilder builder = new BeanMapperBuilder();
-        builder.setTarget(null);
-    }
-
-    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
-    public void setDownsizeSourceOnCoreThrowsException() {
-        BeanMapperBuilder builder = new BeanMapperBuilder();
-        builder.downsizeSource(null);
-    }
-
-    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
-    public void setDownsizeTargetOnCoreThrowsException() {
-        BeanMapperBuilder builder = new BeanMapperBuilder();
-        builder.downsizeTarget(null);
-    }
-
-    @Test(expected = BeanConfigurationOperationNotAllowedException.class)
-    public void setCollectionClassOnCoreThrowsException() {
-        BeanMapperBuilder builder = new BeanMapperBuilder();
-        builder.setCollectionClass(null);
+    @Test
+    void setTargetClassOnCoreThrowsException() {
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
+            BeanMapperBuilder builder = new BeanMapperBuilder();
+            builder.setTargetClass(null);
+        });
     }
 
     @Test
-    public void withoutDefaultConverters() {
+    void setCollectionUsage() {
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
+            BeanMapperBuilder builder = new BeanMapperBuilder();
+            builder.setCollectionUsage(null);
+        });
+    }
+
+    @Test
+    void setPreferredCollectionClass() {
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
+            BeanMapperBuilder builder = new BeanMapperBuilder();
+            builder.setPreferredCollectionClass(null);
+        });
+    }
+
+    @Test
+    void setFlushAfterClear() {
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
+            BeanMapperBuilder builder = new BeanMapperBuilder();
+            builder.setFlushAfterClear(true);
+        });
+    }
+
+    @Test
+    void setTargetOnCoreThrowsException() {
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
+            BeanMapperBuilder builder = new BeanMapperBuilder();
+            builder.setTarget(null);
+        });
+    }
+
+    @Test
+    void setDownsizeSourceOnCoreThrowsException() {
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
+            BeanMapperBuilder builder = new BeanMapperBuilder();
+            builder.downsizeSource(null);
+        });
+    }
+
+    @Test
+    void setDownsizeTargetOnCoreThrowsException() {
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
+            BeanMapperBuilder builder = new BeanMapperBuilder();
+            builder.downsizeTarget(null);
+        });
+    }
+
+    @Test
+    void setCollectionClassOnCoreThrowsException() {
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
+            BeanMapperBuilder builder = new BeanMapperBuilder();
+            builder.setCollectionClass(null);
+        });
+    }
+
+    @Test
+    void withoutDefaultConverters() {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .withoutDefaultConverters()
                 .build();
@@ -78,7 +95,7 @@ public class BeanMapperBuilderTest {
     }
 
     @Test
-    public void addCollectionHandler() {
+    void addCollectionHandler() {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .addCollectionHandler(new ListCollectionHandler())
                 .build();
@@ -86,7 +103,7 @@ public class BeanMapperBuilderTest {
     }
 
     @Test
-    public void setProxySkipClass() {
+    void setProxySkipClass() {
         Class expectedClass = Collections.EMPTY_LIST.getClass();
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .addProxySkipClass(expectedClass)
@@ -95,7 +112,7 @@ public class BeanMapperBuilderTest {
     }
 
     @Test
-    public void addPackagePrefix() {
+    void addPackagePrefix() {
         String expectedPackagePrefix = "io.beanmapper.dummie";
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .addPackagePrefix(expectedPackagePrefix)
@@ -105,7 +122,7 @@ public class BeanMapperBuilderTest {
     }
 
     @Test
-    public void setBeanInitializer() {
+    void setBeanInitializer() {
         final DefaultBeanInitializer expectedBeanInitializer = new DefaultBeanInitializer() {
             @Override
             public <T> T instantiate(Class<T> beanClass, ConstructorArguments arguments) {
@@ -119,7 +136,7 @@ public class BeanMapperBuilderTest {
     }
 
     @Test
-    public void setBeanUnproxy() {
+    void setBeanUnproxy() {
         final BeanUnproxy expectedBeanUnproxy = new BeanUnproxy() {
             @Override
             public Class<?> unproxy(Class<?> beanClass) {
@@ -133,47 +150,46 @@ public class BeanMapperBuilderTest {
     }
 
     @Test
-    public void isConverterChoosableForCoreConfig() {
+    void isConverterChoosableForCoreConfig() {
         BeanMapper beanMapper = new BeanMapperBuilder().build();
-        assertFalse(
-                "The Core configuration assumes that a top-level call always assumes a pure mapping (ie, not using converters)",
-                beanMapper.getConfiguration().isConverterChoosable());
+        assertFalse(beanMapper.getConfiguration().isConverterChoosable(),
+                "The Core configuration assumes that a top-level call always assumes a pure mapping (ie, not using converters)"
+        );
     }
 
     @Test
-    public void isConverterChoosableSettableForCoreConfig() {
+    void isConverterChoosableSettableForCoreConfig() {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .setConverterChoosable(true)
                 .build();
-        assertTrue(
-                "The Core configuration converterChoosable is settable)",
-                beanMapper.getConfiguration().isConverterChoosable());
+        assertTrue(beanMapper.getConfiguration().isConverterChoosable(),
+                "The Core configuration converterChoosable is settable)"
+        );
     }
 
     @Test
-    public void isConverterChoosableCustomForOverrideConfig() {
+    void isConverterChoosableCustomForOverrideConfig() {
         BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrap
         beanMapper = beanMapper
                 .wrap()
                 .setConverterChoosable(false) // <<< override the converter choosable option here
                 .build(); // Override wrap
-        assertFalse(
-                "The Override configuration has a custom override for the converter choosable option, which should be false",
-                beanMapper.getConfiguration().isConverterChoosable());
+        assertFalse(beanMapper.getConfiguration().isConverterChoosable(),
+                "The Override configuration has a custom override for the converter choosable option, which should be false");
     }
 
     @Test
-    public void newConfigOnOverrideLeadsToExistingConfig() {
+    void newConfigOnOverrideLeadsToExistingConfig() {
         BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrap
         beanMapper = beanMapper.wrap().build(); // Wrap in an override wrap
         Configuration currentConfiguration = beanMapper.getConfiguration();
         beanMapper = beanMapper.wrap().build(); // <<< explicitly wrap in an override wrap
-        assertNotSame("The configuration must be a new one from the one we already had",
-                currentConfiguration, beanMapper.getConfiguration());
+        assertNotSame(
+                currentConfiguration, beanMapper.getConfiguration(), "The configuration must be a new one from the one we already had");
     }
 
     @Test
-    public void strictMappingConventionForCoreConfig() {
+    void strictMappingConventionForCoreConfig() {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .setStrictSourceSuffix("Frm")
                 .setStrictTargetSuffix("Rslt")
@@ -184,7 +200,7 @@ public class BeanMapperBuilderTest {
     }
 
     @Test
-    public void strictMappingConventionForOverrideConfig() {
+    void strictMappingConventionForOverrideConfig() {
         BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrap
         beanMapper = beanMapper.wrap()
                 .setStrictSourceSuffix("Frm")
@@ -200,19 +216,19 @@ public class BeanMapperBuilderTest {
     }
 
     @Test
-    public void cleanConfig() {
+    void cleanConfig() {
         BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrap
         beanMapper = wrapAndSetFieldsForSingleRun(beanMapper);
         beanMapper = wrapAndSetFieldsForSingleRun(beanMapper); // Wrap it twice to make sure we have a parent
-                                                               // override wrap with the fields all set
-        assertNotNull("Container class must be set", beanMapper.getConfiguration().getCollectionClass());
-        assertNotNull("Target class must be set", beanMapper.getConfiguration().getTargetClass());
-        assertNotNull("Target must be set", beanMapper.getConfiguration().getTarget());
+        // override wrap with the fields all set
+        assertNotNull(beanMapper.getConfiguration().getCollectionClass(), "Container class must be set");
+        assertNotNull(beanMapper.getConfiguration().getTargetClass(), "Target class must be set");
+        assertNotNull(beanMapper.getConfiguration().getTarget(), "Target must be set");
 
         beanMapper = beanMapper.wrap().build();
-        assertNull("Container class must be cleared", beanMapper.getConfiguration().getCollectionClass());
-        assertNull("Target class must be cleared", beanMapper.getConfiguration().getTargetClass());
-        assertNull("Target must be cleared", beanMapper.getConfiguration().getTarget());
+        assertNull(beanMapper.getConfiguration().getCollectionClass(), "Container class must be cleared");
+        assertNull(beanMapper.getConfiguration().getTargetClass(), "Target class must be cleared");
+        assertNull(beanMapper.getConfiguration().getTarget(), "Target must be cleared");
     }
 
     private BeanMapper wrapAndSetFieldsForSingleRun(BeanMapper beanMapper) {

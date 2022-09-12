@@ -1,22 +1,22 @@
 package io.beanmapper.core.inspector;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.beanmapper.core.BeanPropertyAccessType;
 import io.beanmapper.core.BeanPropertyMatchupDirection;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class BeanPropertyAccessTypeTest {
+class BeanPropertyAccessTypeTest {
 
     @Test
-    public void fieldInSourceCannotBeAccessed() {
+    void fieldInSourceCannotBeAccessed() {
         PropertyAccessor accessor = PropertyAccessors.findProperty(NoAccessToField.class, "name");
         assertEquals(BeanPropertyAccessType.NO_ACCESS, BeanPropertyMatchupDirection.SOURCE_TO_TARGET.accessType(accessor));
     }
 
     @Test
-    public void fieldInTargetCannotBeAccessed() {
+    void fieldInTargetCannotBeAccessed() {
         PropertyAccessor accessor = PropertyAccessors.findProperty(NoAccessToField.class, "name");
         assertEquals(BeanPropertyAccessType.NO_ACCESS, BeanPropertyMatchupDirection.TARGET_TO_SOURCE.accessType(accessor));
     }
@@ -26,33 +26,33 @@ public class BeanPropertyAccessTypeTest {
     }
 
     @Test
-    public void fieldInSourceAccessedByGetter() {
+    void fieldInSourceAccessedByGetter() {
         PropertyAccessor accessor = PropertyAccessors.findProperty(GetterSetterAccessToField.class, "name");
         assertEquals(BeanPropertyAccessType.GETTER, BeanPropertyMatchupDirection.SOURCE_TO_TARGET.accessType(accessor));
     }
 
     @Test
-    public void fieldInTargetAccessedBySetter() {
+    void fieldInTargetAccessedBySetter() {
         PropertyAccessor accessor = PropertyAccessors.findProperty(GetterSetterAccessToField.class, "name");
         assertEquals(BeanPropertyAccessType.SETTER, BeanPropertyMatchupDirection.TARGET_TO_SOURCE.accessType(accessor));
     }
 
-    private class GetterSetterAccessToField {
-        private String name;
-        public String getName() { return name; }
-        public void setName(String name) { this.name = name; }
-    }
-
     @Test
-    public void fieldInSourceAccessedByField() {
+    void fieldInSourceAccessedByField() {
         PropertyAccessor accessor = PropertyAccessors.findProperty(FieldAccessToField.class, "name");
         assertEquals(BeanPropertyAccessType.FIELD, BeanPropertyMatchupDirection.SOURCE_TO_TARGET.accessType(accessor));
     }
 
     @Test
-    public void fieldInTargetAccessedByField() {
+    void fieldInTargetAccessedByField() {
         PropertyAccessor accessor = PropertyAccessors.findProperty(FieldAccessToField.class, "name");
         assertEquals(BeanPropertyAccessType.FIELD, BeanPropertyMatchupDirection.TARGET_TO_SOURCE.accessType(accessor));
+    }
+
+    @Test
+    void getterInSourceAccessed() {
+        PropertyAccessor accessor = PropertyAccessors.findProperty(OnlyGetterSetterNoField.class, "name");
+        assertEquals(BeanPropertyAccessType.GETTER, BeanPropertyMatchupDirection.SOURCE_TO_TARGET.accessType(accessor));
     }
 
     private class FieldAccessToField {
@@ -60,20 +60,23 @@ public class BeanPropertyAccessTypeTest {
     }
 
     @Test
-    public void getterInSourceAccessed() {
-        PropertyAccessor accessor = PropertyAccessors.findProperty(OnlyGetterSetterNoField.class, "name");
-        assertEquals(BeanPropertyAccessType.GETTER, BeanPropertyMatchupDirection.SOURCE_TO_TARGET.accessType(accessor));
-    }
-
-    @Test
-    public void setterInTargetAccessed() {
+    void setterInTargetAccessed() {
         PropertyAccessor accessor = PropertyAccessors.findProperty(OnlyGetterSetterNoField.class, "name");
         assertEquals(BeanPropertyAccessType.SETTER, BeanPropertyMatchupDirection.TARGET_TO_SOURCE.accessType(accessor));
     }
 
+    private class GetterSetterAccessToField {
+        private String name;
+
+        public String getName() {return name;}
+
+        public void setName(String name) {this.name = name;}
+    }
+
     private class OnlyGetterSetterNoField {
-        public String getName() { return "frits"; }
-        public void setName(String name) { }
+        public String getName() {return "frits";}
+
+        public void setName(String name) {}
     }
 
 }

@@ -2,7 +2,7 @@ package io.beanmapper.testmodel.construct;
 
 import io.beanmapper.annotations.BeanConstruct;
 
-@BeanConstruct({"street", "number"})
+@BeanConstruct({ "street", "number" })
 public class NestedTargetWithConstruct {
 
     public String streetWithNumber;

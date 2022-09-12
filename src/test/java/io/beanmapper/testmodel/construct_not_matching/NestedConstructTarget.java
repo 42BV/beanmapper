@@ -9,7 +9,7 @@ public class NestedConstructTarget {
     public String country;
     private String cityCountry;
 
-    public NestedConstructTarget(String city, String country){
+    public NestedConstructTarget(String city, String country) {
         cityCountry = city + " " + country;
     }
 
