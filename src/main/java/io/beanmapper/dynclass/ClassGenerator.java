@@ -27,8 +27,12 @@ public class ClassGenerator {
     private BeanMatchStore beanMatchStore;
 
     public ClassGenerator() {
+        this(ClassPool.getDefault());
+    }
+
+    public ClassGenerator(ClassPool classPool) {
         this.beanMatchStore = new BeanMatchStore(null, null);
-        this.classPool = ClassPool.getDefault();
+        this.classPool = classPool;
     }
 
     public GeneratedClass createClass(
