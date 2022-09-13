@@ -3,7 +3,7 @@
 
     <groupId>io.beanmapper</groupId>
     <artifactId>beanmapper</artifactId>
-    <version>3.1.2</version>
+    <version>3.2.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>42 Bean Mapper</name>
     <description>Easy-to-use bean mapper for conversion from form to object to view</description>
@@ -27,7 +27,7 @@
         <url>https://github.com/42BV/beanmapper</url>
         <connection>scm:git:git@github.com:42BV/beanmapper.git</connection>
         <developerConnection>scm:git:git@github.com:42BV/beanmapper.git</developerConnection>
-        <tag>v3.1.2</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
