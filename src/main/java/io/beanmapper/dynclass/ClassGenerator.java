@@ -30,6 +30,16 @@ public class ClassGenerator {
         this(ClassPool.getDefault());
     }
 
+    /**
+     * This constructor was added specifically to mend an issue in the tests.
+     * The concurrency tests would fail due to a cached object in the {@link ClassPool},
+     * that was fundamentally incompatible with the tests. As such, this
+     * constructor was made to gain control over the instance of the ClassPool
+     * that would be used during testing. Should an issue pop up during testing,
+     * where a baseclass does not contain the fields it should, use this constructor
+     * and pass a new ClassPool.
+     * @param classPool The instance of the ClassPool
+     */
     public ClassGenerator(ClassPool classPool) {
         this.beanMatchStore = new BeanMatchStore(null, null);
         this.classPool = classPool;

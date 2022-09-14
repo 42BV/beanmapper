@@ -9,13 +9,17 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class AbstractConcurrentTest {
 
-    protected boolean run(int threads, Runnable r) throws InterruptedException {
-        ExecutorService service = Executors.newFixedThreadPool(threads);
-        for (int index = 0; index < threads; index++) {
-            service.submit(r);
+    protected void run(int threads, Runnable r) throws InterruptedException {
+        Thread[] tr = new Thread[threads];
+        for (int t = 0; t < tr.length; t++) {
+            tr[t] = new Thread(r);
         }
-        service.shutdown();
-        return service.awaitTermination(10L, TimeUnit.SECONDS);
+        for (Thread thread : tr) {
+            thread.start();
+        }
+        for (Thread thread : tr) {
+            thread.join();
+        }
     }
 
 }
