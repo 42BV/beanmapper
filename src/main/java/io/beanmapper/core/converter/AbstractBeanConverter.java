@@ -25,7 +25,7 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
     /**
      * Construct a new bean converter, dynamically resolving the source and target class. 
      */
-    public AbstractBeanConverter() {
+    protected AbstractBeanConverter() {
         Class<?>[] types = Classes.getParameteredTypes(getClass());
         this.sourceClass = types[0];
         this.targetClass = types[1];
@@ -36,7 +36,7 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
      * @param sourceClass the source class
      * @param targetClass the target class
      */
-    public AbstractBeanConverter(Class<?> sourceClass, Class<?> targetClass) {
+    protected AbstractBeanConverter(Class<?> sourceClass, Class<?> targetClass) {
         this.sourceClass = sourceClass;
         this.targetClass = targetClass;
     }

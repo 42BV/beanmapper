@@ -1440,9 +1440,9 @@ class BeanMapperTest {
 
     @Test
     void wrap_mustAlwaysWrap() {
-        assertNotSame(beanMapper.getConfiguration(), beanMapper.wrapConfig().build().getConfiguration());
-        assertNotSame(beanMapper.getConfiguration(), beanMapper.config().build().getConfiguration());
-        assertNotSame(beanMapper.getConfiguration(), beanMapper.wrap().build().getConfiguration());
+        assertNotSame(beanMapper.configuration(), beanMapper.wrapConfig().build().configuration());
+        assertNotSame(beanMapper.configuration(), beanMapper.config().build().configuration());
+        assertNotSame(beanMapper.configuration(), beanMapper.wrap().build().configuration());
     }
 
     @Test

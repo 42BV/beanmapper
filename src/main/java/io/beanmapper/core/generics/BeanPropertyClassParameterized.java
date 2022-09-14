@@ -26,9 +26,8 @@ class BeanPropertyClassParameterized extends AbstractBeanPropertyClass {
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (!(o instanceof BeanPropertyClassParameterized))
+        if (!(o instanceof BeanPropertyClassParameterized that))
             return false;
-        BeanPropertyClassParameterized that = (BeanPropertyClassParameterized) o;
         return Objects.equals(type, that.type);
     }
 

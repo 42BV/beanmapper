@@ -4,7 +4,6 @@ import io.beanmapper.BeanMapper;
 import io.beanmapper.config.Configuration;
 import io.beanmapper.core.BeanMatch;
 
-@SuppressWarnings("unchecked")
 public class MapToInstanceStrategy extends AbstractMapStrategy {
 
     public MapToInstanceStrategy(BeanMapper beanMapper, Configuration configuration) {

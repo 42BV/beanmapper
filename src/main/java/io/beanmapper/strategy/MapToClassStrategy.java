@@ -5,7 +5,6 @@ import io.beanmapper.config.Configuration;
 import io.beanmapper.core.BeanMatch;
 import io.beanmapper.core.converter.BeanConverter;
 
-@SuppressWarnings("unchecked")
 public class MapToClassStrategy extends MapToInstanceStrategy {
 
     public MapToClassStrategy(BeanMapper beanMapper, Configuration configuration) {
@@ -14,13 +13,13 @@ public class MapToClassStrategy extends MapToInstanceStrategy {
 
     @Override
     public Object map(Object source) {
-        Class targetClass = getConfiguration().getTargetClass();
+        Class<?> targetClass = getConfiguration().getTargetClass();
 
         if (getConfiguration().isConverterChoosable()) {
             Class<?> valueClass = getConfiguration().getBeanUnproxy().unproxy(source.getClass());
             BeanConverter converter = getConverterOptional(valueClass, targetClass);
             if (converter != null) {
-                logger.debug("    " + converter.getClass().getSimpleName() + "->");
+                logger.debug("    {}->", converter.getClass().getSimpleName());
                 return converter.convert(getBeanMapper(), source, targetClass, null);
             }
         }

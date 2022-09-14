@@ -26,6 +26,11 @@ public class PropertyAccessors {
     private static final String CLASS_PROPERTY = "class";
 
     /**
+     * Private constructor to hide the implicit public constructor of utility-class.
+     */
+    private PropertyAccessors() {}
+
+    /**
      * Retrieve all property accessors that relate to a bean.
      * @param beanClass the bean class
      * @return the property accessors of that bean
@@ -34,11 +39,11 @@ public class PropertyAccessors {
         Map<String, PropertyDescriptor> descriptors = findPropertyDescriptors(beanClass);
         Map<String, Field> fields = findAllFields(beanClass);
         
-        Set<String> propertyNames = new HashSet<String>();
+        Set<String> propertyNames = new HashSet<>();
         propertyNames.addAll(descriptors.keySet());
         propertyNames.addAll(fields.keySet());
 
-        List<PropertyAccessor> accessors = new ArrayList<PropertyAccessor>();
+        List<PropertyAccessor> accessors = new ArrayList<>();
         for (String propertyName : propertyNames) {
             PropertyDescriptor descriptor = descriptors.get(propertyName);
             Field field = fields.get(propertyName);
@@ -50,7 +55,7 @@ public class PropertyAccessors {
     private static Map<String, PropertyDescriptor> findPropertyDescriptors(Class<?> clazz) {
         try {
             BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
-            Map<String, PropertyDescriptor> result = new HashMap<String, PropertyDescriptor>();
+            Map<String, PropertyDescriptor> result = new HashMap<>();
             for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
                 result.put(descriptor.getName(), descriptor);
             }
@@ -71,7 +76,7 @@ public class PropertyAccessors {
     }
 
     private static Map<String, Field> findAllFields(Class<?> clazz) {
-        Map<String, Field> fields = new HashMap<String, Field>();
+        Map<String, Field> fields = new HashMap<>();
         for (Field field : clazz.getDeclaredFields()) {
             fields.put(field.getName(), field);
         }

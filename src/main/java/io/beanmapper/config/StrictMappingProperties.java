@@ -11,13 +11,13 @@ public class StrictMappingProperties {
      * The classname suffix that determines a source class is to be treated as strict
      * with regards to mapping.
      */
-    private String strictSourceSuffix = "Form";
+    private String strictSourceSuffix;
 
     /**
      * The classname suffix that determines a target class is to be treated as strict
      * with regards to mapping.
      */
-    private String strictTargetSuffix = "Result";
+    private String strictTargetSuffix;
 
     /**
      * Determines if strict mapping convention will be applied. This means that if a source
@@ -25,7 +25,7 @@ public class StrictMappingProperties {
      * the classes will be treated as if they are strict. This implies that all of their
      * properties will require matching properties on the other side.
      */
-    private Boolean applyStrictMappingConvention = true;
+    private Boolean applyStrictMappingConvention;
 
     public StrictMappingProperties(
             BeanUnproxy beanUnproxy,

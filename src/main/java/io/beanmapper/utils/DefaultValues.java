@@ -1,24 +1,27 @@
 package io.beanmapper.utils;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class DefaultValues {
 
-    private static final Map<Class<?>,Object> defaultValues = new HashMap<Class<?>,Object>()
-    {{
-            put(boolean.class, false);
-            put(byte.class, (byte) 0);
-            put(short.class, (short) 0);
-            put(int.class, 0);
-            put(long.class, 0L);
-            put(char.class, '\0');
-            put(float.class, 0.0F);
-            put(double.class, 0.0);
-    }};
+    private static final Map<Class<?>, Object> defaultValues = Map.of(
+            boolean.class, false,
+            byte.class, (byte) 0,
+            short.class, (short) 0,
+            int.class, 0,
+            char.class, '\0',
+            float.class, 0.0F,
+            double.class, 0.0
+    );
+
+    /**
+     * Private constructor to hide implicit public constructor of utility-class.
+     */
+    private DefaultValues() {
+    }
 
     @SuppressWarnings("unchecked")
-    public static<T> T defaultValueFor(Class<T> clazz) {
-        return (T)defaultValues.get(clazz);
+    public static <T> T defaultValueFor(Class<T> clazz) {
+        return (T) defaultValues.get(clazz);
     }
 }

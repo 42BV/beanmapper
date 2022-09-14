@@ -15,8 +15,8 @@ import org.junit.jupiter.api.Test;
 class ClassGeneratorTest extends AbstractConcurrentTest {
 
     @Test
-    void shouldNotFailConcurrently() throws Exception {
-        final ClassGenerator gen = new ClassGenerator(new ClassPool());
+   void shouldNotFailConcurrently() throws Exception {
+        final ClassGenerator gen = new ClassGenerator(new ClassPool(true));
         final List<Exception> results = Collections.synchronizedList(new ArrayList<>());
         final Runnable r = () -> {
             try {
@@ -26,7 +26,7 @@ class ClassGeneratorTest extends AbstractConcurrentTest {
                             Node.createTree(Collections.singletonList("name")),
                             new BeanMapperBuilder()
                                     .build()
-                                    .getConfiguration()
+                                    .configuration()
                                     .getStrictMappingProperties());
                     Thread.yield();
                 }

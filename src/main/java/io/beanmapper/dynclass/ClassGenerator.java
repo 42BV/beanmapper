@@ -23,23 +23,13 @@ import javassist.bytecode.annotation.ClassMemberValue;
 public class ClassGenerator {
 
     private final ClassPool classPool;
-    private static Integer GENERATED_CLASS_PREFIX = 0;
-    private BeanMatchStore beanMatchStore;
+    private static Integer generatedClassPrefix = 0;
+    private final BeanMatchStore beanMatchStore;
 
     public ClassGenerator() {
         this(ClassPool.getDefault());
     }
 
-    /**
-     * This constructor was added specifically to mend an issue in the tests.
-     * The concurrency tests would fail due to a cached object in the {@link ClassPool},
-     * that was fundamentally incompatible with the tests. As such, this
-     * constructor was made to gain control over the instance of the ClassPool
-     * that would be used during testing. Should an issue pop up during testing,
-     * where a baseclass does not contain the fields it should, use this constructor
-     * and pass a new ClassPool.
-     * @param classPool The instance of the ClassPool
-     */
     public ClassGenerator(ClassPool classPool) {
         this.beanMatchStore = new BeanMatchStore(null, null);
         this.classPool = classPool;
@@ -59,11 +49,11 @@ public class ClassGenerator {
             Class<?> base, Map<String, BeanProperty> baseFields,
             Node displayNodes, StrictMappingProperties strictMappingProperties) throws Exception {
         CtClass baseClass = classPool.getCtClass(base.getName());
-        CtClass dynClass = classPool.makeClass(base.getName() + "Dyn" + ++GENERATED_CLASS_PREFIX);
+        CtClass dynClass = classPool.makeClass(base.getName() + "Dyn" + ++generatedClassPrefix);
 
-        for(String key : baseFields.keySet()) {
-            if (displayNodes.getFields().contains(key)) {
-                BeanProperty beanProperty = baseFields.get(key);
+        for(Map.Entry<String, BeanProperty> entry : baseFields.entrySet()) {
+            if (displayNodes.getFields().contains(entry.getKey())) {
+                BeanProperty beanProperty = entry.getValue();
                 CtField baseField = baseClass.getField(beanProperty.getName());
 
                 // Field must be included -> copy field with related methods
@@ -81,11 +71,11 @@ public class ClassGenerator {
                     writeMethod = new CtMethod(baseWriteMethod, dynClass, null);
                 }
 
-                if(displayNodes.getNode(key).hasNodes()) {
+                if(displayNodes.getNode(entry.getKey()).hasNodes()) {
                     if(beanProperty.getCollectionInstructions() != null) {
-                        handleBeanCollection(generatedField, beanProperty.getCollectionInstructions(), displayNodes.getNode(key), strictMappingProperties);
+                        handleBeanCollection(generatedField, beanProperty.getCollectionInstructions(), displayNodes.getNode(entry.getKey()), strictMappingProperties);
                     } else {
-                        GeneratedClass nestedClass = handleNestedClass(generatedField, beanProperty.getAccessor().getType(), displayNodes.getNode(key),
+                        GeneratedClass nestedClass = handleNestedClass(generatedField, beanProperty.getAccessor().getType(), displayNodes.getNode(entry.getKey()),
                                 strictMappingProperties);
                         if(readMethod != null) readMethod = changeReadMethod(readMethod, nestedClass.ctClass);
                         if(writeMethod != null) writeMethod = changeWriteMethod(writeMethod, baseField.getType(), nestedClass.ctClass);
@@ -126,7 +116,7 @@ public class ClassGenerator {
         return new CtMethod(readMethod, readMethod.getDeclaringClass(), classMap);
     }
 
-    private CtMethod changeWriteMethod(CtMethod writeMethod, CtClass oldType, CtClass newType) throws NotFoundException, CannotCompileException {
+    private CtMethod changeWriteMethod(CtMethod writeMethod, CtClass oldType, CtClass newType) throws CannotCompileException {
         ClassMap classMap = new ClassMap();
         classMap.put(oldType, newType);
         return new CtMethod(writeMethod, writeMethod.getDeclaringClass(), classMap);

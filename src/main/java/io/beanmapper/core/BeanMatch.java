@@ -71,18 +71,18 @@ public class BeanMatch {
 
     private void validateBeanMatchValidity(Map<String, BeanProperty> nodes) {
         List<BeanProperty> missingMatches = validateMappingRequirements(nodes);
-        if (missingMatches.size() > 0) {
+        if (!missingMatches.isEmpty()) {
             throw new BeanStrictMappingRequirementsException(
                     new BeanMatchValidationMessage(beanPair, missingMatches));
         }
     }
 
     private List<BeanProperty> validateMappingRequirements(Map<String, BeanProperty> fields) {
-        List<BeanProperty> missingMatches = new ArrayList<BeanProperty>();
+        List<BeanProperty> missingMatches = new ArrayList<>();
         for (String fieldName : fields.keySet()) {
             MatchedBeanPropertyPair matchedField = findBeanPairField(fieldName);
-            BeanProperty sourceBeanProperty = matchedField.getSourceBeanProperty();
-            BeanProperty targetBeanProperty = matchedField.getTargetBeanProperty();
+            BeanProperty sourceBeanProperty = matchedField.sourceBeanProperty();
+            BeanProperty targetBeanProperty = matchedField.targetBeanProperty();
             if (    sourceBeanProperty == null || targetBeanProperty == null) {
                 missingMatches.add(sourceBeanProperty == null ?
                         targetBeanProperty :
@@ -102,10 +102,10 @@ public class BeanMatch {
     }
 
     private void checkForMandatoryUnmatchedNodes(String side, Class<?> containingClass, Map<String, BeanProperty> nodes) {
-        for (String key : nodes.keySet()) {
-            BeanProperty currentField = nodes.get(key);
+        for (Map.Entry<String, BeanProperty> entry : nodes.entrySet()) {
+            BeanProperty currentField = entry.getValue();
             if (currentField.isUnmatched()) {
-                throw new BeanNoSuchPropertyException(side + " " + containingClass.getCanonicalName() + " has no match for property " + key);
+                throw new BeanNoSuchPropertyException(side + " " + containingClass.getCanonicalName() + " has no match for property " + entry.getKey());
             }
         }
     }

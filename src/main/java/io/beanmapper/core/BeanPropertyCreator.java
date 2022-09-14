@@ -31,7 +31,7 @@ public class BeanPropertyCreator {
     private Stack<BeanProperty> copyNodes(BeanProperty precedingBeanProperty) {
         Stack<BeanProperty> beanProperties = new Stack<>();
         BeanProperty currentPrecedingBeanProperty = precedingBeanProperty;
-        Class currentBaseClass = baseClass;
+        Class<?> currentBaseClass = baseClass;
         while (currentPrecedingBeanProperty != null) {
             beanProperties.push(new BeanProperty(
                     currentPrecedingBeanProperty.getName(),

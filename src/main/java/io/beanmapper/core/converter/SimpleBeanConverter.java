@@ -16,7 +16,7 @@ public abstract class SimpleBeanConverter<S, T> extends AbstractBeanConverter<S,
      * <br>
      * <b>This constructor requires a dependency to Spring.</b>
      */
-    public SimpleBeanConverter() {
+    protected SimpleBeanConverter() {
         super();
     }
     
@@ -25,7 +25,7 @@ public abstract class SimpleBeanConverter<S, T> extends AbstractBeanConverter<S,
      * @param sourceClass the source class
      * @param targetClass the target class
      */
-    public SimpleBeanConverter(Class<?> sourceClass, Class<?> targetClass) {
+    protected SimpleBeanConverter(Class<?> sourceClass, Class<?> targetClass) {
         super(sourceClass, targetClass);
     }
     
@@ -33,7 +33,6 @@ public abstract class SimpleBeanConverter<S, T> extends AbstractBeanConverter<S,
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     protected final T doConvert(S source, Class<? extends T> targetClass) {
         return doConvert(source); // No need to provide the target class
     }
