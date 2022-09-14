@@ -1,7 +1,6 @@
 package io.beanmapper.dynclass;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.Set;
@@ -31,7 +30,7 @@ class ClassStoreTest extends AbstractConcurrentTest {
                 Collections.synchronizedList(Collections.singletonList("name")),
                 new BeanMapperBuilder()
                         .build()
-                        .getConfiguration()
+                        .configuration()
                         .getStrictMappingProperties())));
         assertEquals(1, results.size()); // A thread safe implementation should return one class.
     }

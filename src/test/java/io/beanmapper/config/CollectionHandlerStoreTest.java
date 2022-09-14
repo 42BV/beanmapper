@@ -19,7 +19,7 @@ public class CollectionHandlerStoreTest {
     public void setup() {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .build();
-        configuration = beanMapper.getConfiguration();
+        configuration = beanMapper.configuration();
     }
 
     @Test

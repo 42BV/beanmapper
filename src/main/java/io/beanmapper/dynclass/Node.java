@@ -9,7 +9,7 @@ import io.beanmapper.core.Route;
 
 public class Node {
 
-    private Map<String, Node> nodes = new TreeMap<String, Node>();
+    private final Map<String, Node> nodes = new TreeMap<>();
 
     public Node getNode(String name) {
         return nodes.get(name);
@@ -46,16 +46,16 @@ public class Node {
     }
 
     public String getKey() {
-        StringBuffer key = new StringBuffer();
+        StringBuilder key = new StringBuilder();
         boolean first = true;
-        for (String field : nodes.keySet()) {
+        for (Map.Entry<String, Node> entry : nodes.entrySet()) {
             if (!first) {
                 key.append(',');
             }
-            key.append(field);
-            Node fieldNode = nodes.get(field);
+            key.append(entry.getKey());
+            Node fieldNode = entry.getValue();
             if (fieldNode.hasNodes()) {
-                key.append("(" + fieldNode.getKey() + ")");
+                key.append("(").append(fieldNode.getKey()).append(")");
             }
             first = false;
         }

@@ -12,7 +12,7 @@ public abstract class AbstractCollectionHandler<C> implements CollectionHandler<
     private final Class<C> type;
     private final DefaultBeanInitializer beanInitializer = new DefaultBeanInitializer();
 
-    public AbstractCollectionHandler() {
+    protected AbstractCollectionHandler() {
         this.type = (Class<C>)Classes.getParameteredTypes(getClass())[0];
     }
 
@@ -20,17 +20,17 @@ public abstract class AbstractCollectionHandler<C> implements CollectionHandler<
      * Calls the clear method on the target collection
      * @param target the collection to call clear() on
      */
-    abstract protected void clear(C target);
+    protected abstract void clear(C target);
 
     /**
      * Creates a new instance of the collection class
      * @return new instance of the collection class
      */
-    abstract protected C create();
+    protected abstract C create();
 
     public Object mapItem(
             BeanMapper beanMapper,
-            Class collectionElementClass,
+            Class<?> collectionElementClass,
             Object source) {
 
         return beanMapper

@@ -14,13 +14,7 @@ import io.beanmapper.strategy.MapStrategyType;
  * source to target.
  */
 @SuppressWarnings("unchecked")
-public class BeanMapper {
-
-    private final Configuration configuration;
-
-    public BeanMapper(Configuration configuration) {
-        this.configuration = configuration;
-    }
+public record BeanMapper(Configuration configuration) {
 
     public Object map(Object source) {
         if (source == null && !configuration.getUseNullValue()) {
@@ -92,8 +86,8 @@ public class BeanMapper {
      * @param <S> the class type of the source map
      * @return the target map with literal source set keys and mapped source set values
      */
-    public <K, S, T> Map<K,T> map(Map<K,S> map, Class<T> mapValueClass) {
-        return (Map<K,T>) mapCollection(map, mapValueClass);
+    public <K, S, T> Map<K, T> map(Map<K, S> map, Class<T> mapValueClass) {
+        return (Map<K, T>) mapCollection(map, mapValueClass);
     }
 
     private Object mapCollection(Object collection, Class<?> elementInCollection) {
@@ -104,14 +98,11 @@ public class BeanMapper {
                 .map(collection);
     }
 
-    public final Configuration getConfiguration() {
-        return configuration;
-    }
-
     /**
      * @deprecated use wrap() instead
      * @return BeanMapperBuilder
      */
+    @Deprecated(forRemoval = true)
     public BeanMapperBuilder config() {
         return wrap();
     }
@@ -120,6 +111,7 @@ public class BeanMapper {
      * @deprecated use wrap() instead
      * @return BeanMapperBuilder
      */
+    @Deprecated(forRemoval = true)
     public BeanMapperBuilder wrapConfig() {
         return wrap();
     }

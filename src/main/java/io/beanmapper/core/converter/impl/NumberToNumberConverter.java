@@ -18,7 +18,7 @@ import io.beanmapper.core.converter.BeanConverter;
  */
 public class NumberToNumberConverter implements BeanConverter {
     
-    private static final Set<Class<?>> PRIMITIVES = new HashSet<Class<?>>();
+    private static final Set<Class<?>> PRIMITIVES = new HashSet<>();
     
     static {
         PRIMITIVES.add(byte.class);

@@ -51,12 +51,12 @@ public class CoreConfiguration implements Configuration {
     /**
      * The list of packages (and subpackages) containing classes which are eligible for mapping.
      */
-    private List<String> packagePrefixes = new ArrayList<String>();
+    private List<String> packagePrefixes = new ArrayList<>();
 
     /**
      * The list of converters that should be checked for conversions.
      */
-    private List<BeanConverter> beanConverters = new ArrayList<BeanConverter>();
+    private List<BeanConverter> beanConverters = new ArrayList<>();
 
     /**
      * The list of LogicSecuredCheck instances that verify whether access to a property is allowed.
@@ -66,7 +66,7 @@ public class CoreConfiguration implements Configuration {
     /**
      * The list of converters that should be checked for conversions.
      */
-    private List<BeanPair> beanPairs = new ArrayList<BeanPair>();
+    private List<BeanPair> beanPairs = new ArrayList<>();
 
     /**
      * The value that decides whether a converter may be chosen, or direct mapping has to take place
@@ -180,7 +180,7 @@ public class CoreConfiguration implements Configuration {
 
     @Override
     public Boolean isConverterChoosable() {
-        return converterChoosable == null ? false : converterChoosable;
+        return converterChoosable != null && converterChoosable;
     }
 
     @Override

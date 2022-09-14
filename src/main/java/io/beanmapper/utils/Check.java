@@ -10,6 +10,11 @@ package io.beanmapper.utils;
  * @since Jun 24, 2015
  */
 public class Check {
+
+    /**
+     * Private constructor to hide implicit public constructor of utility-class.
+     */
+    private Check() {}
     
     public static void argument(boolean condition, String message) {
         if (!condition) {

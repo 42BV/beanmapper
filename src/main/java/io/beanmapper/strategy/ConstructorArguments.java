@@ -9,8 +9,8 @@ import io.beanmapper.exceptions.BeanInstantiationException;
 
 public class ConstructorArguments {
 
-    private List<Class> types = new ArrayList<Class>();
-    private List<Object> values = new ArrayList<Object>();
+    private List<Class<?>> types = new ArrayList<>();
+    private List<Object> values = new ArrayList<>();
 
     public ConstructorArguments(Object source, BeanMatch beanMatch, String[] constructorArgs){
 
@@ -32,11 +32,11 @@ public class ConstructorArguments {
         return beanMatch.getSourceNodes().containsKey(constructorArg) || beanMatch.getAliases().containsKey(constructorArg);
     }
 
-    public Class[] getTypes() {
-        return types.toArray(new Class[types.size()]);
+    public Class<?>[] getTypes() {
+        return types.toArray(new Class<?>[0]);
     }
 
     public Object[] getValues() {
-        return values.toArray(new Object[values.size()]);
+        return values.toArray(new Object[0]);
     }
 }

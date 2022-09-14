@@ -38,9 +38,11 @@ public class BeanMatchValidationMessage {
     }
 
     public Class<?> getStrictClass() {
-        return beanPair.isSourceStrict() ?
-                getSourceClass() :
-                beanPair.isTargetStrict() ? getTargetClass() : null;
+        if (beanPair.isSourceStrict())
+            return getSourceClass();
+        else if (beanPair.isTargetStrict())
+            return getTargetClass();
+        return null;
     }
 
     public boolean isLogged() {

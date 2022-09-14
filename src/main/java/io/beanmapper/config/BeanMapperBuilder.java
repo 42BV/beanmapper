@@ -26,15 +26,15 @@ import io.beanmapper.core.unproxy.BeanUnproxy;
 public class BeanMapperBuilder {
 
     private static final List<CollectionHandler> DEFAULT_COLLECTION_HANDLERS =
-            new ArrayList<CollectionHandler>() {{
-        add(new MapCollectionHandler());
-        add(new SetCollectionHandler());
-        add(new ListCollectionHandler());
-    }};
+            List.of(
+                new MapCollectionHandler(),
+                new SetCollectionHandler(),
+                new ListCollectionHandler()
+            );
 
     private final Configuration configuration;
 
-    private List<BeanConverter> customBeanConverters = new ArrayList<BeanConverter>();
+    private List<BeanConverter> customBeanConverters = new ArrayList<>();
 
     private List<CollectionHandler> customCollectionHandlers = new ArrayList<>();
 

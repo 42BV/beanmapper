@@ -24,7 +24,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
     private final BeanMapper beanMapper;
     private final Configuration configuration;
 
-    public AbstractMapStrategy(BeanMapper beanMapper, Configuration configuration) {
+    protected AbstractMapStrategy(BeanMapper beanMapper, Configuration configuration) {
         this.beanMapper = beanMapper;
         this.configuration = configuration;
     }
@@ -75,7 +75,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
 
         final Object convertedValue;
         if (beanPropertyMatch.sourceHasAnnotation(BeanParent.class) || beanPropertyMatch.targetHasAnnotation(BeanParent.class)) {
-            convertedValue = beanMapper.getConfiguration().getParent();
+            convertedValue = beanMapper.configuration().getParent();
         } else {
             convertedValue = convert(copyableSource, beanPropertyMatch.getTargetClass(), beanPropertyMatch);
         }
@@ -93,14 +93,14 @@ public abstract class AbstractMapStrategy implements MapStrategy {
         Object target;
         if (encapsulatedSource != null) {
             logger.debug("    {");
-            BeanMapper beanMapper = getBeanMapper()
+            BeanMapper localBeanMapper = getBeanMapper()
                     .wrap()
                     .setParent(beanPropertyMatch.getTarget())
                     .build();
             if(beanPropertyMatch.getTargetObject() == null){
-                target = beanMapper.map(encapsulatedSource, beanPropertyMatch.getTargetClass());
+                target = localBeanMapper.map(encapsulatedSource, beanPropertyMatch.getTargetClass());
             } else {
-                target = beanMapper.map(encapsulatedSource, beanPropertyMatch.getTargetObject());
+                target = localBeanMapper.map(encapsulatedSource, beanPropertyMatch.getTargetObject());
             }
             beanPropertyMatch.writeObject(target);
             logger.debug("    }");
@@ -114,7 +114,6 @@ public abstract class AbstractMapStrategy implements MapStrategy {
      * @param beanPropertyMatch contains the fields belonging to the source/target field match
      * @return the converted value
      */
-    @SuppressWarnings("unchecked")
     public Object convert(Object value, Class<?> targetClass, BeanPropertyMatch beanPropertyMatch) {
 
         Class<?> valueClass = getConfiguration().getBeanUnproxy().unproxy(beanPropertyMatch.getSourceClass());
@@ -126,7 +125,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
         }
 
         if (converter != null) {
-            logger.debug(INDENT + converter.getClass().getSimpleName() + ARROW);
+            logger.debug("{}{}{}", INDENT, converter.getClass().getSimpleName(), ARROW);
             BeanMapper wrappedBeanMapper = beanMapper
                     .wrap()
                     .setParent(beanPropertyMatch.getTarget())
@@ -194,9 +193,9 @@ public abstract class AbstractMapStrategy implements MapStrategy {
             return;
         }
         if (beanPropertyMatch.isMappable()) {
-            logger.debug(beanPropertyMatch.sourceToString() + ARROW);
+            logger.debug("{}{}", beanPropertyMatch.sourceToString(), ARROW);
             copySourceToTarget(beanPropertyMatch);
-            logger.debug(INDENT + beanPropertyMatch.targetToString());
+            logger.debug("{}{}", INDENT, beanPropertyMatch.targetToString());
         }
     }
 

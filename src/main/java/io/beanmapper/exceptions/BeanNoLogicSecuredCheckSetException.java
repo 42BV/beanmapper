@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 public class BeanNoLogicSecuredCheckSetException extends IllegalArgumentException {
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     public BeanNoLogicSecuredCheckSetException(String message) {
         super(message);

@@ -56,8 +56,8 @@ public class DirectedBeanProperty {
         if (type == null) {
             return null;
         }
-        if (type instanceof ParameterizedType) {
-            return new BeanPropertyClassParameterized((ParameterizedType) type);
+        if (type instanceof ParameterizedType parameterizedType) {
+            return new BeanPropertyClassParameterized(parameterizedType);
         } else {
             return new BeanPropertyClassNormal(type);
         }

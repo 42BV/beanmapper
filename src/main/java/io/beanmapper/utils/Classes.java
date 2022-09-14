@@ -13,6 +13,11 @@ import java.lang.reflect.Type;
  * @since Jun 24, 2015
  */
 public class Classes {
+
+    /**
+     * Private constructor to hide implicit public constructor of utility-class.
+     */
+    private Classes() {}
     
     /**
      * Retrieve the class by name.
@@ -29,9 +34,9 @@ public class Classes {
     }
 
     /**
-     * Retrieve the parametered types of a class.
+     * Retrieve the parameterized types of a class.
      * @param clazz the class to check for
-     * @return the parametered types
+     * @return the parameterized types
      */
     public static Class<?>[] getParameteredTypes(Class<?> clazz) {
         ParameterizedType superClass = (ParameterizedType) clazz.getGenericSuperclass();

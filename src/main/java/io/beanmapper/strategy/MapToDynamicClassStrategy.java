@@ -23,9 +23,9 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
             getConfiguration().setCollectionClass(source.getClass());
         }
 
-        if (downsizeSourceFields != null && downsizeSourceFields.size() > 0) {
+        if (downsizeSourceFields != null && !downsizeSourceFields.isEmpty()) {
             return downsizeSource(source, downsizeSourceFields);
-        } else if (downsizeTargetFields != null && downsizeTargetFields.size() > 0) {
+        } else if (downsizeTargetFields != null && !downsizeTargetFields.isEmpty()) {
             return downsizeTarget(source, downsizeTargetFields);
         } else {
             // Force re-entry through the core map method, but disregard the include fields now
@@ -39,7 +39,7 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
     }
 
     public Object downsizeSource(Object source, List<String> downsizeSourceFields) {
-        final Class dynamicClass = getConfiguration()
+        final Class<?> dynamicClass = getConfiguration()
                 .getClassStore()
                 .getOrCreateGeneratedClass(
                         source.getClass(),
@@ -66,11 +66,11 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
     }
 
     public Object downsizeTarget(Object source, List<String> downsizeTargetFields) {
-        final Class dynamicClass = getConfiguration().getClassStore().getOrCreateGeneratedClass(
+        final Class<?> dynamicClass = getConfiguration().getClassStore().getOrCreateGeneratedClass(
                         getConfiguration().determineTargetClass(),
                         downsizeTargetFields,
                         getConfiguration().getStrictMappingProperties());
-        Class collectionClass = getBeanMapper().getConfiguration().getCollectionClass();
+        Class<?> collectionClass = getBeanMapper().configuration().getCollectionClass();
         return getBeanMapper()
                 .wrap()
                 .downsizeTarget(null)

@@ -25,9 +25,8 @@ class BeanPropertyClassNormal extends AbstractBeanPropertyClass {
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (!(o instanceof BeanPropertyClassNormal))
+        if (!(o instanceof BeanPropertyClassNormal that))
             return false;
-        BeanPropertyClassNormal that = (BeanPropertyClassNormal) o;
         return Objects.equals(type, that.type);
     }
 

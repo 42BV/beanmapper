@@ -2,7 +2,7 @@ package io.beanmapper.core.converter.collections;
 
 public class CollectionElementType {
 
-    public final static CollectionElementType EMPTY_COLLECTION_ELEMENT_TYPE =
+    public static final CollectionElementType EMPTY_COLLECTION_ELEMENT_TYPE =
             new CollectionElementType(null, true);
 
     private final AnnotationClass collectionElementType;

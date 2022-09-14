@@ -35,7 +35,7 @@ public class BeanMatchStore {
 
     private final BeanUnproxy beanUnproxy;
 
-    private Map<String, Map<String, BeanMatch>> store = new TreeMap<String, Map<String, BeanMatch>>();
+    private final Map<String, Map<String, BeanMatch>> store = new TreeMap<>();
 
     public BeanMatchStore(CollectionHandlerStore collectionHandlerStore, BeanUnproxy beanUnproxy) {
         this.collectionHandlerStore = collectionHandlerStore;
@@ -43,7 +43,7 @@ public class BeanMatchStore {
     }
 
     public void validateStrictBeanPairs(List<BeanPair> beanPairs) {
-        List<BeanMatchValidationMessage> validationMessages = new ArrayList<BeanMatchValidationMessage>();
+        List<BeanMatchValidationMessage> validationMessages = new ArrayList<>();
         for (BeanPair beanPair : beanPairs) {
             try {
                 getBeanMatch(beanPair);
@@ -52,7 +52,7 @@ public class BeanMatchStore {
             }
         }
 
-        if (validationMessages.size() > 0) {
+        if (!validationMessages.isEmpty()) {
             throw new BeanStrictMappingRequirementsException(validationMessages);
         }
     }
@@ -72,7 +72,7 @@ public class BeanMatchStore {
     public BeanMatch addBeanMatch(BeanMatch beanMatch) {
         Map<String, BeanMatch> targetsForSource = getTargetsForSource(beanMatch.getSourceClass());
         if (targetsForSource == null) {
-            targetsForSource = new TreeMap<String, BeanMatch>();
+            targetsForSource = new TreeMap<>();
             store.put(beanMatch.getSourceClass().getCanonicalName(), targetsForSource);
         }
         storeTarget(targetsForSource, beanMatch.getTargetClass(), beanMatch);
@@ -97,7 +97,7 @@ public class BeanMatchStore {
 
     private BeanMatch determineBeanMatch(BeanPair beanPair,
                                          Map<String, BeanProperty> sourceNode, Map<String, BeanProperty> targetNode, Map<String, BeanProperty> aliases) {
-        BeanMatch beanMatch = new BeanMatch(
+        return new BeanMatch(
                 beanPair,
                 getAllFields(
                         sourceNode,
@@ -116,7 +116,6 @@ public class BeanMatchStore {
                         null,
                         BeanPropertyMatchupDirection.TARGET_TO_SOURCE),
                 aliases);
-        return beanMatch;
     }
 
     private Map<String, BeanProperty> getAllFields(Map<String, BeanProperty> ourNodes, Map<String, BeanProperty> otherNodes, Map<String, BeanProperty> aliases, Class<?> ourType, Class<?> otherType, BeanProperty precedingBeanProperty, BeanPropertyMatchupDirection matchupDirection) {
