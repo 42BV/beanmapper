@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BeanNoSuchPropertyException extends IllegalArgumentException {
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     public BeanNoSuchPropertyException(String message) {
         super(message);

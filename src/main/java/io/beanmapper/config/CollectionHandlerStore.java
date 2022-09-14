@@ -8,7 +8,7 @@ import io.beanmapper.core.unproxy.BeanUnproxy;
 
 public class CollectionHandlerStore {
 
-    private List<CollectionHandler> collectionHandlers = new ArrayList<CollectionHandler>();
+    private List<CollectionHandler> collectionHandlers = new ArrayList<>();
 
     public List<CollectionHandler> getCollectionHandlers() {
         return collectionHandlers;

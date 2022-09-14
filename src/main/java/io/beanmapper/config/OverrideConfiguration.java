@@ -19,9 +19,9 @@ public class OverrideConfiguration implements Configuration {
 
     private OverrideField<BeanInitializer> beanInitializer;
 
-    private List<BeanConverter> beanConverters = new ArrayList<BeanConverter>();
+    private List<BeanConverter> beanConverters = new ArrayList<>();
     
-    private List<BeanPair> beanPairs = new ArrayList<BeanPair>();
+    private List<BeanPair> beanPairs = new ArrayList<>();
 
     private OverrideField<List<String>> downsizeSourceFields;
 
@@ -133,7 +133,7 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public List<BeanConverter> getBeanConverters() {
-        List<BeanConverter> converters = new ArrayList<BeanConverter>();
+        List<BeanConverter> converters = new ArrayList<>();
         converters.addAll(parentConfiguration.getBeanConverters());
         converters.addAll(beanConverters);
         return converters;
@@ -151,7 +151,7 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public List<BeanPair> getBeanPairs() {
-        List<BeanPair> beanPairs = new ArrayList<BeanPair>();
+        List<BeanPair> beanPairs = new ArrayList<>();
         beanPairs.addAll(parentConfiguration.getBeanPairs());
         beanPairs.addAll(this.beanPairs);
         return beanPairs;

@@ -36,7 +36,7 @@ public class AnyToEnumConverter extends AbstractBeanConverter<Object, Enum<?>> {
     /**
      * Retrieve the enumeration from a specific type and name.
      * <br>
-     * <b>This is placed in a seperate method to due to the {@code Enum<T>} generic restriction.</b>
+     * <b>This is placed in a separate method to due to the {@code Enum<T>} generic restriction.</b>
      * @param enumClass the enumeration type
      * @param name the name of the enumeration constant
      * @return the enumeration, if any

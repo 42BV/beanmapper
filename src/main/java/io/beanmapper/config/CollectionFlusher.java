@@ -5,7 +5,7 @@ import java.util.List;
 
 public class CollectionFlusher {
 
-    private List<AfterClearFlusher> afterClearFlushers = new ArrayList<AfterClearFlusher>();
+    private List<AfterClearFlusher> afterClearFlushers = new ArrayList<>();
 
     public List<AfterClearFlusher> getAfterClearFlushers() {
         return this.afterClearFlushers;
@@ -15,7 +15,7 @@ public class CollectionFlusher {
         this.afterClearFlushers.add(afterClearFlusher);
     }
 
-    public void flush(Boolean flushAfterClear) {
+    public void flush(boolean flushAfterClear) {
         if (!flushAfterClear) {
             return;
         }

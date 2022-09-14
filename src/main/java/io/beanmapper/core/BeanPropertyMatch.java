@@ -18,25 +18,25 @@ public class BeanPropertyMatch {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private BeanMatch beanMatch;
-    private Object source;
-    private Object target;
-    private BeanProperty sourceBeanProperty;
-    private BeanProperty targetBeanProperty;
-    private String targetFieldName;
-    private BeanCollectionInstructions beanCollectionInstructions;
+    private final BeanMatch beanMatch;
+    private final Object source;
+    private final Object target;
+    private final BeanProperty sourceBeanProperty;
+    private final BeanProperty targetBeanProperty;
+    private final String targetFieldName;
+    private final BeanCollectionInstructions beanCollectionInstructions;
 
     public BeanPropertyMatch(Object source, Object target,
             MatchedBeanPropertyPair matchedBeanPropertyPair, String targetFieldName, BeanMatch beanMatch) {
         this.source = source;
         this.target = target;
-        this.sourceBeanProperty = matchedBeanPropertyPair.getSourceBeanProperty();
-        this.targetBeanProperty = matchedBeanPropertyPair.getTargetBeanProperty();
+        this.sourceBeanProperty = matchedBeanPropertyPair.sourceBeanProperty();
+        this.targetBeanProperty = matchedBeanPropertyPair.targetBeanProperty();
         this.targetFieldName = targetFieldName;
         this.beanMatch = beanMatch;
         this.beanCollectionInstructions = BeanCollectionInstructions.merge(
-                matchedBeanPropertyPair.getSourceBeanProperty(),
-                matchedBeanPropertyPair.getTargetBeanProperty());
+                matchedBeanPropertyPair.sourceBeanProperty(),
+                matchedBeanPropertyPair.targetBeanProperty());
     }
 
     public boolean hasAccess(
@@ -65,7 +65,7 @@ public class BeanPropertyMatch {
 
     private boolean checkForLogicSecured(
             Map<Class<? extends LogicSecuredCheck>, LogicSecuredCheck> logicSecuredChecks,
-            BeanProperty beanProperty, Object source, Object target, Boolean enforcedSecuredProperties) {
+            BeanProperty beanProperty, Object source, Object target, boolean enforcedSecuredProperties) {
 
         Class<? extends LogicSecuredCheck> logicSecuredCheckClass = beanProperty.getLogicSecuredCheck();
         if (logicSecuredCheckClass == null) {
@@ -87,7 +87,7 @@ public class BeanPropertyMatch {
         return logicSecuredCheck.isAllowed(source, target);
     }
 
-    private void checkIfSecuredFieldHandlerNotSet(BeanProperty beanProperty, Boolean enforcedSecuredProperties) {
+    private void checkIfSecuredFieldHandlerNotSet(BeanProperty beanProperty, boolean enforcedSecuredProperties) {
         if (beanProperty.getRequiredRoles().length > 0) {
             String message =
                     "Property '" +

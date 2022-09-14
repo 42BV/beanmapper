@@ -7,8 +7,11 @@ public enum BeanPropertyMatchupDirection {
     SOURCE_TO_TARGET {
         @Override
         public BeanPropertyAccessType accessType(PropertyAccessor accessor) {
-            return !accessor.isReadable() ? BeanPropertyAccessType.NO_ACCESS :
-                    accessor.getReadMethod() == null ? BeanPropertyAccessType.FIELD : BeanPropertyAccessType.GETTER;
+            if (!accessor.isReadable())
+                return BeanPropertyAccessType.NO_ACCESS;
+            else if (accessor.getReadMethod() == null)
+                return BeanPropertyAccessType.FIELD;
+            return BeanPropertyAccessType.GETTER;
         }
 
         @Override
@@ -19,8 +22,11 @@ public enum BeanPropertyMatchupDirection {
     TARGET_TO_SOURCE {
         @Override
         public BeanPropertyAccessType accessType(PropertyAccessor accessor) {
-            return !accessor.isWritable() ? BeanPropertyAccessType.NO_ACCESS :
-                    accessor.getWriteMethod() == null ? BeanPropertyAccessType.FIELD : BeanPropertyAccessType.SETTER;
+            if (!accessor.isWritable())
+                return BeanPropertyAccessType.NO_ACCESS;
+            else if (accessor.getWriteMethod() == null)
+                return BeanPropertyAccessType.FIELD;
+            return BeanPropertyAccessType.SETTER;
         }
 
         @Override

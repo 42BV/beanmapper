@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 public class BeanStrictMappingRequirementsException extends RuntimeException {
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private final List<BeanMatchValidationMessage> validationMessages;
 
@@ -26,22 +26,19 @@ public class BeanStrictMappingRequirementsException extends RuntimeException {
             if (validationMessage.isLogged()) {
                 continue;
             }
-            logger.error(
-                    "Missing matching properties for source [" +
-                    validationMessage.getSourceClass().getCanonicalName() +
-                    "]" +
-                    (validationMessage.isSourceStrict() ? "*" : "") +
-                    " > target [" +
-                    validationMessage.getTargetClass().getCanonicalName() +
-                    "]" +
-                    (validationMessage.isTargetStrict() ? "*" : "") +
-                    " for fields:"
-            );
+            logger.error("""
+                    Missing matching properties for source [{}] {} > target [{}] {} for fields:
+                    """,
+                    validationMessage.getSourceClass().getCanonicalName(),
+                    (validationMessage.isSourceStrict() ? "*" : ""),
+                    validationMessage.getTargetClass().getCanonicalName(),
+                    (validationMessage.isTargetStrict() ? "*" : ""));
+
             for (BeanProperty field : validationMessage.getFields()) {
-                logger.error(
-                        "> " +
-                        validationMessage.getStrictClass().getSimpleName() +
-                        "." +
+                logger.error("""
+                        > {}.{}
+                        """,
+                        validationMessage.getStrictClass().getSimpleName(),
                         field.getAccessor().getName());
             }
             validationMessage.setLogged();

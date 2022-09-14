@@ -17,7 +17,7 @@ public class SkippingBeanUnproxy implements BeanUnproxy {
     /**
      * The classes to skip when unproxying.
      */
-    private final Set<Class<?>> proxyClassesToSkip = new HashSet<Class<?>>();
+    private final Set<Class<?>> proxyClassesToSkip = new HashSet<>();
 
     private BeanUnproxy delegate;
 

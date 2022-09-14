@@ -24,7 +24,7 @@ public class OverrideConfigurationTest {
     void setup() {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .build();
-        coreConfiguration = (CoreConfiguration) beanMapper.getConfiguration();
+        coreConfiguration = (CoreConfiguration) beanMapper.configuration();
         overrideConfiguration = new OverrideConfiguration(coreConfiguration);
     }
 
