@@ -35,7 +35,7 @@ class ClassGeneratorTest extends AbstractConcurrentTest {
             }
         };
 
-        assertTrue(run(8, r));
+        run(8, r);
 
         assertTrue(results.isEmpty(), "%d".formatted(results.size())); // Class generation should produce zero exceptions.
     }
