@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -153,6 +154,8 @@ import io.beanmapper.testmodel.numbers.ClassWithInteger;
 import io.beanmapper.testmodel.numbers.ClassWithLong;
 import io.beanmapper.testmodel.numbers.SourceWithDouble;
 import io.beanmapper.testmodel.numbers.TargetWithDouble;
+import io.beanmapper.testmodel.optional_getter.MyEntity;
+import io.beanmapper.testmodel.optional_getter.MyEntityResult;
 import io.beanmapper.testmodel.othername.SourceWithOtherName;
 import io.beanmapper.testmodel.othername.TargetWithOtherName;
 import io.beanmapper.testmodel.parent.Player;
@@ -1678,6 +1681,69 @@ class BeanMapperTest {
         assertEquals(CountryEnum.NL.getCode(), target.country.code);
         assertEquals(CountryEnum.NL.getDisplayName(), target.country.displayName);
         assertEquals(CountryEnum.NL.getImage(), target.country.image);
+    }
+
+    @Test
+    void testMapClassWithGetterReturningOptionalOfFieldWithStrictMapping() {
+        BeanMapper mapper = new BeanMapperBuilder()
+                .addPackagePrefix("nl")
+                .setApplyStrictMappingConvention(true)
+                .build();
+        MyEntity myEntity = createMyEntity();
+        MyEntityResult result = mapper.map(myEntity, MyEntityResult.class);
+        assertEquals(myEntity.value, result.value);
+        assertEquals(myEntity.child.value, result.child.value);
+    }
+
+    @Test
+    void testMapClassWithGetterReturningOptionalOfFieldWithNonStrictMapping() {
+        BeanMapper mapper = new BeanMapperBuilder()
+                .addPackagePrefix("nl")
+                .setApplyStrictMappingConvention(false)
+                .build();
+        MyEntity myEntity = createMyEntity();
+        MyEntityResult result = mapper.map(myEntity, MyEntityResult.class);
+        assertEquals(myEntity.value, result.value);
+        assertEquals(myEntity.child.value, result.child.value);
+    }
+
+    @Test
+    void testMapClassWithGetterReturningOptionalOfFieldWhereFieldIsNull() {
+        BeanMapper mapper = new BeanMapperBuilder()
+                .addPackagePrefix("nl")
+                .setApplyStrictMappingConvention(false)
+                .build();
+        MyEntity myEntity = createMyEntity();
+        myEntity.child = null;
+        MyEntityResult result = mapper.map(myEntity, MyEntityResult.class);
+        assertEquals("Henk", result.value);
+        assertNull(result.child);
+    }
+
+    @Test
+    void mapToOptional() {
+        Optional<Person> person = Optional.of(createPerson());
+        PersonView personView = beanMapper.map(person, PersonView.class).get();
+        assertEquals("Henk", personView.name);
+        assertEquals("Zoetermeer", personView.place);
+    }
+
+    @Test
+    void mapToOptionalEmpty() {
+        Optional<Person> person = Optional.empty();
+        Optional<PersonView> personView = beanMapper.map(person, PersonView.class);
+        assertFalse(personView.isPresent());
+    }
+
+    private MyEntity createMyEntity() {
+        MyEntity child = new MyEntity();
+        child.value = "Piet";
+
+        MyEntity entity = new MyEntity();
+        entity.child = child;
+        entity.value = "Henk";
+
+        return entity;
     }
 
     public Person createPerson(String name) {

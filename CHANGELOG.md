@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Issue [#121](https://github.com/42BV/beanmapper/issues/121) **Mapping an Enum field to an Enum field of the same type fails when a custom toString method is 
   present.**; When an Enum with a custom toString-method was mapped to an Enum, the mapping would fail. Fixed by adding an instanceof check in the 
   AnyToEnumConverter, making it use Enum#name() to get the name of an Enum, rather than toString.
+- Issue [#137](https://github.com/42BV/beanmapper/issues/137) **https://github.com/42BV/beanmapper/issues/137**; Mapping a class with a getter that returns an 
+  Optional, would fail, as an Optional can typically not be mapped to the target class. Fixed implementing an OptionalToObjectConverter, which handles unpacking
+  an Optional, and additionally delegates further conversion back to the BeanMapper.
 
 
 ## [3.2.0] - 2022-09-15

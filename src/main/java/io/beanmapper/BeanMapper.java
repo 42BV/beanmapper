@@ -2,6 +2,7 @@ package io.beanmapper;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import io.beanmapper.config.BeanMapperBuilder;
@@ -36,6 +37,18 @@ public record BeanMapper(Configuration configuration) {
                 .setTarget(target)
                 .build()
                 .map(source);
+    }
+
+    /**
+     * Copies the values from the optional source object to a newly constructed target instance
+     * @param source optional source instance of the properties
+     * @param targetClass class of the target, needs to be constructed as the target instance
+     * @param <S> the instance from which the properties get copied
+     * @param <T> the instance to which the properties get copied
+     * @return the optional target instance containing all applicable properties
+     */
+    public <S, T> Optional<T> map(Optional<S> source, Class<T> targetClass) {
+        return source.map(value -> this.map(value, targetClass));
     }
 
     /**
