@@ -22,7 +22,7 @@ public class AnyToEnumConverter extends AbstractBeanConverter<Object, Enum<?>> {
         if (source == null) {
             return null;
         }
-        String sourceText = source.toString();
+        String sourceText = source instanceof Enum<?> enumerable ? enumerable.name() : source.toString();
         if (isNotEmpty(sourceText)) {
             return valueOf(targetClass, sourceText);
         }

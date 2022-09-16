@@ -117,11 +117,16 @@ import io.beanmapper.testmodel.encapsulate.source_annotated.Driver;
 import io.beanmapper.testmodel.enums.ColorEntity;
 import io.beanmapper.testmodel.enums.ColorResult;
 import io.beanmapper.testmodel.enums.ColorStringResult;
+import io.beanmapper.testmodel.enums.Day;
+import io.beanmapper.testmodel.enums.DayEnumSourceArraysAsList;
 import io.beanmapper.testmodel.enums.EnumSourceArraysAsList;
 import io.beanmapper.testmodel.enums.EnumTargetList;
 import io.beanmapper.testmodel.enums.RGB;
 import io.beanmapper.testmodel.enums.UserRole;
 import io.beanmapper.testmodel.enums.UserRoleResult;
+import io.beanmapper.testmodel.enums.WeekEntity;
+import io.beanmapper.testmodel.enums.WeekResult;
+import io.beanmapper.testmodel.enums.WeekStringResult;
 import io.beanmapper.testmodel.ignore.IgnoreSource;
 import io.beanmapper.testmodel.ignore.IgnoreTarget;
 import io.beanmapper.testmodel.initially_unmatched_source.SourceWithUnmatchedField;
@@ -221,6 +226,14 @@ class BeanMapperTest {
     }
 
     @Test
+    void mapEnumWithOveriddenToString() {
+        WeekEntity weekEntity = new WeekEntity();
+        weekEntity.setCurrentDay(Day.FRIDAY);
+        WeekResult weekResult = beanMapper.map(weekEntity, WeekResult.class);
+        assertEquals(Day.FRIDAY, weekResult.currentDay);
+    }
+
+    @Test
     void mapEnumWithExistingTarget() throws BeanMappingException {
         ColorEntity source = new ColorEntity();
         source.setCurrentColor(RGB.BLUE);
@@ -233,11 +246,31 @@ class BeanMapperTest {
     }
 
     @Test
+    void mapEnumWithExistingTargetAndOverriddenToString() {
+        WeekEntity weekEntity = new WeekEntity();
+        weekEntity.setCurrentDay(Day.FRIDAY);
+
+        WeekResult weekResult = new WeekResult();
+        weekResult.currentDay = Day.THURSDAY;
+
+        beanMapper.map(weekEntity, weekResult);
+        assertEquals(Day.FRIDAY, weekResult.currentDay);
+    }
+
+    @Test
     void mapEnumToString() throws BeanMappingException {
         ColorEntity colorEntity = new ColorEntity();
         colorEntity.setCurrentColor(RGB.GREEN);
         ColorStringResult colorStringResult = beanMapper.map(colorEntity, ColorStringResult.class);
         assertEquals("GREEN", colorStringResult.currentColor);
+    }
+
+    @Test
+    void mapDayEnumToString() {
+        WeekEntity weekEntity = new WeekEntity();
+        weekEntity.setCurrentDay(Day.FRIDAY);
+        WeekStringResult weekStringResult = beanMapper.map(weekEntity, WeekStringResult.class);
+        assertEquals("Friday", weekStringResult.currentDay);
     }
 
     @Test
@@ -440,6 +473,16 @@ class BeanMapperTest {
         EnumTargetList target = beanMapper.map(source, EnumTargetList.class);
         assertEquals(RGB.values().length, target.items.size());
         assertEquals("RED", target.items.get(0));
+    }
+
+    @Test
+    void mapDayToNestedCollectionArraysAsList() {
+        DayEnumSourceArraysAsList source = new DayEnumSourceArraysAsList();
+        EnumTargetList target = beanMapper.map(source, EnumTargetList.class);
+        assertEquals(Day.values().length, target.items.size());
+        for (var i = 0; i < target.items.size(); i++) {
+            assertEquals(Day.values()[i].toString(), target.items.get(i));
+        }
     }
 
     @Test
