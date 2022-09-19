@@ -7,14 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+
+## [3.2.0] - 2022-09-15
+
 ### Changed
 
 - Upgraded JUnit 4 to JUnit 5
 - Replaced travis build with Github actions workflow
 - Upgraded jackson-databind dependency which had an owasp error
 - Upgraded to Java 17, from Java 8
-- Upgraded JUnit
-- Upgraded
 
 ### Fixed
 
