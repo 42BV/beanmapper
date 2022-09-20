@@ -15,9 +15,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Issue [#137](https://github.com/42BV/beanmapper/issues/137) **https://github.com/42BV/beanmapper/issues/137**; Mapping a class with a getter that returns an 
   Optional, would fail, as an Optional can typically not be mapped to the target class. Fixed implementing an OptionalToObjectConverter, which handles unpacking
   an Optional, and additionally delegates further conversion back to the BeanMapper.
+- DynamicClassGeneratorHelper was removed, due to returning null, and replaced with passing the baseclass for a generated class immediately to the constructor 
+  of GeneratedClass.
 
 
-## [3.2.0] - 2022-09-15
+## [4.0.0] - 2022-09-15
 
 ### Changed
 

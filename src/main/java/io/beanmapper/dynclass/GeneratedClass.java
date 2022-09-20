@@ -12,9 +12,9 @@ public class GeneratedClass {
     
     public final Class<?> generatedClass;
     
-    public GeneratedClass(CtClass ctClass) throws CannotCompileException {
+    public GeneratedClass(CtClass ctClass, Class<?> baseClass) throws CannotCompileException {
         this.ctClass = ctClass;
-        this.generatedClass = ctClass.toClass(DynamicClassGeneratorHelper.getNeighbourClass(ctClass));
+        this.generatedClass = ctClass.toClass(baseClass);
     }
 
 }

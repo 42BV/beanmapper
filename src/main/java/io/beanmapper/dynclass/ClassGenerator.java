@@ -42,7 +42,7 @@ public class ClassGenerator {
         Map<String, BeanProperty> baseFields = beanMatchStore.getBeanMatch(
                 strictMappingProperties.createBeanPair(baseClass, Object.class)
         ).getSourceNodes();
-        return new GeneratedClass(createClass(baseClass, baseFields, displayNodes, strictMappingProperties));
+        return new GeneratedClass(createClass(baseClass, baseFields, displayNodes, strictMappingProperties), baseClass);
     }
 
     private synchronized CtClass createClass(
