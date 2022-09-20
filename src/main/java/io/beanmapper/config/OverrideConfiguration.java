@@ -51,6 +51,8 @@ public class OverrideConfiguration implements Configuration {
 
     private OverrideField<Boolean> flushEnabled;
 
+    private OverrideField<Boolean> onlyPatchExistingDuringCollectionToCollection;
+
     public OverrideConfiguration(Configuration configuration) {
         if (configuration == null) {
             throw new ParentConfigurationPossiblyNullException("Developer error: the parent configuration may not be null");
@@ -64,6 +66,7 @@ public class OverrideConfiguration implements Configuration {
         this.flushAfterClear = new OverrideField<>(configuration::isFlushAfterClear);
         this.flushEnabled = new OverrideField<>(configuration::isFlushEnabled);
         this.useNullValue = new OverrideField<>(configuration::getUseNullValue);
+        this.onlyPatchExistingDuringCollectionToCollection = new OverrideField<>(configuration::getOnlyPatchExistingDuringCollectionToCollection);
     }
 
     @Override
@@ -248,6 +251,11 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
+    public Boolean getOnlyPatchExistingDuringCollectionToCollection() {
+        return onlyPatchExistingDuringCollectionToCollection.get();
+    }
+
+    @Override
     public void addConverter(BeanConverter converter) {
         beanConverters.add(converter);
     }
@@ -395,6 +403,11 @@ public class OverrideConfiguration implements Configuration {
     @Override
     public void setUseNullValue(Boolean useNullValue) {
         this.useNullValue.set(useNullValue);
+    }
+
+    @Override
+    public void setOnlyPatchExistingDuringCollectionToCollection(Boolean onlyPatchExistingDuringCollectionToCollection) {
+        this.onlyPatchExistingDuringCollectionToCollection.set(onlyPatchExistingDuringCollectionToCollection);
     }
 
 }

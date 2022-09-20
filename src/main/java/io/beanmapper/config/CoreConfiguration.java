@@ -99,6 +99,12 @@ public class CoreConfiguration implements Configuration {
      */
     private Boolean useNullValue = false;
 
+    /**
+     * Property that determines whether the BeanMapper#map(Map, Map) and BeanMapper#map(Collection, Collection) should
+     * update existing objects and insert new objects without equal, or only update existing objects.
+     */
+    private Boolean onlyPatchExistingDuringCollectionToCollection = false;
+
     @Override
     public List<String> getDownsizeTarget() { return null; }
 
@@ -252,6 +258,11 @@ public class CoreConfiguration implements Configuration {
     @Override
     public Boolean getEnforceSecuredProperties() {
         return enforceSecuredProperties;
+    }
+
+    @Override
+    public Boolean getOnlyPatchExistingDuringCollectionToCollection() {
+        return this.onlyPatchExistingDuringCollectionToCollection;
     }
 
     @Override
@@ -412,6 +423,11 @@ public class CoreConfiguration implements Configuration {
     @Override
     public void setUseNullValue(Boolean useNullValue) {
         this.useNullValue = useNullValue;
+    }
+
+    @Override
+    public void setOnlyPatchExistingDuringCollectionToCollection(Boolean onlyPatchExistingDuringCollectionToCollection) {
+        this.onlyPatchExistingDuringCollectionToCollection = onlyPatchExistingDuringCollectionToCollection;
     }
 
 }

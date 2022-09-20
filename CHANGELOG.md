@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   an Optional, and additionally delegates further conversion back to the BeanMapper.
 - DynamicClassGeneratorHelper was removed, due to returning null, and replaced with passing the baseclass for a generated class immediately to the constructor 
   of GeneratedClass.
+- Issue [#46](https://github.com/42BV/beanmapper/issues/46) **Map to Collection of Targets**; Added the possibility to map a Collection of Class A, immediately 
+  to a Collection of Class B, if both Class A and B implement Equalizer with the same type of ID. Implemented the same for Maps.
 
 
 ## [4.0.0] - 2022-09-15

@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -36,6 +37,9 @@ import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.exceptions.BeanNoLogicSecuredCheckSetException;
 import io.beanmapper.exceptions.BeanNoRoleSecuredCheckSetException;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
+import io.beanmapper.testmodel.map_to_target_collection.DissimilarEqualizeableEntity;
+import io.beanmapper.testmodel.map_to_target_collection.EqualizeableEntity;
+import io.beanmapper.testmodel.map_to_target_collection.OtherEqualizeableEntity;
 import io.beanmapper.testmodel.anonymous.Book;
 import io.beanmapper.testmodel.anonymous.BookForm;
 import io.beanmapper.testmodel.beanalias.NestedSourceWithAlias;
@@ -1733,6 +1737,143 @@ class BeanMapperTest {
         Optional<Person> person = Optional.empty();
         Optional<PersonView> personView = beanMapper.map(person, PersonView.class);
         assertFalse(personView.isPresent());
+    }
+
+    @Test
+    void testMapEqualizableEntities_Patch() {
+        Collection<EqualizeableEntity> entityCollection = List.of(
+                new EqualizeableEntity(1L, "Henk", 25L),
+                new EqualizeableEntity(2L, "Piet", 27L),
+                new EqualizeableEntity(3L, "Klaas", 29L)
+        );
+        Collection<OtherEqualizeableEntity> otherEqualizeableEntities = List.of(
+                new OtherEqualizeableEntity(1L),
+                new OtherEqualizeableEntity(2L)
+        );
+
+        this.beanMapper = this.beanMapper.wrap().setOnlyPatchExistingDuringCollectionToCollection(true).build();
+
+        Collection<OtherEqualizeableEntity> combined = this.beanMapper.map(entityCollection, otherEqualizeableEntities);
+
+        assertEquals(2, combined.size());
+    }
+
+    @Test
+    void testMapEqualizableEntities_Insert() {
+        Collection<EqualizeableEntity> entityCollection = List.of(
+                new EqualizeableEntity(1L, "Henk", 25L),
+                new EqualizeableEntity(2L, "Piet", 27L),
+                new EqualizeableEntity(3L, "Klaas", 29L)
+        );
+        Collection<OtherEqualizeableEntity> otherEqualizeableEntities = List.of(
+                new OtherEqualizeableEntity(1L),
+                new OtherEqualizeableEntity(2L)
+        );
+
+        Collection<OtherEqualizeableEntity> combined = this.beanMapper.map(entityCollection, otherEqualizeableEntities);
+
+        assertEquals(3, combined.size());
+    }
+
+    @Test
+    void testMapEqualizeableEntityMapToDifferentMapOfDissimilarButEqualizeableEntities_Patch() {
+        Map<Long, EqualizeableEntity> equalizeableEntityMap = Map.of(
+                1L, new EqualizeableEntity(1L, "Henk", 25L),
+                2L, new EqualizeableEntity(2L, "Piet", 27L),
+                3L, new EqualizeableEntity(3L, "Klaas", 29L)
+        );
+        Map<Long, OtherEqualizeableEntity> otherEqualizeableEntityMap = Map.of(
+                1L, new OtherEqualizeableEntity(1L),
+                2L, new OtherEqualizeableEntity(2L)
+        );
+
+        this.beanMapper = this.beanMapper.wrap().setOnlyPatchExistingDuringCollectionToCollection(true).build();
+
+        Map<Long, OtherEqualizeableEntity> combined = this.beanMapper.map(equalizeableEntityMap, otherEqualizeableEntityMap, OtherEqualizeableEntity.class);
+
+        assertEquals(2, combined.size());
+
+        assertTrue(combined.containsKey(1L));
+        assertTrue(combined.containsKey(2L));
+
+        assertEquals(2, combined.values().stream()
+                .filter(entity -> entity.getName().equals("Henk") || entity.getName().equals("Piet") || entity.getName().equals("Klaas"))
+                .count()
+        );
+    }
+
+    @Test
+    void testMapEqualizeableEntityMapToDifferentMapOfDissimilarButEqualizeableEntities_Insert() {
+        this.beanMapper = this.beanMapper.wrap().setOnlyPatchExistingDuringCollectionToCollection(false).build();
+        Map<Long, EqualizeableEntity> equalizeableEntityMap = Map.of(
+                1L, new EqualizeableEntity(1L, "Henk", 25L),
+                2L, new EqualizeableEntity(2L, "Piet", 27L),
+                3L, new EqualizeableEntity(3L, "Klaas", 29L)
+        );
+        Map<Long, OtherEqualizeableEntity> otherEqualizeableEntityMap = Map.of(
+                1L, new OtherEqualizeableEntity(1L),
+                2L, new OtherEqualizeableEntity(2L)
+        );
+
+        Map<Long, OtherEqualizeableEntity> combined = this.beanMapper.map(equalizeableEntityMap, otherEqualizeableEntityMap, OtherEqualizeableEntity.class);
+
+        assertEquals(3, combined.size());
+
+        assertTrue(combined.containsKey(1L));
+        assertTrue(combined.containsKey(2L));
+        assertTrue(combined.containsKey(3L));
+
+        assertEquals(3, combined.values().stream()
+                .filter(entity -> entity.getName().equals("Henk") || entity.getName().equals("Piet") || entity.getName().equals("Klaas"))
+                .count()
+        );
+    }
+
+    @Test
+    void testMapToMapShouldFailIfTargetMapIsNull() {
+        Map<Long, EqualizeableEntity> equalizeableEntityMap = Map.of(
+                1L, new EqualizeableEntity(1L, "Henk", 25L),
+                2L, new EqualizeableEntity(2L, "Piet", 27L),
+                3L, new EqualizeableEntity(3L, "Klaas", 29L)
+        );
+        Map<Long, OtherEqualizeableEntity> nullMap = null;
+        assertThrows(NullPointerException.class, () -> beanMapper.map(equalizeableEntityMap, nullMap, OtherEqualizeableEntity.class));
+    }
+
+    @Test
+    void mapToDissimilarClass_Patch() {
+        Map<Long, EqualizeableEntity> equalizeableEntityMap = Map.of(
+                1L, new EqualizeableEntity(1L, "Henk", 25L),
+                2L, new EqualizeableEntity(2L, "Piet", 27L),
+                3L, new EqualizeableEntity(3L, "Klaas", 29L)
+        );
+        Map<Long, DissimilarEqualizeableEntity> dissimilarEqualizeableEntityMap = Map.of(1L, new DissimilarEqualizeableEntity(1L));
+
+        Map<Long, DissimilarEqualizeableEntity> combined = this.beanMapper.map(equalizeableEntityMap, dissimilarEqualizeableEntityMap, DissimilarEqualizeableEntity.class);
+        assertEquals(3, combined.size());
+    }
+
+    @Test
+    void mapCollectionToCollectionOfDissimilarClass_Patch() {
+        Collection<EqualizeableEntity> entityCollection = List.of(
+                new EqualizeableEntity(1L, "Henk", 25L),
+                new EqualizeableEntity(2L, "Piet", 27L),
+                new EqualizeableEntity(3L, "Klaas", 29L)
+        );
+        Collection<DissimilarEqualizeableEntity> dissimilarEqualizeableEntities = List.of(new DissimilarEqualizeableEntity(1L));
+
+        Collection<DissimilarEqualizeableEntity> combined = this.beanMapper.map(entityCollection, dissimilarEqualizeableEntities);
+        assertEquals(3, combined.size());
+    }
+
+    @Test
+    void testMapToMapShouldFailIfSourceMapIsNull() {
+        Map<Long, EqualizeableEntity> nullMap = null;
+        Map<Long, OtherEqualizeableEntity> otherEqualizeableEntityMap = Map.of(
+                1L, new OtherEqualizeableEntity(1L),
+                2L, new OtherEqualizeableEntity(2L)
+        );
+        assertThrows(NullPointerException.class, () -> beanMapper.map(nullMap, otherEqualizeableEntityMap, OtherEqualizeableEntity.class));
     }
 
     private MyEntity createMyEntity() {

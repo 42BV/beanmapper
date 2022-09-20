@@ -195,6 +195,11 @@ public class BeanMapperBuilder {
         return this;
     }
 
+    public BeanMapperBuilder setOnlyPatchExistingDuringCollectionToCollection(boolean onlyPatchExistingDuringCollectionToCollection) {
+        this.configuration.setOnlyPatchExistingDuringCollectionToCollection(onlyPatchExistingDuringCollectionToCollection);
+        return this;
+    }
+
     public BeanMapper build() {
         BeanMapper beanMapper = new BeanMapper(configuration);
         // Custom collection handlers must be registered before default ones

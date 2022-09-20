@@ -213,6 +213,13 @@ public interface Configuration {
     Boolean getEnforceSecuredProperties();
 
     /**
+     * Property that determines whether the BeanMapper#map(Map, Map) and BeanMapper#map(Collection, Collection) should
+     * update existing objects and insert new objects without equal, or only update existing objects.
+     * @return determines if objects without equal should be mapped and inserted into collection or map.
+     */
+    Boolean getOnlyPatchExistingDuringCollectionToCollection();
+
+    /**
      * Add a converter class (must inherit from abstract BeanConverter class) to the beanMapper.
      * On mapping, the beanMapper will check for a suitable converter and use its from and
      * to methods to convert the value of the fields to the correct new data type.
@@ -419,4 +426,9 @@ public interface Configuration {
      */
     void setUseNullValue(Boolean useNullValue);
 
+    /**
+     * Property that determines whether the BeanMapper#map(Map, Map) and BeanMapper#map(Collection, Collection) should
+     * update existing objects and insert new objects without equal, or only update existing objects.
+     */
+    void setOnlyPatchExistingDuringCollectionToCollection(Boolean onlyPatchExistingDuringCollectionToCollection);
 }
