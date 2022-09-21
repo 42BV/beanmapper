@@ -13,12 +13,16 @@ import java.util.Optional;
 
 import io.beanmapper.BeanMapper;
 import io.beanmapper.config.BeanMapperBuilder;
-
-import io.beanmapper.exceptions.BeanConstructException;
 import io.beanmapper.exceptions.BeanInstantiationException;
 import io.beanmapper.strategy.ConstructorArguments;
+import io.beanmapper.utils.DefaultValues;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultBeanInitializer implements BeanInitializer {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * {@inheritDoc}
@@ -33,7 +37,9 @@ public class DefaultBeanInitializer implements BeanInitializer {
             var constructorParameterTypes = Arrays.stream(constructor.getParameters()).map(Parameter::getParameterizedType).toArray(Type[]::new);
             return beanClass.getConstructor(arguments.getTypes()).newInstance(mapParameterizedArguments(constructorParameterTypes, arguments.getValues()));
         } catch (NoSuchMethodException e) {
-            throw new BeanConstructException(beanClass, e);
+            logger.debug(e.getMessage());
+            return DefaultValues.defaultValueFor(beanClass);
+
         } catch (Exception e) {
             throw new BeanInstantiationException(beanClass, e);
         }

@@ -17,6 +17,7 @@ import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.converter.collections.CollectionConverter;
 import io.beanmapper.core.converter.impl.AnyToEnumConverter;
 import io.beanmapper.core.converter.impl.NumberToNumberConverter;
+import io.beanmapper.core.converter.impl.ObjectToOptionalConverter;
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
 import io.beanmapper.core.converter.impl.OptionalToObjectConverter;
 import io.beanmapper.core.converter.impl.PrimitiveConverter;
@@ -251,6 +252,7 @@ public class BeanMapperBuilder {
         attachConverter(new ObjectToStringConverter());
         attachConverter(new OptionalToObjectConverter());
         attachConverter(new RecordToAnyConverter());
+        attachConverter(new ObjectToOptionalConverter());
 
         for (CollectionHandler collectionHandler : configuration.getCollectionHandlers()) {
             attachConverter(new CollectionConverter(collectionHandler));
