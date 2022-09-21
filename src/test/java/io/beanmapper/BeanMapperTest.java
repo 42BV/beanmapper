@@ -170,8 +170,14 @@ import io.beanmapper.testmodel.numbers.ClassWithInteger;
 import io.beanmapper.testmodel.numbers.ClassWithLong;
 import io.beanmapper.testmodel.numbers.SourceWithDouble;
 import io.beanmapper.testmodel.numbers.TargetWithDouble;
+import io.beanmapper.testmodel.optional_getter.EntityResultWithMap;
+import io.beanmapper.testmodel.optional_getter.EntityWithMap;
+import io.beanmapper.testmodel.optional_getter.EntityWithOptional;
+import io.beanmapper.testmodel.optional_getter.EntityWithoutOptional;
 import io.beanmapper.testmodel.optional_getter.MyEntity;
 import io.beanmapper.testmodel.optional_getter.MyEntityResult;
+import io.beanmapper.testmodel.optional_getter.MyEntityResultWithNestedOptionalField;
+import io.beanmapper.testmodel.optional_getter.MyEntityResultWithOptionalField;
 import io.beanmapper.testmodel.othername.SourceWithOtherName;
 import io.beanmapper.testmodel.othername.TargetWithOtherName;
 import io.beanmapper.testmodel.parent.Player;
@@ -1687,7 +1693,6 @@ class BeanMapperTest {
     @Test
     void testMapClassWithGetterReturningOptionalOfFieldWithStrictMapping() {
         BeanMapper mapper = new BeanMapperBuilder()
-                .addPackagePrefix("nl")
                 .setApplyStrictMappingConvention(true)
                 .build();
         MyEntity myEntity = createMyEntity();
@@ -1699,7 +1704,6 @@ class BeanMapperTest {
     @Test
     void testMapClassWithGetterReturningOptionalOfFieldWithNonStrictMapping() {
         BeanMapper mapper = new BeanMapperBuilder()
-                .addPackagePrefix("nl")
                 .setApplyStrictMappingConvention(false)
                 .build();
         MyEntity myEntity = createMyEntity();
@@ -1710,21 +1714,39 @@ class BeanMapperTest {
 
     @Test
     void testMapClassWithGetterReturningOptionalOfFieldWhereFieldIsNull() {
-        BeanMapper mapper = new BeanMapperBuilder()
-                .addPackagePrefix("nl")
-                .setApplyStrictMappingConvention(false)
-                .build();
         MyEntity myEntity = createMyEntity();
         myEntity.child = null;
-        MyEntityResult result = mapper.map(myEntity, MyEntityResult.class);
+        MyEntityResult result = this.beanMapper.map(myEntity, MyEntityResult.class);
         assertEquals("Henk", result.value);
         assertNull(result.child);
     }
 
     @Test
+    void testMapClassWithGetterReturningOptionalToClassWithOptionalOfDifferentClass() {
+        MyEntity myEntity = createMyEntity();
+        MyEntityResultWithOptionalField result = this.beanMapper.map(myEntity, MyEntityResultWithOptionalField.class);
+        assertEquals("Henk", result.value);
+        assertTrue(result.child.isPresent());
+        assertEquals("Piet", result.child.get().value);
+        assertEquals(Optional.empty(), result.child.get().child);
+    }
+
+    @Test
+    void testMapClassWithGetterReturningOptionalToClassWithNestedOptionalOfDifferentClass() {
+        MyEntity myEntity = createMyEntity();
+        MyEntityResultWithNestedOptionalField result = this.beanMapper.map(myEntity, MyEntityResultWithNestedOptionalField.class);
+        assertEquals("Henk", result.value);
+        assertTrue(result.child.isPresent());
+        assertEquals("Piet", result.child.get().get().value);
+        assertEquals(Optional.empty(), result.child.get().get().child);
+    }
+
+    @Test
     void mapToOptional() {
         Optional<Person> person = Optional.of(createPerson());
-        PersonView personView = assertDoesNotThrow(() -> beanMapper.map(person, PersonView.class).orElseThrow());
+        Optional<PersonView> personViewOptional = beanMapper.map(person, PersonView.class);
+        assertTrue(personViewOptional.isPresent());
+        PersonView personView = personViewOptional.get();
         assertEquals("Henk", personView.name);
         assertEquals("Zoetermeer", personView.place);
     }
@@ -1882,6 +1904,77 @@ class BeanMapperTest {
         var result = this.beanMapper.map(form, TargetBeanPropertyWithShadowingNonPublicFieldWithoutSetter.class);
         assertEquals(form.age, result.age2);
         assertNull(ReflectionUtils.getValueOfField(result, ReflectionUtils.getFieldWithName(result.getClass(), "age")));
+    }
+
+    @Test
+    void mapOptionalContainingOptionalToOptionalContainingDifferentType() {
+        Optional<Optional<Person>> personOptional = Optional.of(Optional.of(createPerson()));
+        Optional<PersonView> obj = this.beanMapper.map(personOptional, PersonView.class);
+
+        assertTrue(obj.isPresent());
+        var personView = obj.get();
+        assertEquals("Henk", personView.name);
+        assertEquals("Zoetermeer", personView.place);
+    }
+
+    @Test
+    void mapOptionalContainingOptionalContainingOptionalToOptional() {
+        Optional<Optional<Optional<Person>>> personOptional = Optional.of(Optional.of(Optional.of(createPerson())));
+        Optional<PersonView> obj = this.beanMapper.map(personOptional, PersonView.class);
+
+        assertTrue(obj.isPresent());
+        var personView = obj.get();
+        assertEquals("Henk", personView.name);
+        assertEquals("Zoetermeer", personView.place);
+    }
+
+    @Test
+    void testMapOptionalOfListOfOptionalsToListOfOptionalsOfDifferentType() {
+        Optional<List<Optional<Person>>> optional = Optional.of(List.of(Optional.of(createPerson("Henk")), Optional.of(createPerson("Kees"))));
+        List<PersonView> personView = this.beanMapper.map(optional.get(), PersonView.class);
+        assertNotNull(personView);
+        assertEquals(optional.get().size(), personView.size());
+        assertEquals("Henk", personView.get(0).name);
+        assertEquals("Kees", personView.get(1).name);
+    }
+
+    @Test
+    void testMapEntityWithoutOptionalToEntityWithOptional() {
+        var child = new EntityWithoutOptional();
+        child.value = "Piet";
+
+        var form = new EntityWithoutOptional();
+        form.value = "Henk";
+        form.child = child;
+
+        var result = this.beanMapper.map(form, EntityWithOptional.class);
+        assertTrue(result.child.isPresent());
+        assertEquals("Piet", result.child.get().value);
+    }
+
+    @Test
+    void testMapEntityWithMapToEntityResultWithMap() {
+        EntityWithMap child1 = new EntityWithMap();
+        child1.value = "Piet";
+
+        EntityWithMap child2 = new EntityWithMap();
+        child2.value = "Klaas";
+
+        EntityWithMap form = new EntityWithMap();
+        form.value = "Henk";
+        form.children = Map.of(child1.value, child1, child2.value, child2);
+
+        EntityResultWithMap result = this.beanMapper.map(form, EntityResultWithMap.class);
+
+        assertNotNull(result.children);
+        assertEquals("Henk", result.value);
+        assertEquals(2, result.children.size());
+        assertNotNull(result.children.get("Piet"));
+        assertEquals("Piet", result.children.get("Piet").value);
+        assertNull(result.children.get("Piet").children);
+        assertNotNull(result.children.get("Klaas"));
+        assertEquals("Klaas", result.children.get("Klaas").value);
+        assertNull(result.children.get("Klaas").children);
     }
 
     private MyEntity createMyEntity() {

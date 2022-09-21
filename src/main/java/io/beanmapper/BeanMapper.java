@@ -61,6 +61,9 @@ public final class BeanMapper {
      * @return the optional target instance containing all applicable properties
      */
     public <S, T> Optional<T> map(Optional<S> source, Class<T> targetClass) {
+        if (source.orElse(null) instanceof Optional<?> optional && !targetClass.isInstance(Optional.class)) {
+            return this.map(optional, targetClass);
+        }
         return source.map(value -> this.map(value, targetClass));
     }
 

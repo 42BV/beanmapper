@@ -42,7 +42,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Support for mapping Queue. A Queue will be mapped to an ArrayDeque by default. The order of elements is guaranteed to be preserved, except when the Queue is
   mapped to a Queue that inherently modifies the order of elements (e.g. PriorityQueue).
 - BeanMapper#map(Queue, Class) allowing users to map a Queue to a new Queue, mapping the elements of the source to the target class.
-- BeanMapper#map(Object[], Class) allowing users to map an array to an array with elements of the type of the target class.
+- BeanMapper#map(Object[], Class) allowing users to map an array to an array with elements of the type of the target class. Also works for primitive arrays.
 - Support for mapping to and from JDK16 record-classes.
 - @RecordConstruct-annotation, used to give BeanMapper instructions on how to map a record.
 - RecordConstructMode-enum, which allows the user to exclude certain constructors from being used to map a record, or force one to be used.
@@ -55,6 +55,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - BeanMapper#map(Object, ParameterizedType), allowing for smarter mapping of collections and optionals.
 - BeanMatchStore#detectBeanPropertyFieldShadowing(PropertyAccessor, io.beanmapper.annotations.BeanProperty), which will throw a FieldShadowingException when
   appropriate.
+- Mapping of Optional-objects to a target class, using BeanMapper#map(Optional, Class).
 
 ### Changed
 
