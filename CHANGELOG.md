@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [4.0.1] - 2022-09-22
+
 ### Fixed
 
 - Issue [#121](https://github.com/42BV/beanmapper/issues/121) **Mapping an Enum field to an Enum field of the same type fails when a custom toString method is 
