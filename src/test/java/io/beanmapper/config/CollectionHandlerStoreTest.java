@@ -11,7 +11,7 @@ import io.beanmapper.BeanMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class CollectionHandlerStoreTest {
+class CollectionHandlerStoreTest {
 
     private Configuration configuration;
 
@@ -39,7 +39,7 @@ public class CollectionHandlerStoreTest {
 
     @Test
     void getCollectionHandlerFor_AnonymousClass() {
-        assertEquals(List.class, configuration.getCollectionHandlerFor(new ArrayList() {{}}.getClass()).getType());
+        assertEquals(List.class, configuration.getCollectionHandlerFor(new ArrayList<>() {}.getClass()).getType());
     }
 
 }

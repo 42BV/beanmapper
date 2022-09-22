@@ -32,7 +32,7 @@ class BeanMapperVaryingClassTypesTest {
         assertEquals(source.list, target.someOtherListName);
     }
 
-    public class TargetWithLongField {
+    public static class TargetWithLongField {
         public Long value;
     }
 
@@ -46,7 +46,7 @@ class BeanMapperVaryingClassTypesTest {
         assertEquals(target.someOtherListName.get(0), source.list.get(0));
     }
 
-    public class SourceWithList {
+    public static class SourceWithList {
         public List<String> list = new ArrayList<>();
     }
 
@@ -61,7 +61,7 @@ class BeanMapperVaryingClassTypesTest {
         assertEquals("42", target.list.get(0));
     }
 
-    public class SourceWithStringFieldAndLongAccessors {
+    public static class SourceWithStringFieldAndLongAccessors {
         private String value;
 
         public Long getValue() {return Long.parseLong(value) + 1;}
@@ -69,13 +69,13 @@ class BeanMapperVaryingClassTypesTest {
         public void setValue(Long number) {this.value = number.toString();}
     }
 
-    public class TargetWithListButNoFieldProperty {
+    public static class TargetWithListButNoFieldProperty {
         public List<String> someOtherListName;
 
         public void setList(List<String> list) {someOtherListName = list;}
     }
 
-    public class TargetWithDifferentSetterAndFieldTypes {
+    public static class TargetWithDifferentSetterAndFieldTypes {
         public List<String> someOtherListName = new ArrayList<>();
 
         public void setList(List<Long> list) {
@@ -85,7 +85,7 @@ class BeanMapperVaryingClassTypesTest {
         }
     }
 
-    public class TargetWithDifferentSetterAndFieldTypesButSimilarNames {
+    public static class TargetWithDifferentSetterAndFieldTypesButSimilarNames {
         public List<String> list = new ArrayList<>();
 
         public TargetWithDifferentSetterAndFieldTypesButSimilarNames() {

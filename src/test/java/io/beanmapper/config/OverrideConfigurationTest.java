@@ -1,5 +1,6 @@
 package io.beanmapper.config;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -14,7 +15,7 @@ import io.beanmapper.strategy.ConstructorArguments;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class OverrideConfigurationTest {
+class OverrideConfigurationTest {
 
     private CoreConfiguration coreConfiguration;
 
@@ -35,12 +36,14 @@ public class OverrideConfigurationTest {
 
     @Test
     void unsupportedCalls() {
-        overrideConfiguration.withoutDefaultConverters();
-        overrideConfiguration.addProxySkipClass(null);
-        overrideConfiguration.addPackagePrefix((String) null);
-        overrideConfiguration.addPackagePrefix((Class) null);
-        overrideConfiguration.addAfterClearFlusher(null);
-        overrideConfiguration.setBeanUnproxy(null);
+        assertDoesNotThrow(() -> {
+            overrideConfiguration.withoutDefaultConverters();
+            overrideConfiguration.addProxySkipClass(null);
+            overrideConfiguration.addPackagePrefix((String) null);
+            overrideConfiguration.addPackagePrefix((Class<?>) null);
+            overrideConfiguration.addAfterClearFlusher(null);
+            overrideConfiguration.setBeanUnproxy(null);
+        });
     }
 
     @Test

@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class CollectionFlusherTest {
+class CollectionFlusherTest {
 
     private Counter counter;
 
@@ -34,7 +34,7 @@ public class CollectionFlusherTest {
         assertEquals(0, counter.get());
     }
 
-    class Counter {
+    static class Counter {
         private int count = 0;
 
         public void add() {count++;}
@@ -42,7 +42,7 @@ public class CollectionFlusherTest {
         public int get() {return count;}
     }
 
-    class MyAfterClearFlusher implements AfterClearFlusher {
+    static class MyAfterClearFlusher implements AfterClearFlusher {
         private final Counter counter;
 
         MyAfterClearFlusher(Counter counter) {

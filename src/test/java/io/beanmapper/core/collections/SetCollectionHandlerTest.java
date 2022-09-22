@@ -13,14 +13,14 @@ class SetCollectionHandlerTest {
     @Test
     void createTreeSet() {
         SetCollectionHandler collectionHandler = new SetCollectionHandler();
-        Set set = collectionHandler.create(NonComparableClass.class);
+        Set<?> set = collectionHandler.create(NonComparableClass.class);
         assertEquals(HashSet.class, set.getClass());
     }
 
     @Test
     void createHashSet() {
         SetCollectionHandler collectionHandler = new SetCollectionHandler();
-        Set set = collectionHandler.create(ComparableClass.class);
+        Set<?> set = collectionHandler.create(ComparableClass.class);
         assertEquals(TreeSet.class, set.getClass());
     }
 

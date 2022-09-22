@@ -2,6 +2,7 @@ package io.beanmapper.core.converter.collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -43,6 +44,8 @@ class BeanCollectionInstructionsTest {
 
         BeanCollectionInstructions merged = BeanCollectionInstructions.merge(sourceBeanProperty, targetBeanProperty);
 
+        assertNotNull(merged);
+
         assertEquals(String.class, merged.getCollectionElementType().getType());
         assertEquals(BeanCollectionUsage.CLEAR, merged.getBeanCollectionUsage());
         assertTrue(merged.getPreferredCollectionClass().isEmpty());
@@ -76,17 +79,19 @@ class BeanCollectionInstructionsTest {
 
         BeanCollectionInstructions merged = BeanCollectionInstructions.merge(sourceBeanProperty, targetBeanProperty);
 
+        assertNotNull(merged);
+
         assertEquals(Long.class, merged.getCollectionElementType().getType());
         assertEquals(BeanCollectionUsage.REUSE, merged.getBeanCollectionUsage());
         assertEquals(ArrayList.class, merged.getPreferredCollectionClass().getAnnotationClass());
         assertFalse(merged.getFlushAfterClear());
     }
 
-    public class SourceClassContainingList {
+    public static class SourceClassContainingList {
         public List<String> list;
     }
 
-    public class TargetClassContainingList {
+    public static class TargetClassContainingList {
         public List<String> list;
     }
 

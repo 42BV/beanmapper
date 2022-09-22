@@ -21,13 +21,13 @@ class StringToIntegerConverterTest {
     @Test
     void testConvertBoxed() {
         assertTrue(converter.match(String.class, Integer.class));
-        assertEquals(Integer.valueOf(42), converter.convert(null, "42", Integer.class, null));
+        assertEquals(42, converter.convert(null, "42", Integer.class, null));
     }
 
     @Test
     void testConvertPrimitive() {
         assertTrue(converter.match(String.class, int.class));
-        assertEquals(Integer.valueOf(42), converter.convert(null, "42", int.class, null));
+        assertEquals(42, converter.convert(null, "42", int.class, null));
     }
 
 }

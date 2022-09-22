@@ -1,6 +1,6 @@
 package io.beanmapper.core.collections;
 
-public class ComparableClass implements Comparable {
+public class ComparableClass implements Comparable<Object> {
 
     private String name;
 
@@ -16,10 +16,9 @@ public class ComparableClass implements Comparable {
     public int compareTo(Object o) {
         if (this == o)
             return 0;
-        if (!(o instanceof ComparableClass)) {
+        if (!(o instanceof ComparableClass other)) {
             return -1;
         }
-        ComparableClass other = (ComparableClass) o;
         return name.compareTo(other.name);
     }
 

@@ -20,7 +20,6 @@ class OptionalToObjectConverterTest {
     private BeanMapper beanMapper;
 
     private MyEntity myEntity;
-    private MyEntity child;
 
     @BeforeEach
     void setUp() {
@@ -32,7 +31,7 @@ class OptionalToObjectConverterTest {
         myEntity = new MyEntity();
         myEntity.value = "Henk";
 
-        child = new MyEntity();
+        MyEntity child = new MyEntity();
         child.value = "Piet";
 
         myEntity.child = child;

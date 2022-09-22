@@ -48,7 +48,7 @@ class AnyToEnumConverterTest {
     }
 
     public enum TestEnum {
-        A, B, C;
+        A, B, C
     }
 
     public enum SourceSideEnum {
@@ -59,7 +59,7 @@ class AnyToEnumConverterTest {
         ALPHA
     }
 
-    public class NestedString {
+    public static class NestedString {
         private final String name;
 
         public NestedString(String name) {

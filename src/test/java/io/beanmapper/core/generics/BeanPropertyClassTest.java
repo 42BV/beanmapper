@@ -93,7 +93,7 @@ class BeanPropertyClassTest {
 
     private BeanPropertyClass extractBeanPropertyClass(
             BeanPropertyMatchupDirection direction,
-            Class containingClass,
+            Class<?> containingClass,
             String property) {
         PropertyAccessor sourceAccessor = PropertyAccessors.findProperty(containingClass, property);
         DirectedBeanProperty directedBeanProperty = new DirectedBeanProperty(
@@ -103,27 +103,27 @@ class BeanPropertyClassTest {
         return directedBeanProperty.getBeanPropertyClass();
     }
 
-    public class SourceClassWithListString {
+    public static class SourceClassWithListString {
         public List<String> list;
     }
 
-    public class TargetClassWithListString {
+    public static class TargetClassWithListString {
         public List<String> list;
     }
 
-    public class TargetClassWithListLong {
+    public static class TargetClassWithListLong {
         public List<Long> list;
     }
 
-    public class SourceClassWithComplexListLong {
+    public static class SourceClassWithComplexListLong {
         public List<Map<String, Long>> list;
     }
 
-    public class TargetClassWithComplexListString {
+    public static class TargetClassWithComplexListString {
         public List<Map<String, String>> list;
     }
 
-    public class TargetClassWithComplexListLong {
+    public static class TargetClassWithComplexListLong {
         public List<Map<String, Long>> list;
     }
 

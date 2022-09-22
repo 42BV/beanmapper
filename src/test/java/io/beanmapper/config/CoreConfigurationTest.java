@@ -7,49 +7,47 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class CoreConfigurationTest {
 
+    private CoreConfiguration configuration;
+
+    @BeforeEach
+    void setUp() {
+        this.configuration = new CoreConfiguration();
+    }
+
     @Test
     void setParent() {
-        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
-            CoreConfiguration configuration = new CoreConfiguration();
-            configuration.setParent(null);
-        });
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> configuration.setParent(null));
     }
 
     @Test
     void setTarget() {
-        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
-            CoreConfiguration configuration = new CoreConfiguration();
-            configuration.setTarget("Hello world");
-        });
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> configuration.setTarget("Hello world"));
     }
 
     @Test
     void determineTargetClass_noTargetSet() {
-        CoreConfiguration configuration = new CoreConfiguration();
         assertNull(configuration.determineTargetClass());
     }
 
     @Test
     void addNullPackagePrefix() {
-        CoreConfiguration configuration = new CoreConfiguration();
         configuration.addPackagePrefix((Class<?>) null);
         assertEquals(0, configuration.getPackagePrefixes().size());
     }
 
     @Test
     void addWithoutDefaultConverters() {
-        CoreConfiguration configuration = new CoreConfiguration();
         configuration.withoutDefaultConverters();
         assertFalse(configuration.isAddDefaultConverters());
     }
 
     @Test
     void singleMapRunProperties() {
-        CoreConfiguration configuration = new CoreConfiguration();
         assertNull(configuration.getDownsizeSource());
         assertNull(configuration.getDownsizeTarget());
         assertNull(configuration.getTargetClass());

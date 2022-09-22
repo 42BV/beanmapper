@@ -21,13 +21,13 @@ class StringToByteConverterTest {
     @Test
     void testConvertBoxed() {
         assertTrue(converter.match(String.class, Byte.class));
-        assertEquals(Byte.valueOf((byte) 42), converter.convert(null, "42", Byte.class, null));
+        assertEquals((byte) 42, converter.convert(null, "42", Byte.class, null));
     }
 
     @Test
     void testConvertPrimitive() {
         assertTrue(converter.match(String.class, byte.class));
-        assertEquals(Byte.valueOf((byte) 42), converter.convert(null, "42", byte.class, null));
+        assertEquals((byte) 42, converter.convert(null, "42", byte.class, null));
     }
 
 }

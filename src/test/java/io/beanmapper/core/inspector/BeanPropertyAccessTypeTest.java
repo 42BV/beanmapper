@@ -21,7 +21,7 @@ class BeanPropertyAccessTypeTest {
         assertEquals(BeanPropertyAccessType.NO_ACCESS, BeanPropertyMatchupDirection.TARGET_TO_SOURCE.accessType(accessor));
     }
 
-    private class NoAccessToField {
+    private static class NoAccessToField {
         private String name;
     }
 
@@ -55,7 +55,7 @@ class BeanPropertyAccessTypeTest {
         assertEquals(BeanPropertyAccessType.GETTER, BeanPropertyMatchupDirection.SOURCE_TO_TARGET.accessType(accessor));
     }
 
-    private class FieldAccessToField {
+    private static class FieldAccessToField {
         public String name;
     }
 
@@ -65,7 +65,7 @@ class BeanPropertyAccessTypeTest {
         assertEquals(BeanPropertyAccessType.SETTER, BeanPropertyMatchupDirection.TARGET_TO_SOURCE.accessType(accessor));
     }
 
-    private class GetterSetterAccessToField {
+    private static class GetterSetterAccessToField {
         private String name;
 
         public String getName() {return name;}
@@ -73,7 +73,7 @@ class BeanPropertyAccessTypeTest {
         public void setName(String name) {this.name = name;}
     }
 
-    private class OnlyGetterSetterNoField {
+    private static class OnlyGetterSetterNoField {
         public String getName() {return "frits";}
 
         public void setName(String name) {}
