@@ -141,7 +141,7 @@ public class BeanPropertyMatch {
     }
 
     protected boolean hasAnnotation(BeanProperty beanProperty, Class<? extends Annotation> annotationClass) {
-        return beanProperty.getAccessor().findAnnotation(annotationClass) != null;
+        return beanProperty.getAccessor().isAnnotationPresent(annotationClass);
     }
 
     public Object getSourceDefaultValue() {

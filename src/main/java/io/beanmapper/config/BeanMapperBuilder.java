@@ -20,6 +20,7 @@ import io.beanmapper.core.converter.impl.NumberToNumberConverter;
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
 import io.beanmapper.core.converter.impl.OptionalToObjectConverter;
 import io.beanmapper.core.converter.impl.PrimitiveConverter;
+import io.beanmapper.core.converter.impl.RecordToAnyConverter;
 import io.beanmapper.core.converter.impl.StringToBigDecimalConverter;
 import io.beanmapper.core.converter.impl.StringToBooleanConverter;
 import io.beanmapper.core.converter.impl.StringToIntegerConverter;
@@ -38,9 +39,9 @@ public class BeanMapperBuilder {
 
     private final Configuration configuration;
 
-    private List<BeanConverter> customBeanConverters = new ArrayList<>();
+    private final List<BeanConverter> customBeanConverters = new ArrayList<>();
 
-    private List<CollectionHandler> customCollectionHandlers = new ArrayList<>();
+    private final List<CollectionHandler> customCollectionHandlers = new ArrayList<>();
 
     public BeanMapperBuilder() {
         this.configuration = new CoreConfiguration();
@@ -197,6 +198,20 @@ public class BeanMapperBuilder {
         return this;
     }
 
+    /**
+     * Adds a mapping for a default value to the configuration.
+     *
+     * @param targetClass The class that the value is the default for.
+     * @param value The value that will serve as the default for the target-class.
+     * @return This instance.
+     * @param <T> The type op the targetClass.
+     * @param <V> The type of the value.
+     */
+    public <T, V> BeanMapperBuilder addCustomDefaultValue(Class<T> targetClass, V value) {
+        this.configuration.addCustomDefaultValueForClass(targetClass, value);
+        return this;
+    }
+
     public BeanMapper build() {
         BeanMapper beanMapper = new BeanMapper(configuration);
         // Custom collection handlers must be registered before default ones
@@ -235,6 +250,7 @@ public class BeanMapperBuilder {
         attachConverter(new NumberToNumberConverter());
         attachConverter(new ObjectToStringConverter());
         attachConverter(new OptionalToObjectConverter());
+        attachConverter(new RecordToAnyConverter());
 
         for (CollectionHandler collectionHandler : configuration.getCollectionHandlers()) {
             attachConverter(new CollectionConverter(collectionHandler));

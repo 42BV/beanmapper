@@ -8,6 +8,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,7 +38,9 @@ public class PropertyAccessors {
      * @return the property accessors of that bean
      */
     public static List<PropertyAccessor> getAll(Class<?> beanClass) {
-        Map<String, PropertyDescriptor> descriptors = findPropertyDescriptors(beanClass);
+        Map<String, PropertyDescriptor> descriptors = beanClass.isRecord() ?
+                findPropertyDescriptorsForRecord((Class<? extends Record>) beanClass) :
+                findPropertyDescriptors(beanClass);
         Map<String, Field> fields = findAllFields(beanClass);
 
         Set<String> propertyNames = new HashSet<>();
@@ -51,6 +54,30 @@ public class PropertyAccessors {
             accessors.add(new CombinedPropertyAccessor(descriptor, field));
         }
         return accessors;
+    }
+
+    /**
+     * Compiles a Map&lt;String, PropertyDescriptor&gt;, by generating a new PropertyDescriptor for every
+     * RecordComponent.
+     *
+     * <p>Utilises the {@link PropertyDescriptor#PropertyDescriptor(String, Method, Method)
+     * PropertyDescriptor(String, Method, Method)}-constructor, passing null for the write-method.</p>
+     *
+     * @param clazz The Record-class, for which the PropertyDescriptors must be retrieved.
+     * @return The Map of PropertyDescriptors.
+     */
+    private static Map<String, PropertyDescriptor> findPropertyDescriptorsForRecord(Class<? extends Record> clazz) {
+        var recordComponents = clazz.getRecordComponents();
+        Map<String, PropertyDescriptor> result = new HashMap<>();
+        try {
+            for (var component : recordComponents) {
+                result.put(component.getName(), new PropertyDescriptor(component.getName(), component.getAccessor(), null));
+            }
+        } catch (IntrospectionException ex) {
+            throw new IllegalStateException("Could not introspect record: " + clazz.getSimpleName());
+        }
+        result.remove(CLASS_PROPERTY);
+        return result;
     }
 
     private static Map<String, PropertyDescriptor> findPropertyDescriptors(Class<?> clazz) {

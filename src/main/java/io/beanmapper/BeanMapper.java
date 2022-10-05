@@ -1,6 +1,7 @@
 package io.beanmapper;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -18,7 +19,6 @@ import io.beanmapper.strategy.MapStrategyType;
  * objects. Once that has been determined, the applicable properties will be copied from
  * source to target.
  */
-@SuppressWarnings("unchecked")
 public final class BeanMapper {
 
     private final Configuration configuration;
@@ -29,9 +29,10 @@ public final class BeanMapper {
         this.configuration = configuration;
     }
 
-    public Object map(Object source) {
+    public <S, T> T map(S source) {
         if (source == null && !configuration.getUseNullValue()) {
-            return null;
+            // noinspection unchecked
+            return (T) this.getConfiguration().getDefaultValueForClass(this.getConfiguration().getTargetClass());
         }
         return MapStrategyType.getStrategy(this, configuration).map(source);
     }
@@ -45,7 +46,7 @@ public final class BeanMapper {
      * @return the original target instance containing all applicable properties
      */
     public <S, T> T map(S source, T target) {
-        return (T) wrap()
+        return wrap()
                 .setTarget(target)
                 .build()
                 .map(source);
@@ -64,6 +65,31 @@ public final class BeanMapper {
     }
 
     /**
+     * Maps the source to the given target.
+     *
+     * <p>If the target is a Collection, Map, or Optional, the object wrapped in the source, will be mapped to the type
+     * corresponding to the relevant type argument.</p>
+     *
+     * @param source Source instance of the properties.
+     * @param target Implementation of ParameterizedType, which provides the information necessary to map elements to
+     *               the correct type.
+     * @return The result of the mapping.
+     * @param <S> Type of the source.
+     * @param <P> Type of the specific implementation of ParameterizedType used as the target.
+     */
+    public <S, P extends ParameterizedType> Object map(S source, P target) {
+        if (source instanceof Collection<?> collection) {
+            return this.map(collection, (Class<?>) target.getActualTypeArguments()[0]);
+        } else if (source instanceof Map<?, ?> map) {
+            return this.map(map, (Class<?>) target.getActualTypeArguments()[1]);
+        } else if (source instanceof Optional<?> optional) {
+            return this.map(optional, (Class<?>) target.getActualTypeArguments()[0]);
+        } else {
+            return this.map(source, (Class<?>) target.getRawType());
+        }
+    }
+
+    /**
      * Copies the values from the source object to a newly constructed target instance
      * @param source source instance of the properties
      * @param targetClass class of the target, needs to be constructed as the target instance
@@ -72,7 +98,7 @@ public final class BeanMapper {
      * @return the target instance containing all applicable properties
      */
     public <S, T> T map(S source, Class<T> targetClass) {
-        return (T) wrap()
+        return wrap()
                 .setTargetClass(targetClass)
                 .build()
                 .map(source);
@@ -160,7 +186,7 @@ public final class BeanMapper {
     }
 
     private <S, T, E> T mapCollection(S collection, Class<E> elementInCollection) {
-        return (T) wrap()
+        return wrap()
                 .setCollectionClass(collection.getClass())
                 .setTargetClass(elementInCollection)
                 .build()

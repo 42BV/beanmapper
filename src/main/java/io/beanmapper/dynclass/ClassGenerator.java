@@ -1,6 +1,7 @@
 package io.beanmapper.dynclass;
 
 import java.util.Map;
+import java.util.Set;
 
 import io.beanmapper.annotations.BeanAlias;
 import io.beanmapper.annotations.BeanCollection;
@@ -16,6 +17,7 @@ import javassist.CtClass;
 import javassist.CtField;
 import javassist.CtMethod;
 import javassist.NotFoundException;
+import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
@@ -36,19 +38,61 @@ public class ClassGenerator {
         this.classPool = classPool;
     }
 
+    /**
+     * Creates a class, derived from the given base-class.
+     *
+     * <p>A class is dynamically generated, whenever a source or target has been downsized, and the given combination of base-class and nodes has not been
+     * registered before.</p><p>A class will also be generated when an object is mapped to a record.</p>
+     *
+     * @param baseClass The class that will be used to generate a blueprint for the new class.
+     * @param displayNodes A wrapper for the fields that need to be present in the resulting class.
+     * @param strictMappingProperties Configuration regarding strict mapping.
+     * @return A {@link GeneratedClass}-object representing a {@link CtClass} and a {@link Class}.
+     * @throws NotFoundException May be thrown when Javassist creates a CtClass based on the name of the given base-class.
+     * @throws CannotCompileException If Javassist cannot compile the CtClass to bytecode, a CannotCompileException will be thrown.
+     */
     public GeneratedClass createClass(
             Class<?> baseClass, Node displayNodes,
-            StrictMappingProperties strictMappingProperties) throws Exception {
+            StrictMappingProperties strictMappingProperties) throws NotFoundException, CannotCompileException, ClassNotFoundException {
         this.classPool.insertClassPath(new ClassClassPath(baseClass));
+        if (baseClass.isRecord()) {
+            //noinspection unchecked
+            return createClassDerivedFromRecord((Class<? extends Record>) baseClass, displayNodes.getFields());
+        }
         Map<String, BeanProperty> baseFields = beanMatchStore.getBeanMatch(
                 strictMappingProperties.createBeanPair(baseClass, Object.class)
         ).getSourceNodes();
         return new GeneratedClass(createClass(baseClass, baseFields, displayNodes, strictMappingProperties), baseClass);
     }
 
+    /**
+     * Creates a class specifically derived from a Record-class.
+     *
+     * <p>This method is used whenever a record is used as a source and the configuration allows for the use of converters.</p>
+     *
+     * @param clazz The class that will serve as the baseclass for the dynamically generated class.
+     * @return A GeneratedClass based on the source class.
+     * @throws NotFoundException May be thrown when Javassist creates a CtClass, based on the name of the given base-class.
+     * @throws CannotCompileException If Javassist cannot compile the CtClass to bytecode, a CannotCompileException is thrown.
+     */
+    public synchronized GeneratedClass createClassDerivedFromRecord(Class<? extends Record> clazz, Set<String> fieldNames)
+            throws NotFoundException, CannotCompileException {
+        CtClass baseClass = classPool.getCtClass(clazz.getName());
+        CtClass intermediaryCtClass = classPool.makeClass(baseClass.getName() + "Dyn" + generatedClassPrefix++);
+
+        for (var fieldName : fieldNames) {
+            CtField copyField;
+            copyField = new CtField(baseClass.getField(fieldName), intermediaryCtClass);
+
+            copyField.setModifiers(AccessFlag.PUBLIC);
+            intermediaryCtClass.addField(copyField);
+        }
+        return new GeneratedClass(intermediaryCtClass, clazz);
+    }
+
     private synchronized CtClass createClass(
             Class<?> base, Map<String, BeanProperty> baseFields,
-            Node displayNodes, StrictMappingProperties strictMappingProperties) throws Exception {
+            Node displayNodes, StrictMappingProperties strictMappingProperties) throws NotFoundException, CannotCompileException, ClassNotFoundException {
         CtClass baseClass = classPool.getCtClass(base.getName());
         CtClass dynClass = classPool.makeClass(base.getName() + "Dyn" + ++generatedClassPrefix);
 
@@ -105,7 +149,7 @@ public class ClassGenerator {
 
     private GeneratedClass handleNestedClass(
             CtField field, Class<?> type,
-            Node displayNodes, StrictMappingProperties strictMappingProperties) throws Exception {
+            Node displayNodes, StrictMappingProperties strictMappingProperties) throws NotFoundException, CannotCompileException, ClassNotFoundException {
         GeneratedClass nestedClass = createClass(type, displayNodes, strictMappingProperties);
         field.setType(nestedClass.ctClass);
         return nestedClass;
@@ -113,7 +157,7 @@ public class ClassGenerator {
 
     private void handleBeanCollection(
             CtField field, BeanCollectionInstructions collectionInstructions,
-            Node displayNodes, StrictMappingProperties strictMappingProperties) throws Exception {
+            Node displayNodes, StrictMappingProperties strictMappingProperties) throws NotFoundException, CannotCompileException, ClassNotFoundException {
         GeneratedClass elementClass = createClass(collectionInstructions.getCollectionElementType().getType(), displayNodes, strictMappingProperties);
 
         ConstPool constPool = field.getDeclaringClass().getClassFile().getConstPool();

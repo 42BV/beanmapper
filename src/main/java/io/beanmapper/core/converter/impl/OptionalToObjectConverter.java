@@ -8,14 +8,11 @@ import io.beanmapper.core.converter.BeanConverter;
 
 public class OptionalToObjectConverter implements BeanConverter {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanPropertyMatch beanPropertyMatch) {
+    public <S, T> T convert(BeanMapper beanMapper, S source, Class<T> targetClass, BeanPropertyMatch beanPropertyMatch) {
         Object obj = ((Optional<?>) source).orElse(null);
         if (obj != null && obj.getClass().equals(targetClass)) {
-            return obj;
+            return (T) obj;
         }
         return beanMapper.map(obj, targetClass);
     }

@@ -129,6 +129,7 @@ public class BeanMatchStore {
 
         Map<String, BeanProperty> ourCurrentNodes = ourNodes;
         List<PropertyAccessor> accessors = PropertyAccessors.getAll(ourType);
+
         for (PropertyAccessor accessor : accessors) {
 
             BeanPropertyAccessType accessType = matchupDirection.accessType(accessor);
@@ -137,7 +138,7 @@ public class BeanMatchStore {
             }
 
             // Ignore fields
-            if (accessor.findAnnotation(BeanIgnore.class) != null) {
+            if (accessor.isAnnotationPresent(BeanIgnore.class)) {
                 continue;
             }
 
@@ -147,7 +148,7 @@ public class BeanMatchStore {
                     dealWithBeanProperty(matchupDirection, otherNodes, otherType, accessor);
 
             // Unwrap the fields which exist in the unwrap class
-            BeanProperty currentBeanProperty = null;
+            BeanProperty currentBeanProperty;
             try {
                 currentBeanProperty = new BeanPropertyCreator(
                         matchupDirection, ourType, accessor.getName()).determineNodesForPath(precedingBeanProperty);
@@ -169,7 +170,7 @@ public class BeanMatchStore {
                     currentBeanProperty,
                     accessor.findAnnotation(BeanLogicSecured.class));
 
-            if (accessor.findAnnotation(BeanAlias.class) != null) {
+            if (accessor.isAnnotationPresent(BeanAlias.class)) {
                 BeanAlias beanAlias = accessor.findAnnotation(BeanAlias.class);
                 if (aliases.containsKey(beanAlias.value())) {
                     throw new IllegalArgumentException("There is already a BeanAlias with key " + beanAlias.value());
@@ -177,7 +178,7 @@ public class BeanMatchStore {
                 aliases.put(beanAlias.value(), currentBeanProperty);
             }
 
-            if (accessor.findAnnotation(BeanUnwrap.class) != null) {
+            if (accessor.isAnnotationPresent(BeanUnwrap.class)) {
                 ourCurrentNodes = getAllFields(
                         ourCurrentNodes,
                         otherNodes,
@@ -263,7 +264,7 @@ public class BeanMatchStore {
             BeanPropertyMatchupDirection matchupDirection, Map<String, BeanProperty> otherNodes,
             Class<?> otherType, PropertyAccessor accessor) {
         BeanPropertyWrapper wrapper = new BeanPropertyWrapper(accessor.getName());
-        if (accessor.findAnnotation(io.beanmapper.annotations.BeanProperty.class) != null) {
+        if (accessor.isAnnotationPresent(io.beanmapper.annotations.BeanProperty.class)) {
             wrapper.setMustMatch();
             wrapper.setName(getBeanPropertyName(accessor.findAnnotation(io.beanmapper.annotations.BeanProperty.class)));
             // Get the other field from the location that is specified in the beanProperty annotation.
@@ -277,7 +278,7 @@ public class BeanMatchStore {
                 if (logger.isDebugEnabled()) {
                     logger.debug("""
                             BeanNoSuchPropertyException thrown by BeanMatchStore#dealWithBeanProperty(BeanPropertyMatchupDirection, Map<String, BeanProperty>, Class, PropertyAccessor), for {}.
-                            {}""", accessor.getName(), err.getMessage());
+                            {}""", wrapper.getName(), err.getMessage());
                 }
             }
         }

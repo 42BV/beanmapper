@@ -18,6 +18,7 @@ import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
 import io.beanmapper.dynclass.ClassStore;
 import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
+import io.beanmapper.utils.DefaultValues;
 
 public class CoreConfiguration implements Configuration {
 
@@ -99,6 +100,8 @@ public class CoreConfiguration implements Configuration {
      * is to skip the mapping operation if a source value is null.
      */
     private boolean useNullValue;
+
+    private Map<Class<?>, Object> customDefaultValueMap = new HashMap<>();
 
     @Override
     public List<String> getDownsizeTarget() {
@@ -421,4 +424,21 @@ public class CoreConfiguration implements Configuration {
                 "Illegal to set flush after clear on the core configuration");
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T, V> V getDefaultValueForClass(Class<T> targetClass) {
+        return this.customDefaultValueMap.containsKey(targetClass)
+                ? (V) this.customDefaultValueMap.get(targetClass)
+                : DefaultValues.defaultValueFor(targetClass);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T, V> void addCustomDefaultValueForClass(Class<T> targetClass, V value) {
+        this.customDefaultValueMap.put(targetClass, value);
+    }
 }

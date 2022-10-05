@@ -10,9 +10,9 @@ import io.beanmapper.config.Configuration;
 import io.beanmapper.core.BeanMatch;
 import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.core.converter.BeanConverter;
-import io.beanmapper.core.converter.collections.CollectionConverter;
 import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanPropertyNoMatchException;
+import io.beanmapper.utils.Records;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,13 +41,28 @@ public abstract class AbstractMapStrategy implements MapStrategy {
         return beanMapper;
     }
 
+    /**
+     * Composes the {@link ConstructorArguments}-object for the given source and {@link BeanMatch}-object.
+     *
+     * <p>This method is used specifically by the {@link MapToClassStrategy} and the {@link MapToRecordStrategy}.</p><p>The source-class is checked for the
+     * presence of the {@link BeanConstruct}-annotation. If the annotation is present, the names of the fields described by the annotation will be stored in the
+     * values-array of the method. <p>If no BeanConstruct-annotation is present, a check will be performed to see if the target-class is a record. If so, the
+     * values-array will be set to the result of the {@link Records#getRecordFieldNames(Class)}-method, which essentially loops through all the
+     * RecordComponent-objects associated with the target-class, and returns an array of their names.</p><p>Lastly, if the values-array is null, null will
+     * be returned. Otherwise, a new ConstructorArguments-object will be returned, using the source-object, the BeanMatch, and the values-array.</p>
+     *
+     * @param source The source-object that will be mapped to the target.
+     * @param beanMatch The BeanMatch that will be used to map the source to the target.
+     * @return ConstructorArguments-object constructed from the source, beanMatch and values taken from either the BeanConstruct-annotation, or
+     *         RecordComponents.
+     * @param <S> The type of the source-object.
+     */
     public <S> ConstructorArguments getConstructorArguments(S source, BeanMatch beanMatch) {
-        BeanConstruct beanConstruct = beanMatch.getTargetClass().getAnnotation(BeanConstruct.class);
+        final Class<?> targetClass = beanMatch.getTargetClass();
 
-        // If the target does not have a BeanConstruct annotation, check the source
-        if (beanConstruct == null) {
-            beanConstruct = beanMatch.getSourceClass().getAnnotation(BeanConstruct.class);
-        }
+        BeanConstruct beanConstruct = targetClass.isAnnotationPresent(BeanConstruct.class)
+                ? targetClass.getAnnotation(BeanConstruct.class)
+                : beanMatch.getSourceClass().getAnnotation(BeanConstruct.class);
 
         // If no BeanConstruct exists, assume a no-arg constructor must be used
         return beanConstruct == null ? null : new ConstructorArguments(source, beanMatch, beanConstruct.value());
@@ -123,11 +138,6 @@ public abstract class AbstractMapStrategy implements MapStrategy {
         Class<?> valueClass = getConfiguration().getBeanUnproxy().unproxy(beanPropertyMatch.getSourceClass());
         BeanConverter converter = getConverterOptional(valueClass, targetClass);
 
-        // @TODO Consider removing the null check here and offering a null value to BeanConverters as well
-        if (value == null && !(converter instanceof CollectionConverter)) {
-            return null;
-        }
-
         if (converter != null) {
             logger.debug("{}{}{}", INDENT, converter.getClass().getSimpleName(), ARROW);
             BeanMapper wrappedBeanMapper = beanMapper
@@ -135,6 +145,10 @@ public abstract class AbstractMapStrategy implements MapStrategy {
                     .setParent(beanPropertyMatch.getTarget())
                     .build();
             return converter.convert(wrappedBeanMapper, value, targetClass, beanPropertyMatch);
+        }
+
+        if (value == null) {
+            return this.configuration.getDefaultValueForClass(targetClass);
         }
 
         if (targetClass.isAssignableFrom(valueClass)) {

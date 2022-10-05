@@ -75,7 +75,9 @@ public class MethodPropertyAccessor implements PropertyAccessor {
 
         try {
             Method readMethod = descriptor.getReadMethod();
-            readMethod.setAccessible(true);
+            if (!readMethod.canAccess(instance)) {
+                readMethod.setAccessible(true);
+            }
             return readMethod.invoke(instance);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new BeanPropertyReadException(instance.getClass(), getName(), e);
@@ -101,7 +103,9 @@ public class MethodPropertyAccessor implements PropertyAccessor {
 
         try {
             Method writeMethod = descriptor.getWriteMethod();
-            writeMethod.setAccessible(true);
+            if (!writeMethod.canAccess(instance)) {
+                writeMethod.setAccessible(true);
+            }
             writeMethod.invoke(instance, value);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new BeanPropertyWriteException(instance.getClass(), getName(), e);
@@ -123,4 +127,15 @@ public class MethodPropertyAccessor implements PropertyAccessor {
     public Method getWriteMethod() {
         return descriptor.getWriteMethod();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <A extends Annotation> boolean isAnnotationPresent(final Class<A> annotationClass) {
+        if (this.isReadable() && this.getReadMethod().isAnnotationPresent(annotationClass))
+            return true;
+        return this.isWritable() && this.getWriteMethod().isAnnotationPresent(annotationClass);
+    }
+
 }

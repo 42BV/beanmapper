@@ -44,11 +44,11 @@ public class DefaultBeanInitializer implements BeanInitializer {
         for (var i = 0; i < arguments.length; ++i) {
             var argument = arguments[i];
             if (argument instanceof Collection<?> collection) {
-                argument = beanMapper.map(collection, (Class<?>) ((ParameterizedType) constructorParameterTypes[i]).getActualTypeArguments()[0]);
+                argument = beanMapper.map(collection, (ParameterizedType) constructorParameterTypes[i]);
             } else if (argument instanceof Map<?, ?> map) {
-                argument = beanMapper.map(map, (Class<?>) ((ParameterizedType) constructorParameterTypes[i]).getActualTypeArguments()[1]);
+                argument = beanMapper.map(map, (ParameterizedType) constructorParameterTypes[i]);
             } else if (argument instanceof Optional<?> optional) {
-                argument = beanMapper.map(optional, (Class<?>) ((ParameterizedType) constructorParameterTypes[i]).getActualTypeArguments()[0]);
+                argument = beanMapper.map(optional, (ParameterizedType) constructorParameterTypes[i]);
             }
             mappedArguments[i] = argument;
         }

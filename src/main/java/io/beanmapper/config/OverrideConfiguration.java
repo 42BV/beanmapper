@@ -2,6 +2,7 @@ package io.beanmapper.config;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,39 +20,41 @@ public class OverrideConfiguration implements Configuration {
 
     private final Configuration parentConfiguration;
 
-    private OverrideField<BeanInitializer> beanInitializer;
+    private final OverrideField<BeanInitializer> beanInitializer;
 
-    private List<BeanConverter> beanConverters = new ArrayList<>();
+    private final List<BeanConverter> beanConverters = new ArrayList<>();
 
-    private List<BeanPair> beanPairs = new ArrayList<>();
+    private final List<BeanPair> beanPairs = new ArrayList<>();
 
-    private OverrideField<List<String>> downsizeSourceFields;
+    private final OverrideField<List<String>> downsizeSourceFields;
 
-    private OverrideField<List<String>> downsizeTargetFields;
+    private final OverrideField<List<String>> downsizeTargetFields;
 
     private Class targetClass;
 
     private Object target;
 
-    private OverrideField<Object> parent;
+    private final OverrideField<Object> parent;
 
     private Class collectionClass;
 
-    private OverrideField<Boolean> converterChoosable;
+    private final OverrideField<Boolean> converterChoosable;
 
-    private OverrideField<StrictMappingProperties> strictMappingProperties;
+    private final OverrideField<StrictMappingProperties> strictMappingProperties;
 
     private BeanCollectionUsage collectionUsage = null;
 
     private Class<?> preferredCollectionClass = null;
 
-    private OverrideField<Boolean> enforcedSecuredProperties;
+    private final OverrideField<Boolean> enforcedSecuredProperties;
 
-    private OverrideField<Boolean> useNullValue;
+    private final OverrideField<Boolean> useNullValue;
 
-    private OverrideField<FlushAfterClearInstruction> flushAfterClear;
+    private final OverrideField<FlushAfterClearInstruction> flushAfterClear;
 
-    private OverrideField<Boolean> flushEnabled;
+    private final OverrideField<Boolean> flushEnabled;
+
+    private final Map<Class<?>, Object> customDefaultValues;
 
     public OverrideConfiguration(Configuration configuration) {
         if (configuration == null) {
@@ -68,6 +71,7 @@ public class OverrideConfiguration implements Configuration {
         this.useNullValue = new OverrideField<>(configuration::getUseNullValue);
         this.strictMappingProperties = new OverrideField<>(configuration::getStrictMappingProperties);
         this.enforcedSecuredProperties = new OverrideField<>(configuration::getEnforceSecuredProperties);
+        this.customDefaultValues = new HashMap<>();
     }
 
     @Override
@@ -405,6 +409,24 @@ public class OverrideConfiguration implements Configuration {
     @Override
     public void setFlushAfterClear(FlushAfterClearInstruction flushAfterClear) {
         this.flushAfterClear.set(flushAfterClear);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T, V> void addCustomDefaultValueForClass(Class<T> target, V value) {
+        this.customDefaultValues.put(target, value);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T, V> V getDefaultValueForClass(Class<T> targetClass) {
+        return this.customDefaultValues.containsKey(targetClass)
+                ? (V) this.customDefaultValues.get(targetClass)
+                : this.parentConfiguration.getDefaultValueForClass(targetClass);
     }
 
 }

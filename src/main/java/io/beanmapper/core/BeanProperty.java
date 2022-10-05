@@ -9,6 +9,7 @@ import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.strategy.ConstructorArguments;
 import io.beanmapper.utils.DefaultValues;
+import io.beanmapper.utils.Records;
 
 public class BeanProperty {
 
@@ -90,14 +91,16 @@ public class BeanProperty {
         Object target = getCurrentAccessor().getValue(parent);
         if (target == null) {
             Class<?> type = getCurrentAccessor().getType();
-            BeanConstruct beanConstruct = type.getAnnotation(BeanConstruct.class);
 
-            if (beanConstruct == null) {
-                target = new DefaultBeanInitializer().instantiate(type, null);
+            ConstructorArguments arguments = null;
+            if (!type.isAnnotationPresent(BeanConstruct.class)) {
+                if (type.isRecord()) {
+                    arguments = new ConstructorArguments(source, beanMatch, Records.getRecordFieldNames((Class<? extends Record>) type));
+                }
             } else {
-                ConstructorArguments arguments = new ConstructorArguments(source, beanMatch, beanConstruct.value());
-                target = new DefaultBeanInitializer().instantiate(type, arguments);
+                arguments = new ConstructorArguments(source, beanMatch, type.getAnnotation(BeanConstruct.class).value());
             }
+            target = new DefaultBeanInitializer().instantiate(type, arguments);
             getCurrentAccessor().setValue(parent, target);
         }
         return target;

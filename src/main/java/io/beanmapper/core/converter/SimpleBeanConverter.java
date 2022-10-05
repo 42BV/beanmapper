@@ -25,7 +25,7 @@ public abstract class SimpleBeanConverter<S, T> extends AbstractBeanConverter<S,
      * @param sourceClass the source class
      * @param targetClass the target class
      */
-    protected SimpleBeanConverter(Class<?> sourceClass, Class<?> targetClass) {
+    protected SimpleBeanConverter(Class<? extends S> sourceClass, Class<? extends T> targetClass) {
         super(sourceClass, targetClass);
     }
 

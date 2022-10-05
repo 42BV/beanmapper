@@ -96,7 +96,9 @@ import io.beanmapper.testmodel.collections.target_is_wrapped.UnwrappedSource;
 import io.beanmapper.testmodel.collections.target_is_wrapped.UnwrappedToWrappedBeanConverter;
 import io.beanmapper.testmodel.collections.target_is_wrapped.WrappedTarget;
 import io.beanmapper.testmodel.construct.NestedSourceWithoutConstruct;
+import io.beanmapper.testmodel.construct.SourceBeanConstructWithList;
 import io.beanmapper.testmodel.construct.SourceWithConstruct;
+import io.beanmapper.testmodel.construct.TargetBeanConstructWithList;
 import io.beanmapper.testmodel.construct.TargetWithoutConstruct;
 import io.beanmapper.testmodel.construct_not_matching.BigConstructTarget;
 import io.beanmapper.testmodel.construct_not_matching.BigConstructTarget2;
@@ -1865,6 +1867,14 @@ class BeanMapperTest {
         assertEquals(personFormArray[0].getId(), resultArray[0].getId());
         assertEquals(personFormArray[1].getId(), resultArray[1].getId());
         assertEquals(personFormArray[2].getId(), resultArray[2].getId());
+    }
+
+    @Test
+    void testBeanConstructWithCollectionShouldConvertCollectionItems() {
+        var form = new SourceBeanConstructWithList();
+        var result = this.beanMapper.map(form, TargetBeanConstructWithList.class);
+        assertEquals(form.numbers.size(), result.getNumbers().size());
+        assertTrue(result.getNumbers().containsAll(List.of(1, 2, 3)));
     }
 
     private MyEntity createMyEntity() {
