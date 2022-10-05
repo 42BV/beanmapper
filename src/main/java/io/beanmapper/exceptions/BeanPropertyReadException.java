@@ -9,7 +9,7 @@ public class BeanPropertyReadException extends BeanMappingException {
     }
 
     public BeanPropertyReadException(Class<?> classToInstantiate, String propertyName, Throwable rootCause) {
-        super(String.format(ERROR, classToInstantiate.getName(), propertyName), rootCause);
+        super(ERROR.formatted(classToInstantiate.getName(), propertyName), rootCause);
     }
 
 }

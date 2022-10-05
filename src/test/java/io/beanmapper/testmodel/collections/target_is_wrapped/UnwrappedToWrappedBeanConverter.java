@@ -7,13 +7,13 @@ import io.beanmapper.core.converter.BeanConverter;
 public class UnwrappedToWrappedBeanConverter implements BeanConverter {
 
     @Override
-    public Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanPropertyMatch beanPropertyMatch) {
+    public Object convert(BeanMapper beanMapper, Object source, Class targetClass, BeanPropertyMatch beanPropertyMatch) {
         UnwrappedSource unwrappedSource = (UnwrappedSource) source;
         return new WrappedTarget(unwrappedSource);
     }
 
     @Override
-    public boolean match(Class<?> sourceClass, Class<?> targetClass) {
+    public boolean match(Class sourceClass, Class targetClass) {
         return sourceClass.equals(UnwrappedSource.class) &&
                 targetClass.equals(WrappedTarget.class);
     }

@@ -35,6 +35,15 @@ public interface PropertyAccessor {
     <A extends Annotation> A findAnnotation(Class<A> annotationClass);
 
     /**
+     * Checks whether the given annotation is present on a property.
+     *
+     * @param annotationClass Annotation-class
+     * @return True, if the annotation is present on the property, false otherwise.
+     * @param <A> The type of the annotation.
+     */
+    <A extends Annotation> boolean isAnnotationPresent(final Class<A> annotationClass);
+
+    /**
      * Determine if the property is readable.
      * @return {@code true} when readable, else {@code false}
      */

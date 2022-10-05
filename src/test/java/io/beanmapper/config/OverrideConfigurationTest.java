@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayDeque;
 import java.util.List;
+import java.util.Queue;
 
 import io.beanmapper.BeanMapper;
 import io.beanmapper.core.constructor.DefaultBeanInitializer;
@@ -42,6 +44,9 @@ public class OverrideConfigurationTest {
         assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.addPackagePrefix((Class) null));
         assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.addAfterClearFlusher(null));
         assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.setBeanUnproxy(null));
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.setRoleSecuredCheck(null));
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.addCollectionHandler(null));
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.addLogicSecuredCheck(null));
     }
 
     @Test
@@ -113,6 +118,24 @@ public class OverrideConfigurationTest {
     void determineTargetClass() {
         overrideConfiguration.setTarget("Hello");
         assertEquals(String.class, overrideConfiguration.determineTargetClass());
+    }
+
+    @Test
+    void testAddCustomDefaultValueForQueue() {
+        overrideConfiguration.addCustomDefaultValueForClass(Queue.class, new ArrayDeque<>());
+        assertEquals(ArrayDeque.class, this.overrideConfiguration.getDefaultValueForClass(Queue.class).getClass());
+    }
+
+    @Test
+    void testSetEnforceSecuredProperties_true() {
+        overrideConfiguration.setEnforceSecuredProperties(true);
+        assertTrue(overrideConfiguration.getEnforceSecuredProperties());
+    }
+
+    @Test
+    void testSetEnforceSecuredProperties_false() {
+        overrideConfiguration.setEnforceSecuredProperties(false);
+        assertFalse(overrideConfiguration.getEnforceSecuredProperties());
     }
 
 }

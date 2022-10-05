@@ -12,15 +12,16 @@ public class MapToClassStrategy extends MapToInstanceStrategy {
     }
 
     @Override
-    public Object map(Object source) {
+    public <S, T> T map(S source) {
         Class<?> targetClass = getConfiguration().getTargetClass();
 
-        if (getConfiguration().isConverterChoosable()) {
+        if (getConfiguration().isConverterChoosable() || source instanceof Record) {
             Class<?> valueClass = getConfiguration().getBeanUnproxy().unproxy(source.getClass());
             BeanConverter converter = getConverterOptional(valueClass, targetClass);
             if (converter != null) {
-                logger.debug("    {}->", converter.getClass().getSimpleName());
-                return converter.convert(getBeanMapper(), source, targetClass, null);
+                logger.debug("Converter called for source of class {}, while mapping to class {}\t{}->", source.getClass(), targetClass,
+                        converter.getClass().getSimpleName());
+                return (T) converter.convert(getBeanMapper(), source, targetClass, null);
             }
         }
 
@@ -29,6 +30,6 @@ public class MapToClassStrategy extends MapToInstanceStrategy {
                 targetClass,
                 getConstructorArguments(source, beanMatch));
 
-        return map(source, target, beanMatch);
+        return (T) map(source, target, beanMatch);
     }
 }

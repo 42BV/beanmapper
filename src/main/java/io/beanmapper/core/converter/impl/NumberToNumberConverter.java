@@ -36,9 +36,9 @@ public class NumberToNumberConverter implements BeanConverter {
      * then converting that string back into the target number.
      */
     @Override
-    public Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanPropertyMatch beanPropertyMatch) {
+    public <S, T> T convert(BeanMapper beanMapper, S source, Class<T> targetClass, BeanPropertyMatch beanPropertyMatch) {
         if (source == null || source.getClass().equals(targetClass) || (beanPropertyMatch != null && beanPropertyMatch.getSourceClass().equals(targetClass))) {
-            return source;
+            return (T) source;
         }
         Object sourceAsString = beanMapper
                 .wrap()

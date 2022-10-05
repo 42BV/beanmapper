@@ -12,7 +12,7 @@ public class MapCollectionStrategy extends AbstractMapStrategy {
     }
 
     @Override
-    public Object map(Object source) {
+    public <S, T> T map(S source) {
 
         CollectionHandler collectionHandler = getConfiguration().getCollectionHandlerForCollectionClass();
 
@@ -26,10 +26,10 @@ public class MapCollectionStrategy extends AbstractMapStrategy {
         );
 
         if (source == null) {
-            return targetItems;
+            return (T) targetItems;
         }
 
-        return collectionHandler.copy(
+        return (T) collectionHandler.copy(
                 getBeanMapper(),
                 getConfiguration().getTargetClass(),
                 source,

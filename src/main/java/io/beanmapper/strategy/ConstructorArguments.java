@@ -13,6 +13,8 @@ public class ConstructorArguments {
     private List<Object> values = new ArrayList<>();
 
     public ConstructorArguments(Object source, BeanMatch beanMatch, String[] constructorArgs) {
+        if (constructorArgs == null)
+            throw new IllegalArgumentException("Cannot construct ConstructorArguments-object: Constructor-parameter String[] constructorArgs is null.");
 
         for (String constructorArg : constructorArgs) {
             if (constructorArgumentFoundInSource(beanMatch, constructorArg)) {

@@ -1,6 +1,6 @@
 package io.beanmapper.exceptions;
 
-public abstract class BeanMappingException extends RuntimeException {
+public abstract class BeanMappingException extends MappingException {
 
     protected BeanMappingException(String message) {
         super(message);

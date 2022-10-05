@@ -127,4 +127,13 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
     public Method getWriteMethod() {
         return methodAccessor != null ? methodAccessor.getWriteMethod() : null;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <A extends Annotation> boolean isAnnotationPresent(Class<A> annotationClass) {
+        return (this.fieldAccessor != null && this.fieldAccessor.isAnnotationPresent(annotationClass))
+                || (this.methodAccessor != null && this.methodAccessor.isAnnotationPresent(annotationClass));
+    }
 }

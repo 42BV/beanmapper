@@ -70,7 +70,9 @@ public class FieldPropertyAccessor implements PropertyAccessor {
             if (instance instanceof Enum && field.getName().equals("name")) {
                 return ((Enum<?>) instance).name();
             }
-            field.setAccessible(true);
+            if (!field.canAccess(instance)) {
+                field.setAccessible(true);
+            }
             return field.get(instance);
         } catch (IllegalAccessException e) {
             throw new BeanPropertyReadException(instance.getClass(), field.getName(), e);
@@ -91,7 +93,9 @@ public class FieldPropertyAccessor implements PropertyAccessor {
     @Override
     public void setValue(Object instance, Object value) {
         try {
-            field.setAccessible(true);
+            if (!field.canAccess(instance)) {
+                field.setAccessible(true);
+            }
             field.set(instance, value);
         } catch (IllegalAccessException e) {
             throw new BeanPropertyWriteException(instance.getClass(), field.getName(), e);
@@ -102,8 +106,17 @@ public class FieldPropertyAccessor implements PropertyAccessor {
      * {@inheritDoc}
      */
     @Override
+    public <A extends Annotation> boolean isAnnotationPresent(final Class<A> annotationClass) {
+        return this.field.isAnnotationPresent(annotationClass);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Method getReadMethod() {
-        return null;
+        throw new UnsupportedOperationException("FieldPropertyAccessor#getReadMethod is not supported. If the "
+                + "read-method must be used to get the value of the field, use the MethodPropertyAccessor.");
     }
 
     /**
@@ -111,6 +124,7 @@ public class FieldPropertyAccessor implements PropertyAccessor {
      */
     @Override
     public Method getWriteMethod() {
-        return null;
+        throw new UnsupportedOperationException("FieldPropertyAccessor#getWriteMethod is not supported. If the "
+                + "write-method must be used to set the value of the field, use the MethodPropertyAccessor.");
     }
 }

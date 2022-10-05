@@ -52,7 +52,7 @@ public class DirectedBeanProperty {
             BeanPropertyAccessType accessType,
             Class containingClass,
             PropertyAccessor accessor) {
-        Type type = accessType.getGenericType(containingClass, accessor);
+        Type type = (containingClass.isRecord()) ? BeanPropertyAccessType.FIELD.getGenericType(containingClass, accessor) : accessType.getGenericType(containingClass, accessor);
         if (type == null) {
             return null;
         }

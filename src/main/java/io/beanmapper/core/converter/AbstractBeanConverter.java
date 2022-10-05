@@ -44,17 +44,17 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
     /**
      * {@inheritDoc}
      */
-    @Override
     @SuppressWarnings("unchecked")
-    public final Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanPropertyMatch beanPropertyMatch) {
+    public final <U, R> R convert(BeanMapper beanMapper, U source, Class<R> targetClass, BeanPropertyMatch beanPropertyMatch) {
         this.beanMapper = beanMapper;
         if (source == null) {
-            Check.argument(!targetClass.isPrimitive(), "Cannot convert null into primitive.");
+            if (beanMapper != null)
+                beanMapper.getConfiguration().getDefaultValueForClass(targetClass);
             return null;
         }
         Check.argument(isMatchingSource(source.getClass()), "Unsupported source class.");
         Check.argument(isMatchingTarget(targetClass), "Unsupported target class.");
-        return doConvert((S) source, (Class<T>) targetClass);
+        return (R) doConvert((S) source, (Class<? extends T>) targetClass);
     }
 
     /**

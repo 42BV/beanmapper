@@ -224,7 +224,7 @@ public interface Configuration {
      * it will use this class over the one provided by the collection handler.
      * @return the collection class to prefer for instantiation
      */
-    Class<?> getPreferredCollectionClass();
+    <T> Class<T> getPreferredCollectionClass();
 
     /**
      * Sets the preferred collection class to be instantiated. If it has this choice,
@@ -419,4 +419,32 @@ public interface Configuration {
      */
     void setFlushAfterClear(FlushAfterClearInstruction flushAfterClear);
 
+    /**
+     * Allows the user to set a default value for a given type.
+     *
+     * <p>While the standard implementation of BeanMapper contains a utility-class
+     * {@link io.beanmapper.utils.DefaultValues}, the map within is far from exhaustive. Furthermore, custom default
+     * values can serve as a useful compatibility feature for projects that would prefer different defaults.</p>
+     *
+     * @param target The target class.
+     * @param value The default value for the given target class.
+     * @param <T> The type of the target.
+     * @param <V> The type of the value.
+     */
+    <T, V> void addCustomDefaultValueForClass(Class<T> target, V value);
+
+    /**
+     * Gets the default for the given target class.
+     *
+     * <p>Any implementation of this method must first check the registered custom default values for a suitable value,
+     * if a container for custom defaults exists. Afterwards, the method may check a parent-configuration's custom
+     * defaults, or simply refer to the defaults in {@link io.beanmapper.utils.DefaultValues}.</p>
+     *
+     * @param targetClass The target class
+     * @return The value associated with the given target class, based off of the values set in the custom default
+     *         values container, or the DefaultValues-class.
+     * @param <T> The type of the target-class.
+     * @param <V> The type of the associated value.
+     */
+    <T, V> V getDefaultValueForClass(Class<T> targetClass);
 }
