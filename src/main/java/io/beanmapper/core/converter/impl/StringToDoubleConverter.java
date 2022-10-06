@@ -24,7 +24,7 @@ public class StringToDoubleConverter extends SimpleBeanConverter<String, Double>
     protected Double doConvert(String source) {
         return Double.parseDouble(source);
     }
-    
+
     /**
      * {@inheritDoc}
      */

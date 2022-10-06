@@ -13,7 +13,7 @@ class BeanPropertyClassNormal extends AbstractBeanPropertyClass {
 
     @Override
     public Class<?> getBasicType() {
-        return (Class<?>)type;
+        return (Class<?>) type;
     }
 
     @Override

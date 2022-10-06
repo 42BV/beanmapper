@@ -19,10 +19,10 @@ public interface BeanConverter {
      * @param beanPropertyMatch information on the field pair (source / target)
      * @return the converted source instance
      */
-    Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanPropertyMatch beanPropertyMatch);
+    <S, T> T convert(BeanMapper beanMapper, S source, Class<T> targetClass, BeanPropertyMatch beanPropertyMatch);
 
     /**
-     * Determines if the conversion of our source type to a 
+     * Determines whether the conversion of our source type to a
      * target type is supported by this converter.
      * @param sourceClass the source class
      * @param targetClass the target class

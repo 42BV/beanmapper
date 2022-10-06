@@ -1,6 +1,7 @@
 package io.beanmapper.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -21,9 +22,9 @@ public class BeanMatch {
 
     public BeanMatch(BeanPair beanPair, Map<String, BeanProperty> sourceNodes, Map<String, BeanProperty> targetNodes, Map<String, BeanProperty> aliases) {
         this.beanPair = beanPair;
-        this.sourceNodes = sourceNodes;
-        this.targetNodes = targetNodes;
-        this.aliases = aliases;
+        this.sourceNodes = sourceNodes != null ? sourceNodes : Collections.emptyMap();
+        this.targetNodes = targetNodes != null ? targetNodes : Collections.emptyMap();
+        this.aliases = aliases != null ? aliases : Collections.emptyMap();
         validateMappingRequirements();
     }
 
@@ -36,25 +37,25 @@ public class BeanMatch {
     }
 
     public Map<String, BeanProperty> getSourceNodes() {
-        return sourceNodes;
+        return this.sourceNodes != null ? this.sourceNodes : Collections.emptyMap();
     }
 
     public Map<String, BeanProperty> getTargetNodes() {
-        return targetNodes;
+        return this.targetNodes != null ? this.targetNodes : Collections.emptyMap();
     }
 
     public Map<String, BeanProperty> getAliases() {
-        return aliases;
+        return this.aliases != null ? this.aliases : Collections.emptyMap();
     }
 
     public MatchedBeanPropertyPair findBeanPairField(String fieldName) {
         BeanProperty sourceField = getSourceNodes().get(fieldName);
-        if(sourceField == null) {
+        if (sourceField == null) {
             // No source field found -> check for alias
             sourceField = getAliases().get(fieldName);
         }
         BeanProperty targetField = getTargetNodes().get(fieldName);
-        if(targetField == null) {
+        if (targetField == null) {
             // No target field found -> check for alias
             targetField = getAliases().get(fieldName);
         }
@@ -77,13 +78,13 @@ public class BeanMatch {
         }
     }
 
-    private List<BeanProperty> validateMappingRequirements(Map<String, BeanProperty> fields) {
+    private List<BeanProperty> validateMappingRequirements(Map<String, BeanProperty> nodes) {
         List<BeanProperty> missingMatches = new ArrayList<>();
-        for (String fieldName : fields.keySet()) {
+        for (String fieldName : nodes.keySet()) {
             MatchedBeanPropertyPair matchedField = findBeanPairField(fieldName);
             BeanProperty sourceBeanProperty = matchedField.sourceBeanProperty();
             BeanProperty targetBeanProperty = matchedField.targetBeanProperty();
-            if (    sourceBeanProperty == null || targetBeanProperty == null) {
+            if (sourceBeanProperty == null || targetBeanProperty == null) {
                 missingMatches.add(sourceBeanProperty == null ?
                         targetBeanProperty :
                         sourceBeanProperty);

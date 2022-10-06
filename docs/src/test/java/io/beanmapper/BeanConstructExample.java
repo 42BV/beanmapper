@@ -33,7 +33,7 @@ public class BeanConstructExample {
         }
     }
 
-    @BeanConstruct({"firstName", "prefix", "lastName"})
+    @BeanConstruct({ "firstName", "prefix", "lastName" })
     public static class PersonResult {
         public String fullName;
 

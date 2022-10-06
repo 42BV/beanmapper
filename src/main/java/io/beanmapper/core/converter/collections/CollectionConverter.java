@@ -5,28 +5,26 @@ import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.converter.BeanConverter;
 
-public class CollectionConverter<T> implements BeanConverter {
+public class CollectionConverter implements BeanConverter {
 
-    private final CollectionHandler<T> collectionHandler;
+    private final CollectionHandler<?> collectionHandler;
 
-    public CollectionConverter(CollectionHandler<T> collectionHandler) {
+    public CollectionConverter(CollectionHandler<?> collectionHandler) {
         this.collectionHandler = collectionHandler;
     }
 
     @Override
-    public T convert(
+    public <R, U> U convert(
             BeanMapper beanMapper,
-            Object source,
-            Class<?> targetClass,
+            R source,
+            Class<U> targetClass,
             BeanPropertyMatch beanPropertyMatch) {
 
-        T sourceCollection = (T) source;
-
-        if (beanPropertyMatch.getCollectionInstructions() == null) {
-            return sourceCollection;
+        if (beanPropertyMatch == null || beanPropertyMatch.getCollectionInstructions() == null) {
+            return targetClass.cast(source);
         }
 
-        return (T)beanMapper.wrap()
+        return beanMapper.wrap()
                 .setCollectionClass(collectionHandler.getType())
                 .setCollectionUsage(beanPropertyMatch.getCollectionInstructions().getBeanCollectionUsage())
                 .setPreferredCollectionClass(beanPropertyMatch.getCollectionInstructions().getPreferredCollectionClass().getAnnotationClass())
@@ -35,7 +33,7 @@ public class CollectionConverter<T> implements BeanConverter {
                 .setTarget(beanPropertyMatch.getTargetObject())
                 .setUseNullValue()
                 .build()
-                .map(sourceCollection);
+                .map(source);
     }
 
     @Override

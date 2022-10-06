@@ -1,6 +1,7 @@
 package io.beanmapper.config;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.beanmapper.BeanMapper;
@@ -9,35 +10,40 @@ import io.beanmapper.annotations.LogicSecuredCheck;
 import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.collections.ListCollectionHandler;
 import io.beanmapper.core.collections.MapCollectionHandler;
+import io.beanmapper.core.collections.QueueCollectionHandler;
 import io.beanmapper.core.collections.SetCollectionHandler;
 import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.converter.collections.CollectionConverter;
 import io.beanmapper.core.converter.impl.AnyToEnumConverter;
 import io.beanmapper.core.converter.impl.NumberToNumberConverter;
+import io.beanmapper.core.converter.impl.ObjectToOptionalConverter;
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
 import io.beanmapper.core.converter.impl.OptionalToObjectConverter;
 import io.beanmapper.core.converter.impl.PrimitiveConverter;
+import io.beanmapper.core.converter.impl.RecordToAnyConverter;
 import io.beanmapper.core.converter.impl.StringToBigDecimalConverter;
 import io.beanmapper.core.converter.impl.StringToBooleanConverter;
 import io.beanmapper.core.converter.impl.StringToIntegerConverter;
 import io.beanmapper.core.converter.impl.StringToLongConverter;
 import io.beanmapper.core.unproxy.BeanUnproxy;
+import io.beanmapper.utils.Trinary;
 
 public class BeanMapperBuilder {
 
     private static final List<CollectionHandler> DEFAULT_COLLECTION_HANDLERS =
             List.of(
-                new MapCollectionHandler(),
-                new SetCollectionHandler(),
-                new ListCollectionHandler()
+                    new MapCollectionHandler(),
+                    new SetCollectionHandler(),
+                    new ListCollectionHandler(),
+                    new QueueCollectionHandler()
             );
 
     private final Configuration configuration;
 
-    private List<BeanConverter> customBeanConverters = new ArrayList<>();
+    private final List<BeanConverter> customBeanConverters = new ArrayList<>();
 
-    private List<CollectionHandler> customCollectionHandlers = new ArrayList<>();
+    private final List<CollectionHandler> customCollectionHandlers = new ArrayList<>();
 
     public BeanMapperBuilder() {
         this.configuration = new CoreConfiguration();
@@ -102,7 +108,7 @@ public class BeanMapperBuilder {
         return this;
     }
 
-    public BeanMapperBuilder setEnforcedSecuredProperties(Boolean enforcedSecuredProperties) {
+    public BeanMapperBuilder setEnforcedSecuredProperties(boolean enforcedSecuredProperties) {
         this.configuration.setEnforceSecuredProperties(enforcedSecuredProperties);
         return this;
     }
@@ -119,13 +125,13 @@ public class BeanMapperBuilder {
 
     public BeanMapperBuilder downsizeSource(List<String> includeFields) {
         this.configuration.setApplyStrictMappingConvention(false);
-        this.configuration.downsizeSource(includeFields);
+        this.configuration.downsizeSource(includeFields != null ? includeFields : Collections.emptyList());
         return this;
     }
 
     public BeanMapperBuilder downsizeTarget(List<String> includeFields) {
         this.configuration.setApplyStrictMappingConvention(false);
-        this.configuration.downsizeTarget(includeFields);
+        this.configuration.downsizeTarget(includeFields != null ? includeFields : Collections.emptyList());
         return this;
     }
 
@@ -158,13 +164,13 @@ public class BeanMapperBuilder {
         this.configuration.setStrictSourceSuffix(strictSourceSuffix);
         return this;
     }
-    
+
     public BeanMapperBuilder setStrictTargetSuffix(String strictTargetSuffix) {
         this.configuration.setStrictTargetSuffix(strictTargetSuffix);
         return this;
     }
-    
-    public BeanMapperBuilder setApplyStrictMappingConvention(Boolean applyStrictMappingConvention) {
+
+    public BeanMapperBuilder setApplyStrictMappingConvention(boolean applyStrictMappingConvention) {
         this.configuration.setApplyStrictMappingConvention(applyStrictMappingConvention);
         return this;
     }
@@ -179,7 +185,7 @@ public class BeanMapperBuilder {
         return this;
     }
 
-    public BeanMapperBuilder setFlushAfterClear(boolean flushAfterClear) {
+    public BeanMapperBuilder setFlushAfterClear(Trinary flushAfterClear) {
         this.configuration.setFlushAfterClear(flushAfterClear);
         return this;
     }
@@ -189,9 +195,22 @@ public class BeanMapperBuilder {
         return this;
     }
 
-
     public BeanMapperBuilder setUseNullValue() {
         this.configuration.setUseNullValue(true);
+        return this;
+    }
+
+    /**
+     * Adds a mapping for a default value to the configuration.
+     *
+     * @param targetClass The class that the value is the default for.
+     * @param value The value that will serve as the default for the target-class.
+     * @return This instance.
+     * @param <T> The type op the targetClass.
+     * @param <V> The type of the value.
+     */
+    public <T, V> BeanMapperBuilder addCustomDefaultValue(Class<T> targetClass, V value) {
+        this.configuration.addCustomDefaultValueForClass(targetClass, value);
         return this;
     }
 
@@ -199,7 +218,8 @@ public class BeanMapperBuilder {
         BeanMapper beanMapper = new BeanMapper(configuration);
         // Custom collection handlers must be registered before default ones
         addCollectionHandlers(customCollectionHandlers);
-        addCollectionHandlers(DEFAULT_COLLECTION_HANDLERS);
+        if (this.configuration instanceof CoreConfiguration)
+            addCollectionHandlers(DEFAULT_COLLECTION_HANDLERS);
         // Custom bean converters must be registered before default ones
         addCustomConverters();
         if (configuration.isAddDefaultConverters()) {
@@ -232,6 +252,8 @@ public class BeanMapperBuilder {
         attachConverter(new NumberToNumberConverter());
         attachConverter(new ObjectToStringConverter());
         attachConverter(new OptionalToObjectConverter());
+        attachConverter(new RecordToAnyConverter());
+        attachConverter(new ObjectToOptionalConverter());
 
         for (CollectionHandler collectionHandler : configuration.getCollectionHandlers()) {
             attachConverter(new CollectionConverter(collectionHandler));

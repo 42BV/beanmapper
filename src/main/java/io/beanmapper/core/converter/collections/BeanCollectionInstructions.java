@@ -4,6 +4,7 @@ import static io.beanmapper.core.converter.collections.AnnotationClass.EMPTY_ANN
 
 import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.core.BeanProperty;
+import io.beanmapper.utils.Trinary;
 
 public class BeanCollectionInstructions {
 
@@ -13,39 +14,7 @@ public class BeanCollectionInstructions {
 
     private AnnotationClass preferredCollectionClass = EMPTY_ANNOTATION_CLASS;
 
-    private Boolean flushAfterClear;
-
-    public CollectionElementType getCollectionElementType() {
-        return collectionElementType;
-    }
-
-    public void setCollectionElementType(CollectionElementType collectionElementType) {
-        this.collectionElementType = collectionElementType;
-    }
-
-    public BeanCollectionUsage getBeanCollectionUsage() {
-        return beanCollectionUsage;
-    }
-
-    public void setBeanCollectionUsage(BeanCollectionUsage beanCollectionUsage) {
-        this.beanCollectionUsage = beanCollectionUsage;
-    }
-
-    public AnnotationClass getPreferredCollectionClass() {
-        return preferredCollectionClass;
-    }
-
-    public void setPreferredCollectionClass(AnnotationClass preferredCollectionClass) {
-        this.preferredCollectionClass = preferredCollectionClass;
-    }
-
-    public Boolean getFlushAfterClear() {
-        return flushAfterClear;
-    }
-
-    public void setFlushAfterClear(Boolean flushAfterClear) {
-        this.flushAfterClear = flushAfterClear;
-    }
+    private Trinary flushAfterClear;
 
     public static BeanCollectionInstructions merge(
             BeanProperty sourceBeanProperty,
@@ -71,10 +40,7 @@ public class BeanCollectionInstructions {
             BeanCollectionInstructions target,
             BeanCollectionInstructions source) {
         BeanCollectionInstructions merged = new BeanCollectionInstructions();
-        merged.setFlushAfterClear(chooseValue(
-                target.getFlushAfterClear(),
-                source == null ? null : source.getFlushAfterClear(),
-                true));
+        merged.setFlushAfterClear(target.getFlushAfterClear());
         merged.setBeanCollectionUsage(chooseValue(
                 target.getBeanCollectionUsage(),
                 source == null ? null : source.getBeanCollectionUsage(),
@@ -101,9 +67,9 @@ public class BeanCollectionInstructions {
 
         if (
                 sourceCollectionElementType != null &&
-                targetCollectionElementType != null &&
-                !sourceCollectionElementType.isDerived() &&
-                targetCollectionElementType.isDerived()) {
+                        targetCollectionElementType != null &&
+                        !sourceCollectionElementType.isDerived() &&
+                        targetCollectionElementType.isDerived()) {
             targetCollectionElementType = null;
         }
 
@@ -121,6 +87,38 @@ public class BeanCollectionInstructions {
             return source;
         }
         return defaultValue;
+    }
+
+    public CollectionElementType getCollectionElementType() {
+        return collectionElementType;
+    }
+
+    public void setCollectionElementType(CollectionElementType collectionElementType) {
+        this.collectionElementType = collectionElementType;
+    }
+
+    public BeanCollectionUsage getBeanCollectionUsage() {
+        return beanCollectionUsage;
+    }
+
+    public void setBeanCollectionUsage(BeanCollectionUsage beanCollectionUsage) {
+        this.beanCollectionUsage = beanCollectionUsage;
+    }
+
+    public AnnotationClass getPreferredCollectionClass() {
+        return preferredCollectionClass;
+    }
+
+    public void setPreferredCollectionClass(AnnotationClass preferredCollectionClass) {
+        this.preferredCollectionClass = preferredCollectionClass;
+    }
+
+    public Trinary getFlushAfterClear() {
+        return flushAfterClear;
+    }
+
+    public void setFlushAfterClear(Trinary flushAfterClear) {
+        this.flushAfterClear = flushAfterClear != Trinary.UNSET ? flushAfterClear : Trinary.ENABLED;
     }
 
 }

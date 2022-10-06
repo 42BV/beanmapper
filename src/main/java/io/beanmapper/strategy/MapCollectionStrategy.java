@@ -12,24 +12,24 @@ public class MapCollectionStrategy extends AbstractMapStrategy {
     }
 
     @Override
-    public Object map(Object source) {
+    public <S, T> T map(S source) {
 
         CollectionHandler collectionHandler = getConfiguration().getCollectionHandlerForCollectionClass();
 
         Object targetItems = collectionHandler.getTargetCollection(
-            this.getConfiguration().getCollectionUsage(),
-            this.getConfiguration().getPreferredCollectionClass(),
-            this.getConfiguration().getTargetClass(),
-            this.getConfiguration().getTarget(),
-            this.getConfiguration().getCollectionFlusher(),
-            this.getConfiguration().mustFlush()
+                this.getConfiguration().getCollectionUsage(),
+                this.getConfiguration().getPreferredCollectionClass(),
+                this.getConfiguration().getTargetClass(),
+                this.getConfiguration().getTarget(),
+                this.getConfiguration().getCollectionFlusher(),
+                this.getConfiguration().mustFlush()
         );
 
         if (source == null) {
-            return targetItems;
+            return (T) targetItems;
         }
 
-        return collectionHandler.copy(
+        return (T) collectionHandler.copy(
                 getBeanMapper(),
                 getConfiguration().getTargetClass(),
                 source,

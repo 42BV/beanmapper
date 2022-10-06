@@ -21,10 +21,6 @@ class BeanPropertyAccessTypeTest {
         assertEquals(BeanPropertyAccessType.NO_ACCESS, BeanPropertyMatchupDirection.TARGET_TO_SOURCE.accessType(accessor));
     }
 
-    private class NoAccessToField {
-        private String name;
-    }
-
     @Test
     void fieldInSourceAccessedByGetter() {
         PropertyAccessor accessor = PropertyAccessors.findProperty(GetterSetterAccessToField.class, "name");
@@ -55,28 +51,39 @@ class BeanPropertyAccessTypeTest {
         assertEquals(BeanPropertyAccessType.GETTER, BeanPropertyMatchupDirection.SOURCE_TO_TARGET.accessType(accessor));
     }
 
-    private class FieldAccessToField {
-        public String name;
-    }
-
     @Test
     void setterInTargetAccessed() {
         PropertyAccessor accessor = PropertyAccessors.findProperty(OnlyGetterSetterNoField.class, "name");
         assertEquals(BeanPropertyAccessType.SETTER, BeanPropertyMatchupDirection.TARGET_TO_SOURCE.accessType(accessor));
     }
 
+    private class NoAccessToField {
+        private String name;
+    }
+
+    private class FieldAccessToField {
+        public String name;
+    }
+
     private class GetterSetterAccessToField {
         private String name;
 
-        public String getName() {return name;}
+        public String getName() {
+            return name;
+        }
 
-        public void setName(String name) {this.name = name;}
+        public void setName(String name) {
+            this.name = name;
+        }
     }
 
     private class OnlyGetterSetterNoField {
-        public String getName() {return "frits";}
+        public String getName() {
+            return "frits";
+        }
 
-        public void setName(String name) {}
+        public void setName(String name) {
+        }
     }
 
 }

@@ -12,13 +12,13 @@ import io.beanmapper.exceptions.BeanPropertyReadException;
 import io.beanmapper.exceptions.BeanPropertyWriteException;
 
 /**
- * 
+ *
  *
  * @author Jeroen van Schagen
  * @since Jun 23, 2015
  */
 public class FieldPropertyAccessor implements PropertyAccessor {
-    
+
     private final Field field;
 
     public FieldPropertyAccessor(Field field) {
@@ -32,7 +32,7 @@ public class FieldPropertyAccessor implements PropertyAccessor {
     public String getName() {
         return field.getName();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -40,7 +40,7 @@ public class FieldPropertyAccessor implements PropertyAccessor {
     public Class<?> getType() {
         return field.getType();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -48,7 +48,7 @@ public class FieldPropertyAccessor implements PropertyAccessor {
     public <A extends Annotation> A findAnnotation(Class<A> annotationClass) {
         return field.getAnnotation(annotationClass);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -70,13 +70,15 @@ public class FieldPropertyAccessor implements PropertyAccessor {
             if (instance instanceof Enum && field.getName().equals("name")) {
                 return ((Enum<?>) instance).name();
             }
-            field.setAccessible(true);
+            if (!field.canAccess(instance)) {
+                field.setAccessible(true);
+            }
             return field.get(instance);
         } catch (IllegalAccessException e) {
             throw new BeanPropertyReadException(instance.getClass(), field.getName(), e);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -84,14 +86,16 @@ public class FieldPropertyAccessor implements PropertyAccessor {
     public boolean isWritable() {
         return Modifier.isPublic(field.getModifiers()) && !Modifier.isFinal(field.getModifiers());
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void setValue(Object instance, Object value) {
         try {
-            field.setAccessible(true);
+            if (!field.canAccess(instance)) {
+                field.setAccessible(true);
+            }
             field.set(instance, value);
         } catch (IllegalAccessException e) {
             throw new BeanPropertyWriteException(instance.getClass(), field.getName(), e);
@@ -102,8 +106,17 @@ public class FieldPropertyAccessor implements PropertyAccessor {
      * {@inheritDoc}
      */
     @Override
+    public <A extends Annotation> boolean isAnnotationPresent(final Class<A> annotationClass) {
+        return this.field.isAnnotationPresent(annotationClass);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Method getReadMethod() {
-        return null;
+        throw new UnsupportedOperationException("FieldPropertyAccessor#getReadMethod is not supported. If the "
+                + "read-method must be used to get the value of the field, use the MethodPropertyAccessor.");
     }
 
     /**
@@ -111,6 +124,15 @@ public class FieldPropertyAccessor implements PropertyAccessor {
      */
     @Override
     public Method getWriteMethod() {
-        return null;
+        throw new UnsupportedOperationException("FieldPropertyAccessor#getWriteMethod is not supported. If the "
+                + "write-method must be used to set the value of the field, use the MethodPropertyAccessor.");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <S> Class<S> getDeclaringClass() {
+        return (Class<S>) this.field.getDeclaringClass();
     }
 }

@@ -25,7 +25,7 @@ public class SkippingBeanUnproxy implements BeanUnproxy {
         this.skip(Enum.class); // Skip enum classes by default
         this.delegate = delegate;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -43,7 +43,7 @@ public class SkippingBeanUnproxy implements BeanUnproxy {
     /**
      * This method checks whether the class or its superclasses are in the list
      * of skipped classes for unproxying.
-     * 
+     *
      * @param clazz the class to check
      * @return boolean true if class (or superclass) is in the list, else returns false
      */
@@ -53,7 +53,7 @@ public class SkippingBeanUnproxy implements BeanUnproxy {
                 return true;
             } else if (clazz.getSuperclass() != null) {
                 boolean skipSuperClass = isSkippedProxyClass(clazz.getSuperclass());
-                if(skipSuperClass) {
+                if (skipSuperClass) {
                     return true;
                 }
             }
@@ -71,7 +71,7 @@ public class SkippingBeanUnproxy implements BeanUnproxy {
         proxyClassesToSkip.add(clazz);
         return this;
     }
-    
+
     /**
      * Change the underlying delegate bean unproxy.
      * @param delegate the delegate to set

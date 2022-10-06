@@ -10,7 +10,7 @@ public enum BeanPropertyAccessType {
 
     FIELD {
         @Override
-        public Type getGenericType(Class containingClass, PropertyAccessor accessor) {
+        public <T> Type getGenericType(Class<T> containingClass, PropertyAccessor accessor) {
             String fieldName = accessor.getName();
             Class<?> classWithField = getFirstClassContainingField(containingClass, fieldName);
             if (classWithField == null) {
@@ -26,35 +26,34 @@ public enum BeanPropertyAccessType {
     },
     SETTER {
         @Override
-        public Type getGenericType(Class containingClass, PropertyAccessor accessor) {
+        public <T> Type getGenericType(Class<T> containingClass, PropertyAccessor accessor) {
             return accessor.getWriteMethod().getGenericParameterTypes()[0];
         }
     },
     GETTER {
         @Override
-        public Type getGenericType(Class containingClass, PropertyAccessor accessor) {
+        public <T> Type getGenericType(Class<T> containingClass, PropertyAccessor accessor) {
             return accessor.getReadMethod().getGenericReturnType();
         }
     },
     NO_ACCESS {
         @Override
-        public ParameterizedType getGenericType(Class containingClass, PropertyAccessor accessor) {
+        public <T> ParameterizedType getGenericType(Class<T> containingClass, PropertyAccessor accessor) {
             throw new BeanPropertyAccessException("The field " + accessor.getName() + " cannot be accessed");
         }
     };
 
-    public abstract Type getGenericType(Class containingClass, PropertyAccessor accessor);
-
-    private static Class getFirstClassContainingField(Class<?> currentClass, String fieldName) {
+    private static <T> Class<? super T> getFirstClassContainingField(final Class<T> currentClass, final String fieldName) {
         Field[] allFields = currentClass.getDeclaredFields();
+        Class<? super T> unproxied = currentClass;
         while (!containsField(fieldName, allFields)) {
-            currentClass = currentClass.getSuperclass();
-            if (currentClass == null || Object.class.equals(currentClass)) {
+            unproxied = unproxied.getSuperclass();
+            if (unproxied == null || Object.class.equals(currentClass)) {
                 return null;
             }
-            allFields = currentClass.getDeclaredFields();
+            allFields = unproxied.getDeclaredFields();
         }
-        return currentClass;
+        return unproxied;
     }
 
     private static boolean containsField(String fieldName, Field[] fields) {
@@ -65,5 +64,7 @@ public enum BeanPropertyAccessType {
         }
         return false;
     }
+
+    public abstract <T> Type getGenericType(Class<T> containingClass, PropertyAccessor accessor);
 
 }

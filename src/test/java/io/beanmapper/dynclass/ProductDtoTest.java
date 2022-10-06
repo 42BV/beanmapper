@@ -83,7 +83,7 @@ class ProductDtoTest {
 
     @Test
     void mapListWithNestedEntries() throws Exception {
-        List<Product> products = new ArrayList<Product>();
+        List<Product> products = new ArrayList<>();
         products.add(createProduct(42L, true));
         products.add(createProduct(43L, true));
         beanMapper = beanMapper.wrap()
@@ -127,37 +127,33 @@ class ProductDtoTest {
     }
 
     private List<Asset> createAssets() {
-        List<Asset> assets = new ArrayList<Asset>() {{
+        return new ArrayList<>() {{
             add(createAsset(1138L, "Track 1", "NL-123-ABCDEFGH"));
             add(createAsset(1139L, "Track 2", "NL-123-ABCDEFGI"));
             add(createAsset(1140L, "Track 3", "NL-123-ABCDEFGJ"));
         }};
-        return assets;
     }
 
     private List<Artist> createArtists() {
-        List<Artist> artists = new ArrayList<Artist>() {{
+        return new ArrayList<>() {{
             add(createArtist(1141L, "Artist 1"));
             add(createArtist(1142L, "Artist 2"));
         }};
-        return artists;
     }
 
     private Asset createAsset(Long id, String name, String isrc) {
-        Asset asset = new Asset() {{
+        return new Asset() {{
             setId(id);
             setName(name);
             setIsrc(isrc);
         }};
-        return asset;
     }
 
     private Artist createArtist(long id, String name) {
-        Artist artist = new Artist() {{
+        return new Artist() {{
             setId(id);
             setName(name);
         }};
-        return artist;
     }
 
     private void compareJson(Object object, String expectedJson) throws IOException {
@@ -166,7 +162,7 @@ class ProductDtoTest {
 
         JsonNode jsonNode = objectMapper.readTree(json);
         JsonNode expectedJsonNode = objectMapper.readTree(expectedJson);
-        assertEquals(jsonNode, expectedJsonNode);
+        assertEquals(expectedJsonNode, jsonNode);
     }
 
 }

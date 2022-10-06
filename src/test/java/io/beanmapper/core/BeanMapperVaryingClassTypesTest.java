@@ -32,10 +32,6 @@ class BeanMapperVaryingClassTypesTest {
         assertEquals(source.list, target.someOtherListName);
     }
 
-    public class TargetWithLongField {
-        public Long value;
-    }
-
     @Test
     void listFromStringToLongToString() {
         SourceWithList source = new SourceWithList();
@@ -44,10 +40,6 @@ class BeanMapperVaryingClassTypesTest {
         BeanMapper beanMapper = new BeanMapperBuilder().build();
         target = beanMapper.map(source, target);
         assertEquals(target.someOtherListName.get(0), source.list.get(0));
-    }
-
-    public class SourceWithList {
-        public List<String> list = new ArrayList<>();
     }
 
     @Test
@@ -61,18 +53,32 @@ class BeanMapperVaryingClassTypesTest {
         assertEquals("42", target.list.get(0));
     }
 
+    public class TargetWithLongField {
+        public Long value;
+    }
+
+    public class SourceWithList {
+        public List<String> list = new ArrayList<>();
+    }
+
     public class SourceWithStringFieldAndLongAccessors {
         private String value;
 
-        public Long getValue() {return Long.parseLong(value) + 1;}
+        public Long getValue() {
+            return Long.parseLong(value) + 1;
+        }
 
-        public void setValue(Long number) {this.value = number.toString();}
+        public void setValue(Long number) {
+            this.value = number.toString();
+        }
     }
 
     public class TargetWithListButNoFieldProperty {
         public List<String> someOtherListName;
 
-        public void setList(List<String> list) {someOtherListName = list;}
+        public void setList(List<String> list) {
+            someOtherListName = list;
+        }
     }
 
     public class TargetWithDifferentSetterAndFieldTypes {
@@ -92,7 +98,8 @@ class BeanMapperVaryingClassTypesTest {
             this.list.add("42");
         }
 
-        public void setList(List<Long> list) {}
+        public void setList(List<Long> list) {
+        }
     }
 
 }

@@ -14,7 +14,7 @@ class BeanPropertyClassParameterized extends AbstractBeanPropertyClass {
 
     @Override
     public Class<?> getBasicType() {
-        return (Class<?>)type.getRawType();
+        return (Class<?>) type.getRawType();
     }
 
     @Override

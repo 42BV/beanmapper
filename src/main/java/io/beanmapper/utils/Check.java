@@ -14,8 +14,9 @@ public class Check {
     /**
      * Private constructor to hide implicit public constructor of utility-class.
      */
-    private Check() {}
-    
+    private Check() {
+    }
+
     public static void argument(boolean condition, String message) {
         if (!condition) {
             throw new IllegalArgumentException(message);

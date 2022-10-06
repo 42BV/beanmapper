@@ -1,7 +1,7 @@
 package io.beanmapper.core.converter.collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -12,6 +12,7 @@ import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.core.BeanProperty;
 import io.beanmapper.core.BeanPropertyCreator;
 import io.beanmapper.core.BeanPropertyMatchupDirection;
+import io.beanmapper.utils.Trinary;
 
 import org.junit.jupiter.api.Test;
 
@@ -39,14 +40,15 @@ class BeanCollectionInstructionsTest {
                 CollectionElementType.derived(String.class),
                 null,
                 null,
-                null));
+                Trinary.ENABLED));
 
         BeanCollectionInstructions merged = BeanCollectionInstructions.merge(sourceBeanProperty, targetBeanProperty);
 
+        assertNotNull(merged);
         assertEquals(String.class, merged.getCollectionElementType().getType());
         assertEquals(BeanCollectionUsage.CLEAR, merged.getBeanCollectionUsage());
         assertTrue(merged.getPreferredCollectionClass().isEmpty());
-        assertTrue(merged.getFlushAfterClear());
+        assertEquals(Trinary.ENABLED, merged.getFlushAfterClear());
     }
 
     @Test
@@ -66,20 +68,34 @@ class BeanCollectionInstructionsTest {
                 CollectionElementType.set(Long.class),
                 BeanCollectionUsage.REUSE,
                 new AnnotationClass(ArrayList.class),
-                false));
+                Trinary.DISABLED));
 
         targetBeanProperty.setCollectionInstructions(createBeanCollectionInstructions(
                 CollectionElementType.derived(String.class),
                 null,
                 null,
-                null));
+                Trinary.DISABLED));
 
         BeanCollectionInstructions merged = BeanCollectionInstructions.merge(sourceBeanProperty, targetBeanProperty);
 
+        assertNotNull(merged);
         assertEquals(Long.class, merged.getCollectionElementType().getType());
         assertEquals(BeanCollectionUsage.REUSE, merged.getBeanCollectionUsage());
         assertEquals(ArrayList.class, merged.getPreferredCollectionClass().getAnnotationClass());
-        assertFalse(merged.getFlushAfterClear());
+        assertEquals(Trinary.DISABLED, merged.getFlushAfterClear());
+    }
+
+    private BeanCollectionInstructions createBeanCollectionInstructions(
+            CollectionElementType collectionElementType,
+            BeanCollectionUsage beanCollectionUsage,
+            AnnotationClass preferredCollectionClass,
+            Trinary flushAfterClear) {
+        BeanCollectionInstructions instructions = new BeanCollectionInstructions();
+        instructions.setCollectionElementType(collectionElementType);
+        instructions.setBeanCollectionUsage(beanCollectionUsage);
+        instructions.setPreferredCollectionClass(preferredCollectionClass);
+        instructions.setFlushAfterClear(flushAfterClear);
+        return instructions;
     }
 
     public class SourceClassContainingList {
@@ -88,19 +104,6 @@ class BeanCollectionInstructionsTest {
 
     public class TargetClassContainingList {
         public List<String> list;
-    }
-
-    private BeanCollectionInstructions createBeanCollectionInstructions(
-            CollectionElementType collectionElementType,
-            BeanCollectionUsage beanCollectionUsage,
-            AnnotationClass preferredCollectionClass,
-            Boolean flushAfterClear) {
-        BeanCollectionInstructions instructions = new BeanCollectionInstructions();
-        instructions.setCollectionElementType(collectionElementType);
-        instructions.setBeanCollectionUsage(beanCollectionUsage);
-        instructions.setPreferredCollectionClass(preferredCollectionClass);
-        instructions.setFlushAfterClear(flushAfterClear);
-        return instructions;
     }
 
 }
