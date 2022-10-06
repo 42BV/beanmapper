@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Changed
+
+- Upgraded JUnit 5.8.2 to 5.9.0
+- Upgraded SLF4J 2.0.0 to 2.0.3
+- Upgraded Javassist 3.29.1-GA to 3.29.2-GA
+
+
 ## [4.0.1] - 2022-09-22
 
 ### Fixed
