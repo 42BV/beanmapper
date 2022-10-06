@@ -7,19 +7,81 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Updated
+
+- Upgraded JUnit 5.8.2 to 5.9.0
+- Upgraded SLF4J 2.0.0 to 2.0.3
+- Upgraded Javassist 3.29.1-GA to 3.29.2-GA
+- Upgraded jackson-databind 2.13.4 to 2.13.4.2
+
+### Fixed
+
+- Issue [#130](https://github.com/42BV/beanmapper/issues/130) **@BeanConstruct does not map collection constructor arguments**; Added
+  DefaultBeanInitializer#mapParameterizedArguments(Type[], Object[]), allowing BeanMapper to properly map constructor parameters with a type-parameter, when
+  using the @BeanConstruct-annotation.
+- Issue [#132](https://github.com/42BV/beanmapper/issues/132) **Mapping the same field twice ignores one of the mappings.**; Whenever a field is mapped, a check
+  will be performed to detect field shadowing in this way. If field shadowing is detected, a FieldShadowingException is thrown. However, a
+  BeanProperty-annotation may take on the name of a field that is non-public and for which an accessor is not exposed. Fields annotated with BeanIgnore are not
+  considered when checking for shadowing.
+- Issue [#149](https://github.com/42BV/beanmapper/issues/149) **Support mapping of JDK 16+ records to classes.**; Added support for mapping record through the
+  usual BeanMapper#map(Object, Class<?>)-method.
+- Issue [#152](https://github.com/42BV/beanmapper/issues/152) **Methods that return a Collection should never return null.**; All methods that return a
+  Collection, will return an empty Collection of the target type, rather than returning null.
+- Issue [#153](https://github.com/42BV/beanmapper/issues/153) **https://github.com/42BV/beanmapper/issues/153**; Rather than using the Boolean-wrapper, all
+  occurrences of Boolean that are not absolutely necessary due to generics, have been replaced with the primitive boolean, or the
+  Trinary-enum.
+- Issue [#166](https://github.com/42BV/beanmapper/issues/166) **Source with BeanAlias-annotated fields cannot be downsized.**; Modified
+  ClassGenerator#createClass, to check whether a generated field is annotated with BeanAlias. If so, the name of the generated field will be set to the value on
+  the BeanAlias-annotation, and the annotation will be removed from the generated field.
+- Issue [#168](https://github.com/42BV/beanmapper/issues/168) **ClassGeneratorTest#shouldNotFailConcurrently always succeeds.**; By catching Throwable, and
+  saving Throwable in the List, rather than exception, the test should work correctly, and fail when it should.
+
+### Added
+
+- BeanMapper#map(Collection, Class) allowing users to map from a Collection to the type actual type of the
+- Support for mapping Queue. A Queue will be mapped to an ArrayDeque by default. The order of elements is guaranteed to be preserved, except when the Queue is
+  mapped to a Queue that inherently modifies the order of elements (e.g. PriorityQueue).
+- BeanMapper#map(Queue, Class) allowing users to map a Queue to a new Queue, mapping the elements of the source to the target class.
+- BeanMapper#map(Object[], Class) allowing users to map an array to an array with elements of the type of the target class. Also works for primitive arrays.
+- Support for mapping to and from JDK16 record-classes.
+- @BeanRecordConstruct-annotation, used to give BeanMapper instructions on how to map a record.
+- BeanRecordConstructMode-enum, which allows the user to exclude certain constructors from being used to map a record, or force one to be used.
+- Configuration#addCustomDefaultValueForClass(Class<?>, Object value) and Configuration#getDefaultValueForClass(Class<?>), which can be used to define default
+  values for classes during runtime.
+- RecordToAnyConverter, which creates a dynamic class based off of the given Record, which contains only public fields, corresponding to the RecordComponents.
+  The dynamic class is then filled with values from the source Record, and used as an intermediary between the source and the target.
+- MappingException, to serve as a common super-class for Exceptions thrown while mapping classes, and records.
+- Default values for Optional, List, Set and Map in the DefaultValues.
+- BeanMapper#map(Object, ParameterizedType), allowing for smarter mapping of collections and optionals.
+- BeanMatchStore#detectBeanPropertyFieldShadowing(PropertyAccessor, io.beanmapper.annotations.BeanProperty), which will throw a FieldShadowingException when
+  appropriate.
+- Mapping of Optional-objects to a target class, using BeanMapper#map(Optional, Class).
+
+### Changed
+
+- Methods in OverrideConfiguration that used to perform NOP, now throw a BeanConfigurationOperationNotAllowedException.
+- Removed deprecated method BeanMapper#config(), BeanMapper#wrapConfig().
+- Removed deprecated class BeanMapperAware.
+- @BeanAlias now applicable to RecordComponent.
+- Expanded the use of type parameters to various methods throughout the library, including the BeanMapper-class.
+- BeanConverters may be offered null-values now. Will default to returning the default value for the relevant type.
+
+### Removed
+
+- slf4j-api dependency, as it is transitive through jcl-over-slf4j.
+
 ## [4.0.1] - 2022-09-22
 
 ### Fixed
 
-- Issue [#121](https://github.com/42BV/beanmapper/issues/121) **Mapping an Enum field to an Enum field of the same type fails when a custom toString method is 
-  present.**; When an Enum with a custom toString-method was mapped to an Enum, the mapping would fail. Fixed by adding an instanceof check in the 
+- Issue [#121](https://github.com/42BV/beanmapper/issues/121) **Mapping an Enum field to an Enum field of the same type fails when a custom toString method is
+  present.**; When an Enum with a custom toString-method was mapped to an Enum, the mapping would fail. Fixed by adding an instanceof check in the
   AnyToEnumConverter, making it use Enum#name() to get the name of an Enum, rather than toString.
-- Issue [#137](https://github.com/42BV/beanmapper/issues/137) **https://github.com/42BV/beanmapper/issues/137**; Mapping a class with a getter that returns an 
+- Issue [#137](https://github.com/42BV/beanmapper/issues/137) **https://github.com/42BV/beanmapper/issues/137**; Mapping a class with a getter that returns an
   Optional, would fail, as an Optional can typically not be mapped to the target class. Fixed implementing an OptionalToObjectConverter, which handles unpacking
   an Optional, and additionally delegates further conversion back to the BeanMapper.
-- DynamicClassGeneratorHelper was removed, due to returning null, and replaced with passing the baseclass for a generated class immediately to the constructor 
+- DynamicClassGeneratorHelper was removed, due to returning null, and replaced with passing the baseclass for a generated class immediately to the constructor
   of GeneratedClass.
-
 
 ## [4.0.0] - 2022-09-15
 

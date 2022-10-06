@@ -2,13 +2,10 @@ package io.beanmapper.config;
 
 public class BeanPair {
 
-    private boolean sourceStrict = false;
-
-    private boolean targetStrict = false;
-
     private final Class<?> sourceClass;
-
     private final Class<?> targetClass;
+    private boolean sourceStrict = false;
+    private boolean targetStrict = false;
 
     public BeanPair(Class sourceClass, Class targetClass) {
         this.sourceClass = sourceClass;
@@ -44,7 +41,7 @@ public class BeanPair {
     public boolean matches(Class<?> currentSourceClass, Class<?> currentTargetClass) {
         return
                 currentSourceClass.isAssignableFrom(sourceClass) &&
-                currentTargetClass.isAssignableFrom(targetClass);
+                        currentTargetClass.isAssignableFrom(targetClass);
     }
 
 }

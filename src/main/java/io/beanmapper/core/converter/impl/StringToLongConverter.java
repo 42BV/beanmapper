@@ -24,7 +24,7 @@ public class StringToLongConverter extends SimpleBeanConverter<String, Long> {
     protected Long doConvert(String source) {
         return Long.parseLong(source);
     }
-    
+
     /**
      * {@inheritDoc}
      */

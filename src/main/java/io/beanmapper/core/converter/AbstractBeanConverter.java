@@ -15,9 +15,9 @@ import io.beanmapper.utils.Classes;
  * @since Jun 18, 2015
  */
 public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
-    
+
     private final Class<?> sourceClass;
-    
+
     private final Class<?> targetClass;
 
     protected BeanMapper beanMapper;
@@ -44,19 +44,19 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
     /**
      * {@inheritDoc}
      */
-    @Override
     @SuppressWarnings("unchecked")
-    public final Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanPropertyMatch beanPropertyMatch) {
+    public final <U, R> R convert(BeanMapper beanMapper, U source, Class<R> targetClass, BeanPropertyMatch beanPropertyMatch) {
         this.beanMapper = beanMapper;
         if (source == null) {
-            Check.argument(!targetClass.isPrimitive(), "Cannot convert null into primitive.");
+            if (beanMapper != null)
+                beanMapper.getConfiguration().getDefaultValueForClass(targetClass);
             return null;
         }
         Check.argument(isMatchingSource(source.getClass()), "Unsupported source class.");
         Check.argument(isMatchingTarget(targetClass), "Unsupported target class.");
-        return doConvert((S) source, (Class<T>) targetClass);
+        return (R) doConvert((S) source, (Class<? extends T>) targetClass);
     }
-    
+
     /**
      * Convert a source instance to the target type.
      * @param source the source instance
@@ -72,11 +72,11 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
     public final boolean match(Class<?> sourceClass, Class<?> targetClass) {
         return isMatchingSource(sourceClass) && isMatchingTarget(targetClass);
     }
-    
+
     protected boolean isMatchingSource(Class<?> sourceClass) {
         return this.sourceClass.isAssignableFrom(sourceClass);
     }
-    
+
     protected boolean isMatchingTarget(Class<?> targetClass) {
         return this.targetClass.isAssignableFrom(targetClass);
     }

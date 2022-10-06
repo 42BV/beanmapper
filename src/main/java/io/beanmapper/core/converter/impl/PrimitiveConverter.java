@@ -18,9 +18,9 @@ import io.beanmapper.utils.Check;
  * @since Jun 24, 2015
  */
 public class PrimitiveConverter implements BeanConverter {
-    
+
     private static final Map<Class<?>, Class<?>> MAPPINGS = new HashMap<Class<?>, Class<?>>();
-    
+
     static {
         register(Byte.class, byte.class);
         register(Short.class, short.class);
@@ -30,7 +30,7 @@ public class PrimitiveConverter implements BeanConverter {
         register(Float.class, float.class);
         register(Boolean.class, boolean.class);
     }
-    
+
     private static void register(Class<?> boxedClass, Class<?> primitiveClass) {
         MAPPINGS.put(boxedClass, primitiveClass);
         MAPPINGS.put(primitiveClass, boxedClass);
@@ -40,11 +40,10 @@ public class PrimitiveConverter implements BeanConverter {
      * {@inheritDoc}
      */
     @Override
-    public Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanPropertyMatch beanPropertyMatch) {
-        Check.argument(source != null, "Cannot convert null into primitive value.");
-        return source; // Value will automatically be boxed or unboxed
+    public <S, T> T convert(BeanMapper beanMapper, S source, Class<T> targetClass, BeanPropertyMatch beanPropertyMatch) {
+        return source != null ? (T) source : beanMapper.getConfiguration().getDefaultValueForClass(targetClass); // Value will automatically be boxed or unboxed
     }
-    
+
     /**
      * {@inheritDoc}
      */

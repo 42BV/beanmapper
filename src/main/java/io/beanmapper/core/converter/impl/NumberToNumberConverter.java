@@ -17,9 +17,9 @@ import io.beanmapper.core.converter.BeanConverter;
  * @since Jun 24, 2015
  */
 public class NumberToNumberConverter implements BeanConverter {
-    
+
     private static final Set<Class<?>> PRIMITIVES = new HashSet<>();
-    
+
     static {
         PRIMITIVES.add(byte.class);
         PRIMITIVES.add(short.class);
@@ -36,9 +36,9 @@ public class NumberToNumberConverter implements BeanConverter {
      * then converting that string back into the target number.
      */
     @Override
-    public Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanPropertyMatch beanPropertyMatch) {
+    public <S, T> T convert(BeanMapper beanMapper, S source, Class<T> targetClass, BeanPropertyMatch beanPropertyMatch) {
         if (source == null || source.getClass().equals(targetClass) || (beanPropertyMatch != null && beanPropertyMatch.getSourceClass().equals(targetClass))) {
-            return source;
+            return (T) source;
         }
         Object sourceAsString = beanMapper
                 .wrap()
@@ -65,5 +65,5 @@ public class NumberToNumberConverter implements BeanConverter {
     private boolean isNumber(Class<?> clazz) {
         return Number.class.isAssignableFrom(clazz) || PRIMITIVES.contains(clazz);
     }
-    
+
 }

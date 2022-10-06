@@ -45,7 +45,7 @@ public interface CollectionHandler<C> {
             Class<?> collectionElementClass,
             C targetCollection,
             CollectionFlusher collectionFlusher,
-            Boolean flushAfterClear);
+            boolean flushAfterClear);
 
     /**
      * The type of the collection class. This will be used to determine if the source

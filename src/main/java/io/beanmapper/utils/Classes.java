@@ -6,6 +6,9 @@ package io.beanmapper.utils;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import io.beanmapper.core.BeanPropertyMatch;
+import io.beanmapper.exceptions.BeanNoSuchPropertyException;
+
 /**
  * Reflection utilities.
  *
@@ -17,8 +20,9 @@ public class Classes {
     /**
      * Private constructor to hide implicit public constructor of utility-class.
      */
-    private Classes() {}
-    
+    private Classes() {
+    }
+
     /**
      * Retrieve the class by name.
      * @param className the class name
@@ -51,6 +55,15 @@ public class Classes {
             classes[index] = Classes.forName(typeName);
         }
         return classes;
+    }
+
+    public static Type[] getParameteredTypes(Class<?> clazz, BeanPropertyMatch beanPropertyMatch) {
+        try {
+            return ((ParameterizedType) clazz.getDeclaredField(beanPropertyMatch.getTargetFieldName())
+                    .getGenericType()).getActualTypeArguments();
+        } catch (NoSuchFieldException e) {
+            throw new BeanNoSuchPropertyException(e.getMessage());
+        }
     }
 
 }

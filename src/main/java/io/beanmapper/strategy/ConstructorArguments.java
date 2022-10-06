@@ -12,12 +12,14 @@ public class ConstructorArguments {
     private List<Class<?>> types = new ArrayList<>();
     private List<Object> values = new ArrayList<>();
 
-    public ConstructorArguments(Object source, BeanMatch beanMatch, String[] constructorArgs){
+    public ConstructorArguments(Object source, BeanMatch beanMatch, String[] constructorArgs) {
+        if (constructorArgs == null)
+            throw new IllegalArgumentException("Cannot construct ConstructorArguments-object: Constructor-parameter String[] constructorArgs is null.");
 
         for (String constructorArg : constructorArgs) {
             if (constructorArgumentFoundInSource(beanMatch, constructorArg)) {
                 BeanProperty constructField = beanMatch.getSourceNodes().get(constructorArg);
-                if(constructField == null) {
+                if (constructField == null) {
                     constructField = beanMatch.getAliases().get(constructorArg);
                 }
                 types.add(constructField.getAccessor().getType());

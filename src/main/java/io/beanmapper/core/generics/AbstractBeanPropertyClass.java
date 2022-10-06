@@ -14,9 +14,9 @@ abstract class AbstractBeanPropertyClass implements BeanPropertyClass {
 
     public Class<?> convertToClass(Type type) {
         if (type instanceof ParameterizedType) {
-            return (Class<?>)((ParameterizedType)type).getRawType();
+            return (Class<?>) ((ParameterizedType) type).getRawType();
         } else {
-            return (Class<?>)type;
+            return (Class<?>) type;
         }
     }
 

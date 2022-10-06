@@ -18,7 +18,7 @@ import io.beanmapper.exceptions.BeanPropertyWriteException;
  * @since Jun 24, 2015
  */
 public class MethodPropertyAccessor implements PropertyAccessor {
-    
+
     private final PropertyDescriptor descriptor;
 
     public MethodPropertyAccessor(PropertyDescriptor descriptor) {
@@ -32,7 +32,7 @@ public class MethodPropertyAccessor implements PropertyAccessor {
     public String getName() {
         return descriptor.getName();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -40,7 +40,7 @@ public class MethodPropertyAccessor implements PropertyAccessor {
     public Class<?> getType() {
         return descriptor.getPropertyType();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -55,7 +55,7 @@ public class MethodPropertyAccessor implements PropertyAccessor {
         }
         return annotation;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -75,13 +75,15 @@ public class MethodPropertyAccessor implements PropertyAccessor {
 
         try {
             Method readMethod = descriptor.getReadMethod();
-            readMethod.setAccessible(true);
+            if (!readMethod.canAccess(instance)) {
+                readMethod.setAccessible(true);
+            }
             return readMethod.invoke(instance);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new BeanPropertyReadException(instance.getClass(), getName(), e);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -89,7 +91,7 @@ public class MethodPropertyAccessor implements PropertyAccessor {
     public boolean isWritable() {
         return descriptor.getWriteMethod() != null;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -98,10 +100,12 @@ public class MethodPropertyAccessor implements PropertyAccessor {
         if (!isWritable()) {
             throw new BeanPropertyWriteException(instance.getClass(), getName());
         }
-        
+
         try {
             Method writeMethod = descriptor.getWriteMethod();
-            writeMethod.setAccessible(true);
+            if (!writeMethod.canAccess(instance)) {
+                writeMethod.setAccessible(true);
+            }
             writeMethod.invoke(instance, value);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new BeanPropertyWriteException(instance.getClass(), getName(), e);
@@ -122,5 +126,26 @@ public class MethodPropertyAccessor implements PropertyAccessor {
     @Override
     public Method getWriteMethod() {
         return descriptor.getWriteMethod();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <A extends Annotation> boolean isAnnotationPresent(final Class<A> annotationClass) {
+        if (this.isReadable() && this.getReadMethod().isAnnotationPresent(annotationClass))
+            return true;
+        return this.isWritable() && this.getWriteMethod().isAnnotationPresent(annotationClass);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <S> Class<S> getDeclaringClass() {
+        Method accessor = this.isReadable()
+                ? this.getReadMethod()
+                : this.getWriteMethod();
+        return (Class<S>) accessor.getDeclaringClass();
     }
 }

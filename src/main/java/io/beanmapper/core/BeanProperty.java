@@ -9,26 +9,20 @@ import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.strategy.ConstructorArguments;
 import io.beanmapper.utils.DefaultValues;
+import io.beanmapper.utils.Records;
 
 public class BeanProperty {
 
     private final String name;
 
     private final PropertyAccessor accessor;
-
-    private BeanProperty next;
-
-    private BeanCollectionInstructions collectionInstructions;
-
-    private String[] requiredRoles = new String[0];
-
-    private Class<? extends LogicSecuredCheck> logicSecuredCheck;
-
-    private boolean mustMatch = false;
-
-    private boolean matched = false;
-
     private final DirectedBeanProperty directedBeanProperty;
+    private BeanProperty next;
+    private BeanCollectionInstructions collectionInstructions;
+    private String[] requiredRoles = new String[0];
+    private Class<? extends LogicSecuredCheck> logicSecuredCheck;
+    private boolean mustMatch = false;
+    private boolean matched = false;
 
     public BeanProperty(String name, BeanPropertyMatchupDirection matchupDirection,
             PropertyAccessor accessor, Class containingClass) {
@@ -97,14 +91,16 @@ public class BeanProperty {
         Object target = getCurrentAccessor().getValue(parent);
         if (target == null) {
             Class<?> type = getCurrentAccessor().getType();
-            BeanConstruct beanConstruct = type.getAnnotation(BeanConstruct.class);
 
-            if(beanConstruct == null) {
-                target = new DefaultBeanInitializer().instantiate(type, null);
+            ConstructorArguments arguments = null;
+            if (!type.isAnnotationPresent(BeanConstruct.class)) {
+                if (type.isRecord()) {
+                    arguments = new ConstructorArguments(source, beanMatch, Records.getRecordFieldNames((Class<? extends Record>) type));
+                }
             } else {
-                ConstructorArguments arguments = new ConstructorArguments(source, beanMatch, beanConstruct.value());
-                target = new DefaultBeanInitializer().instantiate(type, arguments);
+                arguments = new ConstructorArguments(source, beanMatch, type.getAnnotation(BeanConstruct.class).value());
             }
+            target = new DefaultBeanInitializer().instantiate(type, arguments);
             getCurrentAccessor().setValue(parent, target);
         }
         return target;
@@ -112,14 +108,14 @@ public class BeanProperty {
 
     public Object writeObject(Object value, Object parent, Object source, BeanMatch beanMatch) throws BeanMappingException {
         if (hasNext()) {
-            if(value != null) {
+            if (value != null) {
                 getNext().writeObject(value, getOrCreate(parent, source, beanMatch), source, beanMatch);
             } else if (getCurrentAccessor().getValue(parent) != null) {
                 // If source is null and target object is filled. The nested target object should be overridden with null.
                 getNext().writeObject(null, getCurrentAccessor().getValue(parent), source, beanMatch);
             }
         } else {
-            if(value == null && getCurrentAccessor().getType().isPrimitive()) {
+            if (value == null && getCurrentAccessor().getType().isPrimitive()) {
                 // Primitives types can't be null.
                 value = DefaultValues.defaultValueFor(getCurrentAccessor().getType());
             }

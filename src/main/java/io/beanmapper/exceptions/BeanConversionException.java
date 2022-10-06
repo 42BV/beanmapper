@@ -10,11 +10,11 @@ package io.beanmapper.exceptions;
  * @since Jun 24, 2015
  */
 public class BeanConversionException extends BeanMappingException {
-    
+
     public static final String ERROR = "Could not convert %s to %s.";
 
     public BeanConversionException(Class<?> sourceClass, Class<?> targetClass) {
-        super(String.format(ERROR, sourceClass.getSimpleName(), targetClass.getSimpleName()));
+        super(ERROR.formatted(sourceClass.getSimpleName(), targetClass.getSimpleName()));
     }
-    
+
 }

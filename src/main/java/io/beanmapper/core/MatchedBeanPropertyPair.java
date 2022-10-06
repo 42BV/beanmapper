@@ -2,9 +2,7 @@ package io.beanmapper.core;
 
 public record MatchedBeanPropertyPair(BeanProperty sourceBeanProperty, BeanProperty targetBeanProperty) {
 
-    public MatchedBeanPropertyPair(BeanProperty sourceBeanProperty, BeanProperty targetBeanProperty) {
-        this.sourceBeanProperty = sourceBeanProperty;
-        this.targetBeanProperty = targetBeanProperty;
+    public MatchedBeanPropertyPair {
         setMatchedBeanProperty(sourceBeanProperty);
         setMatchedBeanProperty(targetBeanProperty);
     }

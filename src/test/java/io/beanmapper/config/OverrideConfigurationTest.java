@@ -5,11 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayDeque;
 import java.util.List;
+import java.util.Queue;
 
 import io.beanmapper.BeanMapper;
 import io.beanmapper.core.constructor.DefaultBeanInitializer;
+import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
 import io.beanmapper.strategy.ConstructorArguments;
+import io.beanmapper.utils.Trinary;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +28,7 @@ public class OverrideConfigurationTest {
     void setup() {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .build();
-        coreConfiguration = (CoreConfiguration) beanMapper.configuration();
+        coreConfiguration = (CoreConfiguration) beanMapper.getConfiguration();
         overrideConfiguration = new OverrideConfiguration(coreConfiguration);
     }
 
@@ -35,28 +39,31 @@ public class OverrideConfigurationTest {
 
     @Test
     void unsupportedCalls() {
-        overrideConfiguration.withoutDefaultConverters();
-        overrideConfiguration.addProxySkipClass(null);
-        overrideConfiguration.addPackagePrefix((String) null);
-        overrideConfiguration.addPackagePrefix((Class) null);
-        overrideConfiguration.addAfterClearFlusher(null);
-        overrideConfiguration.setBeanUnproxy(null);
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.withoutDefaultConverters());
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.addProxySkipClass(null));
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.addPackagePrefix((String) null));
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.addPackagePrefix((Class) null));
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.addAfterClearFlusher(null));
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.setBeanUnproxy(null));
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.setRoleSecuredCheck(null));
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.addCollectionHandler(null));
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.addLogicSecuredCheck(null));
     }
 
     @Test
     void mustFlush() {
         overrideConfiguration.setFlushEnabled(true);
-        overrideConfiguration.setFlushAfterClear(true);
-        assertEquals(true, overrideConfiguration.isFlushEnabled());
-        assertEquals(true, overrideConfiguration.isFlushAfterClear());
-        assertEquals(true, overrideConfiguration.mustFlush());
+        overrideConfiguration.setFlushAfterClear(Trinary.ENABLED);
+        assertTrue(overrideConfiguration.isFlushEnabled());
+        assertEquals(Trinary.ENABLED, overrideConfiguration.isFlushAfterClear());
+        assertTrue(overrideConfiguration.mustFlush());
     }
 
     @Test
     void mustFlush_flushAfterClearIsFalse() {
         overrideConfiguration.setFlushEnabled(true);
-        overrideConfiguration.setFlushAfterClear(false);
-        assertEquals(false, overrideConfiguration.mustFlush());
+        overrideConfiguration.setFlushAfterClear(Trinary.DISABLED);
+        assertFalse(overrideConfiguration.mustFlush());
     }
 
     @Test
@@ -112,6 +119,24 @@ public class OverrideConfigurationTest {
     void determineTargetClass() {
         overrideConfiguration.setTarget("Hello");
         assertEquals(String.class, overrideConfiguration.determineTargetClass());
+    }
+
+    @Test
+    void testAddCustomDefaultValueForQueue() {
+        overrideConfiguration.addCustomDefaultValueForClass(Queue.class, new ArrayDeque<>());
+        assertEquals(ArrayDeque.class, this.overrideConfiguration.getDefaultValueForClass(Queue.class).getClass());
+    }
+
+    @Test
+    void testSetEnforceSecuredProperties_true() {
+        overrideConfiguration.setEnforceSecuredProperties(true);
+        assertTrue(overrideConfiguration.getEnforceSecuredProperties());
+    }
+
+    @Test
+    void testSetEnforceSecuredProperties_false() {
+        overrideConfiguration.setEnforceSecuredProperties(false);
+        assertFalse(overrideConfiguration.getEnforceSecuredProperties());
     }
 
 }

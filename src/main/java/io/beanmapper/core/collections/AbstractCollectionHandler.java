@@ -13,7 +13,7 @@ public abstract class AbstractCollectionHandler<C> implements CollectionHandler<
     private final DefaultBeanInitializer beanInitializer = new DefaultBeanInitializer();
 
     protected AbstractCollectionHandler() {
-        this.type = (Class<C>)Classes.getParameteredTypes(getClass())[0];
+        this.type = (Class<C>) Classes.getParameteredTypes(getClass())[0];
     }
 
     /**
@@ -49,7 +49,7 @@ public abstract class AbstractCollectionHandler<C> implements CollectionHandler<
             Class<?> collectionElementClass,
             C targetCollection,
             CollectionFlusher collectionFlusher,
-            Boolean mustFlush) {
+            boolean mustFlush) {
 
         C useTargetCollection = collectionUsage.mustConstruct(targetCollection) ?
                 createCollection(preferredCollectionClass, collectionElementClass) :

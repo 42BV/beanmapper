@@ -73,6 +73,17 @@ class DirectedBeanPropertyTest {
         assertEquals(Long.class, directedBeanProperty.getGenericClassOfProperty(0));
     }
 
+    private DirectedBeanProperty getDirectedBeanProperty(
+            Class containingClass,
+            BeanPropertyMatchupDirection sourceToTarget,
+            String property) {
+        PropertyAccessor accessor = PropertyAccessors.findProperty(containingClass, property);
+        return new DirectedBeanProperty(
+                sourceToTarget,
+                accessor,
+                containingClass);
+    }
+
     public class ClassContainingTypedList {
 
         private List<String> list;
@@ -88,28 +99,23 @@ class DirectedBeanPropertyTest {
     }
 
     public class ClassContainingNoField {
-        public List<Integer> getList() {return null;}
+        public List<Integer> getList() {
+            return null;
+        }
 
-        public void setList(List<Long> list) {}
+        public void setList(List<Long> list) {
+        }
     }
 
     public class ClassContainingAllDifferentTypes {
         private List<Integer> list;
 
-        public List<String> getList() {return null;}
+        public List<String> getList() {
+            return null;
+        }
 
-        public void setList(List<Long> list) {}
-    }
-
-    private DirectedBeanProperty getDirectedBeanProperty(
-            Class containingClass,
-            BeanPropertyMatchupDirection sourceToTarget,
-            String property) {
-        PropertyAccessor accessor = PropertyAccessors.findProperty(containingClass, property);
-        return new DirectedBeanProperty(
-                sourceToTarget,
-                accessor,
-                containingClass);
+        public void setList(List<Long> list) {
+        }
     }
 
 }

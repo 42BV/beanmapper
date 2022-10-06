@@ -5,6 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import io.beanmapper.utils.Trinary;
+
 /**
  * Determines the type of the other side in a collection. When this annotation is set, beanmapper
  * logic is activated on it.
@@ -53,6 +55,6 @@ public @interface BeanCollection {
      * original state being preserved.
      * @return Whether to flush the collection after clearing or not.
      */
-    boolean flushAfterClear() default true;
+    Trinary flushAfterClear() default Trinary.ENABLED;
 
 }

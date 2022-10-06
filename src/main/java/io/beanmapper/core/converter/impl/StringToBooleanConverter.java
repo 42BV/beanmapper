@@ -24,7 +24,7 @@ public class StringToBooleanConverter extends SimpleBeanConverter<String, Boolea
     protected Boolean doConvert(String source) {
         return Boolean.parseBoolean(source);
     }
-    
+
     /**
      * {@inheritDoc}
      */

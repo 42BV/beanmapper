@@ -24,7 +24,7 @@ public class StringToShortConverter extends SimpleBeanConverter<String, Short> {
     protected Short doConvert(String source) {
         return Short.parseShort(source);
     }
-    
+
     /**
      * {@inheritDoc}
      */

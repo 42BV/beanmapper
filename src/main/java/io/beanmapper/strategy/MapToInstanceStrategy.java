@@ -11,15 +11,15 @@ public class MapToInstanceStrategy extends AbstractMapStrategy {
     }
 
     @Override
-    public Object map(Object source) {
-        return map(source, getConfiguration().getTarget());
+    public <S, T> T map(S source) {
+        return (T) map(source, getConfiguration().getTarget());
     }
 
-    protected Object map(Object source, Object target) {
+    protected <S, T> T map(S source, T target) {
         return map(source, target, getBeanMatch(source.getClass(), target.getClass()));
     }
 
-    protected Object map(Object source, Object target, BeanMatch beanMatch) {
+    protected <S, T> T map(S source, T target, BeanMatch beanMatch) {
         return processProperties(source, target, beanMatch);
     }
 }

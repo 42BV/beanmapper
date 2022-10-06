@@ -17,6 +17,7 @@ import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
 import io.beanmapper.strategy.ConstructorArguments;
+import io.beanmapper.utils.Trinary;
 
 import org.junit.jupiter.api.Test;
 
@@ -50,7 +51,7 @@ class BeanMapperBuilderTest {
     void setFlushAfterClear() {
         assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
             BeanMapperBuilder builder = new BeanMapperBuilder();
-            builder.setFlushAfterClear(true);
+            builder.setFlushAfterClear(Trinary.ENABLED);
         });
     }
 
@@ -91,7 +92,7 @@ class BeanMapperBuilderTest {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .withoutDefaultConverters()
                 .build();
-        assertEquals(0, beanMapper.configuration().getBeanConverters().size());
+        assertEquals(0, beanMapper.getConfiguration().getBeanConverters().size());
     }
 
     @Test
@@ -99,7 +100,7 @@ class BeanMapperBuilderTest {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .addCollectionHandler(new ListCollectionHandler())
                 .build();
-        assertEquals(4, beanMapper.configuration().getCollectionHandlers().size());
+        assertEquals(5, beanMapper.getConfiguration().getCollectionHandlers().size());
     }
 
     @Test
@@ -108,7 +109,7 @@ class BeanMapperBuilderTest {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .addProxySkipClass(expectedClass)
                 .build();
-        assertEquals(expectedClass, beanMapper.configuration().getBeanUnproxy().unproxy(expectedClass));
+        assertEquals(expectedClass, beanMapper.getConfiguration().getBeanUnproxy().unproxy(expectedClass));
     }
 
     @Test
@@ -117,7 +118,7 @@ class BeanMapperBuilderTest {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .addPackagePrefix(expectedPackagePrefix)
                 .build();
-        List<String> packagePrefixes = beanMapper.configuration().getPackagePrefixes();
+        List<String> packagePrefixes = beanMapper.getConfiguration().getPackagePrefixes();
         assertEquals(expectedPackagePrefix, packagePrefixes.get(0));
     }
 
@@ -132,7 +133,7 @@ class BeanMapperBuilderTest {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .setBeanInitializer(expectedBeanInitializer)
                 .build();
-        assertEquals(expectedBeanInitializer, beanMapper.configuration().getBeanInitializer());
+        assertEquals(expectedBeanInitializer, beanMapper.getConfiguration().getBeanInitializer());
     }
 
     @Test
@@ -146,13 +147,13 @@ class BeanMapperBuilderTest {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .setBeanUnproxy(expectedBeanUnproxy)
                 .build();
-        assertEquals(Long.class, beanMapper.configuration().getBeanUnproxy().unproxy(String.class));
+        assertEquals(Long.class, beanMapper.getConfiguration().getBeanUnproxy().unproxy(String.class));
     }
 
     @Test
     void isConverterChoosableForCoreConfig() {
         BeanMapper beanMapper = new BeanMapperBuilder().build();
-        assertFalse(beanMapper.configuration().isConverterChoosable(),
+        assertFalse(beanMapper.getConfiguration().isConverterChoosable(),
                 "The Core configuration assumes that a top-level call always assumes a pure mapping (ie, not using converters)"
         );
     }
@@ -162,7 +163,7 @@ class BeanMapperBuilderTest {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .setConverterChoosable(true)
                 .build();
-        assertTrue(beanMapper.configuration().isConverterChoosable(),
+        assertTrue(beanMapper.getConfiguration().isConverterChoosable(),
                 "The Core configuration converterChoosable is settable)"
         );
     }
@@ -174,7 +175,7 @@ class BeanMapperBuilderTest {
                 .wrap()
                 .setConverterChoosable(false) // <<< override the converter choosable option here
                 .build(); // Override wrap
-        assertFalse(beanMapper.configuration().isConverterChoosable(),
+        assertFalse(beanMapper.getConfiguration().isConverterChoosable(),
                 "The Override configuration has a custom override for the converter choosable option, which should be false");
     }
 
@@ -182,10 +183,10 @@ class BeanMapperBuilderTest {
     void newConfigOnOverrideLeadsToExistingConfig() {
         BeanMapper beanMapper = new BeanMapperBuilder().build(); // Core wrap
         beanMapper = beanMapper.wrap().build(); // Wrap in an override wrap
-        Configuration currentConfiguration = beanMapper.configuration();
+        Configuration currentConfiguration = beanMapper.getConfiguration();
         beanMapper = beanMapper.wrap().build(); // <<< explicitly wrap in an override wrap
         assertNotSame(
-                currentConfiguration, beanMapper.configuration(), "The configuration must be a new one from the one we already had");
+                currentConfiguration, beanMapper.getConfiguration(), "The configuration must be a new one from the one we already had");
     }
 
     @Test
@@ -194,7 +195,7 @@ class BeanMapperBuilderTest {
                 .setStrictSourceSuffix("Frm")
                 .setStrictTargetSuffix("Rslt")
                 .build(); // Core wrap
-        Configuration currentConfiguration = beanMapper.configuration();
+        Configuration currentConfiguration = beanMapper.getConfiguration();
         assertEquals("Frm", currentConfiguration.getStrictSourceSuffix());
         assertEquals("Rslt", currentConfiguration.getStrictTargetSuffix());
     }
@@ -206,13 +207,12 @@ class BeanMapperBuilderTest {
                 .setStrictSourceSuffix("Frm")
                 .build(); // Wrap in an override wrap
 
-        Configuration currentConfiguration = beanMapper.configuration();
+        Configuration currentConfiguration = beanMapper.getConfiguration();
         assertEquals("Frm",
                 currentConfiguration.getStrictMappingProperties().getStrictSourceSuffix());
         assertEquals("Result",
                 currentConfiguration.getStrictMappingProperties().getStrictTargetSuffix());
-        assertEquals(true,
-                currentConfiguration.getStrictMappingProperties().isApplyStrictMappingConvention());
+        assertTrue(currentConfiguration.getStrictMappingProperties().isApplyStrictMappingConvention());
     }
 
     @Test
@@ -221,14 +221,14 @@ class BeanMapperBuilderTest {
         beanMapper = wrapAndSetFieldsForSingleRun(beanMapper);
         beanMapper = wrapAndSetFieldsForSingleRun(beanMapper); // Wrap it twice to make sure we have a parent
         // override wrap with the fields all set
-        assertNotNull(beanMapper.configuration().getCollectionClass(), "Container class must be set");
-        assertNotNull(beanMapper.configuration().getTargetClass(), "Target class must be set");
-        assertNotNull(beanMapper.configuration().getTarget(), "Target must be set");
+        assertNotNull(beanMapper.getConfiguration().getCollectionClass(), "Container class must be set");
+        assertNotNull(beanMapper.getConfiguration().getTargetClass(), "Target class must be set");
+        assertNotNull(beanMapper.getConfiguration().getTarget(), "Target must be set");
 
         beanMapper = beanMapper.wrap().build();
-        assertNull(beanMapper.configuration().getCollectionClass(), "Container class must be cleared");
-        assertNull(beanMapper.configuration().getTargetClass(), "Target class must be cleared");
-        assertNull(beanMapper.configuration().getTarget(), "Target must be cleared");
+        assertNull(beanMapper.getConfiguration().getCollectionClass(), "Container class must be cleared");
+        assertNull(beanMapper.getConfiguration().getTargetClass(), "Target class must be cleared");
+        assertNull(beanMapper.getConfiguration().getTarget(), "Target must be cleared");
     }
 
     private BeanMapper wrapAndSetFieldsForSingleRun(BeanMapper beanMapper) {
