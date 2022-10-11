@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Updated
+
+- Updated Javassist to version 2.29.2-GA, from 2.29.1-GA.
+- Updated SLF4J to version 2.0.3, from 2.0.0.
+- Updated JUnit 5 to version 5.9.0, from 5.8.2.
+- Updated OWASP Dependency Check to version 7.2.0, from 7.1.2.
+- Updated Maven Surefire Plugin to version 3.0.0-M7, from 2.22.2.
+- Updated Maven Release Plugin to version 3.0.0-M6, from 2.5.3.
+
+
 ## [4.0.1] - 2022-09-22
 
 ### Fixed
