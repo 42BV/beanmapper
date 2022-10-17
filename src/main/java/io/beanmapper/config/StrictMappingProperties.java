@@ -25,13 +25,13 @@ public class StrictMappingProperties {
      * the classes will be treated as if they are strict. This implies that all of their
      * properties will require matching properties on the other side.
      */
-    private Boolean applyStrictMappingConvention;
+    private boolean applyStrictMappingConvention;
 
     public StrictMappingProperties(
             BeanUnproxy beanUnproxy,
             String strictSourceSuffix,
             String strictTargetSuffix,
-            Boolean applyStrictMappingConvention) {
+            boolean applyStrictMappingConvention) {
         this.beanUnproxy = beanUnproxy;
         this.strictSourceSuffix = strictSourceSuffix;
         this.strictTargetSuffix = strictTargetSuffix;
@@ -46,7 +46,7 @@ public class StrictMappingProperties {
         return strictTargetSuffix;
     }
 
-    public Boolean isApplyStrictMappingConvention() {
+    public boolean isApplyStrictMappingConvention() {
         return applyStrictMappingConvention;
     }
 
@@ -58,7 +58,7 @@ public class StrictMappingProperties {
         this.strictTargetSuffix = strictTargetSuffix;
     }
 
-    public void setApplyStrictMappingConvention(Boolean applyStrictMappingConvention) {
+    public void setApplyStrictMappingConvention(boolean applyStrictMappingConvention) {
         this.applyStrictMappingConvention = applyStrictMappingConvention;
     }
 
@@ -93,7 +93,7 @@ public class StrictMappingProperties {
                 null,
                 null,
                 null,
-                null);
+                false);
     }
 
     public void setBeanUnproxy(SkippingBeanUnproxy beanUnproxy) {

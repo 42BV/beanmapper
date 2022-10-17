@@ -42,7 +42,7 @@ public class BeanPropertyMatch {
     public boolean hasAccess(
             RoleSecuredCheck roleSecuredCheck,
             Map<Class<? extends LogicSecuredCheck>, LogicSecuredCheck> logicSecuredChecks,
-            Boolean enforcedSecuredProperties) {
+            boolean enforcedSecuredProperties) {
 
         boolean accessAllowed = checkForLogicSecured(
                 logicSecuredChecks, sourceBeanProperty, source, target, enforcedSecuredProperties);
@@ -52,7 +52,7 @@ public class BeanPropertyMatch {
         return accessAllowed && checkForRoleSecured(roleSecuredCheck, enforcedSecuredProperties);
     }
 
-    private boolean checkForRoleSecured(RoleSecuredCheck roleSecuredCheck, Boolean enforcedSecuredProperties) {
+    private boolean checkForRoleSecured(RoleSecuredCheck roleSecuredCheck, boolean enforcedSecuredProperties) {
         if (roleSecuredCheck == null) {
             checkIfSecuredFieldHandlerNotSet(sourceBeanProperty, enforcedSecuredProperties);
             checkIfSecuredFieldHandlerNotSet(targetBeanProperty, enforcedSecuredProperties);

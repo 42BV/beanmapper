@@ -49,7 +49,7 @@ public abstract class AbstractCollectionHandler<C> implements CollectionHandler<
             Class<?> collectionElementClass,
             C targetCollection,
             CollectionFlusher collectionFlusher,
-            Boolean mustFlush) {
+            boolean mustFlush) {
 
         C useTargetCollection = collectionUsage.mustConstruct(targetCollection) ?
                 createCollection(preferredCollectionClass, collectionElementClass) :

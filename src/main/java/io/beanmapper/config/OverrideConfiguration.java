@@ -38,17 +38,17 @@ public class OverrideConfiguration implements Configuration {
 
     private OverrideField<Boolean> converterChoosable;
 
-    private StrictMappingProperties strictMappingProperties = StrictMappingProperties.emptyConfig();
+    private OverrideField<StrictMappingProperties> strictMappingProperties;
 
     private BeanCollectionUsage collectionUsage = null;
 
     private Class<?> preferredCollectionClass = null;
 
-    private Boolean enforcedSecuredProperties = null;
+    private OverrideField<Boolean> enforcedSecuredProperties;
 
     private OverrideField<Boolean> useNullValue;
 
-    private OverrideField<Boolean> flushAfterClear;
+    private OverrideField<FlushAfterClearInstruction> flushAfterClear;
 
     private OverrideField<Boolean> flushEnabled;
 
@@ -65,6 +65,8 @@ public class OverrideConfiguration implements Configuration {
         this.flushAfterClear = new OverrideField<>(configuration::isFlushAfterClear);
         this.flushEnabled = new OverrideField<>(configuration::isFlushEnabled);
         this.useNullValue = new OverrideField<>(configuration::getUseNullValue);
+        this.strictMappingProperties = new OverrideField<>(configuration::getStrictMappingProperties);
+        this.enforcedSecuredProperties = new OverrideField<>(configuration::getEnforceSecuredProperties);
     }
 
     @Override
@@ -164,7 +166,7 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public Boolean isConverterChoosable() {
+    public boolean isConverterChoosable() {
         return converterChoosable.get();
     }
 
@@ -175,23 +177,17 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public String getStrictSourceSuffix() {
-        return strictMappingProperties.getStrictSourceSuffix() == null ?
-                parentConfiguration.getStrictSourceSuffix() :
-                strictMappingProperties.getStrictSourceSuffix();
+        return this.strictMappingProperties.get().getStrictSourceSuffix();
     }
 
     @Override
     public String getStrictTargetSuffix() {
-        return strictMappingProperties.getStrictTargetSuffix() == null ?
-                parentConfiguration.getStrictTargetSuffix() :
-                strictMappingProperties.getStrictTargetSuffix();
+        return strictMappingProperties.get().getStrictTargetSuffix();
     }
 
     @Override
-    public Boolean isApplyStrictMappingConvention() {
-        return strictMappingProperties.isApplyStrictMappingConvention() == null ?
-                parentConfiguration.isApplyStrictMappingConvention() :
-                strictMappingProperties.isApplyStrictMappingConvention();
+    public boolean isApplyStrictMappingConvention() {
+        return strictMappingProperties.get().isApplyStrictMappingConvention();
     }
 
     @Override
@@ -222,22 +218,22 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public Boolean isFlushAfterClear() {
+    public FlushAfterClearInstruction isFlushAfterClear() {
         return flushAfterClear.get();
     }
 
     @Override
-    public Boolean isFlushEnabled() {
-        return flushEnabled.get();
+    public boolean isFlushEnabled() {
+        return this.flushEnabled.get();
     }
 
     @Override
-    public Boolean mustFlush() {
-        return isFlushEnabled() && isFlushAfterClear();
+    public boolean mustFlush() {
+        return isFlushEnabled() && isFlushAfterClear() == FlushAfterClearInstruction.FLUSH_ENABLED;
     }
 
     @Override
-    public Boolean getUseNullValue() {
+    public boolean getUseNullValue() {
         return useNullValue.get();
     }
 
@@ -247,10 +243,8 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public Boolean getEnforceSecuredProperties() {
-        return this.enforcedSecuredProperties == null ?
-                parentConfiguration.getEnforceSecuredProperties() :
-                this.enforcedSecuredProperties;
+    public boolean getEnforceSecuredProperties() {
+        return this.enforcedSecuredProperties.get();
     }
 
     @Override
@@ -304,8 +298,8 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public void setEnforceSecuredProperties(Boolean enforceSecuredProperties) {
-        this.enforcedSecuredProperties = enforceSecuredProperties;
+    public void setEnforceSecuredProperties(boolean enforceSecuredProperties) {
+        this.enforcedSecuredProperties.set(enforceSecuredProperties);
     }
 
     @Override
@@ -365,17 +359,17 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public void setStrictSourceSuffix(String strictSourceSuffix) {
-        this.strictMappingProperties.setStrictSourceSuffix(strictSourceSuffix);
+        this.strictMappingProperties.get().setStrictSourceSuffix(strictSourceSuffix);
     }
 
     @Override
     public void setStrictTargetSuffix(String strictTargetSuffix) {
-        this.strictMappingProperties.setStrictTargetSuffix(strictTargetSuffix);
+        this.strictMappingProperties.get().setStrictTargetSuffix(strictTargetSuffix);
     }
 
     @Override
-    public void setApplyStrictMappingConvention(Boolean applyStrictMappingConvention) {
-        this.strictMappingProperties.setApplyStrictMappingConvention(applyStrictMappingConvention);
+    public void setApplyStrictMappingConvention(boolean applyStrictMappingConvention) {
+        this.strictMappingProperties.get().setApplyStrictMappingConvention(applyStrictMappingConvention);
     }
 
     @Override
@@ -389,17 +383,17 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public void setFlushAfterClear(Boolean flushAfterClear) {
+    public void setFlushAfterClear(FlushAfterClearInstruction flushAfterClear) {
         this.flushAfterClear.set(flushAfterClear);
     }
 
     @Override
-    public void setFlushEnabled(Boolean flushEnabled) {
+    public void setFlushEnabled(boolean flushEnabled) {
         this.flushEnabled.set(flushEnabled);
     }
 
     @Override
-    public void setUseNullValue(Boolean useNullValue) {
+    public void setUseNullValue(boolean useNullValue) {
         this.useNullValue.set(useNullValue);
     }
 

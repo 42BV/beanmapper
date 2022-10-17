@@ -3,6 +3,7 @@ package io.beanmapper.core.converter.collections;
 import static io.beanmapper.core.converter.collections.AnnotationClass.EMPTY_ANNOTATION_CLASS;
 
 import io.beanmapper.annotations.BeanCollectionUsage;
+import io.beanmapper.config.FlushAfterClearInstruction;
 import io.beanmapper.core.BeanProperty;
 
 public class BeanCollectionInstructions {
@@ -13,7 +14,7 @@ public class BeanCollectionInstructions {
 
     private AnnotationClass preferredCollectionClass = EMPTY_ANNOTATION_CLASS;
 
-    private Boolean flushAfterClear;
+    private FlushAfterClearInstruction flushAfterClear;
 
     public CollectionElementType getCollectionElementType() {
         return collectionElementType;
@@ -39,12 +40,12 @@ public class BeanCollectionInstructions {
         this.preferredCollectionClass = preferredCollectionClass;
     }
 
-    public Boolean getFlushAfterClear() {
+    public FlushAfterClearInstruction getFlushAfterClear() {
         return flushAfterClear;
     }
 
-    public void setFlushAfterClear(Boolean flushAfterClear) {
-        this.flushAfterClear = flushAfterClear;
+    public void setFlushAfterClear(FlushAfterClearInstruction flushAfterClear) {
+        this.flushAfterClear = flushAfterClear != FlushAfterClearInstruction.UNSET ? flushAfterClear : FlushAfterClearInstruction.FLUSH_ENABLED;
     }
 
     public static BeanCollectionInstructions merge(
@@ -71,10 +72,7 @@ public class BeanCollectionInstructions {
             BeanCollectionInstructions target,
             BeanCollectionInstructions source) {
         BeanCollectionInstructions merged = new BeanCollectionInstructions();
-        merged.setFlushAfterClear(chooseValue(
-                target.getFlushAfterClear(),
-                source == null ? null : source.getFlushAfterClear(),
-                true));
+        merged.setFlushAfterClear(target.getFlushAfterClear());
         merged.setBeanCollectionUsage(chooseValue(
                 target.getBeanCollectionUsage(),
                 source == null ? null : source.getBeanCollectionUsage(),

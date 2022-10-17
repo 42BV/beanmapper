@@ -113,7 +113,7 @@ public interface Configuration {
      */
     List<BeanPair> getBeanPairs();
 
-    Boolean isConverterChoosable();
+    boolean isConverterChoosable();
 
     void withoutDefaultConverters();
 
@@ -138,7 +138,7 @@ public interface Configuration {
      * properties will require matching properties on the other side. Default is true.
      * @return if true, the strict mapping convention will be applied
      */
-    Boolean isApplyStrictMappingConvention();
+    boolean isApplyStrictMappingConvention();
 
     /**
      * Returns the collection of strictSourceSuffix, strictTargetSuffix and
@@ -173,7 +173,7 @@ public interface Configuration {
      * collection has taken place.
      * @return true if the flush-chain must be called after a clear
      */
-    Boolean isFlushAfterClear();
+    FlushAfterClearInstruction isFlushAfterClear();
 
     /**
      * Determines if flushing has been enabled. Flushing is the calling of flush() on a collection
@@ -182,20 +182,20 @@ public interface Configuration {
      * case, the flush will throw an exception.
      * @return whether flushing has been enabled
      */
-    Boolean isFlushEnabled();
+    boolean isFlushEnabled();
 
     /**
      * Works on the combination of the global flush setting (flushEnabled) and the specific flush
      * setting (flushAfterClear). If both are true, the flush will trigger.
      * @return true if a flush after clear must take place
      */
-    Boolean mustFlush();
+    boolean mustFlush();
 
     /**
      * Property that determines if null values for the source must be skipped or not
      * @return determines if null values must be skipped or not
      */
-    Boolean getUseNullValue();
+    boolean getUseNullValue();
 
     /**
      * The RoleSecuredCheck is responsible for checking if a Principal may access
@@ -210,7 +210,7 @@ public interface Configuration {
      * and the RoleSecuredCheck has not been set, an exception will be thrown.
      * @return whether the handling of secured properties is enforced
      */
-    Boolean getEnforceSecuredProperties();
+    boolean getEnforceSecuredProperties();
 
     /**
      * Add a converter class (must inherit from abstract BeanConverter class) to the beanMapper.
@@ -369,7 +369,7 @@ public interface Configuration {
      * properties will require matching properties on the other side. Default is true.
      * @param applyStrictMappingConvention whether the strict mapping convention must be applied
      */
-    void setApplyStrictMappingConvention(Boolean applyStrictMappingConvention);
+    void setApplyStrictMappingConvention(boolean applyStrictMappingConvention);
 
     /**
      * Sets the collection usage for the current collection mapping
@@ -388,7 +388,7 @@ public interface Configuration {
      * Determines whether the flush-chain must be called after a clear has taken place.
      * @param flushAfterClear true if the flush-chain must be called
      */
-    void setFlushAfterClear(Boolean flushAfterClear);
+    void setFlushAfterClear(FlushAfterClearInstruction flushAfterClear);
 
     /**
      * Set whether flushing must be enabled. Flushing is the calling of flush() on a collection
@@ -397,7 +397,7 @@ public interface Configuration {
      * case, the flush will throw an exception.
      * @param flushEnabled whether flushing has been enabled
      */
-    void setFlushEnabled(Boolean flushEnabled);
+    void setFlushEnabled(boolean flushEnabled);
 
     /**
      * The RoleSecuredCheck is responsible for checking if a Principal may access
@@ -411,12 +411,12 @@ public interface Configuration {
      * and the RoleSecuredCheck has not been set, an exception will be thrown.
      * @param enforceSecuredProperties whether the handling of secured properties is enforced
      */
-    void setEnforceSecuredProperties(Boolean enforceSecuredProperties);
+    void setEnforceSecuredProperties(boolean enforceSecuredProperties);
 
     /**
      * Property that determines if null values for the source must be skipped or not
      * @param useNullValue determines if null values must be skipped or not
      */
-    void setUseNullValue(Boolean useNullValue);
+    void setUseNullValue(boolean useNullValue);
 
 }

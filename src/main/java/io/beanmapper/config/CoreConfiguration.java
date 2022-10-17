@@ -72,7 +72,7 @@ public class CoreConfiguration implements Configuration {
     /**
      * The value that decides whether a converter may be chosen, or direct mapping has to take place
      */
-    private Boolean converterChoosable;
+    private boolean converterChoosable;
 
     private boolean addDefaultConverters = true;
 
@@ -80,7 +80,7 @@ public class CoreConfiguration implements Configuration {
 
     private CollectionFlusher collectionFlusher = new CollectionFlusher();
 
-    private Boolean flushEnabled = false;
+    private boolean flushEnabled;
 
     /**
      * The RoleSecuredCheck is responsible for checking if a Principal may access
@@ -92,13 +92,13 @@ public class CoreConfiguration implements Configuration {
      * Property that determines if secured properties must be handled. If this is set to true
      * and the RoleSecuredCheck has not been set, an exception will be thrown.
      */
-    private Boolean enforceSecuredProperties = true;
+    private boolean enforceSecuredProperties = true;
 
     /**
      * Property that determines if null values for the source will be used. Normal behaviour
      * is to skip the mapping operation if a source value is null.
      */
-    private Boolean useNullValue = false;
+    private boolean useNullValue;
 
     @Override
     public List<String> getDownsizeTarget() {
@@ -184,8 +184,8 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
-    public Boolean isConverterChoosable() {
-        return converterChoosable != null && converterChoosable;
+    public boolean isConverterChoosable() {
+        return converterChoosable;
     }
 
     @Override
@@ -204,7 +204,7 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
-    public Boolean isApplyStrictMappingConvention() {
+    public boolean isApplyStrictMappingConvention() {
         return strictMappingProperties.isApplyStrictMappingConvention();
     }
 
@@ -230,22 +230,22 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
-    public Boolean isFlushAfterClear() {
-        return false;
+    public FlushAfterClearInstruction isFlushAfterClear() {
+        return FlushAfterClearInstruction.FLUSH_DISABLED;
     }
 
     @Override
-    public Boolean isFlushEnabled() {
+    public boolean isFlushEnabled() {
         return this.flushEnabled;
     }
 
     @Override
-    public Boolean mustFlush() {
+    public boolean mustFlush() {
         return false;
     }
 
     @Override
-    public Boolean getUseNullValue() {
+    public boolean getUseNullValue() {
         return this.useNullValue;
     }
 
@@ -255,7 +255,7 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
-    public Boolean getEnforceSecuredProperties() {
+    public boolean getEnforceSecuredProperties() {
         return enforceSecuredProperties;
     }
 
@@ -377,7 +377,7 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
-    public void setApplyStrictMappingConvention(Boolean applyStrictMappingConvention) {
+    public void setApplyStrictMappingConvention(boolean applyStrictMappingConvention) {
         this.strictMappingProperties.setApplyStrictMappingConvention(applyStrictMappingConvention);
     }
 
@@ -394,13 +394,13 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
-    public void setFlushAfterClear(Boolean flushAfterClear) {
+    public void setFlushAfterClear(FlushAfterClearInstruction flushAfterClear) {
         throw new BeanConfigurationOperationNotAllowedException(
                 "Illegal to set flush after clear on the core configuration");
     }
 
     @Override
-    public void setFlushEnabled(Boolean flushEnabled) {
+    public void setFlushEnabled(boolean flushEnabled) {
         this.flushEnabled = flushEnabled;
     }
 
@@ -410,12 +410,12 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
-    public void setEnforceSecuredProperties(Boolean enforceSecuredProperties) {
+    public void setEnforceSecuredProperties(boolean enforceSecuredProperties) {
         this.enforceSecuredProperties = enforceSecuredProperties;
     }
 
     @Override
-    public void setUseNullValue(Boolean useNullValue) {
+    public void setUseNullValue(boolean useNullValue) {
         this.useNullValue = useNullValue;
     }
 
