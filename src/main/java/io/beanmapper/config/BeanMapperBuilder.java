@@ -1,6 +1,7 @@
 package io.beanmapper.config;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.beanmapper.BeanMapper;
@@ -121,13 +122,13 @@ public class BeanMapperBuilder {
 
     public BeanMapperBuilder downsizeSource(List<String> includeFields) {
         this.configuration.setApplyStrictMappingConvention(false);
-        this.configuration.downsizeSource(includeFields);
+        this.configuration.downsizeSource(includeFields != null ? includeFields : Collections.emptyList());
         return this;
     }
 
     public BeanMapperBuilder downsizeTarget(List<String> includeFields) {
         this.configuration.setApplyStrictMappingConvention(false);
-        this.configuration.downsizeTarget(includeFields);
+        this.configuration.downsizeTarget(includeFields != null ? includeFields : Collections.emptyList());
         return this;
     }
 

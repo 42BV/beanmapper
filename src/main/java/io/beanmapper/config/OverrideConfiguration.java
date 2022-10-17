@@ -1,6 +1,7 @@
 package io.beanmapper.config;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -68,12 +69,14 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public List<String> getDownsizeSource() {
-        return downsizeSourceFields.get();
+        var list = this.downsizeSourceFields.get();
+        return list != null ? list : Collections.emptyList();
     }
 
     @Override
     public List<String> getDownsizeTarget() {
-        return downsizeTargetFields.get();
+        var list =  this.downsizeTargetFields.get();
+        return list != null ? list : Collections.emptyList();
     }
 
     @Override
@@ -128,7 +131,8 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public List<String> getPackagePrefixes() {
-        return parentConfiguration.getPackagePrefixes();
+        var list = parentConfiguration.getPackagePrefixes();
+        return list != null ? list : Collections.emptyList();
     }
 
     @Override
@@ -141,12 +145,14 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public Map<Class<? extends LogicSecuredCheck>, LogicSecuredCheck> getLogicSecuredChecks() {
-        return parentConfiguration.getLogicSecuredChecks();
+        var map = this.parentConfiguration.getLogicSecuredChecks();
+        return map != null ? map : Collections.emptyMap();
     }
 
     @Override
     public List<CollectionHandler> getCollectionHandlers() {
-        return parentConfiguration.getCollectionHandlers();
+        var list = this.parentConfiguration.getCollectionHandlers();
+        return list != null ? list : Collections.emptyList();
     }
 
     @Override
@@ -319,12 +325,12 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public void downsizeSource(List<String> includeFields) {
-        this.downsizeSourceFields.set(includeFields);
+        this.downsizeSourceFields.set(includeFields != null ? includeFields : Collections.emptyList());
     }
 
     @Override
     public void downsizeTarget(List<String> includeFields) {
-        this.downsizeTargetFields.set(includeFields);
+        this.downsizeTargetFields.set(includeFields != null ? includeFields : Collections.emptyList());
     }
 
     @Override

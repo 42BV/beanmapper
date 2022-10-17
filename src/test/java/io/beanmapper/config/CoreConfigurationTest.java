@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
 
@@ -50,8 +51,8 @@ class CoreConfigurationTest {
     @Test
     void singleMapRunProperties() {
         CoreConfiguration configuration = new CoreConfiguration();
-        assertNull(configuration.getDownsizeSource());
-        assertNull(configuration.getDownsizeTarget());
+        assertTrue(configuration.getDownsizeSource().isEmpty());
+        assertTrue(configuration.getDownsizeTarget().isEmpty());
         assertNull(configuration.getTargetClass());
         assertNull(configuration.getTarget());
         assertNull(configuration.getParent());

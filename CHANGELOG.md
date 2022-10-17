@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Upgraded SLF4J 2.0.0 to 2.0.3
 - Upgraded Javassist 3.29.1-GA to 3.29.2-GA
 
+### Fixed
+
+- Issue [#152](https://github.com/42BV/beanmapper/issues/152) **Methods that return a Collection should never return null.**; All methods that return a
+  Collection, will return an empty Collection of the target type, rather than returning null.
+
 ### Added
 
 - BeanMapper#map(Collection, Class) allowing users to map from a Collection to the type actual type of the 
