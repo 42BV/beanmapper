@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Upgraded SLF4J 2.0.0 to 2.0.3
 - Upgraded Javassist 3.29.1-GA to 3.29.2-GA
 
+### Added
+
+- BeanMapper#map(Collection, Class) allowing users to map from a Collection to the type actual type of the 
+- Support for mapping Queue. A Queue will be mapped to an ArrayDeque by default. The order of elements is guaranteed to be preserved, except when the Queue is 
+  mapped to a Queue that inherently modifies the order of elements (e.g. PriorityQueue).
+
 
 ## [4.0.1] - 2022-09-22
 

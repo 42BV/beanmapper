@@ -1,5 +1,6 @@
 package io.beanmapper;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -67,6 +68,22 @@ public record BeanMapper(Configuration configuration) {
     }
 
     /**
+     * Maps the source collection to a new target collection.
+     *
+     * <p>The type of the target collection is determined automatically from the actual type of the source collection.
+     * If the source </p>
+     *
+     * @param collection - The source collection
+     * @param elementInCollectionClass - The class of each element in the target list.
+     * @return The target collection with mapped source collection elements.
+     * @param <S> The type up the elements in the source collection.
+     * @param <T> The type of the target, to which the source elements will be mapped.
+     */
+    public <S, T> Collection<T> map(Collection<S> collection, Class<T> elementInCollectionClass) {
+        return mapCollection(collection, elementInCollectionClass);
+    }
+
+    /**
      * Maps the source list of elements to a new target list. Convenience operator
      * @param list the source list
      * @param elementInListClass the class of each element in the target list
@@ -75,7 +92,7 @@ public record BeanMapper(Configuration configuration) {
      * @return the target list with mapped source list elements
      */
     public <S, T> List<T> map(List<S> list, Class<T> elementInListClass) {
-        return (List<T>) mapCollection(list, elementInListClass);
+        return mapCollection(list, elementInListClass);
     }
 
     /**
@@ -87,7 +104,7 @@ public record BeanMapper(Configuration configuration) {
      * @return the target set with mapped source set elements
      */
     public <S, T> Set<T> map(Set<S> set, Class<T> elementInSetClass) {
-        return (Set<T>) mapCollection(set, elementInSetClass);
+        return mapCollection(set, elementInSetClass);
     }
 
     /**
@@ -100,11 +117,11 @@ public record BeanMapper(Configuration configuration) {
      * @return the target map with literal source set keys and mapped source set values
      */
     public <K, S, T> Map<K, T> map(Map<K, S> map, Class<T> mapValueClass) {
-        return (Map<K, T>) mapCollection(map, mapValueClass);
+        return mapCollection(map, mapValueClass);
     }
 
-    private Object mapCollection(Object collection, Class<?> elementInCollection) {
-        return wrap()
+    private <S, T, E> T mapCollection(S collection, Class<E> elementInCollection) {
+        return (T) wrap()
                 .setCollectionClass(collection.getClass())
                 .setTargetClass(elementInCollection)
                 .build()

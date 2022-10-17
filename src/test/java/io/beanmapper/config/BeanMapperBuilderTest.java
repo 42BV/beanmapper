@@ -99,7 +99,7 @@ class BeanMapperBuilderTest {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .addCollectionHandler(new ListCollectionHandler())
                 .build();
-        assertEquals(4, beanMapper.configuration().getCollectionHandlers().size());
+        assertEquals(5, beanMapper.configuration().getCollectionHandlers().size());
     }
 
     @Test
