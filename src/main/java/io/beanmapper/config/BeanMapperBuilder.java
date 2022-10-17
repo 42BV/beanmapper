@@ -9,6 +9,7 @@ import io.beanmapper.annotations.LogicSecuredCheck;
 import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.collections.ListCollectionHandler;
 import io.beanmapper.core.collections.MapCollectionHandler;
+import io.beanmapper.core.collections.QueueCollectionHandler;
 import io.beanmapper.core.collections.SetCollectionHandler;
 import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
@@ -28,9 +29,10 @@ public class BeanMapperBuilder {
 
     private static final List<CollectionHandler> DEFAULT_COLLECTION_HANDLERS =
             List.of(
-                new MapCollectionHandler(),
-                new SetCollectionHandler(),
-                new ListCollectionHandler()
+                    new MapCollectionHandler(),
+                    new SetCollectionHandler(),
+                    new ListCollectionHandler(),
+                    new QueueCollectionHandler()
             );
 
     private final Configuration configuration;
@@ -158,12 +160,12 @@ public class BeanMapperBuilder {
         this.configuration.setStrictSourceSuffix(strictSourceSuffix);
         return this;
     }
-    
+
     public BeanMapperBuilder setStrictTargetSuffix(String strictTargetSuffix) {
         this.configuration.setStrictTargetSuffix(strictTargetSuffix);
         return this;
     }
-    
+
     public BeanMapperBuilder setApplyStrictMappingConvention(Boolean applyStrictMappingConvention) {
         this.configuration.setApplyStrictMappingConvention(applyStrictMappingConvention);
         return this;
@@ -188,7 +190,6 @@ public class BeanMapperBuilder {
         this.configuration.setFlushEnabled(flushEnabled);
         return this;
     }
-
 
     public BeanMapperBuilder setUseNullValue() {
         this.configuration.setUseNullValue(true);

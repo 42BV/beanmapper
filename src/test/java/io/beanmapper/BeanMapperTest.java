@@ -12,17 +12,23 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.ArrayBlockingQueue;
 
+import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.config.AfterClearFlusher;
 import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.config.RoleSecuredCheck;
@@ -74,6 +80,8 @@ import io.beanmapper.testmodel.collections.CollectionListTarget;
 import io.beanmapper.testmodel.collections.CollectionListTargetClear;
 import io.beanmapper.testmodel.collections.CollectionMapSource;
 import io.beanmapper.testmodel.collections.CollectionMapTarget;
+import io.beanmapper.testmodel.collections.CollectionPriorityQueueTarget;
+import io.beanmapper.testmodel.collections.CollectionQueueSource;
 import io.beanmapper.testmodel.collections.CollectionSetSource;
 import io.beanmapper.testmodel.collections.CollectionSetTarget;
 import io.beanmapper.testmodel.collections.CollectionSetTargetIncorrectSubtype;
@@ -203,6 +211,7 @@ import io.beanmapper.testmodel.tostring.SourceWithNonString;
 import io.beanmapper.testmodel.tostring.TargetWithString;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class BeanMapperTest {
@@ -1733,6 +1742,107 @@ class BeanMapperTest {
         Optional<Person> person = Optional.empty();
         Optional<PersonView> personView = beanMapper.map(person, PersonView.class);
         assertFalse(personView.isPresent());
+    }
+
+    @Test
+    void mapCollection_List() {
+        Collection<String> collection = List.of("42", "21", "12");
+        var result = this.beanMapper.map(collection, Long.class);
+        assertEquals(ArrayList.class, result.getClass());
+        assertEquals(3, result.size());
+        assertTrue(result.contains(42L));
+        assertTrue(result.contains(21L));
+        assertTrue(result.contains(12L));
+    }
+
+    @Test
+    void mapCollection_TreeSet() {
+        Collection<String> collection = Set.of("42", "21", "12");
+        var result = this.beanMapper.map(collection, Long.class);
+        assertEquals(TreeSet.class, result.getClass());
+        assertEquals(3, result.size());
+        assertTrue(result.contains(42L));
+        assertTrue(result.contains(21L));
+        assertTrue(result.contains(12L));
+    }
+
+    @Test
+    void mapCollection_HashSet() {
+        Collection<Person> collection = Set.of(createPerson("Henk"), createPerson("Klaas"), createPerson("Kees"));
+        var result = this.beanMapper.map(collection, PersonResult.class);
+        assertEquals(HashSet.class, result.getClass());
+        assertEquals(3, result.size());
+        assertTrue(result.stream().filter(coll -> coll.name.equals("Henk")).toList().size() == 1);
+        assertTrue(result.stream().filter(coll -> coll.name.equals("Klaas")).toList().size() == 1);
+        assertTrue(result.stream().filter(coll -> coll.name.equals("Kees")).toList().size() == 1);
+        assertTrue(result.stream().filter(coll -> coll.name.equals("Broheim")).toList().isEmpty());
+    }
+
+    @Test
+    void mapCollection_Queue() {
+        Collection<String> collection = new ArrayBlockingQueue<>(10, false);
+        collection.add("42");
+        collection.add("21");
+        collection.add("12");
+
+        var result = this.beanMapper.map(collection, Long.class);
+        assertEquals(collection.size(), result.size());
+        assertEquals(42L, ((Queue<Long>) result).poll());
+        assertEquals(21L, ((Queue<Long>) result).poll());
+        assertEquals(12L, ((Queue<Long>) result).poll());
+    }
+
+    @Test
+    @Disabled("BeanMapperBuilder#setPreferredCollectionClass doesn't work as reasonably expected, resulting in "
+            + "failures.")
+    void mapQueueToTarget_PriorityQueue() {
+        Queue<String> collection = new ArrayDeque<>();
+        collection.add("42");
+        collection.add("21");
+        collection.add("12");
+
+        var result = new BeanMapperBuilder().build().wrap()
+                .setPreferredCollectionClass(PriorityQueue.class)
+                .setCollectionUsage(BeanCollectionUsage.CONSTRUCT)
+                .setTargetClass(Long.class)
+                .setFlushAfterClear(false)
+                .build()
+                .map(collection, Long.class);
+
+        assertEquals(PriorityQueue.class, result.getClass());
+        assertEquals(collection.size(), result.size());
+        assertEquals(42L, ((PriorityQueue<Long>) result).poll());
+        assertEquals(21L, ((PriorityQueue<Long>) result).poll());
+        assertEquals(12L, ((PriorityQueue<Long>) result).poll());
+    }
+
+    @Test
+    void mapQueueFieldToPriorityQueueField() {
+        var form = new CollectionQueueSource();
+        form.queue.add("42");
+        form.queue.add("21");
+        form.queue.add("12");
+
+        var result = this.beanMapper.map(form, CollectionPriorityQueueTarget.class);
+        assertEquals(PriorityQueue.class, result.queue.getClass());
+        assertEquals(form.queue.size(), result.queue.size());
+        assertEquals(12L, result.queue.poll());
+        assertEquals(21L, result.queue.poll());
+        assertEquals(42L, result.queue.poll());
+    }
+
+    @Test
+    void mapCollection_Deque() {
+        Collection<String> collection = new ArrayDeque<>();
+        collection.add("42");
+        collection.add("21");
+        collection.add("12");
+
+        var result = this.beanMapper.map(collection, Long.class);
+        assertEquals(3, result.size());
+        assertTrue(result.contains(42L));
+        assertTrue(result.contains(21L));
+        assertTrue(result.contains(12L));
     }
 
     private MyEntity createMyEntity() {
