@@ -1,6 +1,7 @@
 package io.beanmapper.core;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessors;
@@ -21,15 +22,15 @@ public class BeanPropertyCreator {
     }
 
     public BeanProperty determineNodesForPath() {
-        return determineNodes(new Stack<>());
+        return determineNodes(new ArrayDeque<>());
     }
 
     public BeanProperty determineNodesForPath(BeanProperty precedingBeanProperty) {
         return determineNodes(copyNodes(precedingBeanProperty));
     }
 
-    private Stack<BeanProperty> copyNodes(BeanProperty precedingBeanProperty) {
-        Stack<BeanProperty> beanProperties = new Stack<>();
+    private Deque<BeanProperty> copyNodes(BeanProperty precedingBeanProperty) {
+        Deque<BeanProperty> beanProperties = new ArrayDeque<>();
         BeanProperty currentPrecedingBeanProperty = precedingBeanProperty;
         Class<?> currentBaseClass = baseClass;
         while (currentPrecedingBeanProperty != null) {
@@ -45,15 +46,15 @@ public class BeanPropertyCreator {
         return beanProperties;
     }
 
-    private BeanProperty determineNodes(Stack<BeanProperty> beanProperties) {
+    private BeanProperty determineNodes(Deque<BeanProperty> beanProperties) {
         traversePath(beanProperties);
         return getFirstBeanProperty(beanProperties);
     }
 
-    private BeanProperty getFirstBeanProperty(Stack<BeanProperty> beanProperties) {
+    private BeanProperty getFirstBeanProperty(Deque<BeanProperty> beanProperties) {
         BeanProperty previousBeanProperty = null;
         BeanProperty currentBeanProperty = null;
-        while (!beanProperties.empty()) {
+        while (!beanProperties.isEmpty()) {
             currentBeanProperty = beanProperties.pop();
             if (previousBeanProperty != null) {
                 currentBeanProperty.setNext(previousBeanProperty);
@@ -63,7 +64,7 @@ public class BeanPropertyCreator {
         return currentBeanProperty;
     }
 
-    private void traversePath(Stack<BeanProperty> beanProperties) {
+    private void traversePath(Deque<BeanProperty> beanProperties) {
         Class<?> currentBaseClass = baseClass;
         for (String node : route.getRoute()) {
             final PropertyAccessor property = PropertyAccessors.findProperty(currentBaseClass, node);

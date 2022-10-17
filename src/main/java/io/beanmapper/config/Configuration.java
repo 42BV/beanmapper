@@ -1,5 +1,6 @@
 package io.beanmapper.config;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ public interface Configuration {
      * Include fields never refer to the parent configuration.
      * @return the fields to include in the target
      */
-    List<String> getDownsizeTarget();
+    Collection<String> getDownsizeTarget();
 
     /**
      * When include fields are passed, BeanMapper will assume that the generation (or reuse)
@@ -30,7 +31,7 @@ public interface Configuration {
      * Include fields never refer to the parent configuration.
      * @return the fields to include in the source
      */
-    List<String> getDownsizeSource();
+    Collection<String> getDownsizeSource();
 
     /**
      * The class that represents the collection itself. Used to instantiate a collection.
@@ -79,9 +80,9 @@ public interface Configuration {
      */
     ClassStore getClassStore();
 
-    List<String> getPackagePrefixes();
+    Iterable<String> getPackagePrefixes();
 
-    List<BeanConverter> getBeanConverters();
+    Collection<BeanConverter> getBeanConverters();
 
     Map<Class<? extends LogicSecuredCheck>, LogicSecuredCheck> getLogicSecuredChecks();
 
@@ -91,7 +92,7 @@ public interface Configuration {
      * and construction are supplied.
      * @return the list of registered collection handlers
      */
-    List<CollectionHandler> getCollectionHandlers();
+    Iterable<CollectionHandler> getCollectionHandlers();
 
     /**
      * Finds the correction handler for the class. Null, if not found.
@@ -111,7 +112,7 @@ public interface Configuration {
      * have matching properties on the other, non-strict side.
      * @return the entire list of strict bean pairs.
      */
-    List<BeanPair> getBeanPairs();
+    Collection<BeanPair> getBeanPairs();
 
     Boolean isConverterChoosable();
 
@@ -301,7 +302,7 @@ public interface Configuration {
      * THe limited source class is mapped over the given target class.
      * @param includeFields The fields to be mapped to the target class.
      */
-    void downsizeSource(List<String> includeFields);
+    void downsizeSource(Collection<String> includeFields);
 
     /**
      * Sets the only fields that are allowed in the target class. If the include fields are set,
@@ -309,7 +310,7 @@ public interface Configuration {
      * the parent configuration.
      * @param includeFields The field that are allowed in the target class.
      */
-    void downsizeTarget(List<String> includeFields);
+    void downsizeTarget(Collection<String> includeFields);
 
     /**
      * Sets the collection class of the collection. Used to instantiate the collection. If the

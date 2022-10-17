@@ -26,6 +26,8 @@ import java.util.TreeSet;
 import io.beanmapper.config.AfterClearFlusher;
 import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.config.RoleSecuredCheck;
+import io.beanmapper.core.BeanMatchValidationMessage;
+import io.beanmapper.core.BeanProperty;
 import io.beanmapper.core.BeanStrictMappingRequirementsException;
 import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
 import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
@@ -303,7 +305,7 @@ class BeanMapperTest {
     @Test
     void mapListCollectionInContainer() {
         CollectionListSource source = new CollectionListSource() {{
-            items = new ArrayList<Person>();
+            items = new ArrayList<>();
             items.add(createPerson("Jan"));
             items.add(createPerson("Piet"));
             items.add(createPerson("Joris"));
@@ -319,7 +321,7 @@ class BeanMapperTest {
 
     @Test
     void mapListCollectionWithNested() {
-        List<Address> sourceItems = new ArrayList<Address>() {{
+        List<Address> sourceItems = new ArrayList<>() {{
             add(new Address("Koraalrood", 1, "Nederland"));
             add(new Address("ComputerStraat", 1, "Duitsland"));
             add(new Address("InternetWeg", 1, "Belgie"));
@@ -1252,14 +1254,14 @@ class BeanMapperTest {
                     .build();
             fail("Should have thrown an exception");
         } catch (BeanStrictMappingRequirementsException ex) {
-            assertEquals(SourceAStrict.class, ex.getValidationMessages().get(0).getSourceClass());
-            assertEquals("noMatch", ex.getValidationMessages().get(0).getFields().get(0).getName());
-            assertEquals(TargetBStrict.class, ex.getValidationMessages().get(1).getTargetClass());
-            assertEquals("noMatch", ex.getValidationMessages().get(1).getFields().get(0).getName());
-            assertEquals(SourceCStrict.class, ex.getValidationMessages().get(2).getSourceClass());
-            assertEquals("noMatch1", ex.getValidationMessages().get(2).getFields().get(0).getName());
-            assertEquals("noMatch2", ex.getValidationMessages().get(2).getFields().get(1).getName());
-            assertEquals("noMatch3", ex.getValidationMessages().get(2).getFields().get(2).getName());
+            assertEquals(SourceAStrict.class, ((List<BeanMatchValidationMessage>) ex.getValidationMessages()).get(0).getSourceClass());
+            assertEquals("noMatch", ((List<BeanProperty>) ((List<BeanMatchValidationMessage>)ex.getValidationMessages()).get(0).getFields()).get(0).getName());
+            assertEquals(TargetBStrict.class, ((List<BeanMatchValidationMessage>) ex.getValidationMessages()).get(1).getTargetClass());
+            assertEquals("noMatch", ((List<BeanProperty>) ((List<BeanMatchValidationMessage>) ex.getValidationMessages()).get(1).getFields()).get(0).getName());
+            assertEquals(SourceCStrict.class, ((List<BeanMatchValidationMessage>) ex.getValidationMessages()).get(2).getSourceClass());
+            assertEquals("noMatch1", ((List<BeanProperty>) ((List<BeanMatchValidationMessage>) ex.getValidationMessages()).get(2).getFields()).get(0).getName());
+            assertEquals("noMatch2", ((List<BeanProperty>) ((List<BeanMatchValidationMessage>) ex.getValidationMessages()).get(2).getFields()).get(1).getName());
+            assertEquals("noMatch3", ((List<BeanProperty>) ((List<BeanMatchValidationMessage>) ex.getValidationMessages()).get(2).getFields()).get(2).getName());
         }
     }
 

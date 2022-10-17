@@ -37,7 +37,7 @@ class CoreConfigurationTest {
     void addNullPackagePrefix() {
         CoreConfiguration configuration = new CoreConfiguration();
         configuration.addPackagePrefix((Class<?>) null);
-        assertEquals(0, configuration.getPackagePrefixes().size());
+        assertEquals(0, configuration.getPackagePrefixes().spliterator().getExactSizeIfKnown());
     }
 
     @Test

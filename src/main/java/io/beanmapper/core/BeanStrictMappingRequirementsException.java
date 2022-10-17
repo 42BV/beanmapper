@@ -1,7 +1,7 @@
 package io.beanmapper.core;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,18 +10,18 @@ public class BeanStrictMappingRequirementsException extends RuntimeException {
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final List<BeanMatchValidationMessage> validationMessages;
+    private final Collection<BeanMatchValidationMessage> validationMessages;
 
     public BeanStrictMappingRequirementsException(BeanMatchValidationMessage validationMessage) {
-        this(Collections.<BeanMatchValidationMessage>singletonList(validationMessage));
+        this(Collections.singletonList(validationMessage));
     }
 
-    public BeanStrictMappingRequirementsException(List<BeanMatchValidationMessage> validationMessages) {
+    public BeanStrictMappingRequirementsException(Collection<BeanMatchValidationMessage> validationMessages) {
         this.validationMessages = validationMessages;
         logErrors(validationMessages);
     }
 
-    private void logErrors(List<BeanMatchValidationMessage> validationMessages) {
+    private void logErrors(Iterable<BeanMatchValidationMessage> validationMessages) {
         for (BeanMatchValidationMessage validationMessage : validationMessages) {
             if (validationMessage.isLogged()) {
                 continue;
@@ -45,7 +45,7 @@ public class BeanStrictMappingRequirementsException extends RuntimeException {
         }
     }
 
-    public List<BeanMatchValidationMessage> getValidationMessages() {
+    public Collection<BeanMatchValidationMessage> getValidationMessages() {
         return validationMessages;
     }
 

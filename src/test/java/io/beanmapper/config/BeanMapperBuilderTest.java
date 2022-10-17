@@ -99,7 +99,7 @@ class BeanMapperBuilderTest {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .addCollectionHandler(new ListCollectionHandler())
                 .build();
-        assertEquals(4, beanMapper.configuration().getCollectionHandlers().size());
+        assertEquals(4, beanMapper.configuration().getCollectionHandlers().spliterator().getExactSizeIfKnown());
     }
 
     @Test
@@ -117,8 +117,8 @@ class BeanMapperBuilderTest {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .addPackagePrefix(expectedPackagePrefix)
                 .build();
-        List<String> packagePrefixes = beanMapper.configuration().getPackagePrefixes();
-        assertEquals(expectedPackagePrefix, packagePrefixes.get(0));
+        Iterable<String> packagePrefixes = beanMapper.configuration().getPackagePrefixes();
+        assertEquals(expectedPackagePrefix, packagePrefixes.iterator().next());
     }
 
     @Test

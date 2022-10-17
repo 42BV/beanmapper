@@ -1,6 +1,7 @@
 package io.beanmapper.config;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -19,13 +20,13 @@ public class OverrideConfiguration implements Configuration {
 
     private OverrideField<BeanInitializer> beanInitializer;
 
-    private List<BeanConverter> beanConverters = new ArrayList<>();
+    private Collection<BeanConverter> beanConverters = new ArrayList<>();
     
-    private List<BeanPair> beanPairs = new ArrayList<>();
+    private Collection<BeanPair> beanPairs = new ArrayList<>();
 
-    private OverrideField<List<String>> downsizeSourceFields;
+    private OverrideField<Collection<String>> downsizeSourceFields;
 
-    private OverrideField<List<String>> downsizeTargetFields;
+    private OverrideField<Collection<String>> downsizeTargetFields;
 
     private Class targetClass;
 
@@ -67,12 +68,12 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public List<String> getDownsizeSource() {
+    public Collection<String> getDownsizeSource() {
         return downsizeSourceFields.get();
     }
 
     @Override
-    public List<String> getDownsizeTarget() {
+    public Collection<String> getDownsizeTarget() {
         return downsizeTargetFields.get();
     }
 
@@ -127,13 +128,14 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public List<String> getPackagePrefixes() {
+    public Iterable<String> getPackagePrefixes() {
+
         return parentConfiguration.getPackagePrefixes();
     }
 
     @Override
-    public List<BeanConverter> getBeanConverters() {
-        List<BeanConverter> converters = new ArrayList<>();
+    public Collection<BeanConverter> getBeanConverters() {
+        Collection<BeanConverter> converters = new ArrayList<>();
         converters.addAll(parentConfiguration.getBeanConverters());
         converters.addAll(beanConverters);
         return converters;
@@ -145,13 +147,13 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public List<CollectionHandler> getCollectionHandlers() {
+    public Iterable<CollectionHandler> getCollectionHandlers() {
         return parentConfiguration.getCollectionHandlers();
     }
 
     @Override
-    public List<BeanPair> getBeanPairs() {
-        List<BeanPair> beanPairs = new ArrayList<>();
+    public Collection<BeanPair> getBeanPairs() {
+        Collection<BeanPair> beanPairs = new ArrayList<>();
         beanPairs.addAll(parentConfiguration.getBeanPairs());
         beanPairs.addAll(this.beanPairs);
         return beanPairs;
@@ -318,12 +320,12 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public void downsizeSource(List<String> includeFields) {
+    public void downsizeSource(Collection<String> includeFields) {
         this.downsizeSourceFields.set(includeFields);
     }
 
     @Override
-    public void downsizeTarget(List<String> includeFields) {
+    public void downsizeTarget(Collection<String> includeFields) {
         this.downsizeTargetFields.set(includeFields);
     }
 

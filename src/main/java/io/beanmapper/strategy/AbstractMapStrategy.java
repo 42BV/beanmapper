@@ -193,9 +193,11 @@ public abstract class AbstractMapStrategy implements MapStrategy {
             return;
         }
         if (beanPropertyMatch.isMappable()) {
-            logger.debug("{}{}", beanPropertyMatch.sourceToString(), ARROW);
+            if (logger.isDebugEnabled())
+                logger.debug("{}{}", beanPropertyMatch.sourceToString(), ARROW);
             copySourceToTarget(beanPropertyMatch);
-            logger.debug("{}{}", INDENT, beanPropertyMatch.targetToString());
+            if (logger.isDebugEnabled())
+                logger.debug("{}{}", INDENT, beanPropertyMatch.targetToString());
         }
     }
 

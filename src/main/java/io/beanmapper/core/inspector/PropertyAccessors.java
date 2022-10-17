@@ -9,6 +9,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -35,7 +36,7 @@ public class PropertyAccessors {
      * @param beanClass the bean class
      * @return the property accessors of that bean
      */
-    public static List<PropertyAccessor> getAll(Class<?> beanClass) {
+    public static Iterable<PropertyAccessor> getAll(Class<?> beanClass) {
         Map<String, PropertyDescriptor> descriptors = findPropertyDescriptors(beanClass);
         Map<String, Field> fields = findAllFields(beanClass);
         
@@ -43,7 +44,7 @@ public class PropertyAccessors {
         propertyNames.addAll(descriptors.keySet());
         propertyNames.addAll(fields.keySet());
 
-        List<PropertyAccessor> accessors = new ArrayList<>();
+        Collection<PropertyAccessor> accessors = new ArrayList<>();
         for (String propertyName : propertyNames) {
             PropertyDescriptor descriptor = descriptors.get(propertyName);
             Field field = fields.get(propertyName);

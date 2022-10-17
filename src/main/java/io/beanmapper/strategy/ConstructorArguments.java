@@ -1,7 +1,7 @@
 package io.beanmapper.strategy;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import io.beanmapper.core.BeanMatch;
 import io.beanmapper.core.BeanProperty;
@@ -9,8 +9,8 @@ import io.beanmapper.exceptions.BeanInstantiationException;
 
 public class ConstructorArguments {
 
-    private List<Class<?>> types = new ArrayList<>();
-    private List<Object> values = new ArrayList<>();
+    private final Collection<Class<?>> types = new ArrayList<>();
+    private final Collection<Object> values = new ArrayList<>();
 
     public ConstructorArguments(Object source, BeanMatch beanMatch, String[] constructorArgs){
 

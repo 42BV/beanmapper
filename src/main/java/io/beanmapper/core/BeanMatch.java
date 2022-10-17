@@ -1,6 +1,7 @@
 package io.beanmapper.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -70,15 +71,15 @@ public class BeanMatch {
     }
 
     private void validateBeanMatchValidity(Map<String, BeanProperty> nodes) {
-        List<BeanProperty> missingMatches = validateMappingRequirements(nodes);
+        Collection<BeanProperty> missingMatches = validateMappingRequirements(nodes);
         if (!missingMatches.isEmpty()) {
             throw new BeanStrictMappingRequirementsException(
                     new BeanMatchValidationMessage(beanPair, missingMatches));
         }
     }
 
-    private List<BeanProperty> validateMappingRequirements(Map<String, BeanProperty> fields) {
-        List<BeanProperty> missingMatches = new ArrayList<>();
+    private Collection<BeanProperty> validateMappingRequirements(Map<String, BeanProperty> fields) {
+        Collection<BeanProperty> missingMatches = new ArrayList<>();
         for (String fieldName : fields.keySet()) {
             MatchedBeanPropertyPair matchedField = findBeanPairField(fieldName);
             BeanProperty sourceBeanProperty = matchedField.sourceBeanProperty();

@@ -1,6 +1,7 @@
 package io.beanmapper.config;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import io.beanmapper.BeanMapper;
@@ -26,7 +27,7 @@ import io.beanmapper.core.unproxy.BeanUnproxy;
 
 public class BeanMapperBuilder {
 
-    private static final List<CollectionHandler> DEFAULT_COLLECTION_HANDLERS =
+    private static final Iterable<CollectionHandler> DEFAULT_COLLECTION_HANDLERS =
             List.of(
                 new MapCollectionHandler(),
                 new SetCollectionHandler(),
@@ -35,9 +36,9 @@ public class BeanMapperBuilder {
 
     private final Configuration configuration;
 
-    private List<BeanConverter> customBeanConverters = new ArrayList<>();
+    private Collection<BeanConverter> customBeanConverters = new ArrayList<>();
 
-    private List<CollectionHandler> customCollectionHandlers = new ArrayList<>();
+    private Collection<CollectionHandler> customCollectionHandlers = new ArrayList<>();
 
     public BeanMapperBuilder() {
         this.configuration = new CoreConfiguration();
@@ -117,13 +118,13 @@ public class BeanMapperBuilder {
         return this;
     }
 
-    public BeanMapperBuilder downsizeSource(List<String> includeFields) {
+    public BeanMapperBuilder downsizeSource(Collection<String> includeFields) {
         this.configuration.setApplyStrictMappingConvention(false);
         this.configuration.downsizeSource(includeFields);
         return this;
     }
 
-    public BeanMapperBuilder downsizeTarget(List<String> includeFields) {
+    public BeanMapperBuilder downsizeTarget(Collection<String> includeFields) {
         this.configuration.setApplyStrictMappingConvention(false);
         this.configuration.downsizeTarget(includeFields);
         return this;
@@ -210,7 +211,7 @@ public class BeanMapperBuilder {
         return beanMapper;
     }
 
-    private void addCollectionHandlers(List<CollectionHandler> collectionHandlers) {
+    private void addCollectionHandlers(Iterable<CollectionHandler> collectionHandlers) {
         for (CollectionHandler collectionHandler : collectionHandlers) {
             attachCollectionHandler(collectionHandler);
         }

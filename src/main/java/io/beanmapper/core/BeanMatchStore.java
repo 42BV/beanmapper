@@ -6,7 +6,7 @@ import static io.beanmapper.core.converter.collections.CollectionElementType.der
 import static io.beanmapper.core.converter.collections.CollectionElementType.set;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -42,8 +42,8 @@ public class BeanMatchStore {
         this.beanUnproxy = beanUnproxy;
     }
 
-    public void validateStrictBeanPairs(List<BeanPair> beanPairs) {
-        List<BeanMatchValidationMessage> validationMessages = new ArrayList<>();
+    public void validateStrictBeanPairs(Collection<BeanPair> beanPairs) {
+        Collection<BeanMatchValidationMessage> validationMessages = new ArrayList<>();
         for (BeanPair beanPair : beanPairs) {
             try {
                 getBeanMatch(beanPair);
@@ -121,7 +121,7 @@ public class BeanMatchStore {
     private Map<String, BeanProperty> getAllFields(Map<String, BeanProperty> ourNodes, Map<String, BeanProperty> otherNodes, Map<String, BeanProperty> aliases, Class<?> ourType, Class<?> otherType, BeanProperty precedingBeanProperty, BeanPropertyMatchupDirection matchupDirection) {
 
         Map<String, BeanProperty> ourCurrentNodes = ourNodes;
-        List<PropertyAccessor> accessors = PropertyAccessors.getAll(ourType);
+        Iterable<PropertyAccessor> accessors = PropertyAccessors.getAll(ourType);
         for (PropertyAccessor accessor : accessors) {
 
             BeanPropertyAccessType accessType = matchupDirection.accessType(accessor);

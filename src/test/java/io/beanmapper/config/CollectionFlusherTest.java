@@ -19,7 +19,7 @@ public class CollectionFlusherTest {
         CollectionFlusher flusher = new CollectionFlusher();
         flusher.addAfterClearFlusher(new MyAfterClearFlusher(counter));
         flusher.addAfterClearFlusher(new MyAfterClearFlusher(counter));
-        assertEquals(2, flusher.getAfterClearFlushers().size());
+        assertEquals(2, flusher.getAfterClearFlushers().spliterator().getExactSizeIfKnown());
         flusher.flush(true);
         assertEquals(2, counter.get());
     }
@@ -29,7 +29,7 @@ public class CollectionFlusherTest {
         CollectionFlusher flusher = new CollectionFlusher();
         flusher.addAfterClearFlusher(new MyAfterClearFlusher(counter));
         flusher.addAfterClearFlusher(new MyAfterClearFlusher(counter));
-        assertEquals(2, flusher.getAfterClearFlushers().size());
+        assertEquals(2, flusher.getAfterClearFlushers().spliterator().getExactSizeIfKnown());
         flusher.flush(false);
         assertEquals(0, counter.get());
     }

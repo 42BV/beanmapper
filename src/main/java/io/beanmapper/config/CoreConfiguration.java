@@ -1,8 +1,8 @@
 package io.beanmapper.config;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import io.beanmapper.annotations.BeanCollectionUsage;
@@ -51,12 +51,12 @@ public class CoreConfiguration implements Configuration {
     /**
      * The list of packages (and subpackages) containing classes which are eligible for mapping.
      */
-    private List<String> packagePrefixes = new ArrayList<>();
+    private Collection<String> packagePrefixes = new ArrayList<>();
 
     /**
      * The list of converters that should be checked for conversions.
      */
-    private List<BeanConverter> beanConverters = new ArrayList<>();
+    private Collection<BeanConverter> beanConverters = new ArrayList<>();
 
     /**
      * The list of LogicSecuredCheck instances that verify whether access to a property is allowed.
@@ -66,7 +66,7 @@ public class CoreConfiguration implements Configuration {
     /**
      * The list of converters that should be checked for conversions.
      */
-    private List<BeanPair> beanPairs = new ArrayList<>();
+    private Collection<BeanPair> beanPairs = new ArrayList<>();
 
     /**
      * The value that decides whether a converter may be chosen, or direct mapping has to take place
@@ -100,10 +100,14 @@ public class CoreConfiguration implements Configuration {
     private Boolean useNullValue = false;
 
     @Override
-    public List<String> getDownsizeTarget() { return null; }
+    public Collection<String> getDownsizeTarget() {
+        return null;
+    }
 
     @Override
-    public List<String> getDownsizeSource() { return null; }
+    public Collection<String> getDownsizeSource() {
+        return null;
+    }
 
     @Override
     public Class getTargetClass() {
@@ -154,12 +158,12 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
-    public List<String> getPackagePrefixes() {
+    public Iterable<String> getPackagePrefixes() {
         return this.packagePrefixes;
     }
 
     @Override
-    public List<BeanConverter> getBeanConverters() {
+    public Collection<BeanConverter> getBeanConverters() {
         return this.beanConverters;
     }
 
@@ -169,12 +173,12 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
-    public List<CollectionHandler> getCollectionHandlers() {
+    public Iterable<CollectionHandler> getCollectionHandlers() {
         return collectionHandlerStore.getCollectionHandlers();
     }
 
     @Override
-    public List<BeanPair> getBeanPairs() {
+    public Collection<BeanPair> getBeanPairs() {
         return this.beanPairs;
     }
 
@@ -321,13 +325,13 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
-    public void downsizeSource(List<String> includeFields) {
+    public void downsizeSource(Collection<String> includeFields) {
         throw new BeanConfigurationOperationNotAllowedException(
                 "Illegal to set a include fields on the Core configuration, works only for override configurations");
     }
 
     @Override
-    public void downsizeTarget(List<String> includeFields) {
+    public void downsizeTarget(Collection<String> includeFields) {
         throw new BeanConfigurationOperationNotAllowedException(
                 "Illegal to set a include fields on the Core configuration, works only for override configurations");
     }

@@ -81,7 +81,7 @@ public class OverrideConfigurationTest {
     @Test
     void addBeanPairWithStrictSource() {
         overrideConfiguration.addBeanPairWithStrictSource(Long.class, String.class);
-        List<BeanPair> beanPairs = overrideConfiguration.getBeanPairs();
+        List<BeanPair> beanPairs = (List<BeanPair>) overrideConfiguration.getBeanPairs();
         assertEquals(1, beanPairs.size());
         assertTrue(beanPairs.get(0).isSourceStrict());
         assertFalse(beanPairs.get(0).isTargetStrict());
@@ -90,7 +90,7 @@ public class OverrideConfigurationTest {
     @Test
     void addBeanPairWithStrictTarget() {
         overrideConfiguration.addBeanPairWithStrictTarget(Long.class, String.class);
-        List<BeanPair> beanPairs = overrideConfiguration.getBeanPairs();
+        List<BeanPair> beanPairs = (List<BeanPair>) overrideConfiguration.getBeanPairs();
         assertEquals(1, beanPairs.size());
         assertFalse(beanPairs.get(0).isSourceStrict());
         assertTrue(beanPairs.get(0).isTargetStrict());

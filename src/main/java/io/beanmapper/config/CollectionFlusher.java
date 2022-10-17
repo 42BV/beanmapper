@@ -1,13 +1,13 @@
 package io.beanmapper.config;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 public class CollectionFlusher {
 
-    private List<AfterClearFlusher> afterClearFlushers = new ArrayList<>();
+    private Collection<AfterClearFlusher> afterClearFlushers = new ArrayList<>();
 
-    public List<AfterClearFlusher> getAfterClearFlushers() {
+    public Iterable<AfterClearFlusher> getAfterClearFlushers() {
         return this.afterClearFlushers;
     }
 

@@ -1,16 +1,16 @@
 package io.beanmapper.config;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 
 public class CollectionHandlerStore {
 
-    private List<CollectionHandler> collectionHandlers = new ArrayList<>();
+    private Collection<CollectionHandler> collectionHandlers = new ArrayList<>();
 
-    public List<CollectionHandler> getCollectionHandlers() {
+    public Iterable<CollectionHandler> getCollectionHandlers() {
         return collectionHandlers;
     }
 
