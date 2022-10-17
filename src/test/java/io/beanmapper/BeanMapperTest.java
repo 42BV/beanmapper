@@ -1036,7 +1036,7 @@ class BeanMapperTest {
         assertEquals(source.id, target.aliasId, 0);
         assertEquals(source.sourceName, target.targetName);
         assertEquals(source.nestedWithAlias.x, target.nestedWithAlias.nestedString);
-        assertEquals(source.nestedWithAlias.y, target.nestedWithAlias.nestedInt, 0);
+        assertEquals(source.nestedWithAlias.y, target.nestedWithAlias.nestedInt);
         assertEquals(source.nestedWithAlias.property, target.nestedWithAlias.property);
     }
 

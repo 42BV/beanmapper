@@ -20,5 +20,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BeanAlias {
 
+    /**
+     * <p>Returns the name of the field in the target to which the annotated element must be mapped.</p>
+     * @return The name of the target field.
+     */
     String value();
 }

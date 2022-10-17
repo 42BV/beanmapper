@@ -66,6 +66,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Expanded the use of type parameters to various methods throughout the library, including the BeanMapper-class.
 - BeanConverters may be offered null-values now. Will default to returning the default value for the relevant type.
 
+### Deprecated
+
+- BeanCollectionUsage#mustConstruct(), as it is no more than a type-check.
+- io.beanmapper.annotations.BeanProperty#name(), as it is only in for backwards-compatibility.
+
 ### Removed
 
 - slf4j-api dependency, as it is transitive through jcl-over-slf4j.

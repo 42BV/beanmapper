@@ -55,7 +55,7 @@ public abstract class AbstractCollectionHandler<C> implements CollectionHandler<
                 createCollection(preferredCollectionClass, collectionElementClass) :
                 targetCollection;
 
-        if (collectionUsage.mustClear() && size(useTargetCollection) > 0) {
+        if (collectionUsage == BeanCollectionUsage.CLEAR && size(useTargetCollection) > 0) {
             clear(useTargetCollection);
             collectionFlusher.flush(mustFlush);
         }
