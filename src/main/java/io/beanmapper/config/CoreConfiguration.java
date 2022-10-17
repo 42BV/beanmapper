@@ -1,6 +1,7 @@
 package io.beanmapper.config;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,10 +101,14 @@ public class CoreConfiguration implements Configuration {
     private Boolean useNullValue = false;
 
     @Override
-    public List<String> getDownsizeTarget() { return null; }
+    public List<String> getDownsizeTarget() {
+        return Collections.emptyList();
+    }
 
     @Override
-    public List<String> getDownsizeSource() { return null; }
+    public List<String> getDownsizeSource() {
+        return Collections.emptyList();
+    }
 
     @Override
     public Class getTargetClass() {
@@ -170,7 +175,7 @@ public class CoreConfiguration implements Configuration {
 
     @Override
     public List<CollectionHandler> getCollectionHandlers() {
-        return collectionHandlerStore.getCollectionHandlers();
+        return this.collectionHandlerStore.getCollectionHandlers();
     }
 
     @Override

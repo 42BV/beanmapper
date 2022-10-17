@@ -46,7 +46,7 @@ public class BeanStrictMappingRequirementsException extends RuntimeException {
     }
 
     public List<BeanMatchValidationMessage> getValidationMessages() {
-        return validationMessages;
+        return this.validationMessages != null ? this.validationMessages : Collections.emptyList();
     }
 
 }
