@@ -19,6 +19,7 @@ import io.beanmapper.annotations.BeanRoleSecured;
 import io.beanmapper.annotations.BeanUnwrap;
 import io.beanmapper.config.BeanPair;
 import io.beanmapper.config.CollectionHandlerStore;
+import io.beanmapper.config.FlushAfterClearInstruction;
 import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.converter.collections.AnnotationClass;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
@@ -208,7 +209,7 @@ public class BeanMatchStore {
         CollectionElementType elementType = EMPTY_COLLECTION_ELEMENT_TYPE;
         BeanCollectionUsage beanCollectionUsage = null;
         AnnotationClass preferredCollectionClass = EMPTY_ANNOTATION_CLASS;
-        Boolean flushAfterClear = null;
+        FlushAfterClearInstruction flushAfterClear = FlushAfterClearInstruction.UNSET;
 
         CollectionHandler collectionHandler = null;
         if (beanCollection == null) {

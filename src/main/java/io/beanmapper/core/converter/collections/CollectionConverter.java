@@ -26,7 +26,7 @@ public class CollectionConverter<T> implements BeanConverter {
             return sourceCollection;
         }
 
-        return (T)beanMapper.wrap()
+        return (T) beanMapper.wrap()
                 .setCollectionClass(collectionHandler.getType())
                 .setCollectionUsage(beanPropertyMatch.getCollectionInstructions().getBeanCollectionUsage())
                 .setPreferredCollectionClass(beanPropertyMatch.getCollectionInstructions().getPreferredCollectionClass().getAnnotationClass())

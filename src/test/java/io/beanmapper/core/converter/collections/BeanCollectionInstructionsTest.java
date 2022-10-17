@@ -1,7 +1,7 @@
 package io.beanmapper.core.converter.collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.beanmapper.annotations.BeanCollectionUsage;
+import io.beanmapper.config.FlushAfterClearInstruction;
 import io.beanmapper.core.BeanProperty;
 import io.beanmapper.core.BeanPropertyCreator;
 import io.beanmapper.core.BeanPropertyMatchupDirection;
@@ -39,14 +40,15 @@ class BeanCollectionInstructionsTest {
                 CollectionElementType.derived(String.class),
                 null,
                 null,
-                null));
+                FlushAfterClearInstruction.FLUSH_ENABLED));
 
         BeanCollectionInstructions merged = BeanCollectionInstructions.merge(sourceBeanProperty, targetBeanProperty);
 
+        assertNotNull(merged);
         assertEquals(String.class, merged.getCollectionElementType().getType());
         assertEquals(BeanCollectionUsage.CLEAR, merged.getBeanCollectionUsage());
         assertTrue(merged.getPreferredCollectionClass().isEmpty());
-        assertTrue(merged.getFlushAfterClear());
+        assertEquals(FlushAfterClearInstruction.FLUSH_ENABLED, merged.getFlushAfterClear());
     }
 
     @Test
@@ -66,20 +68,21 @@ class BeanCollectionInstructionsTest {
                 CollectionElementType.set(Long.class),
                 BeanCollectionUsage.REUSE,
                 new AnnotationClass(ArrayList.class),
-                false));
+                FlushAfterClearInstruction.FLUSH_DISABLED));
 
         targetBeanProperty.setCollectionInstructions(createBeanCollectionInstructions(
                 CollectionElementType.derived(String.class),
                 null,
                 null,
-                null));
+                FlushAfterClearInstruction.FLUSH_DISABLED));
 
         BeanCollectionInstructions merged = BeanCollectionInstructions.merge(sourceBeanProperty, targetBeanProperty);
 
+        assertNotNull(merged);
         assertEquals(Long.class, merged.getCollectionElementType().getType());
         assertEquals(BeanCollectionUsage.REUSE, merged.getBeanCollectionUsage());
         assertEquals(ArrayList.class, merged.getPreferredCollectionClass().getAnnotationClass());
-        assertFalse(merged.getFlushAfterClear());
+        assertEquals(FlushAfterClearInstruction.FLUSH_DISABLED, merged.getFlushAfterClear());
     }
 
     public class SourceClassContainingList {
@@ -94,7 +97,7 @@ class BeanCollectionInstructionsTest {
             CollectionElementType collectionElementType,
             BeanCollectionUsage beanCollectionUsage,
             AnnotationClass preferredCollectionClass,
-            Boolean flushAfterClear) {
+            FlushAfterClearInstruction flushAfterClear) {
         BeanCollectionInstructions instructions = new BeanCollectionInstructions();
         instructions.setCollectionElementType(collectionElementType);
         instructions.setBeanCollectionUsage(beanCollectionUsage);

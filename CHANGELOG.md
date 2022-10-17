@@ -24,6 +24,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Support for mapping Queue. A Queue will be mapped to an ArrayDeque by default. The order of elements is guaranteed to be preserved, except when the Queue is 
   mapped to a Queue that inherently modifies the order of elements (e.g. PriorityQueue).
 
+### Fixed
+
+- Issue [#153](https://github.com/42BV/beanmapper/issues/153) **https://github.com/42BV/beanmapper/issues/153**; Rather than using the Boolean-wrapper, all 
+  occurrences of Boolean that are not absolutely necessary due to generics, have been replaced with the primitive boolean, or the 
+  FlushAfterClearInstruction-enum.
+
 
 ## [4.0.1] - 2022-09-22
 

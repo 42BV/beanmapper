@@ -31,6 +31,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.config.AfterClearFlusher;
 import io.beanmapper.config.BeanMapperBuilder;
+import io.beanmapper.config.FlushAfterClearInstruction;
 import io.beanmapper.config.RoleSecuredCheck;
 import io.beanmapper.core.BeanStrictMappingRequirementsException;
 import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
@@ -1362,7 +1363,10 @@ class BeanMapperTest {
     void beanCollectionClearCallsAfterClearFlusher() throws Exception {
         AfterClearFlusher afterClearFlusher = createAfterClearFlusher();
         BeanMapper beanMapper = new BeanMapperBuilder()
+                .addAfterClearFlusher(afterClearFlusher)
+                .build().wrap()
                 .setFlushEnabled(true)
+                .setFlushAfterClear(FlushAfterClearInstruction.FLUSH_ENABLED)
                 .addAfterClearFlusher(afterClearFlusher)
                 .build();
         CollSourceClearFlush source = new CollSourceClearFlush() {{
@@ -1393,6 +1397,7 @@ class BeanMapperTest {
         beanMapper.map(source, target);
         assertFalse(afterClearFlusher.getClass().getField("trigger").getBoolean(afterClearFlusher),
                 "Should NOT have called the afterClearFlusher instance");
+        var wait = true;
     }
 
     private AfterClearFlusher createAfterClearFlusher() {
@@ -1805,7 +1810,7 @@ class BeanMapperTest {
                 .setPreferredCollectionClass(PriorityQueue.class)
                 .setCollectionUsage(BeanCollectionUsage.CONSTRUCT)
                 .setTargetClass(Long.class)
-                .setFlushAfterClear(false)
+                .setFlushAfterClear(FlushAfterClearInstruction.FLUSH_DISABLED)
                 .build()
                 .map(collection, Long.class);
 

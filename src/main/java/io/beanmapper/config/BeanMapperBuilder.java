@@ -105,7 +105,7 @@ public class BeanMapperBuilder {
         return this;
     }
 
-    public BeanMapperBuilder setEnforcedSecuredProperties(Boolean enforcedSecuredProperties) {
+    public BeanMapperBuilder setEnforcedSecuredProperties(boolean enforcedSecuredProperties) {
         this.configuration.setEnforceSecuredProperties(enforcedSecuredProperties);
         return this;
     }
@@ -166,8 +166,8 @@ public class BeanMapperBuilder {
         this.configuration.setStrictTargetSuffix(strictTargetSuffix);
         return this;
     }
-
-    public BeanMapperBuilder setApplyStrictMappingConvention(Boolean applyStrictMappingConvention) {
+    
+    public BeanMapperBuilder setApplyStrictMappingConvention(boolean applyStrictMappingConvention) {
         this.configuration.setApplyStrictMappingConvention(applyStrictMappingConvention);
         return this;
     }
@@ -182,7 +182,7 @@ public class BeanMapperBuilder {
         return this;
     }
 
-    public BeanMapperBuilder setFlushAfterClear(boolean flushAfterClear) {
+    public BeanMapperBuilder setFlushAfterClear(FlushAfterClearInstruction flushAfterClear) {
         this.configuration.setFlushAfterClear(flushAfterClear);
         return this;
     }
