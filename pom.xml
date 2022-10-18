@@ -52,11 +52,21 @@
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <jackson-databind.version>2.13.4</jackson-databind.version>
+        <jackson-databind.version>2.14.0-rc1</jackson-databind.version>
         <javassist.version>3.29.2-GA</javassist.version>
         <slf4j.version>2.0.3</slf4j.version>
 
         <junit.version>5.9.0</junit.version>
+
+        <maven.compiler.plugin.version>3.10.1</maven.compiler.plugin.version>
+        <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
+        <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
+        <nexus.staging.plugin.version>1.6.13</nexus.staging.plugin.version>
+        <jacoco.maven.plugin.version>0.8.8</jacoco.maven.plugin.version>
+        <owasp.dependency.check.version>7.2.1</owasp.dependency.check.version>
+        <maven.javadoc.plugin.version>3.4.1</maven.javadoc.plugin.version>
+        <maven.source.plugin.version>3.2.1</maven.source.plugin.version>
+        <maven.gpg.plugin.version>3.0.1</maven.gpg.plugin.version>
     </properties>
 
     <dependencies>
@@ -109,7 +119,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.10.1</version>
+                    <version>${maven.compiler.plugin.version}</version>
                     <configuration>
                         <source>${java.version}</source>
                         <target>${java.version}</target>
@@ -119,12 +129,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.22.2</version>
+                    <version>${maven.surefire.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5.3</version>
+                    <version>${maven.release.plugin.version}</version>
                     <configuration>
                         <mavenExecutorId>forked-path</mavenExecutorId>
                         <useReleaseProfile>false</useReleaseProfile>
@@ -138,7 +148,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.13</version>
+                <version>${nexus.staging.plugin.version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>sonatype-nexus-staging</serverId>
@@ -149,7 +159,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.8</version>
+                <version>${jacoco.maven.plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -168,7 +178,7 @@
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
-                <version>7.1.2</version>
+                <version>${owasp.dependency.check.version}</version>
                 <configuration>
                     <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                     <skipProvidedScope>true</skipProvidedScope>
@@ -189,7 +199,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.4.1</version>
+                        <version>${maven.javadoc.plugin.version}</version>
                         <configuration>
                             <source>${java.version}</source>
                         </configuration>
@@ -205,7 +215,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>3.2.1</version>
+                        <version>${maven.source.plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -218,7 +228,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.0.1</version>
+                        <version>${maven.gpg.plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
