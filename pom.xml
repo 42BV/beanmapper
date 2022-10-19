@@ -52,7 +52,7 @@
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <jackson-databind.version>2.13.4</jackson-databind.version>
+        <jackson-databind.version>2.13.4.1</jackson-databind.version>
         <javassist.version>3.29.1-GA</javassist.version>
         <slf4j.version>2.0.0</slf4j.version>
 
