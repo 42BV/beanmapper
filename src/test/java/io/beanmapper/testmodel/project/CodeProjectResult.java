@@ -11,10 +11,8 @@ import io.beanmapper.annotations.BeanProperty;
  */
 public class CodeProjectResult {
 
-    public Long id;
-
     public final String name = null;
-
+    public Long id;
     @BeanProperty(name = "master.id")
     public Long masterId;
 

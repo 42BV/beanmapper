@@ -17,8 +17,9 @@ public class Classes {
     /**
      * Private constructor to hide implicit public constructor of utility-class.
      */
-    private Classes() {}
-    
+    private Classes() {
+    }
+
     /**
      * Retrieve the class by name.
      * @param className the class name

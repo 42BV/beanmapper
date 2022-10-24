@@ -27,8 +27,8 @@ public class BeanStrictMappingRequirementsException extends RuntimeException {
                 continue;
             }
             logger.error("""
-                    Missing matching properties for source [{}] {} > target [{}] {} for fields:
-                    """,
+                            Missing matching properties for source [{}] {} > target [{}] {} for fields:
+                            """,
                     validationMessage.getSourceClass().getCanonicalName(),
                     (validationMessage.isSourceStrict() ? "*" : ""),
                     validationMessage.getTargetClass().getCanonicalName(),
@@ -36,8 +36,8 @@ public class BeanStrictMappingRequirementsException extends RuntimeException {
 
             for (BeanProperty field : validationMessage.getFields()) {
                 logger.error("""
-                        > {}.{}
-                        """,
+                                > {}.{}
+                                """,
                         validationMessage.getStrictClass().getSimpleName(),
                         field.getAccessor().getName());
             }

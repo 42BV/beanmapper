@@ -24,7 +24,7 @@ public class StringToByteConverter extends SimpleBeanConverter<String, Byte> {
     protected Byte doConvert(String source) {
         return Byte.parseByte(source);
     }
-    
+
     /**
      * {@inheritDoc}
      */

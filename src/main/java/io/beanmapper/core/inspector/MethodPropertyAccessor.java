@@ -18,7 +18,7 @@ import io.beanmapper.exceptions.BeanPropertyWriteException;
  * @since Jun 24, 2015
  */
 public class MethodPropertyAccessor implements PropertyAccessor {
-    
+
     private final PropertyDescriptor descriptor;
 
     public MethodPropertyAccessor(PropertyDescriptor descriptor) {
@@ -32,7 +32,7 @@ public class MethodPropertyAccessor implements PropertyAccessor {
     public String getName() {
         return descriptor.getName();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -40,7 +40,7 @@ public class MethodPropertyAccessor implements PropertyAccessor {
     public Class<?> getType() {
         return descriptor.getPropertyType();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -55,7 +55,7 @@ public class MethodPropertyAccessor implements PropertyAccessor {
         }
         return annotation;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -81,7 +81,7 @@ public class MethodPropertyAccessor implements PropertyAccessor {
             throw new BeanPropertyReadException(instance.getClass(), getName(), e);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -89,7 +89,7 @@ public class MethodPropertyAccessor implements PropertyAccessor {
     public boolean isWritable() {
         return descriptor.getWriteMethod() != null;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -98,7 +98,7 @@ public class MethodPropertyAccessor implements PropertyAccessor {
         if (!isWritable()) {
             throw new BeanPropertyWriteException(instance.getClass(), getName());
         }
-        
+
         try {
             Method writeMethod = descriptor.getWriteMethod();
             writeMethod.setAccessible(true);

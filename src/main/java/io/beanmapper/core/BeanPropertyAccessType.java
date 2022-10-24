@@ -43,8 +43,6 @@ public enum BeanPropertyAccessType {
         }
     };
 
-    public abstract Type getGenericType(Class containingClass, PropertyAccessor accessor);
-
     private static Class getFirstClassContainingField(Class<?> currentClass, String fieldName) {
         Field[] allFields = currentClass.getDeclaredFields();
         while (!containsField(fieldName, allFields)) {
@@ -65,5 +63,7 @@ public enum BeanPropertyAccessType {
         }
         return false;
     }
+
+    public abstract Type getGenericType(Class containingClass, PropertyAccessor accessor);
 
 }

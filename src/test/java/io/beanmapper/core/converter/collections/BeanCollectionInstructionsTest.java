@@ -85,14 +85,6 @@ class BeanCollectionInstructionsTest {
         assertEquals(FlushAfterClearInstruction.FLUSH_DISABLED, merged.getFlushAfterClear());
     }
 
-    public class SourceClassContainingList {
-        public List<String> list;
-    }
-
-    public class TargetClassContainingList {
-        public List<String> list;
-    }
-
     private BeanCollectionInstructions createBeanCollectionInstructions(
             CollectionElementType collectionElementType,
             BeanCollectionUsage beanCollectionUsage,
@@ -104,6 +96,14 @@ class BeanCollectionInstructionsTest {
         instructions.setPreferredCollectionClass(preferredCollectionClass);
         instructions.setFlushAfterClear(flushAfterClear);
         return instructions;
+    }
+
+    public class SourceClassContainingList {
+        public List<String> list;
+    }
+
+    public class TargetClassContainingList {
+        public List<String> list;
     }
 
 }

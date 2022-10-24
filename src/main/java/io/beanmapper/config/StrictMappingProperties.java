@@ -38,48 +38,6 @@ public class StrictMappingProperties {
         this.applyStrictMappingConvention = applyStrictMappingConvention;
     }
 
-    public String getStrictSourceSuffix() {
-        return strictSourceSuffix;
-    }
-
-    public String getStrictTargetSuffix() {
-        return strictTargetSuffix;
-    }
-
-    public boolean isApplyStrictMappingConvention() {
-        return applyStrictMappingConvention;
-    }
-
-    public void setStrictSourceSuffix(String strictSourceSuffix) {
-        this.strictSourceSuffix = strictSourceSuffix;
-    }
-
-    public void setStrictTargetSuffix(String strictTargetSuffix) {
-        this.strictTargetSuffix = strictTargetSuffix;
-    }
-
-    public void setApplyStrictMappingConvention(boolean applyStrictMappingConvention) {
-        this.applyStrictMappingConvention = applyStrictMappingConvention;
-    }
-
-    public BeanPair createBeanPair(Class<?> sourceClass, Class<?> targetClass) {
-        sourceClass = beanUnproxy.unproxy(sourceClass);
-        targetClass = beanUnproxy.unproxy(targetClass);
-        BeanPair beanPair = new BeanPair(sourceClass, targetClass);
-        if (!isApplyStrictMappingConvention()) {
-            return beanPair;
-        }
-        if (    strictSourceSuffix != null &&
-                sourceClass.getCanonicalName().endsWith(strictSourceSuffix)) {
-            beanPair = beanPair.withStrictSource();
-        }
-        if (    strictTargetSuffix != null &&
-                targetClass.getCanonicalName().endsWith(strictTargetSuffix)) {
-            beanPair = beanPair.withStrictTarget();
-        }
-        return beanPair;
-    }
-
     public static StrictMappingProperties defaultConfig() {
         return new StrictMappingProperties(
                 null,
@@ -94,6 +52,48 @@ public class StrictMappingProperties {
                 null,
                 null,
                 false);
+    }
+
+    public String getStrictSourceSuffix() {
+        return strictSourceSuffix;
+    }
+
+    public void setStrictSourceSuffix(String strictSourceSuffix) {
+        this.strictSourceSuffix = strictSourceSuffix;
+    }
+
+    public String getStrictTargetSuffix() {
+        return strictTargetSuffix;
+    }
+
+    public void setStrictTargetSuffix(String strictTargetSuffix) {
+        this.strictTargetSuffix = strictTargetSuffix;
+    }
+
+    public boolean isApplyStrictMappingConvention() {
+        return applyStrictMappingConvention;
+    }
+
+    public void setApplyStrictMappingConvention(boolean applyStrictMappingConvention) {
+        this.applyStrictMappingConvention = applyStrictMappingConvention;
+    }
+
+    public BeanPair createBeanPair(Class<?> sourceClass, Class<?> targetClass) {
+        sourceClass = beanUnproxy.unproxy(sourceClass);
+        targetClass = beanUnproxy.unproxy(targetClass);
+        BeanPair beanPair = new BeanPair(sourceClass, targetClass);
+        if (!isApplyStrictMappingConvention()) {
+            return beanPair;
+        }
+        if (strictSourceSuffix != null &&
+                sourceClass.getCanonicalName().endsWith(strictSourceSuffix)) {
+            beanPair = beanPair.withStrictSource();
+        }
+        if (strictTargetSuffix != null &&
+                targetClass.getCanonicalName().endsWith(strictTargetSuffix)) {
+            beanPair = beanPair.withStrictTarget();
+        }
+        return beanPair;
     }
 
     public void setBeanUnproxy(SkippingBeanUnproxy beanUnproxy) {

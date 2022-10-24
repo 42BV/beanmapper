@@ -10,7 +10,7 @@ package io.beanmapper.core.unproxy;
  * @since Jun 24, 2015
  */
 public interface BeanUnproxy {
-    
+
     /**
      * Removes any potential proxy classes.
      * @param beanClass the bean proxy (could be proxied)

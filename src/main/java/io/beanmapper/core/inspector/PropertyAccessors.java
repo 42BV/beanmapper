@@ -22,13 +22,14 @@ import java.util.Set;
  * @since Jun 23, 2015
  */
 public class PropertyAccessors {
-    
+
     private static final String CLASS_PROPERTY = "class";
 
     /**
      * Private constructor to hide the implicit public constructor of utility-class.
      */
-    private PropertyAccessors() {}
+    private PropertyAccessors() {
+    }
 
     /**
      * Retrieve all property accessors that relate to a bean.
@@ -38,7 +39,7 @@ public class PropertyAccessors {
     public static List<PropertyAccessor> getAll(Class<?> beanClass) {
         Map<String, PropertyDescriptor> descriptors = findPropertyDescriptors(beanClass);
         Map<String, Field> fields = findAllFields(beanClass);
-        
+
         Set<String> propertyNames = new HashSet<>();
         propertyNames.addAll(descriptors.keySet());
         propertyNames.addAll(fields.keySet());
@@ -51,7 +52,7 @@ public class PropertyAccessors {
         }
         return accessors;
     }
-    
+
     private static Map<String, PropertyDescriptor> findPropertyDescriptors(Class<?> clazz) {
         try {
             BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
@@ -101,7 +102,7 @@ public class PropertyAccessors {
         }
         return result;
     }
-    
+
     private static PropertyDescriptor findPropertyDescriptor(Class<?> beanClass, String propertyName) {
         Map<String, PropertyDescriptor> descriptors = findPropertyDescriptors(beanClass);
         return descriptors.get(propertyName);

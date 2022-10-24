@@ -7,11 +7,9 @@ import io.beanmapper.config.BeanPair;
 
 public class BeanMatchValidationMessage {
 
-    private boolean logged = false;
-
     private final List<BeanProperty> fields;
-
     private final BeanPair beanPair;
+    private boolean logged = false;
 
     public BeanMatchValidationMessage(BeanPair beanPair, List<BeanProperty> fields) {
         this.beanPair = beanPair;

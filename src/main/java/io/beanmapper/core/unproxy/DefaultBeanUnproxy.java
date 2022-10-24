@@ -10,7 +10,7 @@ package io.beanmapper.core.unproxy;
  * @since Jun 24, 2015
  */
 public class DefaultBeanUnproxy implements BeanUnproxy {
-    
+
     /**
      * {@inheritDoc}
      */
@@ -19,11 +19,11 @@ public class DefaultBeanUnproxy implements BeanUnproxy {
         String name = beanClass.getName();
         if (name.contains("$")) {
             Class<?>[] interfaces = beanClass.getInterfaces();
-            if(interfaces.length > 0) {
+            if (interfaces.length > 0) {
                 return beanClass.getInterfaces()[0];
             }
         }
         return beanClass;
     }
-    
+
 }

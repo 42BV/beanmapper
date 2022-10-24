@@ -17,5 +17,5 @@ public class BeanNoSuchPropertyException extends IllegalArgumentException {
         super(message);
         logger.error(message);
     }
-    
+
 }

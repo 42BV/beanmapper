@@ -37,9 +37,13 @@ public class CollectionFlusherTest {
     class Counter {
         private int count = 0;
 
-        public void add() {count++;}
+        public void add() {
+            count++;
+        }
 
-        public int get() {return count;}
+        public int get() {
+            return count;
+        }
     }
 
     class MyAfterClearFlusher implements AfterClearFlusher {

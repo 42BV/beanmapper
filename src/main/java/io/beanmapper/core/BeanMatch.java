@@ -50,12 +50,12 @@ public class BeanMatch {
 
     public MatchedBeanPropertyPair findBeanPairField(String fieldName) {
         BeanProperty sourceField = getSourceNodes().get(fieldName);
-        if(sourceField == null) {
+        if (sourceField == null) {
             // No source field found -> check for alias
             sourceField = getAliases().get(fieldName);
         }
         BeanProperty targetField = getTargetNodes().get(fieldName);
-        if(targetField == null) {
+        if (targetField == null) {
             // No target field found -> check for alias
             targetField = getAliases().get(fieldName);
         }
@@ -84,7 +84,7 @@ public class BeanMatch {
             MatchedBeanPropertyPair matchedField = findBeanPairField(fieldName);
             BeanProperty sourceBeanProperty = matchedField.sourceBeanProperty();
             BeanProperty targetBeanProperty = matchedField.targetBeanProperty();
-            if (    sourceBeanProperty == null || targetBeanProperty == null) {
+            if (sourceBeanProperty == null || targetBeanProperty == null) {
                 missingMatches.add(sourceBeanProperty == null ?
                         targetBeanProperty :
                         sourceBeanProperty);

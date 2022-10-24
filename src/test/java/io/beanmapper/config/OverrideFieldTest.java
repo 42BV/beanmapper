@@ -13,6 +13,8 @@ class OverrideFieldTest {
         assertNull(text.get());
     }
 
-    private String get() {return "Hello world!";}
+    private String get() {
+        return "Hello world!";
+    }
 
 }

@@ -97,7 +97,7 @@ public class BeanMatchStore {
     }
 
     private BeanMatch determineBeanMatch(BeanPair beanPair,
-                                         Map<String, BeanProperty> sourceNode, Map<String, BeanProperty> targetNode, Map<String, BeanProperty> aliases) {
+            Map<String, BeanProperty> sourceNode, Map<String, BeanProperty> targetNode, Map<String, BeanProperty> aliases) {
         return new BeanMatch(
                 beanPair,
                 getAllFields(
@@ -119,7 +119,8 @@ public class BeanMatchStore {
                 aliases);
     }
 
-    private Map<String, BeanProperty> getAllFields(Map<String, BeanProperty> ourNodes, Map<String, BeanProperty> otherNodes, Map<String, BeanProperty> aliases, Class<?> ourType, Class<?> otherType, BeanProperty precedingBeanProperty, BeanPropertyMatchupDirection matchupDirection) {
+    private Map<String, BeanProperty> getAllFields(Map<String, BeanProperty> ourNodes, Map<String, BeanProperty> otherNodes, Map<String, BeanProperty> aliases,
+            Class<?> ourType, Class<?> otherType, BeanProperty precedingBeanProperty, BeanPropertyMatchupDirection matchupDirection) {
 
         Map<String, BeanProperty> ourCurrentNodes = ourNodes;
         List<PropertyAccessor> accessors = PropertyAccessors.getAll(ourType);
@@ -163,9 +164,9 @@ public class BeanMatchStore {
                     currentBeanProperty,
                     accessor.findAnnotation(BeanLogicSecured.class));
 
-            if(accessor.findAnnotation(BeanAlias.class) != null) {
+            if (accessor.findAnnotation(BeanAlias.class) != null) {
                 BeanAlias beanAlias = accessor.findAnnotation(BeanAlias.class);
-                if(aliases.containsKey(beanAlias.value())) {
+                if (aliases.containsKey(beanAlias.value())) {
                     throw new IllegalArgumentException("There is already a BeanAlias with key " + beanAlias.value());
                 }
                 aliases.put(beanAlias.value(), currentBeanProperty);
@@ -266,7 +267,7 @@ public class BeanMatchStore {
                 otherNodes.put(
                         wrapper.getName(),
                         new BeanPropertyCreator(matchupDirection.getInverse(), otherType, wrapper.getName())
-                            .determineNodesForPath());
+                                .determineNodesForPath());
             } catch (BeanNoSuchPropertyException err) {
                 // Acceptable, might have been tagged as @BeanProperty as well
             }

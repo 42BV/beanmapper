@@ -8,7 +8,7 @@ import io.beanmapper.exceptions.BeanInstantiationException;
 import io.beanmapper.strategy.ConstructorArguments;
 
 public class DefaultBeanInitializer implements BeanInitializer {
-    
+
     /**
      * {@inheritDoc}
      */
@@ -20,7 +20,7 @@ public class DefaultBeanInitializer implements BeanInitializer {
             } else {
                 return beanClass.getConstructor(arguments.getTypes()).newInstance(arguments.getValues());
             }
-        } catch (NoSuchMethodException e){
+        } catch (NoSuchMethodException e) {
             throw new BeanConstructException(beanClass, e);
         } catch (Exception e) {
             throw new BeanInstantiationException(beanClass, e);
