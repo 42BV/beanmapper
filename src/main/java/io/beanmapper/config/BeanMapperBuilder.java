@@ -201,7 +201,8 @@ public class BeanMapperBuilder {
         BeanMapper beanMapper = new BeanMapper(configuration);
         // Custom collection handlers must be registered before default ones
         addCollectionHandlers(customCollectionHandlers);
-        addCollectionHandlers(DEFAULT_COLLECTION_HANDLERS);
+        if (this.configuration instanceof CoreConfiguration)
+            addCollectionHandlers(DEFAULT_COLLECTION_HANDLERS);
         // Custom bean converters must be registered before default ones
         addCustomConverters();
         if (configuration.isAddDefaultConverters()) {
