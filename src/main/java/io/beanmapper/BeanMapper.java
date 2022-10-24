@@ -16,7 +16,15 @@ import io.beanmapper.strategy.MapStrategyType;
  * source to target.
  */
 @SuppressWarnings("unchecked")
-public record BeanMapper(Configuration configuration) {
+public final class BeanMapper {
+
+    private final Configuration configuration;
+
+    /**
+     */
+    public BeanMapper(Configuration configuration) {
+        this.configuration = configuration;
+    }
 
     public Object map(Object source) {
         if (source == null && !configuration.getUseNullValue()) {
@@ -150,4 +158,7 @@ public record BeanMapper(Configuration configuration) {
         return new BeanMapperBuilder(configuration);
     }
 
+    public Configuration getConfiguration() {
+        return configuration;
+    }
 }

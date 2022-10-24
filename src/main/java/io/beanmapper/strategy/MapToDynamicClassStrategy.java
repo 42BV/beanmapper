@@ -70,7 +70,7 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
                 getConfiguration().determineTargetClass(),
                 downsizeTargetFields,
                 getConfiguration().getStrictMappingProperties());
-        Class<?> collectionClass = getBeanMapper().configuration().getCollectionClass();
+        Class<?> collectionClass = getBeanMapper().getConfiguration().getCollectionClass();
         return getBeanMapper()
                 .wrap()
                 .downsizeTarget(null)

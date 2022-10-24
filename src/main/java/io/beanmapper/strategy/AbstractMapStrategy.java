@@ -79,7 +79,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
 
         final Object convertedValue;
         if (beanPropertyMatch.sourceHasAnnotation(BeanParent.class) || beanPropertyMatch.targetHasAnnotation(BeanParent.class)) {
-            convertedValue = beanMapper.configuration().getParent();
+            convertedValue = beanMapper.getConfiguration().getParent();
         } else {
             convertedValue = convert(copyableSource, beanPropertyMatch.getTargetClass(), beanPropertyMatch);
         }

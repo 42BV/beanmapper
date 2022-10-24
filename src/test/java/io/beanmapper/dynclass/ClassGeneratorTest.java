@@ -26,7 +26,7 @@ class ClassGeneratorTest extends AbstractConcurrentTest {
                             Node.createTree(Collections.singletonList("name")),
                             new BeanMapperBuilder()
                                     .build()
-                                    .configuration()
+                                    .getConfiguration()
                                     .getStrictMappingProperties());
                     Thread.yield();
                 }

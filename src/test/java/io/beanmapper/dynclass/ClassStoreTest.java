@@ -30,7 +30,7 @@ class ClassStoreTest extends AbstractConcurrentTest {
                 Collections.synchronizedList(Collections.singletonList("name")),
                 new BeanMapperBuilder()
                         .build()
-                        .configuration()
+                        .getConfiguration()
                         .getStrictMappingProperties())));
         assertEquals(1, results.size()); // A thread safe implementation should return one class.
     }
