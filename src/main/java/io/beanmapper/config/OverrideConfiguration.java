@@ -22,7 +22,7 @@ public class OverrideConfiguration implements Configuration {
     private OverrideField<BeanInitializer> beanInitializer;
 
     private List<BeanConverter> beanConverters = new ArrayList<>();
-    
+
     private List<BeanPair> beanPairs = new ArrayList<>();
 
     private OverrideField<List<String>> downsizeSourceFields;
@@ -78,13 +78,18 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public List<String> getDownsizeTarget() {
-        var list =  this.downsizeTargetFields.get();
+        var list = this.downsizeTargetFields.get();
         return list != null ? list : Collections.emptyList();
     }
 
     @Override
     public Class getCollectionClass() {
         return collectionClass;
+    }
+
+    @Override
+    public void setCollectionClass(Class collectionClass) {
+        this.collectionClass = collectionClass;
     }
 
     @Override
@@ -103,8 +108,18 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
+    public void setTargetClass(Class targetClass) {
+        this.targetClass = targetClass;
+    }
+
+    @Override
     public Object getTarget() {
         return target;
+    }
+
+    @Override
+    public void setTarget(Object target) {
+        this.target = target;
     }
 
     @Override
@@ -113,13 +128,29 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
+    public void setParent(Object parent) {
+        this.parent.set(parent);
+    }
+
+    @Override
     public BeanInitializer getBeanInitializer() {
         return beanInitializer.get();
     }
 
     @Override
+    public void setBeanInitializer(BeanInitializer beanInitializer) {
+        this.beanInitializer.set(beanInitializer);
+    }
+
+    @Override
     public BeanUnproxy getBeanUnproxy() {
         return parentConfiguration.getBeanUnproxy();
+    }
+
+    @Override
+    public void setBeanUnproxy(BeanUnproxy beanUnproxy) {
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to add BeanUnproxy on the override configuration, works only for core configurations");
     }
 
     @Override
@@ -172,6 +203,11 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
+    public void setConverterChoosable(boolean converterChoosable) {
+        this.converterChoosable.set(converterChoosable);
+    }
+
+    @Override
     public void withoutDefaultConverters() {
         throw new BeanConfigurationOperationNotAllowedException(
                 "Illegal to modify default converters on the override configuration, works only for core configurations");
@@ -183,13 +219,28 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
+    public void setStrictSourceSuffix(String strictSourceSuffix) {
+        this.strictMappingProperties.get().setStrictSourceSuffix(strictSourceSuffix);
+    }
+
+    @Override
     public String getStrictTargetSuffix() {
         return strictMappingProperties.get().getStrictTargetSuffix();
     }
 
     @Override
+    public void setStrictTargetSuffix(String strictTargetSuffix) {
+        this.strictMappingProperties.get().setStrictTargetSuffix(strictTargetSuffix);
+    }
+
+    @Override
     public boolean isApplyStrictMappingConvention() {
         return strictMappingProperties.get().isApplyStrictMappingConvention();
+    }
+
+    @Override
+    public void setApplyStrictMappingConvention(boolean applyStrictMappingConvention) {
+        this.strictMappingProperties.get().setApplyStrictMappingConvention(applyStrictMappingConvention);
     }
 
     @Override
@@ -208,6 +259,11 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
+    public void setPreferredCollectionClass(Class<?> preferredCollectionClass) {
+        this.preferredCollectionClass = preferredCollectionClass;
+    }
+
+    @Override
     public CollectionFlusher getCollectionFlusher() {
         return parentConfiguration.getCollectionFlusher();
     }
@@ -217,6 +273,11 @@ public class OverrideConfiguration implements Configuration {
         return this.collectionUsage == null ?
                 parentConfiguration.getCollectionUsage() :
                 this.collectionUsage;
+    }
+
+    @Override
+    public void setCollectionUsage(BeanCollectionUsage collectionUsage) {
+        this.collectionUsage = collectionUsage;
     }
 
     @Override
@@ -230,6 +291,11 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
+    public void setFlushEnabled(boolean flushEnabled) {
+        this.flushEnabled.set(flushEnabled);
+    }
+
+    @Override
     public boolean mustFlush() {
         return isFlushEnabled() && isFlushAfterClear() == FlushAfterClearInstruction.FLUSH_ENABLED;
     }
@@ -240,13 +306,29 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
+    public void setUseNullValue(boolean useNullValue) {
+        this.useNullValue.set(useNullValue);
+    }
+
+    @Override
     public RoleSecuredCheck getRoleSecuredCheck() {
         return parentConfiguration.getRoleSecuredCheck();
     }
 
     @Override
+    public void setRoleSecuredCheck(RoleSecuredCheck roleSecuredCheck) {
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to add a RoleSecuredCheck on the override configuration, works only for core configurations");
+    }
+
+    @Override
     public boolean getEnforceSecuredProperties() {
         return this.enforcedSecuredProperties.get();
+    }
+
+    @Override
+    public void setEnforceSecuredProperties(boolean enforceSecuredProperties) {
+        this.enforcedSecuredProperties.set(enforceSecuredProperties);
     }
 
     @Override
@@ -301,28 +383,6 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public void setRoleSecuredCheck(RoleSecuredCheck roleSecuredCheck) {
-        throw new BeanConfigurationOperationNotAllowedException(
-                "Illegal to add a RoleSecuredCheck on the override configuration, works only for core configurations");
-    }
-
-    @Override
-    public void setEnforceSecuredProperties(boolean enforceSecuredProperties) {
-        this.enforcedSecuredProperties.set(enforceSecuredProperties);
-    }
-
-    @Override
-    public void setBeanInitializer(BeanInitializer beanInitializer) {
-        this.beanInitializer.set(beanInitializer);
-    }
-
-    @Override
-    public void setBeanUnproxy(BeanUnproxy beanUnproxy) {
-        throw new BeanConfigurationOperationNotAllowedException(
-                "Illegal to add BeanUnproxy on the override configuration, works only for core configurations");
-    }
-
-    @Override
     public boolean isAddDefaultConverters() {
         return false;
     }
@@ -338,73 +398,13 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public void setCollectionClass(Class collectionClass) {
-        this.collectionClass = collectionClass;
-    }
-
-    @Override
-    public void setTargetClass(Class targetClass) {
-        this.targetClass = targetClass;
-    }
-
-    @Override
-    public void setTarget(Object target) {
-        this.target = target;
-    }
-
-    @Override
-    public void setParent(Object parent) {
-        this.parent.set(parent);
-    }
-
-    @Override
-    public void setConverterChoosable(boolean converterChoosable) {
-        this.converterChoosable.set(converterChoosable);
-    }
-
-    @Override
     public Class determineTargetClass() {
         return getTargetClass() == null ? getTarget().getClass() : getTargetClass();
     }
 
     @Override
-    public void setStrictSourceSuffix(String strictSourceSuffix) {
-        this.strictMappingProperties.get().setStrictSourceSuffix(strictSourceSuffix);
-    }
-
-    @Override
-    public void setStrictTargetSuffix(String strictTargetSuffix) {
-        this.strictMappingProperties.get().setStrictTargetSuffix(strictTargetSuffix);
-    }
-
-    @Override
-    public void setApplyStrictMappingConvention(boolean applyStrictMappingConvention) {
-        this.strictMappingProperties.get().setApplyStrictMappingConvention(applyStrictMappingConvention);
-    }
-
-    @Override
-    public void setCollectionUsage(BeanCollectionUsage collectionUsage) {
-        this.collectionUsage = collectionUsage;
-    }
-
-    @Override
-    public void setPreferredCollectionClass(Class<?> preferredCollectionClass) {
-        this.preferredCollectionClass = preferredCollectionClass;
-    }
-
-    @Override
     public void setFlushAfterClear(FlushAfterClearInstruction flushAfterClear) {
         this.flushAfterClear.set(flushAfterClear);
-    }
-
-    @Override
-    public void setFlushEnabled(boolean flushEnabled) {
-        this.flushEnabled.set(flushEnabled);
-    }
-
-    @Override
-    public void setUseNullValue(boolean useNullValue) {
-        this.useNullValue.set(useNullValue);
     }
 
 }

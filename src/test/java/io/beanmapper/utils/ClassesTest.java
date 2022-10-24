@@ -33,7 +33,9 @@ class ClassesTest {
             this.type = (Class<C>) Classes.getParameteredTypes(getClass())[0];
         }
 
-        public Class<C> getType() {return type;}
+        public Class<C> getType() {
+            return type;
+        }
     }
 
     public static class ClassWithGeneric extends AbstractClassWithGeneric<String> {

@@ -17,22 +17,10 @@ public class AnyToEnumConverter extends AbstractBeanConverter<Object, Enum<?>> {
         super(Object.class, Enum.class);
     }
 
-    @Override
-    protected Enum<?> doConvert(Object source, Class<? extends Enum<?>> targetClass) {
-        if (source == null) {
-            return null;
-        }
-        String sourceText = source instanceof Enum<?> enumerable ? enumerable.name() : source.toString();
-        if (isNotEmpty(sourceText)) {
-            return valueOf(targetClass, sourceText);
-        }
-        return null;
-    }
-
     private static boolean isNotEmpty(String name) {
         return name != null && name.trim().length() > 0;
     }
-    
+
     /**
      * Retrieve the enumeration from a specific type and name.
      * <br>
@@ -44,6 +32,18 @@ public class AnyToEnumConverter extends AbstractBeanConverter<Object, Enum<?>> {
     @SuppressWarnings("unchecked")
     private static <T extends Enum<T>> T valueOf(Class<? extends Enum<?>> enumClass, String name) {
         return Enum.valueOf((Class<T>) enumClass, name);
+    }
+
+    @Override
+    protected Enum<?> doConvert(Object source, Class<? extends Enum<?>> targetClass) {
+        if (source == null) {
+            return null;
+        }
+        String sourceText = source instanceof Enum<?> enumerable ? enumerable.name() : source.toString();
+        if (isNotEmpty(sourceText)) {
+            return valueOf(targetClass, sourceText);
+        }
+        return null;
     }
 
 }

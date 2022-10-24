@@ -16,17 +16,17 @@ import java.lang.reflect.Method;
  * @since Jun 24, 2015
  */
 public class CombinedPropertyAccessor implements PropertyAccessor {
-    
+
     /**
      * Method based property access.
      */
     private final MethodPropertyAccessor methodAccessor;
-    
+
     /**
      * Field based property access.
      */
     private final FieldPropertyAccessor fieldAccessor;
-    
+
     public CombinedPropertyAccessor(PropertyDescriptor methodAccessor, Field fieldAccessor) {
         this.methodAccessor = methodAccessor != null ? new MethodPropertyAccessor(methodAccessor) : null;
         this.fieldAccessor = fieldAccessor != null ? new FieldPropertyAccessor(fieldAccessor) : null;
@@ -39,7 +39,7 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
     public String getName() {
         return fieldAccessor != null ? fieldAccessor.getName() : methodAccessor.getName();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -47,7 +47,7 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
     public Class<?> getType() {
         return fieldAccessor != null ? fieldAccessor.getType() : methodAccessor.getType();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -62,7 +62,7 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
         }
         return annotation;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -75,7 +75,7 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
         }
         return null;
     }
-    
+
     /**
      * {@inheritDoc}
      */

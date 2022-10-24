@@ -11,6 +11,22 @@ public class Node {
 
     private final Map<String, Node> nodes = new TreeMap<>();
 
+    public static Node createTree(List<String> fields) {
+        Node root = new Node();
+        for (String field : fields) {
+            Route route = new Route(field);
+            Node current = root;
+            for (String routePart : route.getRoute()) {
+                Node newCurrent = current.getNode(routePart);
+                if (newCurrent == null) {
+                    newCurrent = current.addNode(routePart);
+                }
+                current = newCurrent;
+            }
+        }
+        return root;
+    }
+
     public Node getNode(String name) {
         return nodes.get(name);
     }
@@ -27,22 +43,6 @@ public class Node {
 
     public boolean hasNodes() {
         return nodes.size() > 0;
-    }
-
-    public static Node createTree(List<String> fields) {
-        Node root = new Node();
-        for (String field : fields) {
-            Route route = new Route(field);
-            Node current = root;
-            for (String routePart : route.getRoute()) {
-                Node newCurrent = current.getNode(routePart);
-                if (newCurrent == null) {
-                    newCurrent = current.addNode(routePart);
-                }
-                current = newCurrent;
-            }
-        }
-        return root;
     }
 
     public String getKey() {

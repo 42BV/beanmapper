@@ -12,7 +12,7 @@ import io.beanmapper.core.converter.SimpleBeanConverter;
  * @since Jun 24, 2015
  */
 public class ObjectToStringConverter extends SimpleBeanConverter<Object, String> {
-    
+
     public ObjectToStringConverter() {
         super(Object.class, String.class);
     }
@@ -24,5 +24,5 @@ public class ObjectToStringConverter extends SimpleBeanConverter<Object, String>
     protected String doConvert(Object source) {
         return source.toString();
     }
-    
+
 }

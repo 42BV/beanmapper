@@ -15,9 +15,9 @@ import io.beanmapper.utils.Classes;
  * @since Jun 18, 2015
  */
 public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
-    
+
     private final Class<?> sourceClass;
-    
+
     private final Class<?> targetClass;
 
     protected BeanMapper beanMapper;
@@ -56,7 +56,7 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
         Check.argument(isMatchingTarget(targetClass), "Unsupported target class.");
         return doConvert((S) source, (Class<T>) targetClass);
     }
-    
+
     /**
      * Convert a source instance to the target type.
      * @param source the source instance
@@ -72,11 +72,11 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
     public final boolean match(Class<?> sourceClass, Class<?> targetClass) {
         return isMatchingSource(sourceClass) && isMatchingTarget(targetClass);
     }
-    
+
     protected boolean isMatchingSource(Class<?> sourceClass) {
         return this.sourceClass.isAssignableFrom(sourceClass);
     }
-    
+
     protected boolean isMatchingTarget(Class<?> targetClass) {
         return this.targetClass.isAssignableFrom(targetClass);
     }

@@ -24,7 +24,7 @@ public class StringToFloatConverter extends SimpleBeanConverter<String, Float> {
     protected Float doConvert(String source) {
         return Float.parseFloat(source);
     }
-    
+
     /**
      * {@inheritDoc}
      */

@@ -16,38 +16,6 @@ public class BeanCollectionInstructions {
 
     private FlushAfterClearInstruction flushAfterClear;
 
-    public CollectionElementType getCollectionElementType() {
-        return collectionElementType;
-    }
-
-    public void setCollectionElementType(CollectionElementType collectionElementType) {
-        this.collectionElementType = collectionElementType;
-    }
-
-    public BeanCollectionUsage getBeanCollectionUsage() {
-        return beanCollectionUsage;
-    }
-
-    public void setBeanCollectionUsage(BeanCollectionUsage beanCollectionUsage) {
-        this.beanCollectionUsage = beanCollectionUsage;
-    }
-
-    public AnnotationClass getPreferredCollectionClass() {
-        return preferredCollectionClass;
-    }
-
-    public void setPreferredCollectionClass(AnnotationClass preferredCollectionClass) {
-        this.preferredCollectionClass = preferredCollectionClass;
-    }
-
-    public FlushAfterClearInstruction getFlushAfterClear() {
-        return flushAfterClear;
-    }
-
-    public void setFlushAfterClear(FlushAfterClearInstruction flushAfterClear) {
-        this.flushAfterClear = flushAfterClear != FlushAfterClearInstruction.UNSET ? flushAfterClear : FlushAfterClearInstruction.FLUSH_ENABLED;
-    }
-
     public static BeanCollectionInstructions merge(
             BeanProperty sourceBeanProperty,
             BeanProperty targetBeanProperty) {
@@ -99,9 +67,9 @@ public class BeanCollectionInstructions {
 
         if (
                 sourceCollectionElementType != null &&
-                targetCollectionElementType != null &&
-                !sourceCollectionElementType.isDerived() &&
-                targetCollectionElementType.isDerived()) {
+                        targetCollectionElementType != null &&
+                        !sourceCollectionElementType.isDerived() &&
+                        targetCollectionElementType.isDerived()) {
             targetCollectionElementType = null;
         }
 
@@ -119,6 +87,38 @@ public class BeanCollectionInstructions {
             return source;
         }
         return defaultValue;
+    }
+
+    public CollectionElementType getCollectionElementType() {
+        return collectionElementType;
+    }
+
+    public void setCollectionElementType(CollectionElementType collectionElementType) {
+        this.collectionElementType = collectionElementType;
+    }
+
+    public BeanCollectionUsage getBeanCollectionUsage() {
+        return beanCollectionUsage;
+    }
+
+    public void setBeanCollectionUsage(BeanCollectionUsage beanCollectionUsage) {
+        this.beanCollectionUsage = beanCollectionUsage;
+    }
+
+    public AnnotationClass getPreferredCollectionClass() {
+        return preferredCollectionClass;
+    }
+
+    public void setPreferredCollectionClass(AnnotationClass preferredCollectionClass) {
+        this.preferredCollectionClass = preferredCollectionClass;
+    }
+
+    public FlushAfterClearInstruction getFlushAfterClear() {
+        return flushAfterClear;
+    }
+
+    public void setFlushAfterClear(FlushAfterClearInstruction flushAfterClear) {
+        this.flushAfterClear = flushAfterClear != FlushAfterClearInstruction.UNSET ? flushAfterClear : FlushAfterClearInstruction.FLUSH_ENABLED;
     }
 
 }

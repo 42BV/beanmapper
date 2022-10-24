@@ -24,7 +24,7 @@ public class StringToIntegerConverter extends SimpleBeanConverter<String, Intege
     protected Integer doConvert(String source) {
         return Integer.parseInt(source);
     }
-    
+
     /**
      * {@inheritDoc}
      */

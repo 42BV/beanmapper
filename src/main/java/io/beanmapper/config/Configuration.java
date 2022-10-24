@@ -41,12 +41,28 @@ public interface Configuration {
     Class getCollectionClass();
 
     /**
+     * Sets the collection class of the collection. Used to instantiate the collection. If the
+     * collection class is set, it impacts the usage of the mapping strategy. Note that getting
+     * this field never refers to the parent configuration.
+     * @param collectionClass the class type of the collection
+     */
+    void setCollectionClass(Class collectionClass);
+
+    /**
      * The class that represents the target class. Used to instantiate a target for the mapping.
      * Note that target class is a marker field which impact the selection of the mapping
      * strategy. Target class never refers to the parent configuration.
      * @return class of the target
      */
     Class getTargetClass();
+
+    /**
+     * Sets the target class. Used to instantiate the target. If this class is set, it impact
+     * the usage of the mapping strategy. Note that getting this field never refers to the
+     * parent configuration.
+     * @param targetClass the class type of the target
+     */
+    void setTargetClass(Class targetClass);
 
     /**
      * The target to map to. Note that collection class is a marker field which impact the
@@ -56,6 +72,13 @@ public interface Configuration {
     Object getTarget();
 
     /**
+     * Sets the target. If the target is set, it impact the usage of the mapping strategy.
+     * Note that getting this field never refers to the parent configuration.
+     * @param target the target instance to map to
+     */
+    void setTarget(Object target);
+
+    /**
      * The active parent for the field that is currently being mapped. This is always a parent
      * on the target side of BeanMapper. @BeanParent makes us of this variable to assign to a
      * field
@@ -63,9 +86,21 @@ public interface Configuration {
      */
     Object getParent();
 
+    /**
+     * The active parent for the field that is currently being mapped. This is always a parent
+     * on the target side of BeanMapper. @BeanParent makes us of this variable to assign to a
+     * field
+     * @param parent the parent of the active field
+     */
+    void setParent(Object parent);
+
     BeanInitializer getBeanInitializer();
 
+    void setBeanInitializer(BeanInitializer beanInitializer);
+
     BeanUnproxy getBeanUnproxy();
+
+    void setBeanUnproxy(BeanUnproxy beanUnproxy);
 
     /**
      * Always use the CoreConfiguration beanmatch store
@@ -115,6 +150,8 @@ public interface Configuration {
 
     boolean isConverterChoosable();
 
+    void setConverterChoosable(boolean converterChoosable);
+
     void withoutDefaultConverters();
 
     /**
@@ -125,11 +162,25 @@ public interface Configuration {
     String getStrictSourceSuffix();
 
     /**
+     * Sets the classname suffix that determines a source class is to be treated as strict
+     * with regards to mapping. Default is "Form"
+     * @param strictSourceSuffix the source classname suffix for a class to be treated as strict
+     */
+    void setStrictSourceSuffix(String strictSourceSuffix);
+
+    /**
      * Returns the classname suffix that determines a target class is to be treated as strict
      * with regards to mapping. Default is "Result"
      * @return the target classname suffix for a class to be treated as strict
      */
     String getStrictTargetSuffix();
+
+    /**
+     * Sets the classname suffix that determines a target class is to be treated as strict
+     * with regards to mapping. Default is "Result"
+     * @param strictTargetSuffix the target classname suffix for a class to be treated as strict
+     */
+    void setStrictTargetSuffix(String strictTargetSuffix);
 
     /**
      * Determines if strict mapping convention will be applied. This means that if a source
@@ -139,6 +190,15 @@ public interface Configuration {
      * @return if true, the strict mapping convention will be applied
      */
     boolean isApplyStrictMappingConvention();
+
+    /**
+     * Determines if strict mapping convention will be applied. This means that if a source
+     * class has the strict source suffix, or a target class has the strict target suffix,
+     * the classes will be treated as if they are strict. This implies that all of their
+     * properties will require matching properties on the other side. Default is true.
+     * @param applyStrictMappingConvention whether the strict mapping convention must be applied
+     */
+    void setApplyStrictMappingConvention(boolean applyStrictMappingConvention);
 
     /**
      * Returns the collection of strictSourceSuffix, strictTargetSuffix and
@@ -154,11 +214,24 @@ public interface Configuration {
     BeanCollectionUsage getCollectionUsage();
 
     /**
+     * Sets the collection usage for the current collection mapping
+     * @param collectionUsage the collection usage to apply
+     */
+    void setCollectionUsage(BeanCollectionUsage collectionUsage);
+
+    /**
      * Gets the preferred collection class to be instantiated. If it has this choice,
      * it will use this class over the one provided by the collection handler.
      * @return the collection class to prefer for instantiation
      */
     Class<?> getPreferredCollectionClass();
+
+    /**
+     * Sets the preferred collection class to be instantiated. If it has this choice,
+     * it will use this class over the one provided by the collection handler.
+     * @param preferredCollectionClass the collection class to prefer for instantiation
+     */
+    void setPreferredCollectionClass(Class<?> preferredCollectionClass);
 
     /**
      * Returns the collection clearer, which takes care of calling the clear method
@@ -185,6 +258,15 @@ public interface Configuration {
     boolean isFlushEnabled();
 
     /**
+     * Set whether flushing must be enabled. Flushing is the calling of flush() on a collection
+     * after it has been cleared. This force an ORM to run its delete queries. Default setting is
+     * false, because flushing is tied closely to having a transaction context. If, this is not the
+     * case, the flush will throw an exception.
+     * @param flushEnabled whether flushing has been enabled
+     */
+    void setFlushEnabled(boolean flushEnabled);
+
+    /**
      * Works on the combination of the global flush setting (flushEnabled) and the specific flush
      * setting (flushAfterClear). If both are true, the flush will trigger.
      * @return true if a flush after clear must take place
@@ -198,6 +280,12 @@ public interface Configuration {
     boolean getUseNullValue();
 
     /**
+     * Property that determines if null values for the source must be skipped or not
+     * @param useNullValue determines if null values must be skipped or not
+     */
+    void setUseNullValue(boolean useNullValue);
+
+    /**
      * The RoleSecuredCheck is responsible for checking if a Principal may access
      * a field or method annotated with @BeanRoleSecured. Returns the RoleSecuredCheck,
      * if it has been configured.
@@ -206,11 +294,25 @@ public interface Configuration {
     RoleSecuredCheck getRoleSecuredCheck();
 
     /**
+     * The RoleSecuredCheck is responsible for checking if a Principal may access
+     * a field or method annotated with @BeanRoleSecured.
+     * @param roleSecuredCheck the new active RoleSecuredCheck
+     */
+    void setRoleSecuredCheck(RoleSecuredCheck roleSecuredCheck);
+
+    /**
      * Property that determines if secured properties must be handled. If this is set to true
      * and the RoleSecuredCheck has not been set, an exception will be thrown.
      * @return whether the handling of secured properties is enforced
      */
     boolean getEnforceSecuredProperties();
+
+    /**
+     * Property that determines if secured properties must be handled. If this is set to true
+     * and the RoleSecuredCheck has not been set, an exception will be thrown.
+     * @param enforceSecuredProperties whether the handling of secured properties is enforced
+     */
+    void setEnforceSecuredProperties(boolean enforceSecuredProperties);
 
     /**
      * Add a converter class (must inherit from abstract BeanConverter class) to the beanMapper.
@@ -288,13 +390,7 @@ public interface Configuration {
      */
     void addAfterClearFlusher(AfterClearFlusher afterClearFlusher);
 
-    void setBeanInitializer(BeanInitializer beanInitializer);
-
-    void setBeanUnproxy(BeanUnproxy beanUnproxy);
-
     boolean isAddDefaultConverters();
-
-    void setConverterChoosable(boolean converterChoosable);
 
     /**
      * Sets the field to downsize the source class.
@@ -312,111 +408,15 @@ public interface Configuration {
     void downsizeTarget(List<String> includeFields);
 
     /**
-     * Sets the collection class of the collection. Used to instantiate the collection. If the
-     * collection class is set, it impacts the usage of the mapping strategy. Note that getting
-     * this field never refers to the parent configuration.
-     * @param collectionClass the class type of the collection
-     */
-    void setCollectionClass(Class collectionClass);
-
-    /**
-     * Sets the target class. Used to instantiate the target. If this class is set, it impact
-     * the usage of the mapping strategy. Note that getting this field never refers to the
-     * parent configuration.
-     * @param targetClass the class type of the target
-     */
-    void setTargetClass(Class targetClass);
-
-    /**
-     * Sets the target. If the target is set, it impact the usage of the mapping strategy.
-     * Note that getting this field never refers to the parent configuration.
-     * @param target the target instance to map to
-     */
-    void setTarget(Object target);
-
-    /**
-     * The active parent for the field that is currently being mapped. This is always a parent
-     * on the target side of BeanMapper. @BeanParent makes us of this variable to assign to a
-     * field
-     * @param parent the parent of the active field
-     */
-    void setParent(Object parent);
-
-    /**
      * On the basis of the target, the targetClass will be determined
      * @return the class of the target
      */
     Class determineTargetClass();
 
     /**
-     * Sets the classname suffix that determines a source class is to be treated as strict
-     * with regards to mapping. Default is "Form"
-     * @param strictSourceSuffix the source classname suffix for a class to be treated as strict
-     */
-    void setStrictSourceSuffix(String strictSourceSuffix);
-
-    /**
-     * Sets the classname suffix that determines a target class is to be treated as strict
-     * with regards to mapping. Default is "Result"
-     * @param strictTargetSuffix the target classname suffix for a class to be treated as strict
-     */
-    void setStrictTargetSuffix(String strictTargetSuffix);
-
-    /**
-     * Determines if strict mapping convention will be applied. This means that if a source
-     * class has the strict source suffix, or a target class has the strict target suffix,
-     * the classes will be treated as if they are strict. This implies that all of their
-     * properties will require matching properties on the other side. Default is true.
-     * @param applyStrictMappingConvention whether the strict mapping convention must be applied
-     */
-    void setApplyStrictMappingConvention(boolean applyStrictMappingConvention);
-
-    /**
-     * Sets the collection usage for the current collection mapping
-     * @param collectionUsage the collection usage to apply
-     */
-    void setCollectionUsage(BeanCollectionUsage collectionUsage);
-
-    /**
-     * Sets the preferred collection class to be instantiated. If it has this choice,
-     * it will use this class over the one provided by the collection handler.
-     * @param preferredCollectionClass the collection class to prefer for instantiation
-     */
-    void setPreferredCollectionClass(Class<?> preferredCollectionClass);
-
-    /**
      * Determines whether the flush-chain must be called after a clear has taken place.
      * @param flushAfterClear true if the flush-chain must be called
      */
     void setFlushAfterClear(FlushAfterClearInstruction flushAfterClear);
-
-    /**
-     * Set whether flushing must be enabled. Flushing is the calling of flush() on a collection
-     * after it has been cleared. This force an ORM to run its delete queries. Default setting is
-     * false, because flushing is tied closely to having a transaction context. If, this is not the
-     * case, the flush will throw an exception.
-     * @param flushEnabled whether flushing has been enabled
-     */
-    void setFlushEnabled(boolean flushEnabled);
-
-    /**
-     * The RoleSecuredCheck is responsible for checking if a Principal may access
-     * a field or method annotated with @BeanRoleSecured.
-     * @param roleSecuredCheck the new active RoleSecuredCheck
-     */
-    void setRoleSecuredCheck(RoleSecuredCheck roleSecuredCheck);
-
-    /**
-     * Property that determines if secured properties must be handled. If this is set to true
-     * and the RoleSecuredCheck has not been set, an exception will be thrown.
-     * @param enforceSecuredProperties whether the handling of secured properties is enforced
-     */
-    void setEnforceSecuredProperties(boolean enforceSecuredProperties);
-
-    /**
-     * Property that determines if null values for the source must be skipped or not
-     * @param useNullValue determines if null values must be skipped or not
-     */
-    void setUseNullValue(boolean useNullValue);
 
 }

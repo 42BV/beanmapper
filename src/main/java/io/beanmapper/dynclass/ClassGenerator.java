@@ -22,8 +22,8 @@ import javassist.bytecode.annotation.ClassMemberValue;
 
 public class ClassGenerator {
 
-    private final ClassPool classPool;
     private static Integer generatedClassPrefix = 0;
+    private final ClassPool classPool;
     private final BeanMatchStore beanMatchStore;
 
     public ClassGenerator() {
@@ -51,7 +51,7 @@ public class ClassGenerator {
         CtClass baseClass = classPool.getCtClass(base.getName());
         CtClass dynClass = classPool.makeClass(base.getName() + "Dyn" + ++generatedClassPrefix);
 
-        for(Map.Entry<String, BeanProperty> entry : baseFields.entrySet()) {
+        for (Map.Entry<String, BeanProperty> entry : baseFields.entrySet()) {
             if (displayNodes.getFields().contains(entry.getKey())) {
                 BeanProperty beanProperty = entry.getValue();
                 CtField baseField = baseClass.getField(beanProperty.getName());
@@ -71,19 +71,25 @@ public class ClassGenerator {
                     writeMethod = new CtMethod(baseWriteMethod, dynClass, null);
                 }
 
-                if(displayNodes.getNode(entry.getKey()).hasNodes()) {
-                    if(beanProperty.getCollectionInstructions() != null) {
-                        handleBeanCollection(generatedField, beanProperty.getCollectionInstructions(), displayNodes.getNode(entry.getKey()), strictMappingProperties);
-                    } else {
-                        GeneratedClass nestedClass = handleNestedClass(generatedField, beanProperty.getAccessor().getType(), displayNodes.getNode(entry.getKey()),
+                if (displayNodes.getNode(entry.getKey()).hasNodes()) {
+                    if (beanProperty.getCollectionInstructions() != null) {
+                        handleBeanCollection(generatedField, beanProperty.getCollectionInstructions(), displayNodes.getNode(entry.getKey()),
                                 strictMappingProperties);
-                        if(readMethod != null) readMethod = changeReadMethod(readMethod, nestedClass.ctClass);
-                        if(writeMethod != null) writeMethod = changeWriteMethod(writeMethod, baseField.getType(), nestedClass.ctClass);
+                    } else {
+                        GeneratedClass nestedClass = handleNestedClass(generatedField, beanProperty.getAccessor().getType(),
+                                displayNodes.getNode(entry.getKey()),
+                                strictMappingProperties);
+                        if (readMethod != null)
+                            readMethod = changeReadMethod(readMethod, nestedClass.ctClass);
+                        if (writeMethod != null)
+                            writeMethod = changeWriteMethod(writeMethod, baseField.getType(), nestedClass.ctClass);
                     }
                 }
 
-                if(readMethod != null) dynClass.addMethod(readMethod);
-                if(writeMethod != null) dynClass.addMethod(writeMethod);
+                if (readMethod != null)
+                    dynClass.addMethod(readMethod);
+                if (writeMethod != null)
+                    dynClass.addMethod(writeMethod);
             }
         }
         return dynClass;
@@ -103,7 +109,7 @@ public class ClassGenerator {
         GeneratedClass elementClass = createClass(collectionInstructions.getCollectionElementType().getType(), displayNodes, strictMappingProperties);
 
         ConstPool constPool = field.getDeclaringClass().getClassFile().getConstPool();
-        AnnotationsAttribute attr= new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
+        AnnotationsAttribute attr = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
         Annotation annotation = new Annotation(BeanCollection.class.getName(), constPool);
         annotation.addMemberValue("elementType", new ClassMemberValue(elementClass.generatedClass.getName(), constPool));
         attr.addAnnotation(annotation);

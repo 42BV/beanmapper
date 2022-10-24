@@ -166,7 +166,7 @@ public class BeanMapperBuilder {
         this.configuration.setStrictTargetSuffix(strictTargetSuffix);
         return this;
     }
-    
+
     public BeanMapperBuilder setApplyStrictMappingConvention(boolean applyStrictMappingConvention) {
         this.configuration.setApplyStrictMappingConvention(applyStrictMappingConvention);
         return this;

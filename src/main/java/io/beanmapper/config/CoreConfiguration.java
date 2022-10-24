@@ -116,16 +116,42 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
+    public void setTargetClass(Class targetClass) {
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to set target class on the Core configuration, works only for override configurations");
+    }
+
+    @Override
     public Object getTarget() {
         return null;
     }
 
     @Override
-    public Object getParent() { return null; }
+    public void setTarget(Object target) {
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to set a target instance on the Core configuration, works only for override configurations");
+    }
+
+    @Override
+    public Object getParent() {
+        return null;
+    }
+
+    @Override
+    public void setParent(Object parent) {
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to set a parent instance on the Core configuration, works only for override configurations");
+    }
 
     @Override
     public Class getCollectionClass() {
         return null;
+    }
+
+    @Override
+    public void setCollectionClass(Class collectionClass) {
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to set a target instance on the Core configuration, works only for override configurations");
     }
 
     @Override
@@ -144,8 +170,18 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
+    public void setBeanInitializer(BeanInitializer beanInitializer) {
+        this.beanInitializer = beanInitializer;
+    }
+
+    @Override
     public BeanUnproxy getBeanUnproxy() {
         return this.beanUnproxy;
+    }
+
+    @Override
+    public void setBeanUnproxy(BeanUnproxy beanUnproxy) {
+        this.beanUnproxy.setDelegate(beanUnproxy);
     }
 
     @Override
@@ -189,6 +225,11 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
+    public void setConverterChoosable(boolean converterChoosable) {
+        this.converterChoosable = converterChoosable;
+    }
+
+    @Override
     public void withoutDefaultConverters() {
         this.addDefaultConverters = false;
     }
@@ -199,13 +240,28 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
+    public void setStrictSourceSuffix(String strictSourceSuffix) {
+        this.strictMappingProperties.setStrictSourceSuffix(strictSourceSuffix);
+    }
+
+    @Override
     public String getStrictTargetSuffix() {
         return strictMappingProperties.getStrictTargetSuffix();
     }
 
     @Override
+    public void setStrictTargetSuffix(String strictTargetSuffix) {
+        this.strictMappingProperties.setStrictTargetSuffix(strictTargetSuffix);
+    }
+
+    @Override
     public boolean isApplyStrictMappingConvention() {
         return strictMappingProperties.isApplyStrictMappingConvention();
+    }
+
+    @Override
+    public void setApplyStrictMappingConvention(boolean applyStrictMappingConvention) {
+        this.strictMappingProperties.setApplyStrictMappingConvention(applyStrictMappingConvention);
     }
 
     @Override
@@ -220,8 +276,20 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
+    public void setCollectionUsage(BeanCollectionUsage collectionUsage) {
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to set collection usage on the core configuration");
+    }
+
+    @Override
     public Class<?> getPreferredCollectionClass() {
         return null;
+    }
+
+    @Override
+    public void setPreferredCollectionClass(Class<?> preferredCollectionClass) {
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to set preferred collection class on the core configuration");
     }
 
     @Override
@@ -240,6 +308,11 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
+    public void setFlushEnabled(boolean flushEnabled) {
+        this.flushEnabled = flushEnabled;
+    }
+
+    @Override
     public boolean mustFlush() {
         return false;
     }
@@ -250,13 +323,28 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
+    public void setUseNullValue(boolean useNullValue) {
+        this.useNullValue = useNullValue;
+    }
+
+    @Override
     public RoleSecuredCheck getRoleSecuredCheck() {
         return this.roleSecuredCheck;
     }
 
     @Override
+    public void setRoleSecuredCheck(RoleSecuredCheck roleSecuredCheck) {
+        this.roleSecuredCheck = roleSecuredCheck;
+    }
+
+    @Override
     public boolean getEnforceSecuredProperties() {
         return enforceSecuredProperties;
+    }
+
+    @Override
+    public void setEnforceSecuredProperties(boolean enforceSecuredProperties) {
+        this.enforceSecuredProperties = enforceSecuredProperties;
     }
 
     @Override
@@ -306,23 +394,8 @@ public class CoreConfiguration implements Configuration {
         this.collectionFlusher.addAfterClearFlusher(afterClearFlusher);
     }
 
-    @Override
-    public void setBeanInitializer(BeanInitializer beanInitializer) {
-        this.beanInitializer = beanInitializer;
-    }
-
-    @Override
-    public void setBeanUnproxy(BeanUnproxy beanUnproxy) {
-        this.beanUnproxy.setDelegate(beanUnproxy);
-    }
-
     public boolean isAddDefaultConverters() {
         return this.addDefaultConverters;
-    }
-
-    @Override
-    public void setConverterChoosable(boolean converterChoosable) {
-        this.converterChoosable = converterChoosable;
     }
 
     @Override
@@ -338,85 +411,14 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
-    public void setCollectionClass(Class collectionClass) {
-        throw new BeanConfigurationOperationNotAllowedException(
-                "Illegal to set a target instance on the Core configuration, works only for override configurations");
-    }
-
-    @Override
-    public void setTargetClass(Class targetClass) {
-        throw new BeanConfigurationOperationNotAllowedException(
-                "Illegal to set target class on the Core configuration, works only for override configurations");
-    }
-
-    @Override
-    public void setTarget(Object target) {
-        throw new BeanConfigurationOperationNotAllowedException(
-                "Illegal to set a target instance on the Core configuration, works only for override configurations");
-    }
-
-    @Override
-    public void setParent(Object parent) {
-        throw new BeanConfigurationOperationNotAllowedException(
-                "Illegal to set a parent instance on the Core configuration, works only for override configurations");
-    }
-
-    @Override
     public Class determineTargetClass() {
         return null;
-    }
-
-    @Override
-    public void setStrictSourceSuffix(String strictSourceSuffix) {
-        this.strictMappingProperties.setStrictSourceSuffix(strictSourceSuffix);
-    }
-
-    @Override
-    public void setStrictTargetSuffix(String strictTargetSuffix) {
-        this.strictMappingProperties.setStrictTargetSuffix(strictTargetSuffix);
-    }
-
-    @Override
-    public void setApplyStrictMappingConvention(boolean applyStrictMappingConvention) {
-        this.strictMappingProperties.setApplyStrictMappingConvention(applyStrictMappingConvention);
-    }
-
-    @Override
-    public void setCollectionUsage(BeanCollectionUsage collectionUsage) {
-        throw new BeanConfigurationOperationNotAllowedException(
-                "Illegal to set collection usage on the core configuration");
-    }
-
-    @Override
-    public void setPreferredCollectionClass(Class<?> preferredCollectionClass) {
-        throw new BeanConfigurationOperationNotAllowedException(
-                "Illegal to set preferred collection class on the core configuration");
     }
 
     @Override
     public void setFlushAfterClear(FlushAfterClearInstruction flushAfterClear) {
         throw new BeanConfigurationOperationNotAllowedException(
                 "Illegal to set flush after clear on the core configuration");
-    }
-
-    @Override
-    public void setFlushEnabled(boolean flushEnabled) {
-        this.flushEnabled = flushEnabled;
-    }
-
-    @Override
-    public void setRoleSecuredCheck(RoleSecuredCheck roleSecuredCheck) {
-        this.roleSecuredCheck = roleSecuredCheck;
-    }
-
-    @Override
-    public void setEnforceSecuredProperties(boolean enforceSecuredProperties) {
-        this.enforceSecuredProperties = enforceSecuredProperties;
-    }
-
-    @Override
-    public void setUseNullValue(boolean useNullValue) {
-        this.useNullValue = useNullValue;
     }
 
 }

@@ -1,7 +1,11 @@
 package io.beanmapper.strategy;
 
 import io.beanmapper.BeanMapper;
-import io.beanmapper.annotations.*;
+import io.beanmapper.annotations.BeanConstruct;
+import io.beanmapper.annotations.BeanDefault;
+import io.beanmapper.annotations.BeanMappableEnum;
+import io.beanmapper.annotations.BeanParent;
+import io.beanmapper.annotations.BeanProperty;
 import io.beanmapper.config.Configuration;
 import io.beanmapper.core.BeanMatch;
 import io.beanmapper.core.BeanPropertyMatch;
@@ -32,16 +36,16 @@ public abstract class AbstractMapStrategy implements MapStrategy {
     public Configuration getConfiguration() {
         return configuration;
     }
-    
+
     public BeanMapper getBeanMapper() {
         return beanMapper;
-    } 
-    
+    }
+
     public <S> ConstructorArguments getConstructorArguments(S source, BeanMatch beanMatch) {
         BeanConstruct beanConstruct = beanMatch.getTargetClass().getAnnotation(BeanConstruct.class);
 
         // If the target does not have a BeanConstruct annotation, check the source
-        if(beanConstruct == null){
+        if (beanConstruct == null) {
             beanConstruct = beanMatch.getSourceClass().getAnnotation(BeanConstruct.class);
         }
 
@@ -49,7 +53,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
         return beanConstruct == null ? null : new ConstructorArguments(source, beanMatch, beanConstruct.value());
     }
 
-    public<T, S> BeanMatch getBeanMatch(Class<S> sourceClazz, Class<T> targetClazz) {
+    public <T, S> BeanMatch getBeanMatch(Class<S> sourceClazz, Class<T> targetClazz) {
         Class<?> sourceClass = getConfiguration().getBeanUnproxy().unproxy(sourceClazz);
         Class<?> targetClass = getConfiguration().getBeanUnproxy().unproxy(targetClazz);
         return getConfiguration().getBeanMatchStore().getBeanMatch(
@@ -97,7 +101,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
                     .wrap()
                     .setParent(beanPropertyMatch.getTarget())
                     .build();
-            if(beanPropertyMatch.getTargetObject() == null){
+            if (beanPropertyMatch.getTargetObject() == null) {
                 target = localBeanMapper.map(encapsulatedSource, beanPropertyMatch.getTargetClass());
             } else {
                 target = localBeanMapper.map(encapsulatedSource, beanPropertyMatch.getTargetObject());
@@ -183,7 +187,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
             return;
         }
 
-        if (    noConverterAvailable(beanPropertyMatch) &&
+        if (noConverterAvailable(beanPropertyMatch) &&
                 dissimilarOrSimilarWithExistingTarget(beanPropertyMatch) &&
                 neitherSourceNorTargetIsEnum(beanPropertyMatch) &&
                 beanMapperMayDeepMapClass(beanPropertyMatch) &&

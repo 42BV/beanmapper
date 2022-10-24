@@ -9,7 +9,7 @@ import io.beanmapper.strategy.ConstructorArguments;
  * Abstraction that initializes beans.
  */
 public interface BeanInitializer {
-    
+
     /**
      * Initialize a new bean.
      * @param <T> type of the class to instantiate

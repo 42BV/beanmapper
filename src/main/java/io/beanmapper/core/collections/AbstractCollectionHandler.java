@@ -13,7 +13,7 @@ public abstract class AbstractCollectionHandler<C> implements CollectionHandler<
     private final DefaultBeanInitializer beanInitializer = new DefaultBeanInitializer();
 
     protected AbstractCollectionHandler() {
-        this.type = (Class<C>)Classes.getParameteredTypes(getClass())[0];
+        this.type = (Class<C>) Classes.getParameteredTypes(getClass())[0];
     }
 
     /**

@@ -17,9 +17,9 @@ import io.beanmapper.core.converter.BeanConverter;
  * @since Jun 24, 2015
  */
 public class NumberToNumberConverter implements BeanConverter {
-    
+
     private static final Set<Class<?>> PRIMITIVES = new HashSet<>();
-    
+
     static {
         PRIMITIVES.add(byte.class);
         PRIMITIVES.add(short.class);
@@ -65,5 +65,5 @@ public class NumberToNumberConverter implements BeanConverter {
     private boolean isNumber(Class<?> clazz) {
         return Number.class.isAssignableFrom(clazz) || PRIMITIVES.contains(clazz);
     }
-    
+
 }

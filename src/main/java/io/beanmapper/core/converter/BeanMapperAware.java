@@ -14,10 +14,10 @@ import io.beanmapper.BeanMapper;
  * @deprecated As of release v0.4.0, internally solved by passing BeanMapper to BeanConverter.convert
  */
 public interface BeanMapperAware {
-    
+
     /**
      * Store the bean mapper.
-     * 
+     *
      * @param beanMapper the bean mapper
      */
     void setBeanMapper(BeanMapper beanMapper);

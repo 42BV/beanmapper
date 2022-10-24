@@ -13,7 +13,7 @@ import java.lang.reflect.Method;
  * @since Jun 23, 2015
  */
 public interface PropertyAccessor {
-    
+
     /**
      * Retrieve the property name.
      * @return property name
@@ -25,7 +25,7 @@ public interface PropertyAccessor {
      * @return property type
      */
     Class<?> getType();
-    
+
     /**
      * Retrieve the annotation on a property.
      * @param <A> class type of the annotation class
@@ -33,26 +33,26 @@ public interface PropertyAccessor {
      * @return the annotation, if any
      */
     <A extends Annotation> A findAnnotation(Class<A> annotationClass);
-    
+
     /**
      * Determine if the property is readable.
      * @return {@code true} when readable, else {@code false}
      */
     boolean isReadable();
-    
+
     /**
      * Retrieve the property value.
      * @param instance bean that contains the property
      * @return the property value
      */
     Object getValue(Object instance);
-    
+
     /**
      * Determine if the property is writable.
      * @return {@code true} when writable, else {@code false}
      */
     boolean isWritable();
-    
+
     /**
      * Modify the property value.
      * @param instance bean that contains the property
@@ -61,5 +61,6 @@ public interface PropertyAccessor {
     void setValue(Object instance, Object value);
 
     Method getReadMethod();
+
     Method getWriteMethod();
 }
