@@ -1367,7 +1367,6 @@ class BeanMapperTest {
                 .build().wrap()
                 .setFlushEnabled(true)
                 .setFlushAfterClear(FlushAfterClearInstruction.FLUSH_ENABLED)
-                .addAfterClearFlusher(afterClearFlusher)
                 .build();
         CollSourceClearFlush source = new CollSourceClearFlush() {{
             items.add("A");

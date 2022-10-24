@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
-### Changed
+### Updated
 
 - Upgraded JUnit 5.8.2 to 5.9.0
 - Upgraded SLF4J 2.0.0 to 2.0.3
@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Issue [#152](https://github.com/42BV/beanmapper/issues/152) **Methods that return a Collection should never return null.**; All methods that return a
   Collection, will return an empty Collection of the target type, rather than returning null.
+- Issue [#153](https://github.com/42BV/beanmapper/issues/153) **https://github.com/42BV/beanmapper/issues/153**; Rather than using the Boolean-wrapper, all
+  occurrences of Boolean that are not absolutely necessary due to generics, have been replaced with the primitive boolean, or the
+  FlushAfterClearInstruction-enum.
 
 ### Added
 
@@ -24,11 +27,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Support for mapping Queue. A Queue will be mapped to an ArrayDeque by default. The order of elements is guaranteed to be preserved, except when the Queue is 
   mapped to a Queue that inherently modifies the order of elements (e.g. PriorityQueue).
 
-### Fixed
+### Changed
 
-- Issue [#153](https://github.com/42BV/beanmapper/issues/153) **https://github.com/42BV/beanmapper/issues/153**; Rather than using the Boolean-wrapper, all 
-  occurrences of Boolean that are not absolutely necessary due to generics, have been replaced with the primitive boolean, or the 
-  FlushAfterClearInstruction-enum.
+- Methods in OverrideConfiguration that used to perform NOP, now throw a BeanConfigurationOperationNotAllowedException.
 
 
 ## [4.0.1] - 2022-09-22

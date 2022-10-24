@@ -13,6 +13,7 @@ import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.dynclass.ClassStore;
+import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
 
 public class OverrideConfiguration implements Configuration {
 
@@ -172,7 +173,8 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public void withoutDefaultConverters() {
-        // not supported for override options
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to modify default converters on the override configuration, works only for core configurations");
     }
 
     @Override
@@ -254,12 +256,14 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public void addLogicSecuredCheck(LogicSecuredCheck logicSecuredCheck) {
-        // not supported for override options
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to add a LogicSecuredCheck on the override configuration, works only for core configurations");
     }
 
     @Override
     public void addCollectionHandler(CollectionHandler collectionHandler) {
-        // not supported for override options
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to add a CollectionHandler on the override configuration, works only for core configurations");
     }
 
     @Override
@@ -274,27 +278,32 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public void addProxySkipClass(Class<?> clazz) {
-        // not supported for override options
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to add a ProxySkip-class on the override configuration, works only for core configurations");
     }
 
     @Override
     public void addPackagePrefix(Class<?> clazz) {
-        // not supported for override options
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to add a package prefix on the override configuration, works only for core configurations");
     }
 
     @Override
     public void addPackagePrefix(String packagePrefix) {
-        // not supported for override options
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to add a package prefix on the override configuration, works only for core configurations");
     }
 
     @Override
     public void addAfterClearFlusher(AfterClearFlusher afterClearFlusher) {
-        // not supported for override options
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to add a AfterClearFlusher on the override configuration, works only for core configurations");
     }
 
     @Override
     public void setRoleSecuredCheck(RoleSecuredCheck roleSecuredCheck) {
-        // not supported for override options
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to add a RoleSecuredCheck on the override configuration, works only for core configurations");
     }
 
     @Override
@@ -309,7 +318,8 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public void setBeanUnproxy(BeanUnproxy beanUnproxy) {
-        // not supported for override options
+        throw new BeanConfigurationOperationNotAllowedException(
+                "Illegal to add BeanUnproxy on the override configuration, works only for core configurations");
     }
 
     @Override

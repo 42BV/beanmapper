@@ -9,6 +9,7 @@ import java.util.List;
 
 import io.beanmapper.BeanMapper;
 import io.beanmapper.core.constructor.DefaultBeanInitializer;
+import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
 import io.beanmapper.strategy.ConstructorArguments;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -35,12 +36,12 @@ public class OverrideConfigurationTest {
 
     @Test
     void unsupportedCalls() {
-        overrideConfiguration.withoutDefaultConverters();
-        overrideConfiguration.addProxySkipClass(null);
-        overrideConfiguration.addPackagePrefix((String) null);
-        overrideConfiguration.addPackagePrefix((Class) null);
-        overrideConfiguration.addAfterClearFlusher(null);
-        overrideConfiguration.setBeanUnproxy(null);
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.withoutDefaultConverters());
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.addProxySkipClass(null));
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.addPackagePrefix((String) null));
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.addPackagePrefix((Class) null));
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.addAfterClearFlusher(null));
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.setBeanUnproxy(null));
     }
 
     @Test
