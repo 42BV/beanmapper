@@ -128,24 +128,6 @@ public record BeanMapper(Configuration configuration) {
                 .map(collection);
     }
 
-    /**
-     * @deprecated use wrap() instead
-     * @return BeanMapperBuilder
-     */
-    @Deprecated(forRemoval = true)
-    public BeanMapperBuilder config() {
-        return wrap();
-    }
-
-    /**
-     * @deprecated use wrap() instead
-     * @return BeanMapperBuilder
-     */
-    @Deprecated(forRemoval = true)
-    public BeanMapperBuilder wrapConfig() {
-        return wrap();
-    }
-
     public BeanMapperBuilder wrap() {
         return new BeanMapperBuilder(configuration);
     }

@@ -30,6 +30,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 
 - Methods in OverrideConfiguration that used to perform NOP, now throw a BeanConfigurationOperationNotAllowedException.
+- Removed deprecated methods BeanMapper#config(), and BeanMapper#wrapConfig().
+- Removed deprecated class BeanMapperAware.
 
 
 ## [4.0.1] - 2022-09-22
