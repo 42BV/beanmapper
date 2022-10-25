@@ -29,5 +29,4 @@ public class QueueCollectionHandler extends AbstractCollectionHandler<Queue> {
     public int size(Queue targetCollection) {
         return targetCollection.size();
     }
-
 }

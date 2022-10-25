@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.Set;
 
 import io.beanmapper.config.BeanMapperBuilder;
@@ -113,6 +114,19 @@ public final class BeanMapper {
      */
     public <S, T> Set<T> map(Set<S> set, Class<T> elementInSetClass) {
         return mapCollection(set, elementInSetClass);
+    }
+
+    /**
+     * Maps the source queue to a new target queue. Convenience operator.
+     *
+     * @param queue The source queue.
+     * @param elementInQueueClass The class of each element in the target queue.
+     * @return The target queue with mapped source queue elements.
+     * @param <S> The class type of the source queue.
+     * @param <T> The class type of the elements in the target queue.
+     */
+    public <S, T> Queue<T> map(Queue<S> queue, Class<T> elementInQueueClass) {
+        return mapCollection(queue, elementInQueueClass);
     }
 
     /**
