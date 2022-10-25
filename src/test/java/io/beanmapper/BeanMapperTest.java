@@ -1795,27 +1795,25 @@ class BeanMapperTest {
     }
 
     @Test
-    @Disabled("BeanMapperBuilder#setPreferredCollectionClass doesn't work as reasonably expected, resulting in "
-            + "failures.")
     void mapQueueToTarget_PriorityQueue() {
         Queue<String> collection = new ArrayDeque<>();
         collection.add("42");
         collection.add("21");
         collection.add("12");
 
-        var result = new BeanMapperBuilder().build().wrap()
+        // noinspection unchecked
+        var result = (Queue<Long>) new BeanMapperBuilder().build().wrap()
                 .setPreferredCollectionClass(PriorityQueue.class)
+                .setCollectionClass(PriorityQueue.class)
                 .setCollectionUsage(BeanCollectionUsage.CONSTRUCT)
                 .setTargetClass(Long.class)
-                .setFlushAfterClear(FlushAfterClearInstruction.FLUSH_DISABLED)
-                .build()
-                .map(collection, Long.class);
-
+                .build().map(collection);
+        assertNotNull(result);
         assertEquals(PriorityQueue.class, result.getClass());
         assertEquals(collection.size(), result.size());
-        assertEquals(42L, ((PriorityQueue<Long>) result).poll());
-        assertEquals(21L, ((PriorityQueue<Long>) result).poll());
-        assertEquals(12L, ((PriorityQueue<Long>) result).poll());
+        assertEquals(12L, (result).poll());
+        assertEquals(21L, (result).poll());
+        assertEquals(42L, (result).poll());
     }
 
     @Test

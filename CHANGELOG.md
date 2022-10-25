@@ -24,9 +24,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- BeanMapper#map(Collection, Class) allowing users to map from a Collection to the type actual type of the 
-- Support for mapping Queue. A Queue will be mapped to an ArrayDeque by default. The order of elements is guaranteed to be preserved, except when the Queue is 
+- BeanMapper#map(Collection, Class) allowing users to map from a Collection to the type actual type of the
+- Support for mapping Queue. A Queue will be mapped to an ArrayDeque by default. The order of elements is guaranteed to be preserved, except when the Queue is
   mapped to a Queue that inherently modifies the order of elements (e.g. PriorityQueue).
+- BeanMapper#map(Queue, Class) allowing users to map a Queue to a new Queue, mapping the elements of the source to the target class.
 
 ### Changed
 
@@ -34,20 +35,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Removed deprecated method BeanMapper#config(), BeanMapper#wrapConfig().
 - Removed deprecated class BeanMapperAware.
 
-
 ## [4.0.1] - 2022-09-22
 
 ### Fixed
 
-- Issue [#121](https://github.com/42BV/beanmapper/issues/121) **Mapping an Enum field to an Enum field of the same type fails when a custom toString method is 
-  present.**; When an Enum with a custom toString-method was mapped to an Enum, the mapping would fail. Fixed by adding an instanceof check in the 
+- Issue [#121](https://github.com/42BV/beanmapper/issues/121) **Mapping an Enum field to an Enum field of the same type fails when a custom toString method is
+  present.**; When an Enum with a custom toString-method was mapped to an Enum, the mapping would fail. Fixed by adding an instanceof check in the
   AnyToEnumConverter, making it use Enum#name() to get the name of an Enum, rather than toString.
-- Issue [#137](https://github.com/42BV/beanmapper/issues/137) **https://github.com/42BV/beanmapper/issues/137**; Mapping a class with a getter that returns an 
+- Issue [#137](https://github.com/42BV/beanmapper/issues/137) **https://github.com/42BV/beanmapper/issues/137**; Mapping a class with a getter that returns an
   Optional, would fail, as an Optional can typically not be mapped to the target class. Fixed implementing an OptionalToObjectConverter, which handles unpacking
   an Optional, and additionally delegates further conversion back to the BeanMapper.
-- DynamicClassGeneratorHelper was removed, due to returning null, and replaced with passing the baseclass for a generated class immediately to the constructor 
+- DynamicClassGeneratorHelper was removed, due to returning null, and replaced with passing the baseclass for a generated class immediately to the constructor
   of GeneratedClass.
-
 
 ## [4.0.0] - 2022-09-15
 
