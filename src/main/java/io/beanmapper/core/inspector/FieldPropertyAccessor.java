@@ -127,4 +127,12 @@ public class FieldPropertyAccessor implements PropertyAccessor {
         throw new UnsupportedOperationException("FieldPropertyAccessor#getWriteMethod is not supported. If the "
                 + "write-method must be used to set the value of the field, use the MethodPropertyAccessor.");
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <S> Class<S> getDeclaringClass() {
+        return (Class<S>) this.field.getDeclaringClass();
+    }
 }

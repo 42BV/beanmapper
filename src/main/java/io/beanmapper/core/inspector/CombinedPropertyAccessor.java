@@ -136,4 +136,16 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
         return (this.fieldAccessor != null && this.fieldAccessor.isAnnotationPresent(annotationClass))
                 || (this.methodAccessor != null && this.methodAccessor.isAnnotationPresent(annotationClass));
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <S> Class<S> getDeclaringClass() {
+        if (this.fieldAccessor != null)
+            return this.fieldAccessor.getDeclaringClass();
+        else if (this.methodAccessor != null)
+            return this.methodAccessor.getDeclaringClass();
+        return null;
+    }
 }

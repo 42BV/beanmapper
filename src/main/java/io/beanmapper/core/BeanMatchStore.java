@@ -5,7 +5,12 @@ import static io.beanmapper.core.converter.collections.CollectionElementType.EMP
 import static io.beanmapper.core.converter.collections.CollectionElementType.derived;
 import static io.beanmapper.core.converter.collections.CollectionElementType.set;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -29,6 +34,7 @@ import io.beanmapper.core.inspector.PropertyAccessors;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.exceptions.BeanMissingPathException;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
+import io.beanmapper.exceptions.FieldShadowingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,7 +135,6 @@ public class BeanMatchStore {
 
         Map<String, BeanProperty> ourCurrentNodes = ourNodes;
         List<PropertyAccessor> accessors = PropertyAccessors.getAll(ourType);
-
         for (PropertyAccessor accessor : accessors) {
 
             BeanPropertyAccessType accessType = matchupDirection.accessType(accessor);
@@ -144,8 +149,12 @@ public class BeanMatchStore {
 
             // BeanProperty allows the field to match with a field from the other side with a different name
             // and even a different nesting level.
-            BeanPropertyWrapper beanPropertyWrapper =
-                    dealWithBeanProperty(matchupDirection, otherNodes, otherType, accessor);
+            BeanPropertyWrapper beanPropertyWrapper = null;
+            try {
+                beanPropertyWrapper = dealWithBeanProperty(matchupDirection, otherNodes, otherType, accessor);
+            } catch (IntrospectionException e) {
+                throw new RuntimeException(e);
+            }
 
             // Unwrap the fields which exist in the unwrap class
             BeanProperty currentBeanProperty;
@@ -260,13 +269,16 @@ public class BeanMatchStore {
         return collectionHandlerStore.getCollectionHandlerFor(beanProperty.getAccessor().getType(), beanUnproxy);
     }
 
-    private BeanPropertyWrapper dealWithBeanProperty(
-            BeanPropertyMatchupDirection matchupDirection, Map<String, BeanProperty> otherNodes,
-            Class<?> otherType, PropertyAccessor accessor) {
+    private BeanPropertyWrapper dealWithBeanProperty(BeanPropertyMatchupDirection matchupDirection, Map<String, BeanProperty> otherNodes, Class<?> otherType,
+            PropertyAccessor accessor) throws IntrospectionException {
         BeanPropertyWrapper wrapper = new BeanPropertyWrapper(accessor.getName());
         if (accessor.isAnnotationPresent(io.beanmapper.annotations.BeanProperty.class)) {
+            io.beanmapper.annotations.BeanProperty beanProperty = accessor.findAnnotation(io.beanmapper.annotations.BeanProperty.class);
+
+            detectBeanPropertyFieldShadowing(accessor, beanProperty);
+
             wrapper.setMustMatch();
-            wrapper.setName(getBeanPropertyName(accessor.findAnnotation(io.beanmapper.annotations.BeanProperty.class)));
+            wrapper.setName(getBeanPropertyName(beanProperty));
             // Get the other field from the location that is specified in the beanProperty annotation.
             // If the field is referred to by a path, store the custom field in the other map
             try {
@@ -286,13 +298,64 @@ public class BeanMatchStore {
     }
 
     private String getBeanPropertyName(io.beanmapper.annotations.BeanProperty annotation) {
-        String beanPropertyName = annotation.value();
+        return annotation.value().isBlank() ? annotation.name() : annotation.value();
+    }
 
-        if (beanPropertyName.isEmpty()) {
-            beanPropertyName = annotation.name();
+    /**
+     * Detects whether a field annotated with the BeanProperty-annotation shadows an existing, accessible field.
+     *
+     * @apiNote In this context, an accessible field is any field which is either public, or exposes a public
+     * accessor-method.
+     *
+     * @param accessor The accessor that can be used to access to the value within the field.
+     * @param beanProperty The BeanProperty-annotation annotating the relevant field.
+     * @throws IntrospectionException May be thrown whenever an Exception occurs during the introspection of the
+     *                                relevant bean.
+     */
+    private void detectBeanPropertyFieldShadowing(final PropertyAccessor accessor, final io.beanmapper.annotations.BeanProperty beanProperty)
+            throws IntrospectionException {
+        var beanPropertyName = getBeanPropertyName(beanProperty);
+
+        var fields = accessor.getDeclaringClass().getDeclaredFields();
+        for (var field : fields) {
+            var fieldName = field.getName();
+            if (!fieldName.equals(accessor.getName())
+                    && fieldName.equals(beanPropertyName)
+                    && (Modifier.isPublic(field.getModifiers())
+                    || hasAccessibleWriteMethod(field))) {
+                if (field.isAnnotationPresent(io.beanmapper.annotations.BeanProperty.class)) {
+                    var fieldBeanProperty = field.getAnnotation(io.beanmapper.annotations.BeanProperty.class);
+                    if (getBeanPropertyName(fieldBeanProperty).equals(beanPropertyName))
+                        throw new FieldShadowingException(
+                                String.format("%s %s.%s shadows %s.%s.", beanProperty, accessor.getDeclaringClass().getName(), accessor.getName(),
+                                        field.getDeclaringClass().getName(), fieldName));
+                } else {
+                    throw new FieldShadowingException(
+                            String.format("%s %s.%s shadows %s.%s.", beanProperty, accessor.getDeclaringClass().getName(), accessor.getName(),
+                                    field.getDeclaringClass().getName(), fieldName));
+                }
+            }
         }
+    }
 
-        return beanPropertyName;
+    /**
+     * Determines whether a field exposes an accessible mutator-method.
+     *
+     * <p>This method first retrieves the array of PropertyDescriptors, and turns it into a Stream. If any of the
+     * PropertyDescriptor-objects have the same name as the field, this method returns true. If not, this method returns
+     * false.</p>
+     *
+     * @apiNote In this context, an accessible mutator-method is any method which is public and adheres to the Java
+     *          Beans definition of a mutator.
+     *
+     * @param field The Field of which the method attempts to find a mutator-method.
+     * @return True, if the field exposes an accessible mutator, false otherwise.
+     * @throws IntrospectionException May be thrown whenever an Exception occurs during the introspection of the
+     *                                relevant bean.
+     */
+    private boolean hasAccessibleWriteMethod(final Field field) throws IntrospectionException {
+        return Arrays.stream(Introspector.getBeanInfo(field.getDeclaringClass()).getPropertyDescriptors())
+                .anyMatch(propertyDescriptor -> propertyDescriptor.getName().equals(field.getName()));
     }
 
 }

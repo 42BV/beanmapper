@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Issue [#130](https://github.com/42BV/beanmapper/issues/130) **@BeanConstruct does not map collection constructor arguments**; Added
   DefaultBeanInitializer#mapParameterizedArguments(Type[], Object[]), allowing BeanMapper to properly map constructor parameters with a type-parameter, when
   using the @BeanConstruct-annotation.
+- Issue [#132](https://github.com/42BV/beanmapper/issues/132) **Mapping the same field twice ignores one of the mappings.**; Whenever a field is mapped, a check
+  will be performed to detect field shadowing in this way. If field shadowing is detected, a FieldShadowingException is thrown. However, a
+  BeanProperty-annotation may take on the name of a field that is non-public and for which an accessor is not exposed.
 - Issue [#149](https://github.com/42BV/beanmapper/issues/149) **Support mapping of JDK 16+ records to classes.**; Added support for mapping record through the
   usual BeanMapper#map(Object, Class<?>)-method.
 - Issue [#152](https://github.com/42BV/beanmapper/issues/152) **Methods that return a Collection should never return null.**; All methods that return a
@@ -49,6 +52,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - MappingException, to serve as a common super-class for Exceptions thrown while mapping classes, and records.
 - Default values for Optional, List, Set and Map in the DefaultValues.
 - BeanMapper#map(Object, ParameterizedType), allowing for smarter mapping of collections and optionals.
+- BeanMatchStore#detectBeanPropertyFieldShadowing(PropertyAccessor, io.beanmapper.annotations.BeanProperty), which will throw a FieldShadowingException when
+  appropriate.
 
 ### Changed
 
