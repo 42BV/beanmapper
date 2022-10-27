@@ -211,8 +211,7 @@ class BeanMapperBuilderTest {
                 currentConfiguration.getStrictMappingProperties().getStrictSourceSuffix());
         assertEquals("Result",
                 currentConfiguration.getStrictMappingProperties().getStrictTargetSuffix());
-        assertEquals(true,
-                currentConfiguration.getStrictMappingProperties().isApplyStrictMappingConvention());
+        assertTrue(currentConfiguration.getStrictMappingProperties().isApplyStrictMappingConvention());
     }
 
     @Test
