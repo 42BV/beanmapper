@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- Issue [#130](https://github.com/42BV/beanmapper/issues/130) **@BeanConstruct does not map collection constructor arguments**; Added
+  DefaultBeanInitializer#mapParameterizedArguments(Type[], Object[]), allowing BeanMapper to properly map constructor parameters with a type-parameter, when
+  using the @BeanConstruct-annotation.
 - Issue [#152](https://github.com/42BV/beanmapper/issues/152) **Methods that return a Collection should never return null.**; All methods that return a
   Collection, will return an empty Collection of the target type, rather than returning null.
 - Issue [#153](https://github.com/42BV/beanmapper/issues/153) **https://github.com/42BV/beanmapper/issues/153**; Rather than using the Boolean-wrapper, all
