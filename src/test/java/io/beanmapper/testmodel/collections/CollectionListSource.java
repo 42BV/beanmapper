@@ -7,6 +7,6 @@ import io.beanmapper.testmodel.person.Person;
 
 public class CollectionListSource {
 
-    public Collection<Person> items = new ArrayList<Person>();
+    public Collection<Person> items = new ArrayList<>();
 
 }

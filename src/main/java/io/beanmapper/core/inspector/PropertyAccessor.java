@@ -72,4 +72,12 @@ public interface PropertyAccessor {
     Method getReadMethod();
 
     Method getWriteMethod();
+
+    /**
+     * Gets the class that declares the field/method this accessor applies to.
+     *
+     * @return The decalring class.
+     * @param <S> The type of the declaring class.
+     */
+    <S> Class<S> getDeclaringClass();
 }
