@@ -1,5 +1,6 @@
 package io.beanmapper;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -212,7 +213,6 @@ import io.beanmapper.testmodel.tostring.SourceWithNonString;
 import io.beanmapper.testmodel.tostring.TargetWithString;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class BeanMapperTest {
@@ -1774,9 +1774,9 @@ class BeanMapperTest {
         var result = this.beanMapper.map(collection, PersonResult.class);
         assertEquals(HashSet.class, result.getClass());
         assertEquals(3, result.size());
-        assertTrue(result.stream().filter(coll -> coll.name.equals("Henk")).toList().size() == 1);
-        assertTrue(result.stream().filter(coll -> coll.name.equals("Klaas")).toList().size() == 1);
-        assertTrue(result.stream().filter(coll -> coll.name.equals("Kees")).toList().size() == 1);
+        assertEquals(1, result.stream().filter(coll -> coll.name.equals("Henk")).toList().size());
+        assertEquals(1, result.stream().filter(coll -> coll.name.equals("Klaas")).toList().size());
+        assertEquals(1, result.stream().filter(coll -> coll.name.equals("Kees")).toList().size());
         assertTrue(result.stream().filter(coll -> coll.name.equals("Broheim")).toList().isEmpty());
     }
 
@@ -1843,6 +1843,28 @@ class BeanMapperTest {
         assertTrue(result.contains(42L));
         assertTrue(result.contains(21L));
         assertTrue(result.contains(12L));
+    }
+
+    @Test
+    void testMapArray() {
+        var stringArray = new String[] { "1", "2", "3" };
+        var numberArray = this.beanMapper.map(stringArray, Integer.class);
+        assertEquals(stringArray.length, numberArray.length);
+        assertArrayEquals(new Integer[] { 1, 2, 3 }, numberArray);
+    }
+
+    @Test
+    void testMapComplexObjectArrayToArray() {
+        var personFormArray = new Entity[] { new Entity(1L, "Henk", "Henk"), new Entity(2L, "Piet", "Piet"), new Entity(3L, "Klaas", "Klaas") };
+        var resultArray = this.beanMapper.wrap().setApplyStrictMappingConvention(false).build().map(personFormArray, ResultOne.class);
+
+        assertEquals(personFormArray.length, resultArray.length);
+        assertEquals(personFormArray[0].getName(), resultArray[0].getName());
+        assertEquals(personFormArray[1].getName(), resultArray[1].getName());
+        assertEquals(personFormArray[2].getName(), resultArray[2].getName());
+        assertEquals(personFormArray[0].getId(), resultArray[0].getId());
+        assertEquals(personFormArray[1].getId(), resultArray[1].getId());
+        assertEquals(personFormArray[2].getId(), resultArray[2].getId());
     }
 
     private MyEntity createMyEntity() {
