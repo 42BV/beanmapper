@@ -1,5 +1,7 @@
 package io.beanmapper;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +76,21 @@ public final class BeanMapper {
                 .setTargetClass(targetClass)
                 .build()
                 .map(source);
+    }
+
+    /**
+     * Maps the source array to an array with the type of the target class.
+     *
+     * @param sourceArray The source array.
+     * @param targetClass The class to which the elements from the source array will be converted to.
+     * @return A newly constructed array of the type of the target class.
+     * @param <S> The type of the elements in the source array.
+     * @param <T> The type of the elements in the target array.
+     */
+    public <S, T> T[] map(S[] sourceArray, Class<T> targetClass) {
+        return Arrays.stream(sourceArray)
+                .map(element -> this.wrap().setConverterChoosable(true).build().map(element, targetClass))
+                .toArray(element -> (T[]) Array.newInstance(targetClass, sourceArray.length));
     }
 
     /**

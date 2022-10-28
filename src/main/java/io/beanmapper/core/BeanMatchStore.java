@@ -30,7 +30,12 @@ import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.exceptions.BeanMissingPathException;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class BeanMatchStore {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final CollectionHandlerStore collectionHandlerStore;
 
@@ -269,7 +274,11 @@ public class BeanMatchStore {
                         new BeanPropertyCreator(matchupDirection.getInverse(), otherType, wrapper.getName())
                                 .determineNodesForPath());
             } catch (BeanNoSuchPropertyException err) {
-                // Acceptable, might have been tagged as @BeanProperty as well
+                if (logger.isDebugEnabled()) {
+                    logger.debug("""
+                            BeanNoSuchPropertyException thrown by BeanMatchStore#dealWithBeanProperty(BeanPropertyMatchupDirection, Map<String, BeanProperty>, Class, PropertyAccessor), for {}.
+                            {}""", accessor.getName(), err.getMessage());
+                }
             }
         }
         return wrapper;
