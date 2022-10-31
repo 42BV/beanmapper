@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Issue [#153](https://github.com/42BV/beanmapper/issues/153) **https://github.com/42BV/beanmapper/issues/153**; Rather than using the Boolean-wrapper, all
   occurrences of Boolean that are not absolutely necessary due to generics, have been replaced with the primitive boolean, or the
   FlushAfterClearInstruction-enum.
+- Issue [#166](https://github.com/42BV/beanmapper/issues/166) **Source with BeanAlias-annotated fields cannot be downsized.**; Modified
+  ClassGenerator#createClass, to check whether a generated field is annotated with BeanAlias. If so, the name of the generated field will be set to the value on
+  the BeanAlias-annotation, and the annotation will be removed from the generated field.
 
 ### Added
 
