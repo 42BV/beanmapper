@@ -27,6 +27,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Issue [#166](https://github.com/42BV/beanmapper/issues/166) **Source with BeanAlias-annotated fields cannot be downsized.**; Modified
   ClassGenerator#createClass, to check whether a generated field is annotated with BeanAlias. If so, the name of the generated field will be set to the value on
   the BeanAlias-annotation, and the annotation will be removed from the generated field.
+- Issue [#168](https://github.com/42BV/beanmapper/issues/168) **ClassGeneratorTest#shouldNotFailConcurrently always succeeds.**; By catching Throwable, and
+  saving Throwable in the List, rather than exception, the test should work correctly, and fail when it should.
 
 ### Added
 
