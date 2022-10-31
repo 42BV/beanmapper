@@ -2,6 +2,7 @@ package io.beanmapper.dynclass;
 
 import java.util.Map;
 
+import io.beanmapper.annotations.BeanAlias;
 import io.beanmapper.annotations.BeanCollection;
 import io.beanmapper.config.StrictMappingProperties;
 import io.beanmapper.core.BeanMatchStore;
@@ -58,6 +59,13 @@ public class ClassGenerator {
 
                 // Field must be included -> copy field with related methods
                 CtField generatedField = new CtField(baseField, dynClass);
+                // If the basefield is annotated with BeanAlias, we set the name of the generated field to the value set
+                // on the annotation, and remove the annotation from the generated field.
+                if (baseField.hasAnnotation(BeanAlias.class)) {
+                    generatedField.setName(((BeanAlias) baseField.getAnnotation(BeanAlias.class)).value());
+                    ((AnnotationsAttribute) generatedField.getFieldInfo().getAttribute(AnnotationsAttribute.visibleTag))
+                            .removeAnnotation(BeanAlias.class.getName());
+                }
                 dynClass.addField(generatedField);
 
                 CtMethod readMethod = null;
