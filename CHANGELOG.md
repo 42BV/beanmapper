@@ -21,7 +21,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   using the @BeanConstruct-annotation.
 - Issue [#132](https://github.com/42BV/beanmapper/issues/132) **Mapping the same field twice ignores one of the mappings.**; Whenever a field is mapped, a check
   will be performed to detect field shadowing in this way. If field shadowing is detected, a FieldShadowingException is thrown. However, a
-  BeanProperty-annotation may take on the name of a field that is non-public and for which an accessor is not exposed.
+  BeanProperty-annotation may take on the name of a field that is non-public and for which an accessor is not exposed. Fields annotated with BeanIgnore are not
+  considered when checking for shadowing.
 - Issue [#149](https://github.com/42BV/beanmapper/issues/149) **Support mapping of JDK 16+ records to classes.**; Added support for mapping record through the
   usual BeanMapper#map(Object, Class<?>)-method.
 - Issue [#152](https://github.com/42BV/beanmapper/issues/152) **Methods that return a Collection should never return null.**; All methods that return a

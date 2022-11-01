@@ -143,10 +143,9 @@ public class MethodPropertyAccessor implements PropertyAccessor {
      */
     @Override
     public <S> Class<S> getDeclaringClass() {
-        try {
-            return (Class<S>) Class.forName(this.descriptor.getName());
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        Method accessor = this.isReadable()
+                ? this.getReadMethod()
+                : this.getWriteMethod();
+        return (Class<S>) accessor.getDeclaringClass();
     }
 }
