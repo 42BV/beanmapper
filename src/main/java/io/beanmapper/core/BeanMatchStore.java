@@ -320,6 +320,7 @@ public class BeanMatchStore {
         for (var field : fields) {
             var fieldName = field.getName();
             if (!fieldName.equals(accessor.getName())
+                    && !field.isAnnotationPresent(BeanIgnore.class)
                     && fieldName.equals(beanPropertyName)
                     && (Modifier.isPublic(field.getModifiers())
                     || hasAccessibleWriteMethod(field))) {
