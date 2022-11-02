@@ -1,5 +1,6 @@
 package io.beanmapper.config;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -447,4 +448,25 @@ public interface Configuration {
      * @param <V> The type of the associated value.
      */
     <T, V> V getDefaultValueForClass(Class<T> targetClass);
+
+    /**
+     * Allows the user to set a default value for a specified Field.
+     *
+     * <p>By default the default value set for a field is only used if the field is annotated with
+     * {@link io.beanmapper.annotations.BeanDefault}, and if the field does not have a value during mapping.</p>
+     *
+     * @param field The Field for which a default value will be registered.
+     * @param value The default value that will be registered for the given Field.
+     * @param <V> The type of the default value.
+     */
+    <V> void addDefaultValueForField(Field field, V value);
+
+    /**
+     * Allows the user to get the default value for the given Field.
+     *
+     * @param field The Field for which the default value should be retrieved.
+     * @return The default value set for the specified field, or null if no default is set.
+     * @param <V> The type of the default value.
+     */
+    <V> V getDefaultValueForField(Field field);
 }

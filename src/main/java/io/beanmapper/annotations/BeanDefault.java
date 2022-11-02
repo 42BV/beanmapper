@@ -13,6 +13,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BeanDefault {
 
+    /**
+     * @deprecated
+     */
+    @Deprecated(since = "v4.1.0", forRemoval = true)
     String value();
 
 }

@@ -4,6 +4,7 @@
 package io.beanmapper.core.inspector;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
@@ -80,4 +81,6 @@ public interface PropertyAccessor {
      * @param <S> The type of the declaring class.
      */
     <S> Class<S> getDeclaringClass();
+
+    Field getField();
 }

@@ -3,8 +3,8 @@ package io.beanmapper.core;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
-import io.beanmapper.annotations.BeanDefault;
 import io.beanmapper.annotations.LogicSecuredCheck;
+import io.beanmapper.config.Configuration;
 import io.beanmapper.config.RoleSecuredCheck;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
 import io.beanmapper.exceptions.BeanMappingException;
@@ -144,16 +144,16 @@ public class BeanPropertyMatch {
         return beanProperty.getAccessor().isAnnotationPresent(annotationClass);
     }
 
-    public Object getSourceDefaultValue() {
-        return getDefaultValue(sourceBeanProperty);
+    public Object getSourceDefaultValue(Configuration configuration) {
+        return getDefaultValue(configuration, sourceBeanProperty);
     }
 
-    public Object getTargetDefaultValue() {
-        return getDefaultValue(targetBeanProperty);
+    public Object getTargetDefaultValue(Configuration configuration) {
+        return getDefaultValue(configuration, targetBeanProperty);
     }
 
-    protected Object getDefaultValue(BeanProperty beanProperty) {
-        return beanProperty.getAccessor().findAnnotation(BeanDefault.class).value();
+    protected Object getDefaultValue(Configuration configuration, BeanProperty beanProperty) {
+        return configuration.getDefaultValueForField(beanProperty.getAccessor().getField());
     }
 
     public void writeObject(Object value) throws BeanMappingException {

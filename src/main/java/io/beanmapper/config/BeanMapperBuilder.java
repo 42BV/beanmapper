@@ -1,5 +1,6 @@
 package io.beanmapper.config;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +28,7 @@ import io.beanmapper.core.converter.impl.StringToBooleanConverter;
 import io.beanmapper.core.converter.impl.StringToIntegerConverter;
 import io.beanmapper.core.converter.impl.StringToLongConverter;
 import io.beanmapper.core.unproxy.BeanUnproxy;
+import io.beanmapper.exceptions.BeanConfigurationException;
 
 public class BeanMapperBuilder {
 
@@ -211,6 +213,56 @@ public class BeanMapperBuilder {
     public <T, V> BeanMapperBuilder addCustomDefaultValue(Class<T> targetClass, V value) {
         this.configuration.addCustomDefaultValueForClass(targetClass, value);
         return this;
+    }
+
+    /**
+     * Adds a default value for the specified class to the configuration.
+     *
+     * <p>The default value is used in cases where a field is mapped with the
+     * {@link io.beanmapper.annotations.BeanDefault}-annotation, and no value is found for the target while mapping.</p>
+     *
+     * @param field The field for which a default will be registered.
+     * @param value The value of the default.
+     * @return This instance.
+     * @param <V> The type of the default value.
+     */
+    public <V> BeanMapperBuilder addDefaultValueForField(Field field, V value) {
+        if (value != null && !field.getType().isAssignableFrom(value.getClass())) {
+            throw new IllegalArgumentException(
+                    "Exception thrown while attempting to set a default value for field %s.%s.%nValue of type %s is not an instance of type %s.".formatted(
+                            field.getDeclaringClass().getName(), field.getName(), value.getClass(), field.getType()));
+        }
+        this.configuration.addDefaultValueForField(field, value);
+        return this;
+    }
+
+    /**
+     * Adds a default value for the field in the source-class, with the specified name.
+     *
+     * <p>This method serves as a convenience-operator for users who would prefer not to handle reflection themselves.
+     * </p>
+     * <p>This method may throw a {@link BeanConfigurationException} when the source-class does not contain a field with
+     * the specified name, or if the specified value's type is incompatible with the type of the Field in the target.
+     * </p>
+     *
+     * @param sourceClass The class that will be used to find the Field with the specified field-name.
+     * @param fieldName The field-name that will be used to find the relevant Field.
+     * @param value The value that will be set as the default value for the field with the specified name, in the
+     *              specified class.
+     * @return This instance.
+     * @param <S> The type of the source-class.
+     * @param <V> The type of the default value.
+     */
+    public <S, V> BeanMapperBuilder addDefaultValueForField(Class<S> sourceClass, String fieldName, V value) {
+        Field field;
+        try {
+            field = sourceClass.getDeclaredField(fieldName);
+            return this.addDefaultValueForField(field, value);
+        } catch (NoSuchFieldException e) {
+            throw new BeanConfigurationException("Could not find field %s.%s%n%s".formatted(sourceClass.getName(), fieldName, e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            throw new BeanConfigurationException("", e);
+        }
     }
 
     public BeanMapper build() {

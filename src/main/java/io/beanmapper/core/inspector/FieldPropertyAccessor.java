@@ -135,4 +135,12 @@ public class FieldPropertyAccessor implements PropertyAccessor {
     public <S> Class<S> getDeclaringClass() {
         return (Class<S>) this.field.getDeclaringClass();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Field getField() {
+        return this.field;
+    }
 }

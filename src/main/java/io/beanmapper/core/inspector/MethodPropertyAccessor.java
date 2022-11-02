@@ -5,6 +5,7 @@ package io.beanmapper.core.inspector;
 
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -147,5 +148,17 @@ public class MethodPropertyAccessor implements PropertyAccessor {
                 ? this.getReadMethod()
                 : this.getWriteMethod();
         return (Class<S>) accessor.getDeclaringClass();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Field getField() {
+        try {
+            return this.getDeclaringClass().getDeclaredField(this.getName());
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

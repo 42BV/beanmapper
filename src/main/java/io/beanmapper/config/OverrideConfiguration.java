@@ -1,5 +1,6 @@
 package io.beanmapper.config;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -54,7 +55,9 @@ public class OverrideConfiguration implements Configuration {
 
     private final OverrideField<Boolean> flushEnabled;
 
-    private final Map<Class<?>, Object> customDefaultValues;
+    private final Map<Class<?>, Object> customDefaultsForClassMap;
+
+    private final Map<Field, Object> customDefaultsForFieldMap;
 
     public OverrideConfiguration(Configuration configuration) {
         if (configuration == null) {
@@ -71,7 +74,8 @@ public class OverrideConfiguration implements Configuration {
         this.useNullValue = new OverrideField<>(configuration::getUseNullValue);
         this.strictMappingProperties = new OverrideField<>(configuration::getStrictMappingProperties);
         this.enforcedSecuredProperties = new OverrideField<>(configuration::getEnforceSecuredProperties);
-        this.customDefaultValues = new HashMap<>();
+        this.customDefaultsForClassMap = new HashMap<>();
+        this.customDefaultsForFieldMap = new HashMap<>();
     }
 
     @Override
@@ -416,7 +420,7 @@ public class OverrideConfiguration implements Configuration {
      */
     @Override
     public <T, V> void addCustomDefaultValueForClass(Class<T> target, V value) {
-        this.customDefaultValues.put(target, value);
+        this.customDefaultsForClassMap.put(target, value);
     }
 
     /**
@@ -424,9 +428,26 @@ public class OverrideConfiguration implements Configuration {
      */
     @Override
     public <T, V> V getDefaultValueForClass(Class<T> targetClass) {
-        return this.customDefaultValues.containsKey(targetClass)
-                ? (V) this.customDefaultValues.get(targetClass)
+        return this.customDefaultsForClassMap.containsKey(targetClass)
+                ? (V) this.customDefaultsForClassMap.get(targetClass)
                 : this.parentConfiguration.getDefaultValueForClass(targetClass);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <V> void addDefaultValueForField(Field field, V value) {
+        this.customDefaultsForFieldMap.put(field, value);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <V> V getDefaultValueForField(Field field) {
+        var value = this.customDefaultsForFieldMap.get(field);
+        return value == null ? this.parentConfiguration.getDefaultValueForField(field) : (V) value;
     }
 
 }

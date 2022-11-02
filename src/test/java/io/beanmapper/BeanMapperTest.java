@@ -747,6 +747,13 @@ class BeanMapperTest {
 
     @Test
     void beanDefault() {
+        this.beanMapper = this.beanMapper.wrap()
+                .addDefaultValueForField(SourceWithDefaults.class, "bothDefault", "bothdefault2")
+                .addDefaultValueForField(TargetWithDefaults.class, "bothDefault", "bothdefault2")
+                .addDefaultValueForField(SourceWithDefaults.class, "sourceDefault", "sourcedefault")
+                .addDefaultValueForField(TargetWithDefaults.class, "targetDefault", "targetdefault")
+                .addDefaultValueForField(TargetWithDefaults.class, "targetDefaultWithoutMatch", "targetdefaultwithoutmatch")
+                .build();
         SourceWithDefaults source = new SourceWithDefaults();
         source.setNoDefault("value1");
         source.setTargetDefaultWithValue("value2");

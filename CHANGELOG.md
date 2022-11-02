@@ -65,6 +65,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - @BeanAlias now applicable to RecordComponent.
 - Expanded the use of type parameters to various methods throughout the library, including the BeanMapper-class.
 - BeanConverters may be offered null-values now. Will default to returning the default value for the relevant type.
+- @BeanDefault should only be used to indicate which fields should attempt to use a default value registered to the configuration, for that specific
+  Field-object.
+
+### Deprecated
+
+- BeanDefault#value() has been deprecated, in favour of in-memory configuration of defaults for Field-objects.
 
 ### Removed
 

@@ -148,4 +148,14 @@ public class CombinedPropertyAccessor implements PropertyAccessor {
             return this.methodAccessor.getDeclaringClass();
         return null;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Field getField() {
+        return this.fieldAccessor != null
+                ? this.fieldAccessor.getField()
+                : this.methodAccessor.getField();
+    }
 }

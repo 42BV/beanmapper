@@ -86,9 +86,9 @@ public abstract class AbstractMapStrategy implements MapStrategy {
 
         if (copyableSource == null) {
             if (beanPropertyMatch.targetHasAnnotation(BeanDefault.class)) {
-                copyableSource = beanPropertyMatch.getTargetDefaultValue();
+                copyableSource = beanPropertyMatch.getTargetDefaultValue(this.configuration);
             } else if (beanPropertyMatch.sourceHasAnnotation(BeanDefault.class)) {
-                copyableSource = beanPropertyMatch.getSourceDefaultValue();
+                copyableSource = beanPropertyMatch.getSourceDefaultValue(this.configuration);
             }
         }
 
@@ -248,7 +248,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
      */
     private void dealWithNonMatchingNode(BeanPropertyMatch beanPropertyMatch) {
         if (beanPropertyMatch.targetHasAnnotation(BeanDefault.class)) {
-            beanPropertyMatch.setTarget(beanPropertyMatch.getTargetDefaultValue());
+            beanPropertyMatch.setTarget(beanPropertyMatch.getTargetDefaultValue(this.configuration));
         } else if (beanPropertyMatch.targetHasAnnotation(BeanProperty.class)) {
             throw new BeanPropertyNoMatchException(beanPropertyMatch.getTargetClass(), beanPropertyMatch.getTargetFieldName());
         }
