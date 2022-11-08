@@ -1,15 +1,15 @@
 package io.beanmapper.testmodel.record;
 
-import io.beanmapper.annotations.RecordConstruct;
+import io.beanmapper.annotations.BeanRecordConstruct;
 
 public record PersonRecord(int id, String name) {
 
-    @RecordConstruct(value = "name")
+    @BeanRecordConstruct(value = "name")
     public PersonRecord(String name) {
         this(1, name);
     }
 
-    @RecordConstruct(value = {"name", "id"})
+    @BeanRecordConstruct(value = { "name", "id" })
     public PersonRecord(String name, int id) {
         this(id, name);
     }

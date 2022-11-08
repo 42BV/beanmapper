@@ -52,16 +52,16 @@ public class OverrideConfigurationTest {
     @Test
     void mustFlush() {
         overrideConfiguration.setFlushEnabled(true);
-        overrideConfiguration.setFlushAfterClear(FlushAfterClearInstruction.FLUSH_ENABLED);
+        overrideConfiguration.setFlushAfterClear(Trinary.ENABLED);
         assertTrue(overrideConfiguration.isFlushEnabled());
-        assertEquals(FlushAfterClearInstruction.FLUSH_ENABLED, overrideConfiguration.isFlushAfterClear());
+        assertEquals(Trinary.ENABLED, overrideConfiguration.isFlushAfterClear());
         assertTrue(overrideConfiguration.mustFlush());
     }
 
     @Test
     void mustFlush_flushAfterClearIsFalse() {
         overrideConfiguration.setFlushEnabled(true);
-        overrideConfiguration.setFlushAfterClear(FlushAfterClearInstruction.FLUSH_DISABLED);
+        overrideConfiguration.setFlushAfterClear(Trinary.DISABLED);
         assertFalse(overrideConfiguration.mustFlush());
     }
 

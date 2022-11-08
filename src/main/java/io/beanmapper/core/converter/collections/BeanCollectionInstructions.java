@@ -3,7 +3,7 @@ package io.beanmapper.core.converter.collections;
 import static io.beanmapper.core.converter.collections.AnnotationClass.EMPTY_ANNOTATION_CLASS;
 
 import io.beanmapper.annotations.BeanCollectionUsage;
-import io.beanmapper.config.FlushAfterClearInstruction;
+import io.beanmapper.config.Trinary;
 import io.beanmapper.core.BeanProperty;
 
 public class BeanCollectionInstructions {
@@ -14,7 +14,7 @@ public class BeanCollectionInstructions {
 
     private AnnotationClass preferredCollectionClass = EMPTY_ANNOTATION_CLASS;
 
-    private FlushAfterClearInstruction flushAfterClear;
+    private Trinary flushAfterClear;
 
     public static BeanCollectionInstructions merge(
             BeanProperty sourceBeanProperty,
@@ -113,12 +113,12 @@ public class BeanCollectionInstructions {
         this.preferredCollectionClass = preferredCollectionClass;
     }
 
-    public FlushAfterClearInstruction getFlushAfterClear() {
+    public Trinary getFlushAfterClear() {
         return flushAfterClear;
     }
 
-    public void setFlushAfterClear(FlushAfterClearInstruction flushAfterClear) {
-        this.flushAfterClear = flushAfterClear != FlushAfterClearInstruction.UNSET ? flushAfterClear : FlushAfterClearInstruction.FLUSH_ENABLED;
+    public void setFlushAfterClear(Trinary flushAfterClear) {
+        this.flushAfterClear = flushAfterClear != Trinary.UNSET ? flushAfterClear : Trinary.ENABLED;
     }
 
 }

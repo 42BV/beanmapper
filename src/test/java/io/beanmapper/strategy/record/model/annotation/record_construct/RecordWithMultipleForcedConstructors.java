@@ -1,17 +1,17 @@
 package io.beanmapper.strategy.record.model.annotation.record_construct;
 
-import io.beanmapper.annotations.RecordConstruct;
-import io.beanmapper.annotations.RecordConstructMode;
+import io.beanmapper.annotations.BeanRecordConstruct;
+import io.beanmapper.annotations.BeanRecordConstructMode;
 
 public record RecordWithMultipleForcedConstructors(int id, String name) {
 
-    @RecordConstruct(constructMode = RecordConstructMode.FORCE)
+    @BeanRecordConstruct(constructMode = BeanRecordConstructMode.FORCE)
     public RecordWithMultipleForcedConstructors {
     }
 
-    @RecordConstruct(constructMode = RecordConstructMode.FORCE)
+    @BeanRecordConstruct(constructMode = BeanRecordConstructMode.FORCE)
     public RecordWithMultipleForcedConstructors() {
         this(42, "Henk");
     }
-    
+
 }

@@ -18,8 +18,8 @@ import java.util.stream.Stream;
 
 import io.beanmapper.BeanMapper;
 import io.beanmapper.annotations.BeanAlias;
-import io.beanmapper.annotations.RecordConstruct;
-import io.beanmapper.annotations.RecordConstructMode;
+import io.beanmapper.annotations.BeanRecordConstruct;
+import io.beanmapper.annotations.BeanRecordConstructMode;
 import io.beanmapper.config.Configuration;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.exceptions.BeanInstantiationException;
@@ -141,8 +141,8 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
      * @param <T> The type of the target class.
      */
     private <T> String[] getNamesOfConstructorParameters(final Class<T> targetClass, final Constructor<T> constructor) {
-        if (constructor.isAnnotationPresent(RecordConstruct.class)) {
-            return constructor.getAnnotation(RecordConstruct.class).value();
+        if (constructor.isAnnotationPresent(BeanRecordConstruct.class)) {
+            return constructor.getAnnotation(BeanRecordConstruct.class).value();
         }
 
         // We can only use this in cases where the compiler added the parameter-name to the classfile. If the name is
@@ -212,7 +212,7 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
     private <T> Constructor<?> getSuitableConstructor(final Map<String, Field> sourceFields, final Class<T> targetClass) {
         List<Constructor<T>> constructors = new ArrayList<>(Records.getConstructorsAnnotatedWithRecordConstruct(targetClass));
         List<Constructor<T>> mandatoryConstructor = constructors.stream()
-                .filter(constructor -> constructor.getAnnotation(RecordConstruct.class).constructMode() == RecordConstructMode.FORCE)
+                .filter(constructor -> constructor.getAnnotation(BeanRecordConstruct.class).constructMode() == BeanRecordConstructMode.FORCE)
                 .toList();
         if (!mandatoryConstructor.isEmpty()) {
             if (mandatoryConstructor.size() > 1) {
@@ -228,9 +228,9 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
             return getConstructorWithMostMatchingParameters(constructors, sourceFields).orElse(Records.getCanonicalConstructorOfRecord((Class) targetClass));
         }
         var canonicalConstructor = Records.getCanonicalConstructorOfRecord((Class) targetClass);
-        if (canonicalConstructor.isAnnotationPresent(RecordConstruct.class)) {
-            var recordConstruct = (RecordConstruct) canonicalConstructor.getAnnotation(RecordConstruct.class);
-            if (recordConstruct.constructMode() == RecordConstructMode.EXCLUDE)
+        if (canonicalConstructor.isAnnotationPresent(BeanRecordConstruct.class)) {
+            var recordConstruct = (BeanRecordConstruct) canonicalConstructor.getAnnotation(BeanRecordConstruct.class);
+            if (recordConstruct.constructMode() == BeanRecordConstructMode.EXCLUDE)
                 throw new RecordNoAvailableConstructorsExceptions((Class<? extends Record>) targetClass, "All available constructors have been "
                         + "annotated with @RecordConstruct(constructMode = RecordConstructMode.EXCLUDE). To enable mapping to the target record, please make at "
                         + "least one constructor available.");
@@ -241,7 +241,7 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
     private <T> Optional<Constructor<T>> getConstructorWithMostMatchingParameters(final List<Constructor<T>> constructors,
             final Map<String, Field> sourceFields) {
         for (var constructor : constructors) {
-            RecordConstruct recordConstruct = constructor.getAnnotation(RecordConstruct.class);
+            BeanRecordConstruct recordConstruct = constructor.getAnnotation(BeanRecordConstruct.class);
             List<Field> relevantFields = Arrays.stream(recordConstruct.value())
                     .map(sourceFields::get)
                     .toList();

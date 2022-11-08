@@ -31,8 +31,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.config.AfterClearFlusher;
 import io.beanmapper.config.BeanMapperBuilder;
-import io.beanmapper.config.FlushAfterClearInstruction;
 import io.beanmapper.config.RoleSecuredCheck;
+import io.beanmapper.config.Trinary;
 import io.beanmapper.core.BeanStrictMappingRequirementsException;
 import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
 import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
@@ -1375,7 +1375,7 @@ class BeanMapperTest {
                 .addAfterClearFlusher(afterClearFlusher)
                 .build().wrap()
                 .setFlushEnabled(true)
-                .setFlushAfterClear(FlushAfterClearInstruction.FLUSH_ENABLED)
+                .setFlushAfterClear(Trinary.ENABLED)
                 .build();
         CollSourceClearFlush source = new CollSourceClearFlush() {{
             items.add("A");

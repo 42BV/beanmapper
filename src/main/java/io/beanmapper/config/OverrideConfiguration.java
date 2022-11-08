@@ -30,7 +30,7 @@ public class OverrideConfiguration implements Configuration {
 
     private final OverrideField<List<String>> downsizeTargetFields;
 
-    private Class targetClass;
+    private Class<?> targetClass;
 
     private Object target;
 
@@ -50,7 +50,7 @@ public class OverrideConfiguration implements Configuration {
 
     private final OverrideField<Boolean> useNullValue;
 
-    private final OverrideField<FlushAfterClearInstruction> flushAfterClear;
+    private final OverrideField<Trinary> flushAfterClear;
 
     private final OverrideField<Boolean> flushEnabled;
 
@@ -108,7 +108,7 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public Class getTargetClass() {
-        return targetClass;
+        return this.targetClass;
     }
 
     @Override
@@ -285,7 +285,7 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public FlushAfterClearInstruction isFlushAfterClear() {
+    public Trinary isFlushAfterClear() {
         return flushAfterClear.get();
     }
 
@@ -301,7 +301,7 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public boolean mustFlush() {
-        return isFlushEnabled() && isFlushAfterClear() == FlushAfterClearInstruction.FLUSH_ENABLED;
+        return isFlushEnabled() && isFlushAfterClear() == Trinary.ENABLED;
     }
 
     @Override
@@ -407,7 +407,7 @@ public class OverrideConfiguration implements Configuration {
     }
 
     @Override
-    public void setFlushAfterClear(FlushAfterClearInstruction flushAfterClear) {
+    public void setFlushAfterClear(Trinary flushAfterClear) {
         this.flushAfterClear.set(flushAfterClear);
     }
 

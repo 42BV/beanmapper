@@ -1,11 +1,11 @@
 package io.beanmapper.testmodel.record;
 
-import io.beanmapper.annotations.RecordConstruct;
-import io.beanmapper.annotations.RecordConstructMode;
+import io.beanmapper.annotations.BeanRecordConstruct;
+import io.beanmapper.annotations.BeanRecordConstructMode;
 
 public record TargetRecordAllowsNull(String name, int id, int age) {
 
-    @RecordConstruct(value = { "name", "id", "age" }, allowNull = true, constructMode = RecordConstructMode.FORCE)
+    @BeanRecordConstruct(value = { "name", "id", "age" }, allowNull = true, constructMode = BeanRecordConstructMode.FORCE)
     public TargetRecordAllowsNull {
     }
 

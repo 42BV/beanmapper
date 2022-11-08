@@ -184,7 +184,7 @@ public class BeanMapperBuilder {
         return this;
     }
 
-    public BeanMapperBuilder setFlushAfterClear(FlushAfterClearInstruction flushAfterClear) {
+    public BeanMapperBuilder setFlushAfterClear(Trinary flushAfterClear) {
         this.configuration.setFlushAfterClear(flushAfterClear);
         return this;
     }

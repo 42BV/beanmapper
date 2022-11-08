@@ -5,8 +5,8 @@ import java.lang.reflect.RecordComponent;
 import java.util.Arrays;
 import java.util.Collection;
 
-import io.beanmapper.annotations.RecordConstruct;
-import io.beanmapper.annotations.RecordConstructMode;
+import io.beanmapper.annotations.BeanRecordConstruct;
+import io.beanmapper.annotations.BeanRecordConstructMode;
 import io.beanmapper.exceptions.RecordConstructorNotFoundException;
 
 /**
@@ -66,16 +66,16 @@ public final class Records {
     }
 
     /**
-     * Gets all constructors of the target record, annotated with {@link RecordConstruct @RecordConstruct}, without the option
-     * constructMode = {@link RecordConstructMode#EXCLUDE}.
+     * Gets all constructors of the target record, annotated with {@link BeanRecordConstruct @RecordConstruct}, without the option
+     * constructMode = {@link BeanRecordConstructMode#EXCLUDE}.
      * @param recordClass The record-class of which the constructors will be retrieved.
      * @return The collection of constructors annotated with the @RecordConstruct-annotation.
      * @param <R> The type of the record-class.
      */
     public static <R> Collection<Constructor<R>> getConstructorsAnnotatedWithRecordConstruct(Class<R> recordClass) {
         return Arrays.stream(recordClass.getConstructors())
-                .filter(constructor -> constructor.isAnnotationPresent(RecordConstruct.class)
-                        && constructor.getAnnotation(RecordConstruct.class).constructMode() != RecordConstructMode.EXCLUDE)
+                .filter(constructor -> constructor.isAnnotationPresent(BeanRecordConstruct.class)
+                        && constructor.getAnnotation(BeanRecordConstruct.class).constructMode() != BeanRecordConstructMode.EXCLUDE)
                 .map(constructor -> (Constructor<R>) constructor)
                 .toList();
     }

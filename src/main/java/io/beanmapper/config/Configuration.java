@@ -246,7 +246,7 @@ public interface Configuration {
      * collection has taken place.
      * @return true if the flush-chain must be called after a clear
      */
-    FlushAfterClearInstruction isFlushAfterClear();
+    Trinary isFlushAfterClear();
 
     /**
      * Determines if flushing has been enabled. Flushing is the calling of flush() on a collection
@@ -417,7 +417,7 @@ public interface Configuration {
      * Determines whether the flush-chain must be called after a clear has taken place.
      * @param flushAfterClear true if the flush-chain must be called
      */
-    void setFlushAfterClear(FlushAfterClearInstruction flushAfterClear);
+    void setFlushAfterClear(Trinary flushAfterClear);
 
     /**
      * Allows the user to set a default value for a given type.

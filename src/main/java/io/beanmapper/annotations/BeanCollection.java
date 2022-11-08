@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.beanmapper.config.FlushAfterClearInstruction;
+import io.beanmapper.config.Trinary;
 
 /**
  * Determines the type of the other side in a collection. When this annotation is set, beanmapper
@@ -55,6 +55,6 @@ public @interface BeanCollection {
      * original state being preserved.
      * @return Whether to flush the collection after clearing or not.
      */
-    FlushAfterClearInstruction flushAfterClear() default FlushAfterClearInstruction.FLUSH_ENABLED;
+    Trinary flushAfterClear() default Trinary.ENABLED;
 
 }

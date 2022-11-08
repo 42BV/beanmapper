@@ -25,27 +25,29 @@ import io.beanmapper.exceptions.RecordNoAvailableConstructorsExceptions;
  * especially useful in cases where BeanMapper should only use a specific constructor, or should exclude certain
  * from consideration.</p>
  *
- * @apiNote <p>Annotating multiple constructors with the {@link RecordConstructMode#FORCE}-option will lead to a
+ * @apiNote <p>Annotating multiple constructors with the {@link BeanRecordConstructMode#FORCE}-option will lead to a
  * {@link RecordConstructorConflictException} being thrown.</p>
  *
- * <p>Annotating a single constructor with {@link RecordConstructMode#FORCE}, and (an)other constructor(s) with
- * {@link RecordConstructMode#ON_DEMAND} will always result in the constructor annotated with the
+ * <p>Annotating a single constructor with {@link BeanRecordConstructMode#FORCE}, and (an)other constructor(s) with
+ * {@link BeanRecordConstructMode#ON_DEMAND} will always result in the constructor annotated with the
  * RecordConstructMode.FORCE-option being used. This will, however, not throw an Exception, as it will not cause any
  * issues for BeanMapper.</p>
  *
- * <p>Annotating a constructor with the {@link RecordConstructMode#EXCLUDE}-option, will actively exclude that
+ * <p>Annotating a constructor with the {@link BeanRecordConstructMode#EXCLUDE}-option, will actively exclude that
  * constructor from consideration.</p>
  *
  * <p>Annotating all constructors with the RecordConstructMode.EXCLUDE-option, will result in a
  * {@link RecordNoAvailableConstructorsExceptions} being thrown.</p>
  *
- * @see RecordConstructMode
+ * <p></p>
+ *
+ * @see BeanRecordConstructMode
  * @see io.beanmapper.strategy.MapToRecordStrategy
  * @see io.beanmapper.utils.Records
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.CONSTRUCTOR })
-public @interface RecordConstruct {
+public @interface BeanRecordConstruct {
 
     /**
      * Should contain the names of the fields that need to be used to invoke the constructor.
@@ -54,7 +56,7 @@ public @interface RecordConstruct {
      */
     String[] value() default "";
 
-    RecordConstructMode constructMode() default RecordConstructMode.ON_DEMAND;
+    BeanRecordConstructMode constructMode() default BeanRecordConstructMode.ON_DEMAND;
 
     boolean allowNull() default false;
 

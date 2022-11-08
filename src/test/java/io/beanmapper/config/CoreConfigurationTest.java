@@ -59,7 +59,7 @@ class CoreConfigurationTest {
         assertNull(configuration.getCollectionClass());
         assertNull(configuration.getPreferredCollectionClass());
         assertNull(configuration.getCollectionHandlerForCollectionClass());
-        assertEquals(FlushAfterClearInstruction.FLUSH_DISABLED, configuration.isFlushAfterClear());
+        assertEquals(Trinary.DISABLED, configuration.isFlushAfterClear());
         assertFalse(configuration.mustFlush());
     }
 

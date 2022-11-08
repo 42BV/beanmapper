@@ -3,17 +3,14 @@
  */
 package io.beanmapper.core.constructor;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
 
 import io.beanmapper.BeanMapper;
 import io.beanmapper.config.BeanMapperBuilder;
-import io.beanmapper.exceptions.BeanInstantiationException;
 import io.beanmapper.strategy.ConstructorArguments;
 import io.beanmapper.utils.DefaultValues;
 
@@ -36,26 +33,20 @@ public class DefaultBeanInitializer implements BeanInitializer {
             var constructor = beanClass.getConstructor(arguments.getTypes());
             var constructorParameterTypes = Arrays.stream(constructor.getParameters()).map(Parameter::getParameterizedType).toArray(Type[]::new);
             return beanClass.getConstructor(arguments.getTypes()).newInstance(mapParameterizedArguments(constructorParameterTypes, arguments.getValues()));
-        } catch (NoSuchMethodException e) {
-            logger.debug(e.getMessage());
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            logger.error("Could not instantiate bean of class %s. Returning the default value associated with the given type. %s".formatted(beanClass.getName(),
+                    e.getMessage()));
             return DefaultValues.defaultValueFor(beanClass);
-
-        } catch (Exception e) {
-            throw new BeanInstantiationException(beanClass, e);
         }
     }
 
     private Object[] mapParameterizedArguments(Type[] constructorParameterTypes, Object[] arguments) {
-        BeanMapper beanMapper = new BeanMapperBuilder().build();
+        final BeanMapper beanMapper = new BeanMapperBuilder().build();
         Object[] mappedArguments = new Object[arguments.length];
         for (var i = 0; i < arguments.length; ++i) {
             var argument = arguments[i];
-            if (argument instanceof Collection<?> collection) {
-                argument = beanMapper.map(collection, (ParameterizedType) constructorParameterTypes[i]);
-            } else if (argument instanceof Map<?, ?> map) {
-                argument = beanMapper.map(map, (ParameterizedType) constructorParameterTypes[i]);
-            } else if (argument instanceof Optional<?> optional) {
-                argument = beanMapper.map(optional, (ParameterizedType) constructorParameterTypes[i]);
+            if (argument.getClass().getTypeParameters().length > 0) {
+                argument = beanMapper.map(argument, (ParameterizedType) constructorParameterTypes[i]);
             }
             mappedArguments[i] = argument;
         }

@@ -1,11 +1,11 @@
 package io.beanmapper.testmodel.record;
 
-import io.beanmapper.annotations.RecordConstruct;
-import io.beanmapper.annotations.RecordConstructMode;
+import io.beanmapper.annotations.BeanRecordConstruct;
+import io.beanmapper.annotations.BeanRecordConstructMode;
 
 public record PersonResultRecord(int id, String name) {
 
-    @RecordConstruct(value = { "id", "name" }, constructMode = RecordConstructMode.FORCE)
+    @BeanRecordConstruct(value = { "id", "name" }, constructMode = BeanRecordConstructMode.FORCE)
     public PersonResultRecord {
     }
 

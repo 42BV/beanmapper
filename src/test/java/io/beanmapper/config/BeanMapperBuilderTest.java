@@ -50,7 +50,7 @@ class BeanMapperBuilderTest {
     void setFlushAfterClear() {
         assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
             BeanMapperBuilder builder = new BeanMapperBuilder();
-            builder.setFlushAfterClear(FlushAfterClearInstruction.FLUSH_ENABLED);
+            builder.setFlushAfterClear(Trinary.ENABLED);
         });
     }
 
