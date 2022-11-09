@@ -25,7 +25,7 @@ import io.beanmapper.exceptions.RecordNoAvailableConstructorsExceptions;
  * especially useful in cases where BeanMapper should only use a specific constructor, or should exclude certain
  * from consideration.</p>
  *
- * @apiNote <p>Annotating multiple constructors with the {@link BeanRecordConstructMode#FORCE}-option will lead to a
+ * <p>Annotating multiple constructors with the {@link BeanRecordConstructMode#FORCE}-option will lead to a
  * {@link RecordConstructorConflictException} being thrown.</p>
  *
  * <p>Annotating a single constructor with {@link BeanRecordConstructMode#FORCE}, and (an)other constructor(s) with

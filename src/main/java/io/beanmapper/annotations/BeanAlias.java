@@ -11,9 +11,9 @@ import java.lang.annotation.Target;
  *
  * <p>The BeanAlias-annotation works well in concert with the {@link BeanProperty}-annotation.</p>
  *
- * @apiNote While a target-class may contain field annotated with the BeanAlias-annotation, during mapping, those
- *          annotations will be ignored. For equivalent functionality on the target-side, use the
- *          BeanProperty-annotation on the relevant fields.
+ * While a target-class may contain field annotated with the BeanAlias-annotation, during mapping, those
+ * annotations will be ignored. For equivalent functionality on the target-side, use the
+ * BeanProperty-annotation on the relevant fields.
  * @see BeanProperty
  */
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.RECORD_COMPONENT })

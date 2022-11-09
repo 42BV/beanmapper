@@ -304,7 +304,7 @@ public class BeanMatchStore {
     /**
      * Detects whether a field annotated with the BeanProperty-annotation shadows an existing, accessible field.
      *
-     * @apiNote In this context, an accessible field is any field which is either public, or exposes a public
+     * In this context, an accessible field is any field which is either public, or exposes a public
      * accessor-method.
      *
      * @param accessor The accessor that can be used to access to the value within the field.
@@ -346,7 +346,7 @@ public class BeanMatchStore {
      * PropertyDescriptor-objects have the same name as the field, this method returns true. If not, this method returns
      * false.</p>
      *
-     * @apiNote In this context, an accessible mutator-method is any method which is public and adheres to the Java
+     * In this context, an accessible mutator-method is any method which is public and adheres to the Java
      *          Beans definition of a mutator.
      *
      * @param field The Field of which the method attempts to find a mutator-method.
