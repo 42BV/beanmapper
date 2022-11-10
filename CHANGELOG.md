@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [4.1.0] - 2022-11-10
+
 ### Updated
 
 - Upgraded JUnit 5.8.2 to 5.9.0
