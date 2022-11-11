@@ -10,6 +10,6 @@ public interface RoleSecuredCheck {
      * @param roles roles of which the Principal must have at least one
      * @return true if at least one role matches, false if not
      */
-    public boolean hasRole(String... roles);
+    boolean hasRole(String... roles);
 
 }
