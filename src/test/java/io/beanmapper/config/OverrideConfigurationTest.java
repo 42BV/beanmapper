@@ -12,6 +12,7 @@ import java.util.Queue;
 import io.beanmapper.BeanMapper;
 import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
+import io.beanmapper.exceptions.ParentConfigurationNullException;
 import io.beanmapper.strategy.ConstructorArguments;
 import io.beanmapper.utils.Trinary;
 
@@ -34,7 +35,7 @@ public class OverrideConfigurationTest {
 
     @Test
     void noParentConfig() {
-        assertThrows(ParentConfigurationPossiblyNullException.class, () -> new OverrideConfiguration(null));
+        assertThrows(ParentConfigurationNullException.class, () -> new OverrideConfiguration(null));
     }
 
     @Test

@@ -15,6 +15,7 @@ import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.dynclass.ClassStore;
 import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
+import io.beanmapper.exceptions.ParentConfigurationNullException;
 import io.beanmapper.utils.Trinary;
 
 public class OverrideConfiguration implements Configuration {
@@ -59,7 +60,7 @@ public class OverrideConfiguration implements Configuration {
 
     public OverrideConfiguration(Configuration configuration) {
         if (configuration == null) {
-            throw new ParentConfigurationPossiblyNullException("Developer error: the parent configuration may not be null");
+            throw new ParentConfigurationNullException("Developer error: the parent configuration may not be null");
         }
         this.parentConfiguration = configuration;
         this.downsizeSourceFields = new OverrideField<>(configuration::getDownsizeSource);
