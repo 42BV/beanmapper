@@ -22,40 +22,31 @@ public class BeanCollectionInstructions {
 
         BeanCollectionInstructions source = sourceBeanProperty == null ? null : sourceBeanProperty.getCollectionInstructions();
         BeanCollectionInstructions target = targetBeanProperty == null ? null : targetBeanProperty.getCollectionInstructions();
-
-        if (source == null && target == null) {
-            return null;
-        }
-        if (source == null) {
-            return determineFinalValues(target, null);
-        }
-        if (target == null) {
-            return determineFinalValues(source, null);
-        }
-
         return determineFinalValues(target, source);
     }
 
     private static BeanCollectionInstructions determineFinalValues(
             BeanCollectionInstructions target,
             BeanCollectionInstructions source) {
+        boolean sourceIsNull = source == null;
+        if (target == null) {
+            return sourceIsNull ? null : determineFinalValues(source, null);
+        }
         BeanCollectionInstructions merged = new BeanCollectionInstructions();
         merged.setFlushAfterClear(target.getFlushAfterClear());
         merged.setBeanCollectionUsage(chooseValue(
                 target.getBeanCollectionUsage(),
-                source == null ? null : source.getBeanCollectionUsage(),
+                sourceIsNull ? null : source.getBeanCollectionUsage(),
                 BeanCollectionUsage.CLEAR));
         merged.setPreferredCollectionClass(chooseValue(
                 target.getPreferredCollectionClass(),
-                source == null ? null : source.getPreferredCollectionClass(),
+                sourceIsNull ? null : source.getPreferredCollectionClass(),
                 EMPTY_ANNOTATION_CLASS));
 
         merged.setCollectionElementType(determineCollectionElementType(target, source));
-
         if (merged.getCollectionElementType().isEmpty()) {
             return null;
         }
-
         return merged;
     }
 
