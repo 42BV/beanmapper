@@ -14,10 +14,10 @@ public class CollectionConverter implements BeanConverter {
     }
 
     @Override
-    public <R, U> U convert(
+    public <S, T> T convert(
             BeanMapper beanMapper,
-            R source,
-            Class<U> targetClass,
+            S source,
+            Class<T> targetClass,
             BeanPropertyMatch beanPropertyMatch) {
 
         if (beanPropertyMatch == null || beanPropertyMatch.getCollectionInstructions() == null) {
