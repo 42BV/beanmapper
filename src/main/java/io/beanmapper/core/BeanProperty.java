@@ -2,12 +2,12 @@ package io.beanmapper.core;
 
 import io.beanmapper.annotations.BeanConstruct;
 import io.beanmapper.annotations.LogicSecuredCheck;
+import io.beanmapper.core.constructor.ConstructorArguments;
 import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
 import io.beanmapper.core.generics.DirectedBeanProperty;
 import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.exceptions.BeanMappingException;
-import io.beanmapper.strategy.ConstructorArguments;
 import io.beanmapper.utils.DefaultValues;
 import io.beanmapper.utils.Records;
 

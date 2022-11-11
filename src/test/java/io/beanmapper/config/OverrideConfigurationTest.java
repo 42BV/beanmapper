@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Queue;
 
 import io.beanmapper.BeanMapper;
+import io.beanmapper.core.constructor.ConstructorArguments;
 import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
 import io.beanmapper.exceptions.ParentConfigurationNullException;
-import io.beanmapper.strategy.ConstructorArguments;
 import io.beanmapper.utils.Trinary;
 
 import org.junit.jupiter.api.BeforeEach;

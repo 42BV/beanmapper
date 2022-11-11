@@ -11,7 +11,6 @@ import java.util.Arrays;
 
 import io.beanmapper.BeanMapper;
 import io.beanmapper.config.BeanMapperBuilder;
-import io.beanmapper.strategy.ConstructorArguments;
 import io.beanmapper.utils.DefaultValues;
 
 import org.slf4j.Logger;

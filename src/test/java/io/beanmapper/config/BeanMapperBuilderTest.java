@@ -13,10 +13,10 @@ import java.util.List;
 
 import io.beanmapper.BeanMapper;
 import io.beanmapper.core.collections.ListCollectionHandler;
+import io.beanmapper.core.constructor.ConstructorArguments;
 import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
-import io.beanmapper.strategy.ConstructorArguments;
 import io.beanmapper.utils.Trinary;
 
 import org.junit.jupiter.api.Test;

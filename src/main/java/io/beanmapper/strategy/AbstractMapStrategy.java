@@ -9,6 +9,7 @@ import io.beanmapper.annotations.BeanProperty;
 import io.beanmapper.config.Configuration;
 import io.beanmapper.core.BeanMatch;
 import io.beanmapper.core.BeanPropertyMatch;
+import io.beanmapper.core.constructor.ConstructorArguments;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanPropertyNoMatchException;

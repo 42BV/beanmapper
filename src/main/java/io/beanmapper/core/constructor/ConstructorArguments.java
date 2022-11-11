@@ -1,4 +1,4 @@
-package io.beanmapper.strategy;
+package io.beanmapper.core.constructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +9,8 @@ import io.beanmapper.exceptions.BeanInstantiationException;
 
 public class ConstructorArguments {
 
-    private List<Class<?>> types = new ArrayList<>();
-    private List<Object> values = new ArrayList<>();
+    private final List<Class<?>> types = new ArrayList<>();
+    private final List<Object> values = new ArrayList<>();
 
     public ConstructorArguments(Object source, BeanMatch beanMatch, String[] constructorArgs) {
         if (constructorArgs == null)
