@@ -15,12 +15,8 @@ public class OverrideField<T> {
     }
 
     public void set(T value) {
-        if (value == null) {
-            this.block = true;
-        } else {
-            this.value = value;
-            this.block = false;
-        }
+        this.block |= value == null;
+        this.value = value;
     }
 
     public void block() {
@@ -29,7 +25,7 @@ public class OverrideField<T> {
 
     public T get() {
         if (this.block) {
-            return null;
+            return value;
         }
         return this.value == null ?
                 this.supplier.get() :
