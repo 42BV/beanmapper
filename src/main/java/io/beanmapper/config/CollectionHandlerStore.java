@@ -8,36 +8,29 @@ import io.beanmapper.core.unproxy.BeanUnproxy;
 
 public class CollectionHandlerStore {
 
-    private List<CollectionHandler> collectionHandlers = new ArrayList<>();
+    private final List<CollectionHandler> collectionHandlers = new ArrayList<>();
 
     public List<CollectionHandler> getCollectionHandlers() {
         return collectionHandlers;
     }
 
-    public void add(CollectionHandler collectionHandler) {
-        collectionHandlers.add(collectionHandler);
+    public void add(final CollectionHandler<?> collectionHandler) {
+        this.collectionHandlers.add(collectionHandler);
     }
 
-    public CollectionHandler getCollectionHandlerFor(Class<?> clazz, BeanUnproxy beanUnproxy) {
+    public <C> CollectionHandler<C> getCollectionHandlerFor(final Class<?> clazz, final BeanUnproxy beanUnproxy) {
         if (clazz == null) {
             return null;
         }
-        // First verify if the class already has parent types which match
-        CollectionHandler collectionHandler = getCollectionHandlerFor(clazz);
-        if (collectionHandler != null) {
-            return collectionHandler;
-        }
-        // Unproxy the collection class in case it was anonymous and try again
-        return getCollectionHandlerFor(beanUnproxy.unproxy(clazz));
+        return getCollectionHandlerFor(clazz.isAnonymousClass() ? beanUnproxy.unproxy(clazz) : clazz);
     }
 
-    private CollectionHandler getCollectionHandlerFor(Class<?> clazz) {
-        for (CollectionHandler handler : getCollectionHandlers()) {
-            if (handler.isMatch(clazz)) {
-                return handler;
-            }
-        }
-        return null;
+    private <C> CollectionHandler<C> getCollectionHandlerFor(Class<?> clazz) {
+        // noinspection unchecked
+        return (CollectionHandler<C>) this.collectionHandlers.stream()
+                .filter(collectionHandler -> collectionHandler.isMatch(clazz))
+                .findFirst()
+                .orElse(null);
     }
 
 }
