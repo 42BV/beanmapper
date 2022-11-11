@@ -78,19 +78,17 @@ public class StrictMappingProperties {
         this.applyStrictMappingConvention = applyStrictMappingConvention;
     }
 
-    public BeanPair createBeanPair(Class<?> sourceClass, Class<?> targetClass) {
-        sourceClass = beanUnproxy.unproxy(sourceClass);
-        targetClass = beanUnproxy.unproxy(targetClass);
-        BeanPair beanPair = new BeanPair(sourceClass, targetClass);
+    public BeanPair createBeanPair(final Class<?> sourceClass, final Class<?> targetClass) {
+        BeanPair beanPair = new BeanPair(beanUnproxy.unproxy(sourceClass), beanUnproxy.unproxy(targetClass));
         if (!isApplyStrictMappingConvention()) {
             return beanPair;
         }
         if (strictSourceSuffix != null &&
-                sourceClass.getCanonicalName().endsWith(strictSourceSuffix)) {
+                beanPair.getSourceClass().getCanonicalName().endsWith(strictSourceSuffix)) {
             beanPair = beanPair.withStrictSource();
         }
         if (strictTargetSuffix != null &&
-                targetClass.getCanonicalName().endsWith(strictTargetSuffix)) {
+                beanPair.getTargetClass().getCanonicalName().endsWith(strictTargetSuffix)) {
             beanPair = beanPair.withStrictTarget();
         }
         return beanPair;
