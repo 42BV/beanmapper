@@ -16,7 +16,7 @@ public interface Provider<T> {
         entry(short.class, new ShortProvider()),
         entry(int.class, new IntegerProvider()),
         entry(long.class, new LongProvider()),
-        entry(Character.class, new CharacterProvider()),
+        entry(char.class, new CharacterProvider()),
         entry(float.class, new FloatProvider()),
         entry(double.class, new DoubleProvider()),
         entry(List.class, new ListProvider()),
