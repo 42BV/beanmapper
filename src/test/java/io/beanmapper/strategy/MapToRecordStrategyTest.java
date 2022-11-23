@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.beanmapper.utils.provider.Provider;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,6 @@ import io.beanmapper.strategy.record.model.collection.result.ResultRecordWithQue
 import io.beanmapper.strategy.record.model.collection.result.ResultRecordWithSet;
 import io.beanmapper.strategy.record.model.inheritance.Layer3;
 import io.beanmapper.testmodel.person.Person;
-import io.beanmapper.utils.DefaultValues;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -85,7 +85,7 @@ class MapToRecordStrategyTest {
         var form = new FormWithName();
         var result = this.beanMapper.map(form, ResultRecordWithIdAndName.class);
 
-        assertEquals((int) DefaultValues.defaultValueFor(int.class), result.id());
+        assertEquals((int) Provider.of(int.class).getDefault(), result.id());
         assertEquals(form.name, result.name());
     }
 

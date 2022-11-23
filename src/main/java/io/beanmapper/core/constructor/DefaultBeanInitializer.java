@@ -12,7 +12,7 @@ import java.util.Arrays;
 import io.beanmapper.BeanMapper;
 import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.strategy.ConstructorArguments;
-import io.beanmapper.utils.DefaultValues;
+import io.beanmapper.utils.provider.Provider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public class DefaultBeanInitializer implements BeanInitializer {
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             logger.error("Could not instantiate bean of class %s. Returning the default value associated with the given type. %s".formatted(beanClass.getName(),
                     e.getMessage()));
-            return DefaultValues.defaultValueFor(beanClass);
+            return Provider.of(beanClass).getDefault();
         }
     }
 

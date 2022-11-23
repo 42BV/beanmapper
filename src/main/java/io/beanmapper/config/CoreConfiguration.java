@@ -18,7 +18,7 @@ import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
 import io.beanmapper.dynclass.ClassStore;
 import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
-import io.beanmapper.utils.DefaultValues;
+import io.beanmapper.utils.provider.Provider;
 import io.beanmapper.utils.Trinary;
 
 public class CoreConfiguration implements Configuration {
@@ -430,9 +430,12 @@ public class CoreConfiguration implements Configuration {
      */
     @Override
     public <T, V> V getDefaultValueForClass(Class<T> targetClass) {
-        return this.customDefaultValueMap.containsKey(targetClass)
-                ? (V) this.customDefaultValueMap.get(targetClass)
-                : DefaultValues.defaultValueFor(targetClass);
+        if (this.customDefaultValueMap.containsKey(targetClass)) {
+            return (V) this.customDefaultValueMap.get(targetClass);
+        }
+        return (V) Provider.of(targetClass) != null
+                ? (V) Provider.of(targetClass).getDefault()
+                : null;
     }
 
     /**
