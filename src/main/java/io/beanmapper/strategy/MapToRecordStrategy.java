@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -168,20 +169,24 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
                 .toList();
     }
 
-    private Object[] getConstructorArgumentsMappedToCorrectTargetType(final Parameter[] parameters, final List<Object> values) {
+    private Object[] getConstructorArgumentsMappedToCorrectTargetType(final Parameter[] parameters,
+                                                                      final Collection<Object> values) {
         Object[] arguments = new Object[parameters.length];
+        Iterator<Object> valueIterator = values.iterator();
         for (var i = 0; i < parameters.length; ++i) {
-            if (i >= values.size() || values.get(i) == null) {
+            Object currentValue = valueIterator.next();
+            if (i >= values.size() || currentValue == null) {
                 arguments[i] = this.getConfiguration().getDefaultValueForClass(parameters[i].getType());
             } else {
                 var parameterType = parameters[i].getType();
                 if (Collection.class.isAssignableFrom(parameterType) || Optional.class.isAssignableFrom(parameterType)
                         || Map.class.isAssignableFrom(parameterType)) {
-                    arguments[i] = this.getBeanMapper().map(values.get(i), (ParameterizedType) parameters[i].getParameterizedType());
+                    arguments[i] = this.getBeanMapper().map(currentValue,
+                            (ParameterizedType) parameters[i].getParameterizedType());
                 } else {
-                    arguments[i] = values.get(i) != null && parameters[i].getType().equals(values.get(i).getClass()) ?
-                            values.get(i) :
-                            this.getBeanMapper().wrap().setConverterChoosable(true).build().map(values.get(i), parameterType);
+                    arguments[i] = currentValue != null && parameters[i].getType().equals(currentValue.getClass()) ?
+                            currentValue :
+                            this.getBeanMapper().wrap().setConverterChoosable(true).build().map(currentValue, parameterType);
                 }
             }
         }
@@ -238,7 +243,7 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
         return canonicalConstructor;
     }
 
-    private <T> Optional<Constructor<T>> getConstructorWithMostMatchingParameters(final List<Constructor<T>> constructors,
+    private <T> Optional<Constructor<T>> getConstructorWithMostMatchingParameters(final Collection<Constructor<T>> constructors,
             final Map<String, Field> sourceFields) {
         for (var constructor : constructors) {
             BeanRecordConstruct recordConstruct = constructor.getAnnotation(BeanRecordConstruct.class);

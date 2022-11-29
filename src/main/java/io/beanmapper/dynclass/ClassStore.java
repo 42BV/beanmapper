@@ -1,5 +1,6 @@
 package io.beanmapper.dynclass;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ public class ClassStore {
     }
 
     public Class<?> getOrCreateGeneratedClass(
-            Class<?> baseClass, List<String> includeFields,
+            Class<?> baseClass, Collection<String> includeFields,
             StrictMappingProperties strictMappingProperties) {
         Node displayNodes = Node.createTree(includeFields);
         String baseClassName = baseClass.getName();

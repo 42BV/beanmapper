@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,6 +33,8 @@ import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.config.AfterClearFlusher;
 import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.config.RoleSecuredCheck;
+import io.beanmapper.core.BeanMatchValidationMessage;
+import io.beanmapper.core.BeanProperty;
 import io.beanmapper.core.BeanStrictMappingRequirementsException;
 import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
 import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
@@ -348,7 +351,7 @@ class BeanMapperTest {
             add(new Address("MuisLaan", 1, "Frankrijk"));
         }};
         List<ResultAddress> targetItems =
-                beanMapper.map(sourceItems, ResultAddress.class);
+                (List<ResultAddress>) beanMapper.map(sourceItems, ResultAddress.class);
         assertEquals("Koraalrood", targetItems.get(0).getStreet());
         assertEquals("ComputerStraat", targetItems.get(1).getStreet());
         assertEquals("InternetWeg", targetItems.get(2).getStreet());
@@ -435,7 +438,7 @@ class BeanMapperTest {
             add(createPerson("Joris"));
             add(createPerson("Korneel"));
         }};
-        List<PersonView> targetItems = beanMapper.map(sourceItems, PersonView.class);
+        List<PersonView> targetItems = (List<PersonView>) beanMapper.map(sourceItems, PersonView.class);
         assertEquals("Jan", targetItems.get(0).name);
         assertEquals("Piet", targetItems.get(1).name);
         assertEquals("Joris", targetItems.get(2).name);
@@ -488,7 +491,7 @@ class BeanMapperTest {
     @Test
     void mapToCollectionArraysAsList() {
         List<RGB> collection = Arrays.asList(RGB.values());
-        List<String> result = beanMapper.map(collection, String.class);
+        Collection<String> result = beanMapper.map(collection, String.class);
         assertEquals(RGB.values().length, result.size());
     }
 
@@ -513,7 +516,7 @@ class BeanMapperTest {
     @Test
     void mapToCollectionNewArrayList() {
         List<RGB> collection = new ArrayList<>(Arrays.asList(RGB.values()));
-        List<String> result = beanMapper.map(collection, String.class);
+        Collection<String> result = beanMapper.map(collection, String.class);
         assertEquals(RGB.values().length, result.size());
     }
 
@@ -1217,7 +1220,7 @@ class BeanMapperTest {
         List<String> numberStrings = new ArrayList<>();
         numberStrings.add("1");
 
-        List<Integer> numbers = beanMapper.map(numberStrings, Integer.class);
+        List<Integer> numbers = (List<Integer>) beanMapper.map(numberStrings, Integer.class);
         assertEquals((Integer) 1, numbers.get(0));
     }
 
@@ -1269,14 +1272,28 @@ class BeanMapperTest {
                 .addBeanPairWithStrictSource(SourceCStrict.class, TargetCNonStrict.class)
                 .addBeanPairWithStrictSource(SourceDStrict.class, TargetDNonStrict.class);
         var exception = assertThrows(BeanStrictMappingRequirementsException.class, builder::build);
-        assertEquals(SourceAStrict.class, exception.getValidationMessages().get(0).getSourceClass());
-        assertEquals("noMatch", exception.getValidationMessages().get(0).getFields().get(0).getName());
-        assertEquals(TargetBStrict.class, exception.getValidationMessages().get(1).getTargetClass());
-        assertEquals("noMatch", exception.getValidationMessages().get(1).getFields().get(0).getName());
-        assertEquals(SourceCStrict.class, exception.getValidationMessages().get(2).getSourceClass());
-        assertEquals("noMatch1", exception.getValidationMessages().get(2).getFields().get(0).getName());
-        assertEquals("noMatch2", exception.getValidationMessages().get(2).getFields().get(1).getName());
-        assertEquals("noMatch3", exception.getValidationMessages().get(2).getFields().get(2).getName());
+
+        Iterator<BeanMatchValidationMessage> iterator = exception.getValidationMessages().iterator();
+
+        BeanMatchValidationMessage message1 = iterator.next();
+        BeanMatchValidationMessage message2 = iterator.next();
+        BeanMatchValidationMessage message3 = iterator.next();
+
+        assertEquals(SourceAStrict.class, message1.getSourceClass());
+        assertEquals("noMatch", message1.getFields().iterator().next().getName());
+        assertEquals(TargetBStrict.class, message2.getTargetClass());
+        assertEquals("noMatch", message2.getFields().iterator().next().getName());
+        assertEquals(SourceCStrict.class, message3.getSourceClass());
+
+        Iterator<BeanProperty> message3BeanPropertyIterator = message3.getFields().iterator();
+
+        BeanProperty beanProperty1 = message3BeanPropertyIterator.next();
+        BeanProperty beanProperty2 = message3BeanPropertyIterator.next();
+        BeanProperty beanProperty3 = message3BeanPropertyIterator.next();
+
+        assertEquals("noMatch1", beanProperty1.getName());
+        assertEquals("noMatch2", beanProperty2.getName());
+        assertEquals("noMatch3", beanProperty3.getName());
     }
 
     @Test
@@ -1475,7 +1492,7 @@ class BeanMapperTest {
     @Test
     void unmodifiableRandomAccessList() {
         List<Long> numbers = List.of(42L, 57L, 33L);
-        List<String> numbersAsText = beanMapper.map(numbers, String.class);
+        List<String> numbersAsText = (List<String>) beanMapper.map(numbers, String.class);
         assertEquals(3, numbersAsText.size());
         assertEquals("42", numbersAsText.get(0));
     }
@@ -1931,7 +1948,7 @@ class BeanMapperTest {
     @Test
     void testMapOptionalOfListOfOptionalsToListOfOptionalsOfDifferentType() {
         Optional<List<Optional<Person>>> optional = Optional.of(List.of(Optional.of(createPerson("Henk")), Optional.of(createPerson("Kees"))));
-        List<PersonView> personView = this.beanMapper.map(optional.get(), PersonView.class);
+        List<PersonView> personView = (List<PersonView>) this.beanMapper.map(optional.get(), PersonView.class);
         assertNotNull(personView);
         assertEquals(optional.get().size(), personView.size());
         assertEquals("Henk", personView.get(0).name);

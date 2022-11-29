@@ -1,5 +1,6 @@
 package io.beanmapper.dynclass;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,7 +12,7 @@ public class Node {
 
     private final Map<String, Node> nodes = new TreeMap<>();
 
-    public static Node createTree(List<String> fields) {
+    public static Node createTree(Collection<String> fields) {
         Node root = new Node();
         for (String field : fields) {
             Route route = new Route(field);

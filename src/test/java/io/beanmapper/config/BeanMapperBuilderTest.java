@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -118,8 +119,8 @@ class BeanMapperBuilderTest {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .addPackagePrefix(expectedPackagePrefix)
                 .build();
-        List<String> packagePrefixes = beanMapper.getConfiguration().getPackagePrefixes();
-        assertEquals(expectedPackagePrefix, packagePrefixes.get(0));
+        Collection<String> packagePrefixes = beanMapper.getConfiguration().getPackagePrefixes();
+        assertEquals(expectedPackagePrefix, packagePrefixes.iterator().next());
     }
 
     @Test

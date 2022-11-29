@@ -14,8 +14,8 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
 
     @Override
     public <S, T> T map(S source) {
-        List<String> downsizeSourceFields = getConfiguration().getDownsizeSource();
-        List<String> downsizeTargetFields = getConfiguration().getDownsizeTarget();
+        Collection<String> downsizeSourceFields = getConfiguration().getDownsizeSource();
+        Collection<String> downsizeTargetFields = getConfiguration().getDownsizeTarget();
 
         // If no collection class is set, but we are dealing with a collection class, make sure it is set
         Class collectionClass = getConfiguration().getCollectionClass();
@@ -38,7 +38,7 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
         }
     }
 
-    public <S, T> T downsizeSource(S source, List<String> downsizeSourceFields) {
+    public <S, T> T downsizeSource(S source, Collection<String> downsizeSourceFields) {
         final Class<?> dynamicClass = getConfiguration()
                 .getClassStore()
                 .getOrCreateGeneratedClass(
@@ -65,7 +65,7 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
                 .map(dynSource);
     }
 
-    public <S, T> T downsizeTarget(S source, List<String> downsizeTargetFields) {
+    public <S, T> T downsizeTarget(S source, Collection<String> downsizeTargetFields) {
         final Class<?> dynamicClass = getConfiguration().getClassStore().getOrCreateGeneratedClass(
                 getConfiguration().determineTargetClass(),
                 downsizeTargetFields,

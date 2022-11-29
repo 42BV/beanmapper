@@ -1,15 +1,16 @@
 package io.beanmapper.exceptions;
 
 import java.lang.reflect.Constructor;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
 public final class RecordConstructorConflictException extends RuntimeException {
 
-    public <T> RecordConstructorConflictException(final List<Constructor<T>> constructors) {
+    public <T> RecordConstructorConflictException(final Collection<Constructor<T>> constructors) {
         this(() -> {
             StringBuilder builder = new StringBuilder("Record class ")
-                    .append(constructors.get(0).getDeclaringClass().getName())
+                    .append(constructors.iterator().next().getDeclaringClass().getName())
                     .append(" contains ")
                     .append(constructors.size())
                     .append(" constructors annotated with @RecordConstruct(String[], RecordConstructMode.FORCE).\n")

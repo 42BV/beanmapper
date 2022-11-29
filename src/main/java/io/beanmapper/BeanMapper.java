@@ -146,7 +146,7 @@ public final class BeanMapper {
      * @param <T> the class type of an element in the target list
      * @return the target list with mapped source list elements
      */
-    public <S, T> List<T> map(List<S> list, Class<T> elementInListClass) {
+    public <S, T> Iterable<T> map(Iterable<S> list, Class<T> elementInListClass) {
         return mapCollection(list, elementInListClass);
     }
 

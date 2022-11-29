@@ -1,5 +1,6 @@
 package io.beanmapper.core;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -7,16 +8,16 @@ import io.beanmapper.config.BeanPair;
 
 public class BeanMatchValidationMessage {
 
-    private final List<BeanProperty> fields;
+    private final Collection<BeanProperty> fields;
     private final BeanPair beanPair;
     private boolean logged = false;
 
-    public BeanMatchValidationMessage(BeanPair beanPair, List<BeanProperty> fields) {
+    public BeanMatchValidationMessage(BeanPair beanPair, Collection<BeanProperty> fields) {
         this.beanPair = beanPair;
         this.fields = fields;
     }
 
-    public List<BeanProperty> getFields() {
+    public Collection<BeanProperty> getFields() {
         return this.fields != null ? this.fields : Collections.emptyList();
     }
 
