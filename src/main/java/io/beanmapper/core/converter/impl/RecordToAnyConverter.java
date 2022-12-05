@@ -2,33 +2,22 @@ package io.beanmapper.core.converter.impl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.RecordComponent;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import io.beanmapper.BeanMapper;
-import io.beanmapper.annotations.BeanAlias;
 import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.exceptions.RecordMappingToIntermediaryException;
+import io.beanmapper.utils.DefaultValues;
 import io.beanmapper.utils.Records;
 
 public class RecordToAnyConverter implements BeanConverter {
 
     @Override
     public <S, T> T convert(BeanMapper beanMapper, S source, Class<T> targetClass, BeanPropertyMatch beanPropertyMatch) {
-        Map<String, RecordComponent> mappedComponents = new HashMap<>();
-        Arrays.stream(source.getClass().getRecordComponents()).forEach(component -> {
-            if (component.isAnnotationPresent(BeanAlias.class)) {
-                mappedComponents.put(component.getAnnotation(BeanAlias.class).value(), component);
-            } else {
-                mappedComponents.put(component.getName(), component);
-            }
-        });
-
         try {
             Class<?> intermediaryClass = beanMapper.getConfiguration().getClassStore().getOrCreateGeneratedClass(source.getClass(),
                     List.of(Records.getRecordFieldNames(
@@ -77,10 +66,16 @@ public class RecordToAnyConverter implements BeanConverter {
     private <T> T copyFieldsToIntermediary(T intermediary, Map<String, Object> fieldMap) throws NoSuchFieldException, IllegalAccessException {
         BeanMapper beanMapper = new BeanMapperBuilder().setConverterChoosable(true).setUseNullValue().build();
         for (Map.Entry<String, Object> fieldEntry : fieldMap.entrySet()) {
-            if (!fieldEntry.getValue().getClass().equals(intermediary.getClass().getDeclaredField(fieldEntry.getKey()).getType())) {
-                fieldEntry.setValue(beanMapper.map(fieldEntry.getValue(), intermediary.getClass().getDeclaredField(fieldEntry.getKey()).getType()));
+            final Class<?> targetType = intermediary.getClass().getDeclaredField(fieldEntry.getKey()).getType();
+            var value = fieldEntry.getValue();
+            if (value == null) {
+                if (targetType.isPrimitive()) {
+                    value = DefaultValues.defaultValueFor(targetType);
+                }
+            } else if (!value.getClass().equals(targetType)) {
+                value = beanMapper.map(value, targetType);
             }
-            intermediary.getClass().getDeclaredField(fieldEntry.getKey()).set(intermediary, fieldEntry.getValue());
+            intermediary.getClass().getDeclaredField(fieldEntry.getKey()).set(intermediary, value);
         }
         return intermediary;
     }
