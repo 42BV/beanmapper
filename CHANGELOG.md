@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Issue [#181](https://github.com/42BV/beanmapper/issues/181) **RecordToAnyConverter#copyFieldsToIntermediary(Object, Map) throws a NPE if Map contains an Entry 
   where the value is null.**; Added null-check to RecordToAnyConverter#copyFieldsToIntermediary(Object, Map), preventing a NPE whenever a field in the 
   source-object is null. 
+- Issue [#185](https://github.com/42BV/beanmapper/issues/185) **OverrideConfiguration#strictMappingProperties cause of severe hit to performance.**; Replaced 
+  usage of OverrideField, with direct call to underlying configuration.
 
 ## [4.1.0] - 2022-11-10
 
