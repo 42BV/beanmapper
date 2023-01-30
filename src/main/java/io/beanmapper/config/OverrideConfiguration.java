@@ -41,7 +41,7 @@ public class OverrideConfiguration implements Configuration {
 
     private final OverrideField<Boolean> converterChoosable;
 
-    private final OverrideField<StrictMappingProperties> strictMappingProperties;
+    private final StrictMappingProperties strictMappingProperties;
 
     private BeanCollectionUsage collectionUsage = null;
 
@@ -70,7 +70,7 @@ public class OverrideConfiguration implements Configuration {
         this.flushAfterClear = new OverrideField<>(configuration::isFlushAfterClear);
         this.flushEnabled = new OverrideField<>(configuration::isFlushEnabled);
         this.useNullValue = new OverrideField<>(configuration::getUseNullValue);
-        this.strictMappingProperties = new OverrideField<>(configuration::getStrictMappingProperties);
+        this.strictMappingProperties = configuration.getStrictMappingProperties();
         this.enforcedSecuredProperties = new OverrideField<>(configuration::getEnforceSecuredProperties);
         this.customDefaultValues = new HashMap<>();
     }
@@ -220,32 +220,32 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public String getStrictSourceSuffix() {
-        return this.strictMappingProperties.get().getStrictSourceSuffix();
+        return this.strictMappingProperties.getStrictSourceSuffix();
     }
 
     @Override
     public void setStrictSourceSuffix(String strictSourceSuffix) {
-        this.strictMappingProperties.get().setStrictSourceSuffix(strictSourceSuffix);
+        this.strictMappingProperties.setStrictSourceSuffix(strictSourceSuffix);
     }
 
     @Override
     public String getStrictTargetSuffix() {
-        return strictMappingProperties.get().getStrictTargetSuffix();
+        return strictMappingProperties.getStrictTargetSuffix();
     }
 
     @Override
     public void setStrictTargetSuffix(String strictTargetSuffix) {
-        this.strictMappingProperties.get().setStrictTargetSuffix(strictTargetSuffix);
+        this.strictMappingProperties.setStrictTargetSuffix(strictTargetSuffix);
     }
 
     @Override
     public boolean isApplyStrictMappingConvention() {
-        return strictMappingProperties.get().isApplyStrictMappingConvention();
+        return strictMappingProperties.isApplyStrictMappingConvention();
     }
 
     @Override
     public void setApplyStrictMappingConvention(boolean applyStrictMappingConvention) {
-        this.strictMappingProperties.get().setApplyStrictMappingConvention(applyStrictMappingConvention);
+        this.strictMappingProperties.setApplyStrictMappingConvention(applyStrictMappingConvention);
     }
 
     @Override
