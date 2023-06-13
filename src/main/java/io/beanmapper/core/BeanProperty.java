@@ -8,8 +8,8 @@ import io.beanmapper.core.generics.DirectedBeanProperty;
 import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.strategy.ConstructorArguments;
-import io.beanmapper.utils.DefaultValues;
 import io.beanmapper.utils.Records;
+import io.beanmapper.utils.provider.Provider;
 
 public class BeanProperty {
 
@@ -117,7 +117,7 @@ public class BeanProperty {
         } else {
             if (value == null && getCurrentAccessor().getType().isPrimitive()) {
                 // Primitives types can't be null.
-                value = DefaultValues.defaultValueFor(getCurrentAccessor().getType());
+                value = Provider.of(getCurrentAccessor().getType()).getDefault();
             }
             getCurrentAccessor().setValue(parent, value);
         }

@@ -424,7 +424,7 @@ public interface Configuration {
      * Allows the user to set a default value for a given type.
      *
      * <p>While the standard implementation of BeanMapper contains a utility-class
-     * {@link io.beanmapper.utils.DefaultValues}, the map within is far from exhaustive. Furthermore, custom default
+     * {@link io.beanmapper.utils.provider.Provider}, the map within is far from exhaustive. Furthermore, custom default
      * values can serve as a useful compatibility feature for projects that would prefer different defaults.</p>
      *
      * @param target The target class.
@@ -439,7 +439,7 @@ public interface Configuration {
      *
      * <p>Any implementation of this method must first check the registered custom default values for a suitable value,
      * if a container for custom defaults exists. Afterwards, the method may check a parent-configuration's custom
-     * defaults, or simply refer to the defaults in {@link io.beanmapper.utils.DefaultValues}.</p>
+     * defaults, or simply refer to the defaults in {@link io.beanmapper.utils.provider.Provider}.</p>
      *
      * @param targetClass The target class
      * @return The value associated with the given target class, based off of the values set in the custom default
