@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.AbstractMap;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -129,7 +130,7 @@ class OptionalToObjectConverterTest {
     @Test
     void convertListWithOptionalToListOfDifferentType() {
         List<Optional<Integer>> list = List.of(Optional.of(42), Optional.of(23), Optional.empty());
-        List<Long> listOfLong = this.beanMapper.map(list, Long.TYPE);
+        Collection<Long> listOfLong = this.beanMapper.map(list, Long.TYPE);
         assertEquals(list.size(), listOfLong.size());
         assertTrue(listOfLong.contains(42L));
         assertTrue(listOfLong.contains(23L));
@@ -139,7 +140,7 @@ class OptionalToObjectConverterTest {
     @Test
     void convertListWithoutOptionalToListOfWithOptional() {
         List<Optional<Integer>> list = List.of(Optional.of(42), Optional.of(23), Optional.empty());
-        List<Long> listOfLong = this.beanMapper.map(list, Long.TYPE);
+        Collection<Long> listOfLong = this.beanMapper.map(list, Long.TYPE);
         List<Optional<Integer>> unoReversedList = this.beanMapper.map(listOfLong, Integer.TYPE).stream().map(Optional::ofNullable).toList();
         assertEquals(list.size(), listOfLong.size());
         assertTrue(unoReversedList.contains(Optional.of(42)));

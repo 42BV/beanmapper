@@ -54,7 +54,7 @@ public class BeanMatchStore {
         this.beanUnproxy = beanUnproxy;
     }
 
-    public void validateStrictBeanPairs(List<BeanPair> beanPairs) {
+    public void validateStrictBeanPairs(Iterable<BeanPair> beanPairs) {
         List<BeanMatchValidationMessage> validationMessages = new ArrayList<>();
         for (BeanPair beanPair : beanPairs) {
             try {

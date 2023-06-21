@@ -1,6 +1,7 @@
 package io.beanmapper.config;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -105,12 +106,12 @@ public class CoreConfiguration implements Configuration {
     private final Map<Class<?>, Object> customDefaultValueMap = new HashMap<>();
 
     @Override
-    public List<String> getDownsizeTarget() {
+    public Collection<String> getDownsizeTarget() {
         return Collections.emptyList();
     }
 
     @Override
-    public List<String> getDownsizeSource() {
+    public Collection<String> getDownsizeSource() {
         return Collections.emptyList();
     }
 
@@ -403,13 +404,13 @@ public class CoreConfiguration implements Configuration {
     }
 
     @Override
-    public void downsizeSource(List<String> includeFields) {
+    public void downsizeSource(Collection<String> includeFields) {
         throw new BeanConfigurationOperationNotAllowedException(
                 "Illegal to set a include fields on the Core configuration, works only for override configurations");
     }
 
     @Override
-    public void downsizeTarget(List<String> includeFields) {
+    public void downsizeTarget(Collection<String> includeFields) {
         throw new BeanConfigurationOperationNotAllowedException(
                 "Illegal to set a include fields on the Core configuration, works only for override configurations");
     }

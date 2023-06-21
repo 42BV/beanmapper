@@ -1,6 +1,7 @@
 package io.beanmapper.config;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,7 +32,7 @@ import io.beanmapper.utils.Trinary;
 
 public class BeanMapperBuilder {
 
-    private static final List<CollectionHandler> DEFAULT_COLLECTION_HANDLERS =
+    private static final Collection<CollectionHandler> DEFAULT_COLLECTION_HANDLERS =
             List.of(
                     new MapCollectionHandler(),
                     new SetCollectionHandler(),
@@ -123,13 +124,13 @@ public class BeanMapperBuilder {
         return this;
     }
 
-    public BeanMapperBuilder downsizeSource(List<String> includeFields) {
+    public BeanMapperBuilder downsizeSource(Collection<String> includeFields) {
         this.configuration.setApplyStrictMappingConvention(false);
         this.configuration.downsizeSource(includeFields != null ? includeFields : Collections.emptyList());
         return this;
     }
 
-    public BeanMapperBuilder downsizeTarget(List<String> includeFields) {
+    public BeanMapperBuilder downsizeTarget(Collection<String> includeFields) {
         this.configuration.setApplyStrictMappingConvention(false);
         this.configuration.downsizeTarget(includeFields != null ? includeFields : Collections.emptyList());
         return this;
@@ -230,7 +231,7 @@ public class BeanMapperBuilder {
         return beanMapper;
     }
 
-    private void addCollectionHandlers(List<CollectionHandler> collectionHandlers) {
+    private void addCollectionHandlers(Collection<CollectionHandler> collectionHandlers) {
         for (CollectionHandler collectionHandler : collectionHandlers) {
             attachCollectionHandler(collectionHandler);
         }
