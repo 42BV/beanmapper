@@ -38,5 +38,4 @@ public class OverrideField<T> {
         }
         return value;
     }
-
 }

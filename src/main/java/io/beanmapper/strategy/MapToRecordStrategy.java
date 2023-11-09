@@ -76,8 +76,8 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
      * present.
      *
      * @param sourceClass The class of the source-object.
-     * @param <S>         The type of the sourceClass.
      * @return A Map containing the fields of the source-class, mapped by the name of the field, or the value of an available BeanAlias.
+     * @param <S> The type of the sourceClass.
      */
     private <S> Map<String, Field> getFieldsOfClass(final Class<S> sourceClass) {
         return Arrays.stream(sourceClass.getDeclaredFields())
@@ -176,7 +176,7 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
             } else {
                 var parameterType = parameters[i].getType();
                 if (Collection.class.isAssignableFrom(parameterType) || Optional.class.isAssignableFrom(parameterType)
-                    || Map.class.isAssignableFrom(parameterType)) {
+                        || Map.class.isAssignableFrom(parameterType)) {
                     arguments[i] = this.getBeanMapper().map(values.get(i), (ParameterizedType) parameters[i].getParameterizedType());
                 } else {
                     arguments[i] = values.get(i) != null && parameters[i].getType().equals(values.get(i).getClass()) ?
@@ -232,8 +232,8 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
             var recordConstruct = (BeanRecordConstruct) canonicalConstructor.getAnnotation(BeanRecordConstruct.class);
             if (recordConstruct.constructMode() == BeanRecordConstructMode.EXCLUDE)
                 throw new RecordNoAvailableConstructorsExceptions((Class<? extends Record>) targetClass, "All available constructors have been "
-                                                                                                         + "annotated with @RecordConstruct(constructMode = RecordConstructMode.EXCLUDE). To enable mapping to the target record, please make at "
-                                                                                                         + "least one constructor available.");
+                        + "annotated with @RecordConstruct(constructMode = RecordConstructMode.EXCLUDE). To enable mapping to the target record, please make at "
+                        + "least one constructor available.");
         }
         return canonicalConstructor;
     }

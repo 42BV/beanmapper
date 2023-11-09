@@ -11,6 +11,8 @@ import io.beanmapper.exceptions.BeanNoSuchPropertyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static io.beanmapper.utils.CanonicalClassName.determineCanonicalClassName;
+
 public class BeanMatch {
 
     private static final Logger log = LoggerFactory.getLogger(BeanMatch.class);
@@ -91,8 +93,8 @@ public class BeanMatch {
             BeanProperty targetBeanProperty = matchedField.targetBeanProperty();
             if (sourceBeanProperty == null || targetBeanProperty == null) {
                 missingMatches.add(sourceBeanProperty == null ?
-                        targetBeanProperty :
-                        sourceBeanProperty);
+                                   targetBeanProperty :
+                                   sourceBeanProperty);
             }
         }
         return missingMatches;
@@ -111,8 +113,9 @@ public class BeanMatch {
         for (Map.Entry<String, BeanProperty> entry : nodes.entrySet()) {
             BeanProperty currentField = entry.getValue();
             if (currentField.isUnmatched()) {
-                log.error("{} {} has no match for property {}", side, containingClass.getCanonicalName() != null ? containingClass.getCanonicalName() : containingClass.getDeclaringClass().getCanonicalName(), entry.getKey());
-                throw new BeanNoSuchPropertyException(side + " " + containingClass.getCanonicalName() + " has no match for property " + entry.getKey());
+                String canonicalClassName = determineCanonicalClassName(containingClass);
+                log.error("{} {} has no match for property {}", side, canonicalClassName, entry.getKey());
+                throw new BeanNoSuchPropertyException(side + " " + canonicalClassName + " has no match for property " + entry.getKey());
             }
         }
     }
