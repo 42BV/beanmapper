@@ -8,6 +8,8 @@ import io.beanmapper.utils.BeanMapperTraceLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static io.beanmapper.utils.CanonicalClassName.determineCanonicalClassName;
+
 public class BeanStrictMappingRequirementsException extends RuntimeException {
 
     private static final Logger log = LoggerFactory.getLogger(BeanStrictMappingRequirementsException.class);
@@ -30,9 +32,9 @@ public class BeanStrictMappingRequirementsException extends RuntimeException {
             log.error("""
                             Missing matching properties for source [{}] {} > target [{}] {} for fields:
                             """,
-                    validationMessage.getSourceClass().getCanonicalName(),
+                    determineCanonicalClassName(validationMessage.getSourceClass()),
                     (validationMessage.isSourceStrict() ? "*" : ""),
-                    validationMessage.getTargetClass().getCanonicalName(),
+                    determineCanonicalClassName(validationMessage.getTargetClass()),
                     (validationMessage.isTargetStrict() ? "*" : ""));
 
             for (BeanProperty field : validationMessage.getFields()) {

@@ -4,6 +4,8 @@ import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
 import io.beanmapper.utils.BeanMapperPerformanceLogger;
 
+import static io.beanmapper.utils.CanonicalClassName.determineCanonicalClassName;
+
 public class StrictMappingProperties {
 
     private BeanUnproxy beanUnproxy;
@@ -89,11 +91,11 @@ public class StrictMappingProperties {
             return beanPair;
         }
         if (strictSourceSuffix != null &&
-            beanPair.getSourceClass().getCanonicalName().endsWith(strictSourceSuffix)) {
+                determineCanonicalClassName(sourceClass).endsWith(strictSourceSuffix)) {
             beanPair = beanPair.withStrictSource();
         }
         if (strictTargetSuffix != null &&
-            beanPair.getTargetClass().getCanonicalName().endsWith(strictTargetSuffix)) {
+                determineCanonicalClassName(targetClass).endsWith(strictTargetSuffix)) {
             beanPair = beanPair.withStrictTarget();
         }
         return beanPair;

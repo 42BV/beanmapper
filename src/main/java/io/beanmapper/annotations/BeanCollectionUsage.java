@@ -1,5 +1,7 @@
 package io.beanmapper.annotations;
 
+import static io.beanmapper.utils.CanonicalClassName.determineCanonicalClassName;
+
 /**
  * Determines how to deal with the target collection. If the value is set to CONSTRUCT, it
  * will also be recreated, even if it already exists. If REUSE is set, it will attempt to
@@ -34,7 +36,7 @@ public enum BeanCollectionUsage {
 
     public boolean mustConstruct(Object targetCollection) {
         if (targetCollection != null &&
-                targetCollection.getClass().getCanonicalName().startsWith("java.util.Collections.")) {
+                determineCanonicalClassName(targetCollection.getClass()).startsWith("java.util.Collections.")) {
             return true;
         }
         return this.construct || targetCollection == null;

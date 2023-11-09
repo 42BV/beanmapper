@@ -4,6 +4,7 @@ import static io.beanmapper.core.converter.collections.AnnotationClass.EMPTY_ANN
 import static io.beanmapper.core.converter.collections.CollectionElementType.EMPTY_COLLECTION_ELEMENT_TYPE;
 import static io.beanmapper.core.converter.collections.CollectionElementType.derived;
 import static io.beanmapper.core.converter.collections.CollectionElementType.set;
+import static io.beanmapper.utils.CanonicalClassName.determineCanonicalClassName;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -74,29 +75,29 @@ public class BeanMatchStore {
     }
 
     private boolean containsKeyForTargetClass(Map<String, BeanMatch> targetsForSource, BeanPair beanPair) {
-        return targetsForSource.containsKey(beanPair.getTargetClass().getCanonicalName());
+        return targetsForSource.containsKey(determineCanonicalClassName(beanPair.getTargetClass()));
     }
 
     public BeanMatch addBeanMatch(BeanMatch beanMatch) {
         Map<String, BeanMatch> targetsForSource = getTargetsForSource(beanMatch.getSourceClass());
         if (targetsForSource == null) {
             targetsForSource = new TreeMap<>();
-            store.put(beanMatch.getSourceClass().getCanonicalName(), targetsForSource);
+            store.put(determineCanonicalClassName(beanMatch.getSourceClass()), targetsForSource);
         }
         storeTarget(targetsForSource, beanMatch.getTargetClass(), beanMatch);
         return beanMatch;
     }
 
     private Map<String, BeanMatch> getTargetsForSource(Class<?> sourceClass) {
-        return store.get(sourceClass.getCanonicalName());
+        return store.get(determineCanonicalClassName(sourceClass));
     }
 
     private BeanMatch getTarget(Map<String, BeanMatch> targetsForSource, Class<?> target) {
-        return targetsForSource.get(target.getCanonicalName());
+        return targetsForSource.get(determineCanonicalClassName(target));
     }
 
     private void storeTarget(Map<String, BeanMatch> targetsForSource, Class<?> target, BeanMatch beanMatch) {
-        targetsForSource.put(target.getCanonicalName(), beanMatch);
+        targetsForSource.put(determineCanonicalClassName(target), beanMatch);
     }
 
     private BeanMatch determineBeanMatch(BeanPair beanPair) {
@@ -283,11 +284,9 @@ public class BeanMatchStore {
                         new BeanPropertyCreator(matchupDirection.getInverse(), otherType, wrapper.getName())
                                 .determineNodesForPath());
             } catch (BeanNoSuchPropertyException err) {
-
                     BeanMapperTraceLogger.log("""
                             BeanNoSuchPropertyException thrown by BeanMatchStore#dealWithBeanProperty(BeanPropertyMatchupDirection, Map<String, BeanProperty>, Class, PropertyAccessor), for {}.
                             {}""", wrapper.getName(), err.getMessage());
-
             }
         }
         return wrapper;

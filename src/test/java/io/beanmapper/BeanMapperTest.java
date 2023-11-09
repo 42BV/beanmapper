@@ -130,19 +130,7 @@ import io.beanmapper.testmodel.encapsulate.ResultOneToMany;
 import io.beanmapper.testmodel.encapsulate.source_annotated.Car;
 import io.beanmapper.testmodel.encapsulate.source_annotated.CarDriver;
 import io.beanmapper.testmodel.encapsulate.source_annotated.Driver;
-import io.beanmapper.testmodel.enums.ColorEntity;
-import io.beanmapper.testmodel.enums.ColorResult;
-import io.beanmapper.testmodel.enums.ColorStringResult;
-import io.beanmapper.testmodel.enums.Day;
-import io.beanmapper.testmodel.enums.DayEnumSourceArraysAsList;
-import io.beanmapper.testmodel.enums.EnumSourceArraysAsList;
-import io.beanmapper.testmodel.enums.EnumTargetList;
-import io.beanmapper.testmodel.enums.RGB;
-import io.beanmapper.testmodel.enums.UserRole;
-import io.beanmapper.testmodel.enums.UserRoleResult;
-import io.beanmapper.testmodel.enums.WeekEntity;
-import io.beanmapper.testmodel.enums.WeekResult;
-import io.beanmapper.testmodel.enums.WeekStringResult;
+import io.beanmapper.testmodel.enums.*;
 import io.beanmapper.testmodel.ignore.IgnoreSource;
 import io.beanmapper.testmodel.ignore.IgnoreTarget;
 import io.beanmapper.testmodel.initially_unmatched_source.SourceWithUnmatchedField;
@@ -1975,6 +1963,13 @@ class BeanMapperTest {
         assertNotNull(result.children.get("Klaas"));
         assertEquals("Klaas", result.children.get("Klaas").value);
         assertNull(result.children.get("Klaas").children);
+    }
+
+    @Test
+    void testEnumWithAbstractMethod() {
+        WithAbstractMethod enumValue = WithAbstractMethod.class.getEnumConstants()[0];
+        ComplexEnumResult result = beanMapper.map(enumValue, ComplexEnumResult.class);
+        assertEquals(enumValue.name(), result.name);
     }
 
     private MyEntity createMyEntity() {
