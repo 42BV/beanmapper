@@ -43,6 +43,8 @@ import io.beanmapper.exceptions.BeanNoLogicSecuredCheckSetException;
 import io.beanmapper.exceptions.BeanNoRoleSecuredCheckSetException;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
 import io.beanmapper.exceptions.FieldShadowingException;
+import io.beanmapper.routine.AnyToEnumRoutine;
+import io.beanmapper.routine.Routines;
 import io.beanmapper.shared.ReflectionUtils;
 import io.beanmapper.testmodel.anonymous.Book;
 import io.beanmapper.testmodel.anonymous.BookForm;
@@ -2019,5 +2021,34 @@ class BeanMapperTest {
         address.setCountry(new Country("Nederland"));
         house.setAddress(address);
         return house;
+    }
+
+    @Test
+    void testAnyToEnumRoutine() {
+        var obj = new Object() {
+            @Override
+            public String toString() {
+                return "NL";
+            }
+        };
+        var result = new AnyToEnumRoutine<>(CountryEnum.class).apply(obj);
+        assertEquals(CountryEnum.NL, result);
+    }
+
+    @Test
+    void testNoOpRoutine() {
+        String a = "Hello, World!";
+        assertEquals(a, Routines.noOpRoutine().apply(a));
+    }
+
+    @Test
+    void testToStringRoutine() {
+        Object a = new Object() {
+            public String toString() {
+                return "Hello, World!";
+            }
+        };
+
+        assertEquals(a.toString(), Routines.toStringRoutine().apply(a));
     }
 }

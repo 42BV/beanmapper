@@ -18,7 +18,7 @@ public class AnyToEnumConverter extends AbstractBeanConverter<Object, Enum<?>> {
     }
 
     private static boolean isNotEmpty(String name) {
-        return name != null && name.trim().length() > 0;
+        return name != null && !name.trim().isEmpty();
     }
 
     /**
