@@ -5,6 +5,7 @@ import java.util.List;
 
 import io.beanmapper.BeanMapper;
 import io.beanmapper.config.Configuration;
+import io.beanmapper.utils.BeanMapperLogger;
 
 public class MapToDynamicClassStrategy extends AbstractMapStrategy {
 
@@ -48,21 +49,25 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
         Class<?> targetClass = getConfiguration().getTargetClass();
         Object target = getConfiguration().getTarget();
 
-        Object dynSource = getBeanMapper()
-                .wrap()
-                .downsizeSource(null)
-                .setTarget(target)
-                .setTargetClass(dynamicClass)
-                .build()
-                .map(source);
+        Object dynSource = BeanMapperLogger.logTimed("Recursively calling BeanMapper#map(Object), to map source of type %s, to target of type %s."
+                        .formatted(source.getClass().getCanonicalName(), dynamicClass.getCanonicalName()),
+                () -> getBeanMapper()
+                        .wrap()
+                        .downsizeSource(null)
+                        .setTarget(target)
+                        .setTargetClass(dynamicClass)
+                        .build()
+                        .map(source));
 
-        return getBeanMapper()
-                .wrap()
-                .downsizeSource(null)
-                .setTarget(target)
-                .setTargetClass(targetClass)
-                .build()
-                .map(dynSource);
+        return BeanMapperLogger.logTimed("Recursively calling BeanMapper#map(Object), to map source of type %s, to type %s."
+                        .formatted(dynSource.getClass().getCanonicalName(), targetClass != null ? targetClass.getCanonicalName() : "null"),
+                () -> getBeanMapper()
+                        .wrap()
+                        .downsizeSource(null)
+                        .setTarget(target)
+                        .setTargetClass(targetClass)
+                        .build()
+                        .map(dynSource));
     }
 
     public <S, T> T downsizeTarget(S source, List<String> downsizeTargetFields) {
@@ -71,12 +76,13 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
                 downsizeTargetFields,
                 getConfiguration().getStrictMappingProperties());
         Class<?> collectionClass = getBeanMapper().getConfiguration().getCollectionClass();
-        return getBeanMapper()
+        return BeanMapperLogger.logTimed("Recursively calling BeanMapper#map(Object), to map source of type %s, to type %s."
+                .formatted(source.getClass().getCanonicalName(), dynamicClass.getCanonicalName()), () -> getBeanMapper()
                 .wrap()
                 .downsizeTarget(null)
                 .setCollectionClass(collectionClass)
                 .setTargetClass(dynamicClass)
                 .build()
-                .map(source);
+                .map(source));
     }
 }

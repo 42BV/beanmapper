@@ -2,6 +2,8 @@ package io.beanmapper.config;
 
 import java.util.function.Supplier;
 
+import io.beanmapper.utils.BeanMapperLogger;
+
 public class OverrideField<T> {
 
     private final Supplier<T> supplier;
@@ -31,9 +33,10 @@ public class OverrideField<T> {
         if (this.block) {
             return null;
         }
-        return this.value == null ?
-                this.supplier.get() :
-                this.value;
+        if (this.value == null) {
+            this.value = BeanMapperLogger.logTimed("Retrieving nested configuration field.", this.supplier);
+        }
+        return value;
     }
 
 }

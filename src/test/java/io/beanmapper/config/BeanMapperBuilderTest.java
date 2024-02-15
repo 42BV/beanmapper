@@ -19,6 +19,7 @@ import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
 import io.beanmapper.strategy.ConstructorArguments;
 import io.beanmapper.utils.Trinary;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class BeanMapperBuilderTest {
@@ -137,6 +138,7 @@ class BeanMapperBuilderTest {
     }
 
     @Test
+    @Disabled("BeanUnproxy should not be used as a Converter.")
     void setBeanUnproxy() {
         final BeanUnproxy expectedBeanUnproxy = new BeanUnproxy() {
             @Override

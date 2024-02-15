@@ -10,13 +10,9 @@ import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
 import io.beanmapper.exceptions.BeanMappingException;
 import io.beanmapper.exceptions.BeanNoLogicSecuredCheckSetException;
 import io.beanmapper.exceptions.BeanNoRoleSecuredCheckSetException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.beanmapper.utils.BeanMapperLogger;
 
 public class BeanPropertyMatch {
-
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final BeanMatch beanMatch;
     private final Object source;
@@ -81,7 +77,7 @@ public class BeanPropertyMatch {
             if (enforcedSecuredProperties) {
                 throw new BeanNoLogicSecuredCheckSetException(message);
             }
-            logger.warn(message);
+            BeanMapperLogger.warn(message);
             return true;
         }
         return logicSecuredCheck.isAllowed(source, target);
@@ -96,7 +92,7 @@ public class BeanPropertyMatch {
             if (enforcedSecuredProperties) {
                 throw new BeanNoRoleSecuredCheckSetException(message);
             }
-            logger.warn(message);
+            BeanMapperLogger.warn(message);
         }
     }
 

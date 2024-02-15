@@ -2,6 +2,7 @@ package io.beanmapper.config;
 
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
+import io.beanmapper.utils.BeanMapperLogger;
 
 public class StrictMappingProperties {
 
@@ -79,18 +80,20 @@ public class StrictMappingProperties {
     }
 
     public BeanPair createBeanPair(Class<?> sourceClass, Class<?> targetClass) {
-        sourceClass = beanUnproxy.unproxy(sourceClass);
-        targetClass = beanUnproxy.unproxy(targetClass);
-        BeanPair beanPair = new BeanPair(sourceClass, targetClass);
+        BeanPair beanPair = BeanMapperLogger.logTimed("Creating BeanPair, and unproxying source %s-class and target %s-class.".formatted(sourceClass.getCanonicalName(), targetClass.getCanonicalName()), () -> {
+            Class<?> unproxiedSource = beanUnproxy.unproxy(sourceClass);
+            Class<?> unproxiedTarget = beanUnproxy.unproxy(targetClass);
+            return new BeanPair(unproxiedSource, unproxiedTarget);
+        });
         if (!isApplyStrictMappingConvention()) {
             return beanPair;
         }
         if (strictSourceSuffix != null &&
-                sourceClass.getCanonicalName().endsWith(strictSourceSuffix)) {
+            beanPair.getSourceClass().getCanonicalName().endsWith(strictSourceSuffix)) {
             beanPair = beanPair.withStrictSource();
         }
         if (strictTargetSuffix != null &&
-                targetClass.getCanonicalName().endsWith(strictTargetSuffix)) {
+            beanPair.getTargetClass().getCanonicalName().endsWith(strictTargetSuffix)) {
             beanPair = beanPair.withStrictTarget();
         }
         return beanPair;
