@@ -12,10 +12,8 @@ import java.util.Set;
 import io.beanmapper.BeanMapper;
 import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.core.converter.BeanConverter;
+import io.beanmapper.utils.BeanMapperLogger;
 import io.beanmapper.utils.Classes;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This converter facilitates the conversion of an arbitrary amount of Optional wrappers, however, support for complex
@@ -25,8 +23,6 @@ import org.slf4j.LoggerFactory;
  */
 public class OptionalToObjectConverter implements BeanConverter {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
     /**
      * {@inheritDoc}
      */
@@ -35,13 +31,11 @@ public class OptionalToObjectConverter implements BeanConverter {
         Object obj = ((Optional<?>) source).orElse(null);
 
         if (targetClass.equals(Optional.class)) {
-            if (logger.isDebugEnabled()) {
-                // Not always possible to get the actual source class, so just report the name of the field. Debug log will show the call stack.
-                logger.debug("Converting Optional to Optional. Perhaps the target does not need to be an Optional?\nSource-field: {}\nTarget: {}.{}",
-                        beanPropertyMatch.getSourceFieldName(),
-                        beanPropertyMatch.getTarget().getClass(),
-                        beanPropertyMatch.getTargetFieldName());
-            }
+            // Not always possible to get the actual source class, so just report the name of the field. Debug log will show the call stack.
+            BeanMapperLogger.log("Converting Optional to Optional. Perhaps the target does not need to be an Optional?\nSource-field: {}\nTarget: {}.{}",
+                    beanPropertyMatch.getSourceFieldName(),
+                    beanPropertyMatch.getTarget().getClass(),
+                    beanPropertyMatch.getTargetFieldName());
             return targetClass.cast(convertToOptional(beanMapper, (Optional<?>) source, beanPropertyMatch));
         } else if (obj == null) {
             return null;

@@ -12,18 +12,14 @@ import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanPropertyNoMatchException;
+import io.beanmapper.utils.BeanMapperLogger;
 import io.beanmapper.utils.Records;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class AbstractMapStrategy implements MapStrategy {
 
     private static final String INDENT = "    ";
 
     private static final String ARROW = " -> ";
-
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final BeanMapper beanMapper;
     private final Configuration configuration;
@@ -111,7 +107,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
         Object encapsulatedSource = beanPropertyMatch.getSourceObject();
         Object target;
         if (encapsulatedSource != null) {
-            logger.debug("    {");
+            BeanMapperLogger.log("    {");
             BeanMapper localBeanMapper = getBeanMapper()
                     .wrap()
                     .setParent(beanPropertyMatch.getTarget())
@@ -122,7 +118,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
                 target = localBeanMapper.map(encapsulatedSource, beanPropertyMatch.getTargetObject());
             }
             beanPropertyMatch.writeObject(target);
-            logger.debug("    }");
+            BeanMapperLogger.log("    }");
         }
     }
 
@@ -139,7 +135,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
         BeanConverter converter = getConverterOptional(valueClass, targetClass);
 
         if (converter != null) {
-            logger.debug("{}{}{}", INDENT, converter.getClass().getSimpleName(), ARROW);
+            BeanMapperLogger.log("{}{}{}", INDENT, converter.getClass().getSimpleName(), ARROW);
             BeanMapper wrappedBeanMapper = beanMapper
                     .wrap()
                     .setParent(beanPropertyMatch.getTarget())
@@ -211,9 +207,9 @@ public abstract class AbstractMapStrategy implements MapStrategy {
             return;
         }
         if (beanPropertyMatch.isMappable()) {
-            logger.debug("{}{}", beanPropertyMatch.sourceToString(), ARROW);
+            BeanMapperLogger.log("{}{}", beanPropertyMatch.sourceToString(), ARROW);
             copySourceToTarget(beanPropertyMatch);
-            logger.debug("{}{}", INDENT, beanPropertyMatch.targetToString());
+            BeanMapperLogger.log("{}{}", INDENT, beanPropertyMatch.targetToString());
         }
     }
 

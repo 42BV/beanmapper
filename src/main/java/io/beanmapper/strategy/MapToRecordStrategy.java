@@ -26,6 +26,7 @@ import io.beanmapper.exceptions.BeanInstantiationException;
 import io.beanmapper.exceptions.RecordConstructorConflictException;
 import io.beanmapper.exceptions.RecordNoAvailableConstructorsExceptions;
 import io.beanmapper.exceptions.SourceFieldAccessException;
+import io.beanmapper.utils.BeanMapperLogger;
 import io.beanmapper.utils.Records;
 
 /**
@@ -56,9 +57,8 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
         if (getConfiguration().isConverterChoosable()) {
             BeanConverter converter = getConverterOptional(source.getClass(), this.getConfiguration().getTargetClass());
             if (converter != null) {
-                if (logger.isDebugEnabled())
-                    logger.debug("Converter called for source of class {}, while mapping to class {}\t{}->", source.getClass(), targetClass,
-                            converter.getClass().getSimpleName());
+                BeanMapperLogger.log("Converter called for source of class {}, while mapping to class {}\t{}->", source.getClass(), targetClass,
+                        converter.getClass().getSimpleName());
                 return converter.convert(getBeanMapper(), source, targetClass, null);
             }
         }
@@ -76,8 +76,8 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
      * present.
      *
      * @param sourceClass The class of the source-object.
+     * @param <S>         The type of the sourceClass.
      * @return A Map containing the fields of the source-class, mapped by the name of the field, or the value of an available BeanAlias.
-     * @param <S> The type of the sourceClass.
      */
     private <S> Map<String, Field> getFieldsOfClass(final Class<S> sourceClass) {
         return Arrays.stream(sourceClass.getDeclaredFields())
@@ -95,8 +95,8 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
      * BeanAlias-annotation.
      *
      * @param source The source-object, of which the fields will be mapped.
-     * @return The fields of the source-object, mapped to the
      * @param <S>
+     * @return The fields of the source-object, mapped to the
      */
     private <S> Map<String, Field> getSourceFields(final S source) {
         Map<String, Field> sourceFields = new HashMap<>();
@@ -115,8 +115,8 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
      * from an available {@link io.beanmapper.annotations.BeanProperty BeanProperty}-annotation.</p>
      *
      * @param targetClass The class of the target record.
+     * @param <T>         The type of the target record.
      * @return The names of the RecordComponents as a String-array.
-     * @param <T> The type of the target record.
      */
     private <T> String[] getNamesOfRecordComponents(final Class<T> targetClass) {
         return Arrays.stream(targetClass.getRecordComponents())
@@ -137,8 +137,8 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
      *
      * @param targetClass The target record.
      * @param constructor The target constructor.
+     * @param <T>         The type of the target class.
      * @return The String-array containing the names of the constructor-parameters.
-     * @param <T> The type of the target class.
      */
     private <T> String[] getNamesOfConstructorParameters(final Class<T> targetClass, final Constructor<T> constructor) {
         if (constructor.isAnnotationPresent(BeanRecordConstruct.class)) {
@@ -176,7 +176,7 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
             } else {
                 var parameterType = parameters[i].getType();
                 if (Collection.class.isAssignableFrom(parameterType) || Optional.class.isAssignableFrom(parameterType)
-                        || Map.class.isAssignableFrom(parameterType)) {
+                    || Map.class.isAssignableFrom(parameterType)) {
                     arguments[i] = this.getBeanMapper().map(values.get(i), (ParameterizedType) parameters[i].getParameterizedType());
                 } else {
                     arguments[i] = values.get(i) != null && parameters[i].getType().equals(values.get(i).getClass()) ?
@@ -232,8 +232,8 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
             var recordConstruct = (BeanRecordConstruct) canonicalConstructor.getAnnotation(BeanRecordConstruct.class);
             if (recordConstruct.constructMode() == BeanRecordConstructMode.EXCLUDE)
                 throw new RecordNoAvailableConstructorsExceptions((Class<? extends Record>) targetClass, "All available constructors have been "
-                        + "annotated with @RecordConstruct(constructMode = RecordConstructMode.EXCLUDE). To enable mapping to the target record, please make at "
-                        + "least one constructor available.");
+                                                                                                         + "annotated with @RecordConstruct(constructMode = RecordConstructMode.EXCLUDE). To enable mapping to the target record, please make at "
+                                                                                                         + "least one constructor available.");
         }
         return canonicalConstructor;
     }

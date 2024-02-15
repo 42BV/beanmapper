@@ -12,20 +12,17 @@ import java.util.Arrays;
 import io.beanmapper.BeanMapper;
 import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.strategy.ConstructorArguments;
+import io.beanmapper.utils.BeanMapperLogger;
 import io.beanmapper.utils.DefaultValues;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class DefaultBeanInitializer implements BeanInitializer {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * {@inheritDoc}
      */
     @Override
     public <T> T instantiate(Class<T> beanClass, ConstructorArguments arguments) {
+        BeanMapperLogger.log("Creating a new instance of type %s, using reflection.".formatted(beanClass));
         try {
             if (arguments == null) {
                 return beanClass.getConstructor().newInstance();
@@ -34,7 +31,7 @@ public class DefaultBeanInitializer implements BeanInitializer {
             var constructorParameterTypes = Arrays.stream(constructor.getParameters()).map(Parameter::getParameterizedType).toArray(Type[]::new);
             return beanClass.getConstructor(arguments.getTypes()).newInstance(mapParameterizedArguments(constructorParameterTypes, arguments.getValues()));
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            logger.error("Could not instantiate bean of class %s. Returning the default value associated with the given type. %s".formatted(beanClass.getName(),
+            BeanMapperLogger.error("Could not instantiate bean of class %s. Returning the default value associated with the given type. %s".formatted(beanClass.getName(),
                     e.getMessage()));
             return DefaultValues.defaultValueFor(beanClass);
         }
