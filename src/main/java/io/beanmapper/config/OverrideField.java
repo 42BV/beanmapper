@@ -2,7 +2,7 @@ package io.beanmapper.config;
 
 import java.util.function.Supplier;
 
-import io.beanmapper.utils.BeanMapperLogger;
+import io.beanmapper.utils.BeanMapperPerformanceLogger;
 
 public class OverrideField<T> {
 
@@ -34,7 +34,7 @@ public class OverrideField<T> {
             return null;
         }
         if (this.value == null) {
-            this.value = BeanMapperLogger.logTimed("Retrieving nested configuration field.", this.supplier);
+            this.value = BeanMapperPerformanceLogger.runTimedTask("Retrieving nested configuration field.", this.supplier);
         }
         return value;
     }

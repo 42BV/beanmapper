@@ -9,6 +9,9 @@ import java.lang.reflect.Type;
 import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Reflection utilities.
  *
@@ -16,6 +19,8 @@ import io.beanmapper.exceptions.BeanNoSuchPropertyException;
  * @since Jun 24, 2015
  */
 public class Classes {
+
+    private static final Logger log = LoggerFactory.getLogger(Classes.class);
 
     /**
      * Private constructor to hide implicit public constructor of utility-class.
@@ -62,6 +67,7 @@ public class Classes {
             return ((ParameterizedType) clazz.getDeclaredField(beanPropertyMatch.getTargetFieldName())
                     .getGenericType()).getActualTypeArguments();
         } catch (NoSuchFieldException e) {
+            log.error(e.getMessage());
             throw new BeanNoSuchPropertyException(e.getMessage());
         }
     }

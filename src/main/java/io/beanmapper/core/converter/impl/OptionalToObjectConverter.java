@@ -12,7 +12,7 @@ import java.util.Set;
 import io.beanmapper.BeanMapper;
 import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.core.converter.BeanConverter;
-import io.beanmapper.utils.BeanMapperLogger;
+import io.beanmapper.utils.BeanMapperTraceLogger;
 import io.beanmapper.utils.Classes;
 
 /**
@@ -32,7 +32,7 @@ public class OptionalToObjectConverter implements BeanConverter {
 
         if (targetClass.equals(Optional.class)) {
             // Not always possible to get the actual source class, so just report the name of the field. Debug log will show the call stack.
-            BeanMapperLogger.log("Converting Optional to Optional. Perhaps the target does not need to be an Optional?\nSource-field: {}\nTarget: {}.{}",
+            BeanMapperTraceLogger.log("Converting Optional to Optional. Perhaps the target does not need to be an Optional?\nSource-field: {}\nTarget: {}.{}",
                     beanPropertyMatch.getSourceFieldName(),
                     beanPropertyMatch.getTarget().getClass(),
                     beanPropertyMatch.getTargetFieldName());

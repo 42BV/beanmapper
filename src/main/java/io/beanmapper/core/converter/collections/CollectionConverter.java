@@ -4,7 +4,7 @@ import io.beanmapper.BeanMapper;
 import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.converter.BeanConverter;
-import io.beanmapper.utils.BeanMapperLogger;
+import io.beanmapper.utils.BeanMapperPerformanceLogger;
 
 public class CollectionConverter implements BeanConverter {
 
@@ -25,7 +25,7 @@ public class CollectionConverter implements BeanConverter {
             return targetClass.cast(source);
         }
 
-        return BeanMapperLogger.logTimed("Calling BeanMapper#map(Object) recursively, to convert object of type %s, to type %s."
+        return BeanMapperPerformanceLogger.runTimedTask("Calling BeanMapper#map(Object) recursively, to convert object of type %s, to type %s."
                 .formatted(source != null
                         ? source.getClass().getCanonicalName()
                         : "null", targetClass.getCanonicalName()),

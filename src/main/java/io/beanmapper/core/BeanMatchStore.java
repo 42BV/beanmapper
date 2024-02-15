@@ -34,7 +34,7 @@ import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.exceptions.BeanMissingPathException;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
 import io.beanmapper.exceptions.FieldShadowingException;
-import io.beanmapper.utils.BeanMapperLogger;
+import io.beanmapper.utils.BeanMapperTraceLogger;
 import io.beanmapper.utils.Trinary;
 
 public class BeanMatchStore {
@@ -284,7 +284,7 @@ public class BeanMatchStore {
                                 .determineNodesForPath());
             } catch (BeanNoSuchPropertyException err) {
 
-                    BeanMapperLogger.log("""
+                    BeanMapperTraceLogger.log("""
                             BeanNoSuchPropertyException thrown by BeanMatchStore#dealWithBeanProperty(BeanPropertyMatchupDirection, Map<String, BeanProperty>, Class, PropertyAccessor), for {}.
                             {}""", wrapper.getName(), err.getMessage());
 

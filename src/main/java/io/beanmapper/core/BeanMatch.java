@@ -8,7 +8,12 @@ import java.util.Map;
 import io.beanmapper.config.BeanPair;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class BeanMatch {
+
+    private static final Logger log = LoggerFactory.getLogger(BeanMatch.class);
 
     private final BeanPair beanPair;
 
@@ -106,6 +111,7 @@ public class BeanMatch {
         for (Map.Entry<String, BeanProperty> entry : nodes.entrySet()) {
             BeanProperty currentField = entry.getValue();
             if (currentField.isUnmatched()) {
+                log.error("{} {} has no match for property {}", side, containingClass.isAnonymousClass(), entry.getKey());
                 throw new BeanNoSuchPropertyException(side + " " + containingClass.getCanonicalName() + " has no match for property " + entry.getKey());
             }
         }

@@ -26,7 +26,7 @@ import io.beanmapper.exceptions.BeanInstantiationException;
 import io.beanmapper.exceptions.RecordConstructorConflictException;
 import io.beanmapper.exceptions.RecordNoAvailableConstructorsExceptions;
 import io.beanmapper.exceptions.SourceFieldAccessException;
-import io.beanmapper.utils.BeanMapperLogger;
+import io.beanmapper.utils.BeanMapperTraceLogger;
 import io.beanmapper.utils.Records;
 
 /**
@@ -57,7 +57,7 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
         if (getConfiguration().isConverterChoosable()) {
             BeanConverter converter = getConverterOptional(source.getClass(), this.getConfiguration().getTargetClass());
             if (converter != null) {
-                BeanMapperLogger.log("Converter called for source of class {}, while mapping to class {}\t{}->", source.getClass(), targetClass,
+                BeanMapperTraceLogger.log("Converter called for source of class {}, while mapping to class {}\t{}->", source.getClass(), targetClass,
                         converter.getClass().getSimpleName());
                 return converter.convert(getBeanMapper(), source, targetClass, null);
             }
