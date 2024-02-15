@@ -10,6 +10,9 @@ import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This converter facilitates the conversion of an object to an Optional wrapping another object. This converter does
  * not support the conversion of complex datastructures, such as Collections, to Optionals. If that functionality is
@@ -17,6 +20,8 @@ import io.beanmapper.exceptions.BeanNoSuchPropertyException;
  * your specific conversion.
  */
 public class ObjectToOptionalConverter implements BeanConverter {
+
+    private static final Logger log = LoggerFactory.getLogger(ObjectToOptionalConverter.class);
 
     @Override
     public <S, T> T convert(BeanMapper beanMapper, S source, Class<T> targetClass, BeanPropertyMatch beanPropertyMatch) {
@@ -28,6 +33,7 @@ public class ObjectToOptionalConverter implements BeanConverter {
         try {
             targetField = beanPropertyMatch.getTarget().getClass().getDeclaredField(beanPropertyMatch.getTargetFieldName());
         } catch (NoSuchFieldException e) {
+            log.error(e.getMessage());
             throw new BeanNoSuchPropertyException(e.getMessage());
         }
 

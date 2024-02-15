@@ -3,8 +3,6 @@
  */
 package io.beanmapper.exceptions;
 
-import io.beanmapper.utils.BeanMapperLogger;
-
 /**
  * Exception thrown when a property could not be found.
  */
@@ -12,7 +10,5 @@ public class BeanNoSuchPropertyException extends IllegalArgumentException {
 
     public BeanNoSuchPropertyException(String message) {
         super(message);
-        BeanMapperLogger.error(message);
     }
-
 }

@@ -6,7 +6,7 @@ package io.beanmapper.core.unproxy;
 import java.util.HashSet;
 import java.util.Set;
 
-import io.beanmapper.utils.BeanMapperLogger;
+import io.beanmapper.utils.BeanMapperTraceLogger;
 
 /**
  * Unproxy that allows you to configure classes to skip.
@@ -33,7 +33,7 @@ public class SkippingBeanUnproxy implements BeanUnproxy {
      */
     @Override
     public Class<?> unproxy(Class<?> beanClass) {
-        BeanMapperLogger.log("Unproxying class %s.".formatted(beanClass != null ? beanClass.getCanonicalName() : "null"));
+        BeanMapperTraceLogger.log("Unproxying class %s.".formatted(beanClass != null ? beanClass.getCanonicalName() : "null"));
         if (isSkippedProxyClass(beanClass)) {
             return beanClass;
         }

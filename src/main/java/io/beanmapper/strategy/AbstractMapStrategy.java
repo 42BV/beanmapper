@@ -12,7 +12,7 @@ import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanPropertyNoMatchException;
-import io.beanmapper.utils.BeanMapperLogger;
+import io.beanmapper.utils.BeanMapperTraceLogger;
 import io.beanmapper.utils.Records;
 
 public abstract class AbstractMapStrategy implements MapStrategy {
@@ -107,7 +107,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
         Object encapsulatedSource = beanPropertyMatch.getSourceObject();
         Object target;
         if (encapsulatedSource != null) {
-            BeanMapperLogger.log("    {");
+            BeanMapperTraceLogger.log("    {");
             BeanMapper localBeanMapper = getBeanMapper()
                     .wrap()
                     .setParent(beanPropertyMatch.getTarget())
@@ -118,7 +118,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
                 target = localBeanMapper.map(encapsulatedSource, beanPropertyMatch.getTargetObject());
             }
             beanPropertyMatch.writeObject(target);
-            BeanMapperLogger.log("    }");
+            BeanMapperTraceLogger.log("    }");
         }
     }
 
@@ -135,7 +135,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
         BeanConverter converter = getConverterOptional(valueClass, targetClass);
 
         if (converter != null) {
-            BeanMapperLogger.log("{}{}{}", INDENT, converter.getClass().getSimpleName(), ARROW);
+            BeanMapperTraceLogger.log("{}{}{}", INDENT, converter.getClass().getSimpleName(), ARROW);
             BeanMapper wrappedBeanMapper = beanMapper
                     .wrap()
                     .setParent(beanPropertyMatch.getTarget())
@@ -207,9 +207,9 @@ public abstract class AbstractMapStrategy implements MapStrategy {
             return;
         }
         if (beanPropertyMatch.isMappable()) {
-            BeanMapperLogger.log("{}{}", beanPropertyMatch.sourceToString(), ARROW);
+            BeanMapperTraceLogger.log("{}{}", beanPropertyMatch.sourceToString(), ARROW);
             copySourceToTarget(beanPropertyMatch);
-            BeanMapperLogger.log("{}{}", INDENT, beanPropertyMatch.targetToString());
+            BeanMapperTraceLogger.log("{}{}", INDENT, beanPropertyMatch.targetToString());
         }
     }
 

@@ -6,7 +6,12 @@ import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessors;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class BeanPropertyCreator {
+
+    private static final Logger log = LoggerFactory.getLogger(BeanPropertyCreator.class);
 
     private final BeanPropertyMatchupDirection matchupDirection;
 
@@ -68,6 +73,7 @@ public class BeanPropertyCreator {
         for (String node : route.getRoute()) {
             final PropertyAccessor property = PropertyAccessors.findProperty(currentBaseClass, node);
             if (property == null) {
+                log.error("Property '{}' does not exist in: {}", node, currentBaseClass.getSimpleName());
                 throw new BeanNoSuchPropertyException("Property '" + node + "' does not exist in: " + currentBaseClass.getSimpleName());
             }
             beanProperties.push(new BeanProperty(

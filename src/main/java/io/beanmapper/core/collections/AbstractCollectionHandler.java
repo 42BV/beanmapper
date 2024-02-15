@@ -5,7 +5,7 @@ import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.config.CollectionFlusher;
 import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.exceptions.BeanCollectionUnassignableTargetCollectionTypeException;
-import io.beanmapper.utils.BeanMapperLogger;
+import io.beanmapper.utils.BeanMapperPerformanceLogger;
 import io.beanmapper.utils.Classes;
 
 public abstract class AbstractCollectionHandler<C> implements CollectionHandler<C> {
@@ -33,7 +33,7 @@ public abstract class AbstractCollectionHandler<C> implements CollectionHandler<
             BeanMapper beanMapper,
             Class<?> collectionElementClass,
             Object source) {
-        return BeanMapperLogger.logTimed("Recursively calling BeanMapper#map(Object), to map collection elements of type %s, to %s."
+        return BeanMapperPerformanceLogger.runTimedTask("Recursively calling BeanMapper#map(Object), to map collection elements of type %s, to %s."
                 .formatted(source != null
                         ? source.getClass().getCanonicalName()
                         : "null", collectionElementClass.getCanonicalName()),

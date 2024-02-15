@@ -3,10 +3,14 @@ package io.beanmapper.core;
 import java.util.Collections;
 import java.util.List;
 
-import io.beanmapper.utils.BeanMapperLogger;
+import io.beanmapper.utils.BeanMapperTraceLogger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BeanStrictMappingRequirementsException extends RuntimeException {
 
+    private static final Logger log = LoggerFactory.getLogger(BeanStrictMappingRequirementsException.class);
     private final List<BeanMatchValidationMessage> validationMessages;
 
     public BeanStrictMappingRequirementsException(BeanMatchValidationMessage validationMessage) {
@@ -23,7 +27,7 @@ public class BeanStrictMappingRequirementsException extends RuntimeException {
             if (validationMessage.isLogged()) {
                 continue;
             }
-            BeanMapperLogger.error("""
+            log.error("""
                             Missing matching properties for source [{}] {} > target [{}] {} for fields:
                             """,
                     validationMessage.getSourceClass().getCanonicalName(),
@@ -32,7 +36,7 @@ public class BeanStrictMappingRequirementsException extends RuntimeException {
                     (validationMessage.isTargetStrict() ? "*" : ""));
 
             for (BeanProperty field : validationMessage.getFields()) {
-                BeanMapperLogger.error("""
+                log.error("""
                                 > {}.{}
                                 """,
                         validationMessage.getStrictClass().getSimpleName(),
