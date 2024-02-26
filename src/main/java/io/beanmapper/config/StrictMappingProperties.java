@@ -80,7 +80,7 @@ public class StrictMappingProperties {
     }
 
     public BeanPair createBeanPair(Class<?> sourceClass, Class<?> targetClass) {
-        BeanPair beanPair = BeanMapperPerformanceLogger.runTimedTask("Creating BeanPair, and unproxying source %s-class and target %s-class.".formatted(sourceClass.getCanonicalName(), targetClass.getCanonicalName()), () -> {
+        BeanPair beanPair = BeanMapperPerformanceLogger.runTimed("%s#%s".formatted(this.getClass().getSimpleName(), "createBeanPair(Class, Class) -> BeanUnproxy#unproxy(Class)"), () -> {
             Class<?> unproxiedSource = beanUnproxy.unproxy(sourceClass);
             Class<?> unproxiedTarget = beanUnproxy.unproxy(targetClass);
             return new BeanPair(unproxiedSource, unproxiedTarget);

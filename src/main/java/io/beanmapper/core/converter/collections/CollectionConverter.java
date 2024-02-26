@@ -25,10 +25,8 @@ public class CollectionConverter implements BeanConverter {
             return targetClass.cast(source);
         }
 
-        return BeanMapperPerformanceLogger.runTimedTask("Calling BeanMapper#map(Object) recursively, to convert object of type %s, to type %s."
-                .formatted(source != null
-                        ? source.getClass().getCanonicalName()
-                        : "null", targetClass.getCanonicalName()),
+        return BeanMapperPerformanceLogger.runTimed("%s#%s"
+                .formatted(this.getClass().getSimpleName(), "convert(BeanMapper, Object, Class, BeanPropertyMatch) -> BeanMapper#map(Object)"),
                 () -> beanMapper.wrap()
                 .setCollectionClass(collectionHandler.getType())
                 .setCollectionUsage(beanPropertyMatch.getCollectionInstructions().getBeanCollectionUsage())

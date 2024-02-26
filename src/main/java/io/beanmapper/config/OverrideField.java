@@ -34,7 +34,7 @@ public class OverrideField<T> {
             return null;
         }
         if (this.value == null) {
-            this.value = BeanMapperPerformanceLogger.runTimedTask("Retrieving nested configuration field.", this.supplier);
+            this.value = BeanMapperPerformanceLogger.runTimed("%s#%s -> %s#%s".formatted(this.getClass().getSimpleName(), "get(void)", this.getClass().getSimpleName(), "get(void)"), this.supplier);
         }
         return value;
     }
