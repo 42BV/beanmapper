@@ -111,7 +111,7 @@ public class BeanMatch {
         for (Map.Entry<String, BeanProperty> entry : nodes.entrySet()) {
             BeanProperty currentField = entry.getValue();
             if (currentField.isUnmatched()) {
-                log.error("{} {} has no match for property {}", side, containingClass.isAnonymousClass(), entry.getKey());
+                log.error("{} {} has no match for property {}", side, containingClass.getCanonicalName() != null ? containingClass.getCanonicalName() : containingClass.getDeclaringClass().getCanonicalName(), entry.getKey());
                 throw new BeanNoSuchPropertyException(side + " " + containingClass.getCanonicalName() + " has no match for property " + entry.getKey());
             }
         }
