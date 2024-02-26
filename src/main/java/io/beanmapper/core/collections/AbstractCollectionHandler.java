@@ -33,10 +33,8 @@ public abstract class AbstractCollectionHandler<C> implements CollectionHandler<
             BeanMapper beanMapper,
             Class<?> collectionElementClass,
             Object source) {
-        return BeanMapperPerformanceLogger.runTimedTask("Recursively calling BeanMapper#map(Object), to map collection elements of type %s, to %s."
-                .formatted(source != null
-                        ? source.getClass().getCanonicalName()
-                        : "null", collectionElementClass.getCanonicalName()),
+        return BeanMapperPerformanceLogger.runTimed("%s#%s"
+                .formatted(this.getClass().getSimpleName(), "mapItem(BeanMapper, Class, Object) -> BeanMapper#map(Object)"),
                 () -> beanMapper.wrap()
                 .setTargetClass(collectionElementClass)
                 .setCollectionClass(null)
