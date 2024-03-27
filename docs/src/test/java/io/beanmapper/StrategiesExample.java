@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import io.beanmapper.BeanMapper;
 import io.beanmapper.config.BeanMapperBuilder;
 
 import org.junit.jupiter.api.Test;
@@ -44,8 +45,8 @@ public class StrategiesExample {
         sources.add(new Source(2L, "Piet", 50));
         sources.add(new Source(3L, "Kees", 3));
 
-        ArrayList<Target> targets = (ArrayList<Target>) new BeanMapperBuilder().build()
-                .map(sources, Target.class, ArrayList.class);
+        List<Target> targets = new BeanMapperBuilder().build()
+                .map(sources, Target.class);
 
         assertEquals(3, targets.size(), 0);
         assertEquals("Henk", targets.get(0).name);
@@ -59,7 +60,7 @@ public class StrategiesExample {
         Source source = new Source(1L, "Henk", 42);
         Target target = new Target("Piet", 12);
 
-        beanMapper.wrapConfig()
+        beanMapper.wrap()
                 .downsizeSource(Arrays.asList("age"))
                 .build()
                 .map(source, target);
@@ -73,7 +74,7 @@ public class StrategiesExample {
         BeanMapper beanMapper = new BeanMapperBuilder().build();
         Source source = new Source(1L, "Henk", 42);
 
-        Object target = beanMapper.wrapConfig()
+        Object target = beanMapper.wrap()
                 .downsizeTarget(Arrays.asList("name"))
                 .build()
                 .map(source, Target.class);
