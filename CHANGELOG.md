@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [4.1.3] - 2024-03-27
+
+### Fixed
+
+- Issue [#190](https://github.com/42BV/beanmapper/issues/190) **Enum with abstract overrides cannot be mapped.**; Due to a change in the way Class.getCanonicalName() works in newer versions of Java, this would return null for Enums with an abstract method.
+
+### Added
+
+- PR [#193](https://github.com/42BV/beanmapper/pull/193) **Create Logger, replace existing logging.**; Added performance logging and replaced regular logging with a trace-logger.
+
 ### Fixed
 
 - Issue [#181](https://github.com/42BV/beanmapper/issues/181) **RecordToAnyConverter#copyFieldsToIntermediary(Object, Map) throws a NPE if Map contains an Entry 
