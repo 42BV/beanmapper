@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Issue [#196](https://github.com/42BV/beanmapper/issues/196) **Calls to the logger should not contain a call to String.formatted(Object...)**; Fixed by removing any formatting from performance logging. Trace-logging should keep the level of detail provided by the formatting.
 - Issue [#197](https://github.com/42BV/beanmapper/issues/197) **Implement caching for Unproxy results.**; Created UnproxyResultStore, allowing for thread-safe caching and retrieval of unproxied classes.
+- Issue [#199](https://github.com/42BV/beanmapper/issues/199) **Use of OverrideField causes excessive resource consumption.**; Use of OverrideField was phased out. OverrideField itself is now deprecated for removal.
 
 ## [4.1.3] - 2024-03-27
 
