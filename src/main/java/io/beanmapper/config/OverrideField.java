@@ -6,6 +6,7 @@ import io.beanmapper.utils.BeanMapperPerformanceLogger;
 
 public class OverrideField<T> {
 
+    private static final String LOGGING_STRING = "OverrideField#get(void) -> OverrideField#get(void)";
     private final Supplier<T> supplier;
 
     private boolean block = false;
@@ -34,7 +35,7 @@ public class OverrideField<T> {
             return null;
         }
         if (this.value == null) {
-            this.value = BeanMapperPerformanceLogger.runTimed("%s#%s -> %s#%s".formatted(this.getClass().getSimpleName(), "get(void)", this.getClass().getSimpleName(), "get(void)"), this.supplier);
+            this.value = BeanMapperPerformanceLogger.runTimed(LOGGING_STRING, this.supplier);
         }
         return value;
     }

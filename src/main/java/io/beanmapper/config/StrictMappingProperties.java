@@ -8,6 +8,8 @@ import static io.beanmapper.utils.CanonicalClassName.determineCanonicalClassName
 
 public class StrictMappingProperties {
 
+    private static final String LOGGING_STRING = "StrictMappingProperties#createBeanPair(Class, Class) -> BeanUnproxy#unproxy(Class)";
+
     private BeanUnproxy beanUnproxy;
 
     /**
@@ -85,6 +87,7 @@ public class StrictMappingProperties {
         BeanPair beanPair = BeanMapperPerformanceLogger.runTimed("%s#%s".formatted(this.getClass().getSimpleName(), "createBeanPair(Class, Class) -> BeanUnproxy#unproxy(Class)"), () -> {
             Class<?> unproxiedSource = beanUnproxy.unproxy(sourceClass);
             Class<?> unproxiedTarget = beanUnproxy.unproxy(targetClass);
+        BeanPair beanPair = BeanMapperPerformanceLogger.runTimed(LOGGING_STRING, () -> {
             return new BeanPair(unproxiedSource, unproxiedTarget);
         });
         if (!isApplyStrictMappingConvention()) {

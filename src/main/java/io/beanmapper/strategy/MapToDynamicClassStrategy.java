@@ -9,6 +9,8 @@ import io.beanmapper.utils.BeanMapperPerformanceLogger;
 
 public class MapToDynamicClassStrategy extends AbstractMapStrategy {
 
+    private static final String LOGGING_STRING = "Recursively calling BeanMapper#map(Object)";
+
     public MapToDynamicClassStrategy(BeanMapper beanMapper, Configuration configuration) {
         super(beanMapper, configuration);
     }
@@ -49,8 +51,7 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
         Class<?> targetClass = getConfiguration().getTargetClass();
         Object target = getConfiguration().getTarget();
 
-        Object dynSource = BeanMapperPerformanceLogger.runTimed("Recursively calling BeanMapper#map(Object), to map source of type %s, to target of type %s."
-                        .formatted(source.getClass().getCanonicalName(), dynamicClass.getCanonicalName()),
+        Object dynSource = BeanMapperPerformanceLogger.runTimed(LOGGING_STRING,
                 () -> getBeanMapper()
                         .wrap()
                         .downsizeSource(null)
@@ -59,8 +60,7 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
                         .build()
                         .map(source));
 
-        return BeanMapperPerformanceLogger.runTimed("Recursively calling BeanMapper#map(Object), to map source of type %s, to type %s."
-                        .formatted(dynSource.getClass().getCanonicalName(), targetClass != null ? targetClass.getCanonicalName() : "null"),
+        return BeanMapperPerformanceLogger.runTimed(LOGGING_STRING,
                 () -> getBeanMapper()
                         .wrap()
                         .downsizeSource(null)
@@ -76,8 +76,7 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
                 downsizeTargetFields,
                 getConfiguration().getStrictMappingProperties());
         Class<?> collectionClass = getBeanMapper().getConfiguration().getCollectionClass();
-        return BeanMapperPerformanceLogger.runTimed("Recursively calling BeanMapper#map(Object), to map source of type %s, to type %s."
-                .formatted(source.getClass().getCanonicalName(), dynamicClass.getCanonicalName()), () -> getBeanMapper()
+        return BeanMapperPerformanceLogger.runTimed(LOGGING_STRING, () -> getBeanMapper()
                 .wrap()
                 .downsizeTarget(null)
                 .setCollectionClass(collectionClass)
