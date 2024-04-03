@@ -1,20 +1,19 @@
 package io.beanmapper.core.unproxy;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Singleton responsible for storing the results of unproxy-results. Allows for fast and thread-safe retrieval of results.
  */
 public final class UnproxyResultStore {
 
-    private static volatile UnproxyResultStore INSTANCE;
+    private static UnproxyResultStore INSTANCE;
 
     private final Map<Class<?>, Class<?>> unproxyResultClassStore;
 
     private UnproxyResultStore() {
-        unproxyResultClassStore = Collections.synchronizedMap(new HashMap<>());
+        unproxyResultClassStore = new ConcurrentHashMap<>();
     }
 
     /**
@@ -28,14 +27,9 @@ public final class UnproxyResultStore {
         return unproxyResultClassStore.computeIfAbsent(source, unproxy::unproxy);
     }
 
-    public static UnproxyResultStore getInstance() {
-        if (INSTANCE != null) {
-            return INSTANCE;
-        }
-        synchronized (UnproxyResultStore.class) {
-            if (INSTANCE == null) {
-                INSTANCE = new UnproxyResultStore();
-            }
+    public static synchronized UnproxyResultStore getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new UnproxyResultStore();
         }
         return INSTANCE;
     }
