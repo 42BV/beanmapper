@@ -21,25 +21,25 @@ public class OverrideConfiguration implements Configuration {
 
     private final Configuration parentConfiguration;
 
-    private final OverrideField<BeanInitializer> beanInitializer;
+    private BeanInitializer beanInitializer;
 
     private final List<BeanConverter> beanConverters = new ArrayList<>();
 
     private final List<BeanPair> beanPairs = new ArrayList<>();
 
-    private final OverrideField<List<String>> downsizeSourceFields;
+    private final List<String> downsizeSourceFields;
 
-    private final OverrideField<List<String>> downsizeTargetFields;
+    private final List<String> downsizeTargetFields;
 
     private Class<?> targetClass;
 
     private Object target;
 
-    private final OverrideField<Object> parent;
+    private Object parent;
 
     private Class collectionClass;
 
-    private final OverrideField<Boolean> converterChoosable;
+    private boolean converterChoosable;
 
     private final StrictMappingProperties strictMappingProperties;
 
@@ -47,13 +47,13 @@ public class OverrideConfiguration implements Configuration {
 
     private Class<?> preferredCollectionClass = null;
 
-    private final OverrideField<Boolean> enforcedSecuredProperties;
+    private boolean enforcedSecuredProperties;
 
-    private final OverrideField<Boolean> useNullValue;
+    private boolean useNullValue;
 
-    private final OverrideField<Trinary> flushAfterClear;
+    private Trinary flushAfterClear;
 
-    private final OverrideField<Boolean> flushEnabled;
+    private boolean flushEnabled;
 
     private final Map<Class<?>, Object> customDefaultValues;
 
@@ -62,29 +62,27 @@ public class OverrideConfiguration implements Configuration {
             throw new ParentConfigurationPossiblyNullException("Developer error: the parent configuration may not be null");
         }
         this.parentConfiguration = configuration;
-        this.downsizeSourceFields = new OverrideField<>(configuration::getDownsizeSource);
-        this.downsizeTargetFields = new OverrideField<>(configuration::getDownsizeTarget);
-        this.beanInitializer = new OverrideField<>(configuration::getBeanInitializer);
-        this.parent = new OverrideField<>(configuration::getParent);
-        this.converterChoosable = new OverrideField<>(configuration::isConverterChoosable);
-        this.flushAfterClear = new OverrideField<>(configuration::isFlushAfterClear);
-        this.flushEnabled = new OverrideField<>(configuration::isFlushEnabled);
-        this.useNullValue = new OverrideField<>(configuration::getUseNullValue);
+        this.downsizeSourceFields = new ArrayList<>(configuration.getDownsizeSource());
+        this.downsizeTargetFields = new ArrayList<>(configuration.getDownsizeTarget());
+        this.beanInitializer = configuration.getBeanInitializer();
+        this.parent = configuration.getParent();
+        this.converterChoosable = configuration.isConverterChoosable();
+        this.flushAfterClear = configuration.isFlushAfterClear();
+        this.flushEnabled = configuration.isFlushEnabled();
+        this.useNullValue = configuration.getUseNullValue();
         this.strictMappingProperties = configuration.getStrictMappingProperties();
-        this.enforcedSecuredProperties = new OverrideField<>(configuration::getEnforceSecuredProperties);
+        this.enforcedSecuredProperties = configuration.getEnforceSecuredProperties();
         this.customDefaultValues = new HashMap<>();
     }
 
     @Override
     public List<String> getDownsizeSource() {
-        var list = this.downsizeSourceFields.get();
-        return list != null ? list : Collections.emptyList();
+        return this.downsizeSourceFields;
     }
 
     @Override
     public List<String> getDownsizeTarget() {
-        var list = this.downsizeTargetFields.get();
-        return list != null ? list : Collections.emptyList();
+        return this.downsizeTargetFields;
     }
 
     @Override
@@ -129,22 +127,22 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public Object getParent() {
-        return parent.get();
+        return parent;
     }
 
     @Override
     public void setParent(Object parent) {
-        this.parent.set(parent);
+        this.parent = parent;
     }
 
     @Override
     public BeanInitializer getBeanInitializer() {
-        return beanInitializer.get();
+        return beanInitializer;
     }
 
     @Override
     public void setBeanInitializer(BeanInitializer beanInitializer) {
-        this.beanInitializer.set(beanInitializer);
+        this.beanInitializer = beanInitializer;
     }
 
     @Override
@@ -204,12 +202,12 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public boolean isConverterChoosable() {
-        return converterChoosable.get();
+        return converterChoosable;
     }
 
     @Override
     public void setConverterChoosable(boolean converterChoosable) {
-        this.converterChoosable.set(converterChoosable);
+        this.converterChoosable = converterChoosable;
     }
 
     @Override
@@ -287,17 +285,17 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public Trinary isFlushAfterClear() {
-        return flushAfterClear.get();
+        return flushAfterClear;
     }
 
     @Override
     public boolean isFlushEnabled() {
-        return this.flushEnabled.get();
+        return this.flushEnabled;
     }
 
     @Override
     public void setFlushEnabled(boolean flushEnabled) {
-        this.flushEnabled.set(flushEnabled);
+        this.flushEnabled = flushEnabled;
     }
 
     @Override
@@ -307,12 +305,12 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public boolean getUseNullValue() {
-        return useNullValue.get();
+        return useNullValue;
     }
 
     @Override
     public void setUseNullValue(boolean useNullValue) {
-        this.useNullValue.set(useNullValue);
+        this.useNullValue = useNullValue;
     }
 
     @Override
@@ -328,12 +326,12 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public boolean getEnforceSecuredProperties() {
-        return this.enforcedSecuredProperties.get();
+        return this.enforcedSecuredProperties;
     }
 
     @Override
     public void setEnforceSecuredProperties(boolean enforceSecuredProperties) {
-        this.enforcedSecuredProperties.set(enforceSecuredProperties);
+        this.enforcedSecuredProperties = enforceSecuredProperties;
     }
 
     @Override
@@ -394,12 +392,14 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public void downsizeSource(List<String> includeFields) {
-        this.downsizeSourceFields.set(includeFields != null ? includeFields : Collections.emptyList());
+        this.downsizeSourceFields.clear();
+        this.downsizeSourceFields.addAll(includeFields);
     }
 
     @Override
     public void downsizeTarget(List<String> includeFields) {
-        this.downsizeTargetFields.set(includeFields != null ? includeFields : Collections.emptyList());
+        this.downsizeTargetFields.clear();
+        this.downsizeTargetFields.addAll(includeFields);
     }
 
     @Override
@@ -409,7 +409,7 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public void setFlushAfterClear(Trinary flushAfterClear) {
-        this.flushAfterClear.set(flushAfterClear);
+        this.flushAfterClear = flushAfterClear;
     }
 
     /**
