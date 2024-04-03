@@ -10,6 +10,8 @@ import io.beanmapper.config.Configuration;
 import io.beanmapper.core.BeanMatch;
 import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.core.converter.BeanConverter;
+import io.beanmapper.core.unproxy.BeanUnproxy;
+import io.beanmapper.core.unproxy.UnproxyResultStore;
 import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanPropertyNoMatchException;
 import io.beanmapper.utils.BeanMapperTraceLogger;
@@ -65,8 +67,9 @@ public abstract class AbstractMapStrategy implements MapStrategy {
     }
 
     public <T, S> BeanMatch getBeanMatch(Class<S> sourceClazz, Class<T> targetClazz) {
-        Class<?> sourceClass = getConfiguration().getBeanUnproxy().unproxy(sourceClazz);
-        Class<?> targetClass = getConfiguration().getBeanUnproxy().unproxy(targetClazz);
+        BeanUnproxy unproxy = getConfiguration().getBeanUnproxy();
+        Class<?> sourceClass = UnproxyResultStore.getInstance().getOrComputeUnproxyResult(sourceClazz, unproxy);
+        Class<?> targetClass = UnproxyResultStore.getInstance().getOrComputeUnproxyResult(targetClazz, unproxy);
         return getConfiguration().getBeanMatchStore().getBeanMatch(
                 configuration.getStrictMappingProperties().createBeanPair(sourceClass, targetClass)
         );
@@ -131,7 +134,8 @@ public abstract class AbstractMapStrategy implements MapStrategy {
      */
     public Object convert(Object value, Class<?> targetClass, BeanPropertyMatch beanPropertyMatch) {
 
-        Class<?> valueClass = getConfiguration().getBeanUnproxy().unproxy(beanPropertyMatch.getSourceClass());
+        BeanUnproxy unproxy = getConfiguration().getBeanUnproxy();
+        Class<?> valueClass = UnproxyResultStore.getInstance().getOrComputeUnproxyResult(beanPropertyMatch.getSourceClass(), unproxy);
         BeanConverter converter = getConverterOptional(valueClass, targetClass);
 
         if (converter != null) {
