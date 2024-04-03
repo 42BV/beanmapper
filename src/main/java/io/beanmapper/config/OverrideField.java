@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import io.beanmapper.utils.BeanMapperPerformanceLogger;
 
+@Deprecated(forRemoval = true, since = "4.1.4")
 public class OverrideField<T> {
 
     private static final String LOGGING_STRING = "OverrideField#get(void) -> OverrideField#get(void)";
