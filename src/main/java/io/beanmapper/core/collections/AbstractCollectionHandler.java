@@ -10,7 +10,7 @@ import io.beanmapper.utils.Classes;
 
 public abstract class AbstractCollectionHandler<C> implements CollectionHandler<C> {
 
-    private static final String LOGGING_STRING = "AbstractCollectionHandler#mapItem(BeanMapper, Class, Object) -> BeanMapper#map(Object)";
+    private static final String LOGGING_STRING = "%s#mapItem(BeanMapper, Class, Object) -> BeanMapper#map(Object)";
 
     private final Class<C> type;
     private final DefaultBeanInitializer beanInitializer = new DefaultBeanInitializer();
@@ -35,13 +35,12 @@ public abstract class AbstractCollectionHandler<C> implements CollectionHandler<
             BeanMapper beanMapper,
             Class<?> collectionElementClass,
             Object source) {
-        return BeanMapperPerformanceLogger.runTimed(LOGGING_STRING,
-                () -> beanMapper.wrap()
+        return BeanMapperPerformanceLogger.runTimed(() -> beanMapper.wrap()
                 .setTargetClass(collectionElementClass)
                 .setCollectionClass(null)
                 .setConverterChoosable(true)
                 .build()
-                .map(source));
+                .map(source), LOGGING_STRING, getClass().getSimpleName());
     }
 
     @Override

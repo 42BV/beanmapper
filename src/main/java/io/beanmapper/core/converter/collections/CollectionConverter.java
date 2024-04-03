@@ -8,7 +8,7 @@ import io.beanmapper.utils.BeanMapperPerformanceLogger;
 
 public class CollectionConverter implements BeanConverter {
 
-    private static final String LOGGING_STRING = "CollectionConverter#convert(BeanMapper, Object, Class, BeanPropertyMatch) -> BeanMapper#map(Object)";
+    private static final String LOGGING_STRING = "%s#convert(BeanMapper, Object, Class, BeanPropertyMatch) -> BeanMapper#map(Object)";
 
     private final CollectionHandler<?> collectionHandler;
 
@@ -27,8 +27,7 @@ public class CollectionConverter implements BeanConverter {
             return targetClass.cast(source);
         }
 
-        return BeanMapperPerformanceLogger.runTimed(LOGGING_STRING,
-                () -> beanMapper.wrap()
+        return BeanMapperPerformanceLogger.runTimed(() -> beanMapper.wrap()
                 .setCollectionClass(collectionHandler.getType())
                 .setCollectionUsage(beanPropertyMatch.getCollectionInstructions().getBeanCollectionUsage())
                 .setPreferredCollectionClass(beanPropertyMatch.getCollectionInstructions().getPreferredCollectionClass().getAnnotationClass())
@@ -37,7 +36,7 @@ public class CollectionConverter implements BeanConverter {
                 .setTarget(beanPropertyMatch.getTargetObject())
                 .setUseNullValue()
                 .build()
-                .map(source));
+                .map(source), LOGGING_STRING, getClass().getSimpleName());
     }
 
     @Override

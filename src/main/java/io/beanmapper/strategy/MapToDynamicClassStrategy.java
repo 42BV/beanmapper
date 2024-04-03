@@ -9,7 +9,7 @@ import io.beanmapper.utils.BeanMapperPerformanceLogger;
 
 public class MapToDynamicClassStrategy extends AbstractMapStrategy {
 
-    private static final String LOGGING_STRING = "Recursively calling BeanMapper#map(Object)";
+    private static final String LOGGING_STRING = "Recursively calling BeanMapper#map(Object), to map source of type %s, to type %s.";
 
     public MapToDynamicClassStrategy(BeanMapper beanMapper, Configuration configuration) {
         super(beanMapper, configuration);
@@ -51,23 +51,21 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
         Class<?> targetClass = getConfiguration().getTargetClass();
         Object target = getConfiguration().getTarget();
 
-        Object dynSource = BeanMapperPerformanceLogger.runTimed(LOGGING_STRING,
-                () -> getBeanMapper()
+        Object dynSource = BeanMapperPerformanceLogger.runTimed(() -> getBeanMapper()
                         .wrap()
                         .downsizeSource(null)
                         .setTarget(target)
                         .setTargetClass(dynamicClass)
                         .build()
-                        .map(source));
+                        .map(source), LOGGING_STRING, source.getClass().getSimpleName(), targetClass != null ? targetClass.getSimpleName() : null);
 
-        return BeanMapperPerformanceLogger.runTimed(LOGGING_STRING,
-                () -> getBeanMapper()
+        return BeanMapperPerformanceLogger.runTimed(() -> getBeanMapper()
                         .wrap()
                         .downsizeSource(null)
                         .setTarget(target)
                         .setTargetClass(targetClass)
                         .build()
-                        .map(dynSource));
+                        .map(dynSource), LOGGING_STRING, dynSource.getClass().getSimpleName(), targetClass != null ? targetClass.getSimpleName() : null);
     }
 
     public <S, T> T downsizeTarget(S source, List<String> downsizeTargetFields) {
@@ -76,12 +74,12 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
                 downsizeTargetFields,
                 getConfiguration().getStrictMappingProperties());
         Class<?> collectionClass = getBeanMapper().getConfiguration().getCollectionClass();
-        return BeanMapperPerformanceLogger.runTimed(LOGGING_STRING, () -> getBeanMapper()
+        return BeanMapperPerformanceLogger.runTimed(() -> getBeanMapper()
                 .wrap()
                 .downsizeTarget(null)
                 .setCollectionClass(collectionClass)
                 .setTargetClass(dynamicClass)
                 .build()
-                .map(source));
+                .map(source), LOGGING_STRING, source.getClass().getSimpleName(), dynamicClass.getSimpleName());
     }
 }
