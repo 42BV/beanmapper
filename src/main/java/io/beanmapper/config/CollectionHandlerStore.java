@@ -5,6 +5,7 @@ import java.util.List;
 
 import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.unproxy.BeanUnproxy;
+import io.beanmapper.core.unproxy.UnproxyResultStore;
 
 public class CollectionHandlerStore {
 
@@ -28,7 +29,8 @@ public class CollectionHandlerStore {
             return collectionHandler;
         }
         // Unproxy the collection class in case it was anonymous and try again
-        return getCollectionHandlerFor(beanUnproxy.unproxy(clazz));
+        Class<?> unproxiedClass = UnproxyResultStore.getInstance().getOrComputeUnproxyResult(clazz, beanUnproxy);
+        return getCollectionHandlerFor(unproxiedClass);
     }
 
     private CollectionHandler getCollectionHandlerFor(Class<?> clazz) {
