@@ -25,6 +25,14 @@ public class BeanMapperPerformanceLogger {
         return result;
     }
 
+    public static <T> T runTimed(Supplier<T> task, String unformattedTaskName, Object... messageArguments) {
+        if (log.isDebugEnabled()) {
+            String taskName = unformattedTaskName.formatted(messageArguments);
+            return runTimed(taskName, task);
+        }
+        return task.get();
+    }
+
     private static class Stopwatch {
 
         private final Instant started;
