@@ -149,6 +149,13 @@ public interface Configuration {
      */
     List<BeanPair> getBeanPairs();
 
+    /**
+     * Retrieves the CollectionHandlerStore from the CoreConfiguration.
+     *
+     * @return The CollectionHandlerStore retrieved from the CoreConfiguration.
+     */
+    CollectionHandlerStore getCollectionHandlerStore();
+
     boolean isConverterChoosable();
 
     void setConverterChoosable(boolean converterChoosable);
@@ -448,4 +455,11 @@ public interface Configuration {
      * @param <V> The type of the associated value.
      */
     <T, V> V getDefaultValueForClass(Class<T> targetClass);
+
+    /**
+     * Retrieved the Map containing the custom values for classes registered to the current mapping.
+     *
+     * @return Map containing custom values per type.
+     */
+    Map<Class<?>, Object> getCustomDefaultValuesMap();
 }

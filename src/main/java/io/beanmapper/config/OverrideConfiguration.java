@@ -1,7 +1,6 @@
 package io.beanmapper.config;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +14,7 @@ import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.dynclass.ClassStore;
 import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
+import io.beanmapper.utils.DefaultValues;
 import io.beanmapper.utils.Trinary;
 
 public class OverrideConfiguration implements Configuration {
@@ -23,13 +23,33 @@ public class OverrideConfiguration implements Configuration {
 
     private BeanInitializer beanInitializer;
 
-    private final List<BeanConverter> beanConverters = new ArrayList<>();
+    private final List<BeanConverter> beanConverters;
 
-    private final List<BeanPair> beanPairs = new ArrayList<>();
+    private final List<BeanPair> beanPairs;
 
     private final List<String> downsizeSourceFields;
 
     private final List<String> downsizeTargetFields;
+
+    private final Map<Class<?>, Object> customDefaultValuesMap;
+
+    private final CollectionHandlerStore collectionHandlerStore;
+
+    private final BeanUnproxy beanUnproxy;
+
+    private final BeanMatchStore beanMatchStore;
+
+    private final List<String> packagePrefixes;
+
+    private final Map<Class<? extends LogicSecuredCheck>, LogicSecuredCheck> logicSecuredChecks;
+
+    private final List<CollectionHandler> collectionHandlers;
+
+    private final CollectionFlusher collectionFlusher;
+
+    private final RoleSecuredCheck roleSecuredCheck;
+
+    private final StrictMappingProperties strictMappingProperties;
 
     private Class<?> targetClass;
 
@@ -41,11 +61,9 @@ public class OverrideConfiguration implements Configuration {
 
     private boolean converterChoosable;
 
-    private final StrictMappingProperties strictMappingProperties;
+    private BeanCollectionUsage collectionUsage;
 
-    private BeanCollectionUsage collectionUsage = null;
-
-    private Class<?> preferredCollectionClass = null;
+    private Class<?> preferredCollectionClass;
 
     private boolean enforcedSecuredProperties;
 
@@ -54,8 +72,6 @@ public class OverrideConfiguration implements Configuration {
     private Trinary flushAfterClear;
 
     private boolean flushEnabled;
-
-    private final Map<Class<?>, Object> customDefaultValues;
 
     public OverrideConfiguration(Configuration configuration) {
         if (configuration == null) {
@@ -72,17 +88,29 @@ public class OverrideConfiguration implements Configuration {
         this.useNullValue = configuration.getUseNullValue();
         this.strictMappingProperties = configuration.getStrictMappingProperties();
         this.enforcedSecuredProperties = configuration.getEnforceSecuredProperties();
-        this.customDefaultValues = new HashMap<>();
+        this.customDefaultValuesMap = new HashMap<>(parentConfiguration.getCustomDefaultValuesMap());
+        this.collectionHandlerStore = parentConfiguration.getCollectionHandlerStore();
+        this.beanUnproxy = parentConfiguration.getBeanUnproxy();
+        this.beanMatchStore = parentConfiguration.getBeanMatchStore();
+        this.packagePrefixes = new ArrayList<>(parentConfiguration.getPackagePrefixes());
+        this.beanConverters = new ArrayList<>(parentConfiguration.getBeanConverters());
+        this.beanPairs = new ArrayList<>(parentConfiguration.getBeanPairs());
+        this.collectionUsage = parentConfiguration.getCollectionUsage();
+        this.logicSecuredChecks = parentConfiguration.getLogicSecuredChecks();
+        this.collectionHandlers = parentConfiguration.getCollectionHandlers();
+        this.collectionFlusher = parentConfiguration.getCollectionFlusher();
+        this.roleSecuredCheck = parentConfiguration.getRoleSecuredCheck();
+        this.preferredCollectionClass = parentConfiguration.getPreferredCollectionClass();
     }
 
     @Override
     public List<String> getDownsizeSource() {
-        return this.downsizeSourceFields;
+        return downsizeSourceFields;
     }
 
     @Override
     public List<String> getDownsizeTarget() {
-        return this.downsizeTargetFields;
+        return downsizeTargetFields;
     }
 
     @Override
@@ -97,17 +125,17 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public CollectionHandler getCollectionHandlerForCollectionClass() {
-        return getCollectionHandlerFor(getCollectionClass());
+        return collectionHandlerStore.getCollectionHandlerFor(collectionClass, beanUnproxy);
     }
 
     @Override
     public CollectionHandler getCollectionHandlerFor(Class<?> clazz) {
-        return parentConfiguration.getCollectionHandlerFor(clazz);
+        return getCollectionHandlerFor(clazz);
     }
 
     @Override
     public Class getTargetClass() {
-        return this.targetClass;
+        return targetClass;
     }
 
     @Override
@@ -147,7 +175,7 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public BeanUnproxy getBeanUnproxy() {
-        return parentConfiguration.getBeanUnproxy();
+        return beanUnproxy;
     }
 
     @Override
@@ -158,7 +186,7 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public BeanMatchStore getBeanMatchStore() {
-        return parentConfiguration.getBeanMatchStore();
+        return beanMatchStore;
     }
 
     @Override
@@ -168,35 +196,26 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public List<String> getPackagePrefixes() {
-        var list = parentConfiguration.getPackagePrefixes();
-        return list != null ? list : Collections.emptyList();
+        return packagePrefixes;
     }
 
     @Override
     public List<BeanConverter> getBeanConverters() {
-        List<BeanConverter> converters = new ArrayList<>();
-        converters.addAll(parentConfiguration.getBeanConverters());
-        converters.addAll(beanConverters);
-        return converters;
+        return beanConverters;
     }
 
     @Override
     public Map<Class<? extends LogicSecuredCheck>, LogicSecuredCheck> getLogicSecuredChecks() {
-        var map = this.parentConfiguration.getLogicSecuredChecks();
-        return map != null ? map : Collections.emptyMap();
+        return logicSecuredChecks;
     }
 
     @Override
     public List<CollectionHandler> getCollectionHandlers() {
-        var list = this.parentConfiguration.getCollectionHandlers();
-        return list != null ? list : Collections.emptyList();
+        return collectionHandlers;
     }
 
     @Override
     public List<BeanPair> getBeanPairs() {
-        List<BeanPair> beanPairs = new ArrayList<>();
-        beanPairs.addAll(parentConfiguration.getBeanPairs());
-        beanPairs.addAll(this.beanPairs);
         return beanPairs;
     }
 
@@ -218,12 +237,12 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public String getStrictSourceSuffix() {
-        return this.strictMappingProperties.getStrictSourceSuffix();
+        return strictMappingProperties.getStrictSourceSuffix();
     }
 
     @Override
     public void setStrictSourceSuffix(String strictSourceSuffix) {
-        this.strictMappingProperties.setStrictSourceSuffix(strictSourceSuffix);
+        strictMappingProperties.setStrictSourceSuffix(strictSourceSuffix);
     }
 
     @Override
@@ -233,7 +252,7 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public void setStrictTargetSuffix(String strictTargetSuffix) {
-        this.strictMappingProperties.setStrictTargetSuffix(strictTargetSuffix);
+        strictMappingProperties.setStrictTargetSuffix(strictTargetSuffix);
     }
 
     @Override
@@ -243,7 +262,7 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public void setApplyStrictMappingConvention(boolean applyStrictMappingConvention) {
-        this.strictMappingProperties.setApplyStrictMappingConvention(applyStrictMappingConvention);
+        strictMappingProperties.setApplyStrictMappingConvention(applyStrictMappingConvention);
     }
 
     @Override
@@ -268,14 +287,12 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public CollectionFlusher getCollectionFlusher() {
-        return parentConfiguration.getCollectionFlusher();
+        return collectionFlusher;
     }
 
     @Override
     public BeanCollectionUsage getCollectionUsage() {
-        return this.collectionUsage == null ?
-                parentConfiguration.getCollectionUsage() :
-                this.collectionUsage;
+        return collectionUsage;
     }
 
     @Override
@@ -290,7 +307,7 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public boolean isFlushEnabled() {
-        return this.flushEnabled;
+        return flushEnabled;
     }
 
     @Override
@@ -315,7 +332,7 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public RoleSecuredCheck getRoleSecuredCheck() {
-        return parentConfiguration.getRoleSecuredCheck();
+        return roleSecuredCheck;
     }
 
     @Override
@@ -326,12 +343,12 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public boolean getEnforceSecuredProperties() {
-        return this.enforcedSecuredProperties;
+        return enforcedSecuredProperties;
     }
 
     @Override
     public void setEnforceSecuredProperties(boolean enforceSecuredProperties) {
-        this.enforcedSecuredProperties = enforceSecuredProperties;
+        enforcedSecuredProperties = enforceSecuredProperties;
     }
 
     @Override
@@ -353,12 +370,12 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public void addBeanPairWithStrictSource(Class source, Class target) {
-        this.beanPairs.add(new BeanPair(source, target).withStrictSource());
+        beanPairs.add(new BeanPair(source, target).withStrictSource());
     }
 
     @Override
     public void addBeanPairWithStrictTarget(Class source, Class target) {
-        this.beanPairs.add(new BeanPair(source, target).withStrictTarget());
+        beanPairs.add(new BeanPair(source, target).withStrictTarget());
     }
 
     @Override
@@ -392,14 +409,14 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public void downsizeSource(List<String> includeFields) {
-        this.downsizeSourceFields.clear();
-        this.downsizeSourceFields.addAll(includeFields);
+        downsizeSourceFields.clear();
+        downsizeSourceFields.addAll(includeFields);
     }
 
     @Override
     public void downsizeTarget(List<String> includeFields) {
-        this.downsizeTargetFields.clear();
-        this.downsizeTargetFields.addAll(includeFields);
+        downsizeTargetFields.clear();
+        downsizeTargetFields.addAll(includeFields);
     }
 
     @Override
@@ -417,7 +434,7 @@ public class OverrideConfiguration implements Configuration {
      */
     @Override
     public <T, V> void addCustomDefaultValueForClass(Class<T> target, V value) {
-        this.customDefaultValues.put(target, value);
+        customDefaultValuesMap.put(target, value);
     }
 
     /**
@@ -425,9 +442,23 @@ public class OverrideConfiguration implements Configuration {
      */
     @Override
     public <T, V> V getDefaultValueForClass(Class<T> targetClass) {
-        return this.customDefaultValues.containsKey(targetClass)
-                ? (V) this.customDefaultValues.get(targetClass)
-                : this.parentConfiguration.getDefaultValueForClass(targetClass);
+        V value = (V) customDefaultValuesMap.get(targetClass);
+        return value != null ? value : DefaultValues.defaultValueFor(targetClass);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CollectionHandlerStore getCollectionHandlerStore() {
+        return collectionHandlerStore;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<Class<?>, Object> getCustomDefaultValuesMap() {
+        return customDefaultValuesMap;
+    }
 }

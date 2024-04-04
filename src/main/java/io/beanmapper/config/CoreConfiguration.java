@@ -430,9 +430,8 @@ public class CoreConfiguration implements Configuration {
      */
     @Override
     public <T, V> V getDefaultValueForClass(Class<T> targetClass) {
-        return this.customDefaultValueMap.containsKey(targetClass)
-                ? (V) this.customDefaultValueMap.get(targetClass)
-                : DefaultValues.defaultValueFor(targetClass);
+        Object defaultValue = customDefaultValueMap.get(targetClass);
+        return defaultValue != null ? (V) defaultValue : DefaultValues.defaultValueFor(targetClass);
     }
 
     /**
@@ -441,5 +440,21 @@ public class CoreConfiguration implements Configuration {
     @Override
     public <T, V> void addCustomDefaultValueForClass(Class<T> targetClass, V value) {
         this.customDefaultValueMap.put(targetClass, value);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CollectionHandlerStore getCollectionHandlerStore() {
+        return this.collectionHandlerStore;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<Class<?>, Object> getCustomDefaultValuesMap() {
+        return customDefaultValueMap;
     }
 }
