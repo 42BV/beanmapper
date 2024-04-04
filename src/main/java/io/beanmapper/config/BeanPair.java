@@ -1,5 +1,7 @@
 package io.beanmapper.config;
 
+import java.util.Objects;
+
 public class BeanPair {
 
     private final Class<?> sourceClass;
@@ -44,4 +46,8 @@ public class BeanPair {
                         currentTargetClass.isAssignableFrom(targetClass);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(sourceClass, targetClass, sourceStrict, targetStrict);
+    }
 }

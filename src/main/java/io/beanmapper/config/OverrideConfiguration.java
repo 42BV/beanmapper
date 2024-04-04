@@ -15,6 +15,7 @@ import io.beanmapper.core.converter.BeanConverterStore;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.dynclass.ClassStore;
 import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
+import io.beanmapper.execution_plan.ExecutionPlan;
 import io.beanmapper.utils.DefaultValues;
 import io.beanmapper.utils.Trinary;
 
@@ -363,7 +364,6 @@ public class OverrideConfiguration implements Configuration {
     @Override
     public void addConverter(BeanConverter converter) {
         beanConverters.add(converter);
-
     }
 
     @Override
@@ -480,5 +480,15 @@ public class OverrideConfiguration implements Configuration {
     @Override
     public <S, T> BeanConverter getBeanConverter(Class<S> source, Class<T> target) {
         return beanConverterStore.get(source, target);
+    }
+
+    @Override
+    public <S, T> ExecutionPlan<S, T> getExecutionPlan() {
+        return null;
+    }
+
+    @Override
+    public <S, T> ExecutionPlan<S, T> setExecutionPlan(ExecutionPlan<S, T> executionPlan) {
+        return null;
     }
 }

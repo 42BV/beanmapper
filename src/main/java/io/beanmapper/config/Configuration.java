@@ -12,6 +12,7 @@ import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.converter.BeanConverterStore;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.dynclass.ClassStore;
+import io.beanmapper.execution_plan.ExecutionPlan;
 import io.beanmapper.utils.Trinary;
 
 public interface Configuration {
@@ -467,4 +468,8 @@ public interface Configuration {
     BeanConverterStore getBeanConverterStore();
 
     <S, T> BeanConverter getBeanConverter(Class<S> source, Class<T> target);
+
+    <S, T> ExecutionPlan<S, T> getExecutionPlan();
+
+    <S, T> ExecutionPlan<S, T> setExecutionPlan(ExecutionPlan<S, T> executionPlan);
 }
