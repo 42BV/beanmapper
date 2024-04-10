@@ -7,15 +7,15 @@ import java.util.Map;
 
 import io.beanmapper.config.BeanPair;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
+import io.beanmapper.utils.CanonicalClassNameStore;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static io.beanmapper.utils.CanonicalClassName.determineCanonicalClassName;
-
 public class BeanMatch {
 
     private static final Logger log = LoggerFactory.getLogger(BeanMatch.class);
+    private static final CanonicalClassNameStore CLASS_NAME_STORE = CanonicalClassNameStore.getInstance();
 
     private final BeanPair beanPair;
 
@@ -113,7 +113,7 @@ public class BeanMatch {
         for (Map.Entry<String, BeanProperty> entry : nodes.entrySet()) {
             BeanProperty currentField = entry.getValue();
             if (currentField.isUnmatched()) {
-                String canonicalClassName = determineCanonicalClassName(containingClass);
+                String canonicalClassName = CLASS_NAME_STORE.getOrComputeClassName(containingClass);
                 log.error("{} {} has no match for property {}", side, canonicalClassName, entry.getKey());
                 throw new BeanNoSuchPropertyException(side + " " + canonicalClassName + " has no match for property " + entry.getKey());
             }

@@ -4,7 +4,6 @@ import static io.beanmapper.core.converter.collections.AnnotationClass.EMPTY_ANN
 import static io.beanmapper.core.converter.collections.CollectionElementType.EMPTY_COLLECTION_ELEMENT_TYPE;
 import static io.beanmapper.core.converter.collections.CollectionElementType.derived;
 import static io.beanmapper.core.converter.collections.CollectionElementType.set;
-import static io.beanmapper.utils.CanonicalClassName.determineCanonicalClassName;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -36,9 +35,12 @@ import io.beanmapper.exceptions.BeanMissingPathException;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
 import io.beanmapper.exceptions.FieldShadowingException;
 import io.beanmapper.utils.BeanMapperTraceLogger;
+import io.beanmapper.utils.CanonicalClassNameStore;
 import io.beanmapper.utils.Trinary;
 
 public class BeanMatchStore {
+
+    private static final CanonicalClassNameStore CLASS_NAME_STORE = CanonicalClassNameStore.getInstance();
 
     private final CollectionHandlerStore collectionHandlerStore;
 
@@ -75,29 +77,29 @@ public class BeanMatchStore {
     }
 
     private boolean containsKeyForTargetClass(Map<String, BeanMatch> targetsForSource, BeanPair beanPair) {
-        return targetsForSource.containsKey(determineCanonicalClassName(beanPair.getTargetClass()));
+        return targetsForSource.containsKey(CLASS_NAME_STORE.getOrComputeClassName(beanPair.getTargetClass()));
     }
 
     public BeanMatch addBeanMatch(BeanMatch beanMatch) {
         Map<String, BeanMatch> targetsForSource = getTargetsForSource(beanMatch.getSourceClass());
         if (targetsForSource == null) {
             targetsForSource = new TreeMap<>();
-            store.put(determineCanonicalClassName(beanMatch.getSourceClass()), targetsForSource);
+            store.put(CLASS_NAME_STORE.getOrComputeClassName(beanMatch.getSourceClass()), targetsForSource);
         }
         storeTarget(targetsForSource, beanMatch.getTargetClass(), beanMatch);
         return beanMatch;
     }
 
     private Map<String, BeanMatch> getTargetsForSource(Class<?> sourceClass) {
-        return store.get(determineCanonicalClassName(sourceClass));
+        return store.get(CLASS_NAME_STORE.getOrComputeClassName(sourceClass));
     }
 
     private BeanMatch getTarget(Map<String, BeanMatch> targetsForSource, Class<?> target) {
-        return targetsForSource.get(determineCanonicalClassName(target));
+        return targetsForSource.get(CLASS_NAME_STORE.getOrComputeClassName(target));
     }
 
     private void storeTarget(Map<String, BeanMatch> targetsForSource, Class<?> target, BeanMatch beanMatch) {
-        targetsForSource.put(determineCanonicalClassName(target), beanMatch);
+        targetsForSource.put(CLASS_NAME_STORE.getOrComputeClassName(target), beanMatch);
     }
 
     private BeanMatch determineBeanMatch(BeanPair beanPair) {

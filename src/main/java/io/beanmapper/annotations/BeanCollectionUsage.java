@@ -1,6 +1,6 @@
 package io.beanmapper.annotations;
 
-import static io.beanmapper.utils.CanonicalClassName.determineCanonicalClassName;
+import io.beanmapper.utils.CanonicalClassNameStore;
 
 /**
  * Determines how to deal with the target collection. If the value is set to CONSTRUCT, it
@@ -22,6 +22,7 @@ public enum BeanCollectionUsage {
      */
     CLEAR(false, true);
 
+    private static final CanonicalClassNameStore CLASS_NAME_STORE = CanonicalClassNameStore.getInstance();
     private final boolean construct;
     private final boolean clear;
 
@@ -36,7 +37,7 @@ public enum BeanCollectionUsage {
 
     public boolean mustConstruct(Object targetCollection) {
         if (targetCollection != null &&
-                determineCanonicalClassName(targetCollection.getClass()).startsWith("java.util.Collections.")) {
+                CLASS_NAME_STORE.getOrComputeClassName(targetCollection.getClass()).startsWith("java.util.Collections.")) {
             return true;
         }
         return this.construct || targetCollection == null;
