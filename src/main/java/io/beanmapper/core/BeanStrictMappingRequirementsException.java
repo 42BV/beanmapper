@@ -3,16 +3,16 @@ package io.beanmapper.core;
 import java.util.Collections;
 import java.util.List;
 
-import io.beanmapper.utils.BeanMapperTraceLogger;
+import io.beanmapper.utils.CanonicalClassNameStore;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static io.beanmapper.utils.CanonicalClassName.determineCanonicalClassName;
-
 public class BeanStrictMappingRequirementsException extends RuntimeException {
 
     private static final Logger log = LoggerFactory.getLogger(BeanStrictMappingRequirementsException.class);
+    private static final CanonicalClassNameStore CLASS_NAME_STORE = CanonicalClassNameStore.getInstance();
+
     private final List<BeanMatchValidationMessage> validationMessages;
 
     public BeanStrictMappingRequirementsException(BeanMatchValidationMessage validationMessage) {
@@ -32,9 +32,9 @@ public class BeanStrictMappingRequirementsException extends RuntimeException {
             log.error("""
                             Missing matching properties for source [{}] {} > target [{}] {} for fields:
                             """,
-                    determineCanonicalClassName(validationMessage.getSourceClass()),
+                    CLASS_NAME_STORE.getOrComputeClassName(validationMessage.getSourceClass()),
                     (validationMessage.isSourceStrict() ? "*" : ""),
-                    determineCanonicalClassName(validationMessage.getTargetClass()),
+                    CLASS_NAME_STORE.getOrComputeClassName(validationMessage.getTargetClass()),
                     (validationMessage.isTargetStrict() ? "*" : ""));
 
             for (BeanProperty field : validationMessage.getFields()) {
