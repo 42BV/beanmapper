@@ -283,10 +283,17 @@ public abstract class AbstractMapStrategy implements MapStrategy {
 
     public BeanConverter getConverterOptional(Class<?> sourceClass, Class<?> targetClass) {
 
+        BeanConverter beanConverter = configuration.getBeanConverter(sourceClass, targetClass);
+
+        if (beanConverter != null) {
+            return beanConverter;
+        }
+
         // Retrieve the first supported converter
-        for (BeanConverter beanConverter : getConfiguration().getBeanConverters()) {
-            if (beanConverter != null && beanConverter.match(sourceClass, targetClass)) {
-                return beanConverter;
+        for (BeanConverter converter : getConfiguration().getBeanConverters()) {
+            if (converter != null && converter.match(sourceClass, targetClass)) {
+                configuration.getBeanConverterStore().add(sourceClass, targetClass, converter);
+                return converter;
             }
         }
 

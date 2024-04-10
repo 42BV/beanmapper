@@ -9,6 +9,7 @@ import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
+import io.beanmapper.core.converter.BeanConverterStore;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.dynclass.ClassStore;
 import io.beanmapper.utils.Trinary;
@@ -462,4 +463,8 @@ public interface Configuration {
      * @return Map containing custom values per type.
      */
     Map<Class<?>, Object> getCustomDefaultValuesMap();
+
+    BeanConverterStore getBeanConverterStore();
+
+    <S, T> BeanConverter getBeanConverter(Class<S> source, Class<T> target);
 }
