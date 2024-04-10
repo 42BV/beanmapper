@@ -24,7 +24,12 @@ public final class UnproxyResultStore {
      * @return The unproxied class.
      */
     public Class<?> getOrComputeUnproxyResult(Class<?> source, BeanUnproxy unproxy) {
-        return unproxyResultClassStore.computeIfAbsent(source, unproxy::unproxy);
+        Class<?> unproxyResultClass = unproxyResultClassStore.get(source);
+        if (unproxyResultClass == null) {
+            unproxyResultClass = unproxy.unproxy(source);
+            unproxyResultClassStore.put(source, unproxyResultClass);
+        }
+        return unproxyResultClass;
     }
 
     public static synchronized UnproxyResultStore getInstance() {

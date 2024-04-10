@@ -11,6 +11,7 @@ import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
+import io.beanmapper.core.converter.BeanConverterStore;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.dynclass.ClassStore;
 import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
@@ -38,6 +39,8 @@ public class OverrideConfiguration implements Configuration {
     private final BeanUnproxy beanUnproxy;
 
     private final BeanMatchStore beanMatchStore;
+
+    private final BeanConverterStore beanConverterStore;
 
     private final List<String> packagePrefixes;
 
@@ -92,6 +95,9 @@ public class OverrideConfiguration implements Configuration {
         this.collectionHandlerStore = parentConfiguration.getCollectionHandlerStore();
         this.beanUnproxy = parentConfiguration.getBeanUnproxy();
         this.beanMatchStore = parentConfiguration.getBeanMatchStore();
+        this.beanConverterStore = parentConfiguration instanceof OverrideConfiguration overrideConfiguration
+                ? overrideConfiguration.getBeanConverterStore()
+                : new BeanConverterStore(parentConfiguration.getBeanConverterStore());
         this.packagePrefixes = new ArrayList<>(parentConfiguration.getPackagePrefixes());
         this.beanConverters = new ArrayList<>(parentConfiguration.getBeanConverters());
         this.beanPairs = new ArrayList<>(parentConfiguration.getBeanPairs());
@@ -354,6 +360,7 @@ public class OverrideConfiguration implements Configuration {
     @Override
     public void addConverter(BeanConverter converter) {
         beanConverters.add(converter);
+
     }
 
     @Override
@@ -460,5 +467,15 @@ public class OverrideConfiguration implements Configuration {
     @Override
     public Map<Class<?>, Object> getCustomDefaultValuesMap() {
         return customDefaultValuesMap;
+    }
+
+    @Override
+    public BeanConverterStore getBeanConverterStore() {
+        return beanConverterStore;
+    }
+
+    @Override
+    public <S, T> BeanConverter getBeanConverter(Class<S> source, Class<T> target) {
+        return beanConverterStore.get(source, target);
     }
 }
