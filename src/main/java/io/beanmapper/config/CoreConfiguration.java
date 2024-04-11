@@ -468,6 +468,6 @@ public class CoreConfiguration implements Configuration {
 
     @Override
     public <S, T> BeanConverter getBeanConverter(Class<S> source, Class<T> target) {
-        return null;
+        return this.beanConverterStore.get(source, target);
     }
 }
