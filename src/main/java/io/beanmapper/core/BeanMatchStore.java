@@ -11,9 +11,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import io.beanmapper.annotations.BeanAlias;
 import io.beanmapper.annotations.BeanCollection;
@@ -35,18 +35,15 @@ import io.beanmapper.exceptions.BeanMissingPathException;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
 import io.beanmapper.exceptions.FieldShadowingException;
 import io.beanmapper.utils.BeanMapperTraceLogger;
-import io.beanmapper.utils.CanonicalClassNameStore;
 import io.beanmapper.utils.Trinary;
 
 public class BeanMatchStore {
-
-    private static final CanonicalClassNameStore CLASS_NAME_STORE = CanonicalClassNameStore.getInstance();
 
     private final CollectionHandlerStore collectionHandlerStore;
 
     private final BeanUnproxy beanUnproxy;
 
-    private final Map<String, Map<String, BeanMatch>> store = new TreeMap<>();
+    private final Map<Class<?>, Map<Class<?>, BeanMatch>> store = new HashMap<>();
 
     public BeanMatchStore(CollectionHandlerStore collectionHandlerStore, BeanUnproxy beanUnproxy) {
         this.collectionHandlerStore = collectionHandlerStore;
@@ -69,45 +66,37 @@ public class BeanMatchStore {
     }
 
     public BeanMatch getBeanMatch(BeanPair beanPair) {
-        Map<String, BeanMatch> targetsForSource = getTargetsForSource(beanPair.getSourceClass());
-        if (targetsForSource == null || !containsKeyForTargetClass(targetsForSource, beanPair)) {
+        Map<Class<?>, BeanMatch> targetsForSource = store.get(beanPair.getSourceClass());
+
+        if (targetsForSource == null) {
             return addBeanMatch(determineBeanMatch(beanPair));
         }
-        return getTarget(targetsForSource, beanPair.getTargetClass());
-    }
 
-    private boolean containsKeyForTargetClass(Map<String, BeanMatch> targetsForSource, BeanPair beanPair) {
-        return targetsForSource.containsKey(CLASS_NAME_STORE.getOrComputeClassName(beanPair.getTargetClass()));
-    }
+        var beanMatch = targetsForSource.get(beanPair.getTargetClass());
 
-    public BeanMatch addBeanMatch(BeanMatch beanMatch) {
-        Map<String, BeanMatch> targetsForSource = getTargetsForSource(beanMatch.getSourceClass());
-        if (targetsForSource == null) {
-            targetsForSource = new TreeMap<>();
-            store.put(CLASS_NAME_STORE.getOrComputeClassName(beanMatch.getSourceClass()), targetsForSource);
+        if (beanMatch == null) {
+            return addBeanMatch(determineBeanMatch(beanPair));
         }
-        storeTarget(targetsForSource, beanMatch.getTargetClass(), beanMatch);
+
         return beanMatch;
     }
 
-    private Map<String, BeanMatch> getTargetsForSource(Class<?> sourceClass) {
-        return store.get(CLASS_NAME_STORE.getOrComputeClassName(sourceClass));
-    }
-
-    private BeanMatch getTarget(Map<String, BeanMatch> targetsForSource, Class<?> target) {
-        return targetsForSource.get(CLASS_NAME_STORE.getOrComputeClassName(target));
-    }
-
-    private void storeTarget(Map<String, BeanMatch> targetsForSource, Class<?> target, BeanMatch beanMatch) {
-        targetsForSource.put(CLASS_NAME_STORE.getOrComputeClassName(target), beanMatch);
+    public BeanMatch addBeanMatch(BeanMatch beanMatch) {
+        Map<Class<?>, BeanMatch> targetsForSource = store.get(beanMatch.getSourceClass());
+        if (targetsForSource == null) {
+            targetsForSource = new HashMap<>();
+            store.put(beanMatch.getSourceClass(), targetsForSource);
+        }
+        targetsForSource.put(beanMatch.getTargetClass(), beanMatch);
+        return beanMatch;
     }
 
     private BeanMatch determineBeanMatch(BeanPair beanPair) {
-        return determineBeanMatch(beanPair, new TreeMap<>(), new TreeMap<>(), new TreeMap<>());
-    }
 
-    private BeanMatch determineBeanMatch(BeanPair beanPair,
-            Map<String, BeanProperty> sourceNode, Map<String, BeanProperty> targetNode, Map<String, BeanProperty> aliases) {
+        Map<String, BeanProperty> sourceNode = new HashMap<>();
+        Map<String, BeanProperty>targetNode = new HashMap<>();
+        Map<String, BeanProperty> aliases = new HashMap<>();
+
         return new BeanMatch(
                 beanPair,
                 getAllFields(
@@ -148,7 +137,7 @@ public class BeanMatchStore {
 
             // BeanProperty allows the field to match with a field from the other side with a different name
             // and even a different nesting level.
-            BeanPropertyWrapper beanPropertyWrapper = null;
+            BeanPropertyWrapper beanPropertyWrapper;
             try {
                 beanPropertyWrapper = dealWithBeanProperty(matchupDirection, otherNodes, otherType, accessor);
             } catch (IntrospectionException e) {
