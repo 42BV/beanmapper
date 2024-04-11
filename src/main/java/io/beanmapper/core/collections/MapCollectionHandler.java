@@ -1,7 +1,7 @@
 package io.beanmapper.core.collections;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 import io.beanmapper.BeanMapper;
 
@@ -29,7 +29,7 @@ public class MapCollectionHandler extends AbstractCollectionHandler<Map> {
 
     @Override
     protected Map create() {
-        return new TreeMap();
+        return new HashMap<>();
     }
 
     /**
