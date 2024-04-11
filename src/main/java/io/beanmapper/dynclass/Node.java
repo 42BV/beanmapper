@@ -42,7 +42,7 @@ public class Node {
     }
 
     public boolean hasNodes() {
-        return nodes.size() > 0;
+        return !nodes.isEmpty();
     }
 
     public String getKey() {

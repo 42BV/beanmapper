@@ -80,9 +80,12 @@ public class OverrideConfiguration implements Configuration {
         if (configuration == null) {
             throw new ParentConfigurationPossiblyNullException("Developer error: the parent configuration may not be null");
         }
+
+        boolean parentIsOverride = configuration instanceof OverrideConfiguration;
+
         this.parentConfiguration = configuration;
-        this.downsizeSourceFields = new ArrayList<>(configuration.getDownsizeSource());
-        this.downsizeTargetFields = new ArrayList<>(configuration.getDownsizeTarget());
+        this.downsizeSourceFields = parentIsOverride ? new ArrayList<>(parentConfiguration.getDownsizeSource()) : new ArrayList<>();
+        this.downsizeTargetFields = parentIsOverride ? new ArrayList<>(configuration.getDownsizeTarget()) : new ArrayList<>();
         this.beanInitializer = configuration.getBeanInitializer();
         this.parent = configuration.getParent();
         this.converterChoosable = configuration.isConverterChoosable();
@@ -95,12 +98,12 @@ public class OverrideConfiguration implements Configuration {
         this.collectionHandlerStore = parentConfiguration.getCollectionHandlerStore();
         this.beanUnproxy = parentConfiguration.getBeanUnproxy();
         this.beanMatchStore = parentConfiguration.getBeanMatchStore();
-        this.beanConverterStore = parentConfiguration instanceof OverrideConfiguration overrideConfiguration
-                ? overrideConfiguration.getBeanConverterStore()
+        this.beanConverterStore = parentIsOverride
+                ? parentConfiguration.getBeanConverterStore()
                 : new BeanConverterStore(parentConfiguration.getBeanConverterStore());
-        this.packagePrefixes = new ArrayList<>(parentConfiguration.getPackagePrefixes());
+        this.packagePrefixes = parentConfiguration.getPackagePrefixes();
         this.beanConverters = new ArrayList<>(parentConfiguration.getBeanConverters());
-        this.beanPairs = new ArrayList<>(parentConfiguration.getBeanPairs());
+        this.beanPairs = parentConfiguration.getBeanPairs();
         this.collectionUsage = parentConfiguration.getCollectionUsage();
         this.logicSecuredChecks = parentConfiguration.getLogicSecuredChecks();
         this.collectionHandlers = parentConfiguration.getCollectionHandlers();
