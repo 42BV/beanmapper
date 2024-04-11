@@ -3,6 +3,7 @@ package io.beanmapper.dynclass;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import io.beanmapper.BeanMapper;
@@ -13,8 +14,6 @@ import io.beanmapper.dynclass.model.PersonForm;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 class PersonDtoTest {
 
@@ -49,8 +48,14 @@ class PersonDtoTest {
         Person person = createPerson();
         Object dynPersonDto = beanMapper.map(person);
 
-        String json = new ObjectMapper().writeValueAsString(dynPersonDto);
-        assertEquals("{\"id\":42,\"name\":\"Henk\"}", json);
+        Field nameField = dynPersonDto.getClass().getDeclaredField("name");
+        Field idField = dynPersonDto.getClass().getDeclaredField("id");
+
+        nameField.setAccessible(true);
+        idField.setAccessible(true);
+
+        assertEquals("Henk", nameField.get(dynPersonDto));
+        assertEquals(42L, idField.get(dynPersonDto));
     }
 
     @Test
