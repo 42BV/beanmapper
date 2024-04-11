@@ -77,6 +77,8 @@ public class OverrideConfiguration implements Configuration {
 
     private boolean flushEnabled;
 
+    private ExecutionPlan<?, ?> executionPlan;
+
     public OverrideConfiguration(Configuration configuration) {
         if (configuration == null) {
             throw new ParentConfigurationPossiblyNullException("Developer error: the parent configuration may not be null");
@@ -484,11 +486,12 @@ public class OverrideConfiguration implements Configuration {
 
     @Override
     public <S, T> ExecutionPlan<S, T> getExecutionPlan() {
-        return null;
+        return (ExecutionPlan<S, T>) this.executionPlan;
     }
 
     @Override
     public <S, T> ExecutionPlan<S, T> setExecutionPlan(ExecutionPlan<S, T> executionPlan) {
-        return null;
+        this.executionPlan = executionPlan;
+        return (ExecutionPlan<S, T>) this.executionPlan;
     }
 }

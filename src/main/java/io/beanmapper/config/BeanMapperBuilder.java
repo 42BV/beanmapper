@@ -27,6 +27,7 @@ import io.beanmapper.core.converter.impl.StringToBooleanConverter;
 import io.beanmapper.core.converter.impl.StringToIntegerConverter;
 import io.beanmapper.core.converter.impl.StringToLongConverter;
 import io.beanmapper.core.unproxy.BeanUnproxy;
+import io.beanmapper.execution_plan.ExecutionPlan;
 import io.beanmapper.utils.Trinary;
 
 public class BeanMapperBuilder {
@@ -200,6 +201,11 @@ public class BeanMapperBuilder {
         return this;
     }
 
+    public <S, T> BeanMapperBuilder setExecutionPlan(ExecutionPlan<S, T> executionPlan) {
+        this.configuration.setExecutionPlan(executionPlan);
+        return this;
+    }
+
     /**
      * Adds a mapping for a default value to the configuration.
      *
@@ -248,7 +254,7 @@ public class BeanMapperBuilder {
         attachConverter(new StringToIntegerConverter());
         attachConverter(new StringToLongConverter());
         attachConverter(new StringToBigDecimalConverter());
-        attachConverter(new AnyToEnumConverter());
+        attachConverter(new AnyToEnumConverter<>());
         attachConverter(new NumberToNumberConverter());
         attachConverter(new ObjectToStringConverter());
         attachConverter(new OptionalToObjectConverter());

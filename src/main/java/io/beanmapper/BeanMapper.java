@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -12,7 +13,9 @@ import java.util.Set;
 
 import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.config.Configuration;
+import io.beanmapper.execution_plan.ExecutionPlan;
 import io.beanmapper.strategy.MapStrategyType;
+import io.beanmapper.utils.TypeMatch;
 
 /**
  * Class that is responsible first for understanding the semantics of the source and target
@@ -22,6 +25,8 @@ import io.beanmapper.strategy.MapStrategyType;
 public final class BeanMapper {
 
     private final Configuration configuration;
+
+    public static Map<TypeMatch<?, ?>, ExecutionPlan<?, ?>> EXECUTION_PLANS = new HashMap<>();
 
     /**
      */
@@ -33,6 +38,9 @@ public final class BeanMapper {
         if (source == null && !configuration.getUseNullValue()) {
             // noinspection unchecked
             return (T) this.getConfiguration().getDefaultValueForClass(this.getConfiguration().getTargetClass());
+        }
+        if (EXECUTION_PLANS.get(new TypeMatch<S, T>((Class<S>) source.getClass(), configuration.getTargetClass())) == null) {
+            EXECUTION_PLANS.put(new TypeMatch<S, T>((Class<S>) source.getClass(), getConfiguration().getTargetClass()), configuration.getExecutionPlan());
         }
         return MapStrategyType.getStrategy(this, configuration).map(source);
     }
@@ -48,6 +56,7 @@ public final class BeanMapper {
     public <S, T> T map(S source, T target) {
         return wrap()
                 .setTarget(target)
+                .setExecutionPlan(new ExecutionPlan<>(source, target))
                 .build()
                 .map(source);
     }
@@ -103,6 +112,7 @@ public final class BeanMapper {
     public <S, T> T map(S source, Class<T> targetClass) {
         return wrap()
                 .setTargetClass(targetClass)
+                .setExecutionPlan(new ExecutionPlan<>(source.getClass(), targetClass))
                 .build()
                 .map(source);
     }
@@ -118,7 +128,7 @@ public final class BeanMapper {
      */
     public <S, T> T[] map(S[] sourceArray, Class<T> targetClass) {
         return Arrays.stream(sourceArray)
-                .map(element -> this.wrap().setConverterChoosable(true).build().map(element, targetClass))
+                .map(element -> this.wrap().setExecutionPlan(new ExecutionPlan<>(element.getClass(), targetClass)).setConverterChoosable(true).build().map(element, targetClass))
                 .toArray(element -> (T[]) Array.newInstance(targetClass, sourceArray.length));
     }
 

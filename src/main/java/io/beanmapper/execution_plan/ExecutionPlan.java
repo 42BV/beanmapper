@@ -3,21 +3,24 @@ package io.beanmapper.execution_plan;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ExecutionPlan<S, T> implements ExecutionStep<S, T> {
+public class ExecutionPlan<S, T> {
 
-    private final MappingProperties<S, T> mappingProperties;
-    private final Map<FieldMatch, ExecutionStep> fieldExecutionSteps = new HashMap<>();
+    private S source;
+    private T target;
 
-    public void addFieldConverter(FieldMatch field, ExecutionStep executionStep) {
-        fieldExecutionSteps.put(field, executionStep);
-    }
+    private final Map<FieldPair, ExecutionStep> executionSteps;
 
     public ExecutionPlan(S source, T target) {
-        this.mappingProperties = new MappingProperties<>(source, target, (Class<T>) target.getClass(), true);
+        this.source = source;
+        this.target = target;
+        this.executionSteps = new HashMap<>();
     }
 
-    @Override
-    public T apply(MappingProperties<S, T> mappingProperties) {
-        return null;
+    public T apply() throws IllegalAccessException {
+        for (var entry : executionSteps.entrySet()) {
+            entry.getKey().target().set(target, entry.getValue().apply(entry.getKey().source().get(source), entry.getKey().target().getType()));
+        }
+        return target;
     }
+
 }

@@ -3,7 +3,6 @@
  */
 package io.beanmapper.core.converter.impl;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import io.beanmapper.BeanMapper;
@@ -18,16 +17,15 @@ import io.beanmapper.core.converter.BeanConverter;
  */
 public class NumberToNumberConverter implements BeanConverter {
 
-    private static final Set<Class<?>> PRIMITIVES = new HashSet<>();
-
-    static {
-        PRIMITIVES.add(byte.class);
-        PRIMITIVES.add(short.class);
-        PRIMITIVES.add(int.class);
-        PRIMITIVES.add(long.class);
-        PRIMITIVES.add(float.class);
-        PRIMITIVES.add(double.class);
-    }
+    private static final Set<Class<?>> PRIMITIVES = Set.of(
+            byte.class,
+            short.class,
+            char.class,
+            int.class,
+            long.class,
+            float.class,
+            double.class
+    );
 
     /**
      * {@inheritDoc}
@@ -36,6 +34,7 @@ public class NumberToNumberConverter implements BeanConverter {
      * then converting that string back into the target number.
      */
     @Override
+    @SuppressWarnings("unchecked")
     public <S, T> T convert(BeanMapper beanMapper, S source, Class<T> targetClass, BeanPropertyMatch beanPropertyMatch) {
         if (source == null || source.getClass().equals(targetClass) || (beanPropertyMatch != null && beanPropertyMatch.getSourceClass().equals(targetClass))) {
             return (T) source;

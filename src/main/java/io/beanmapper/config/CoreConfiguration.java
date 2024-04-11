@@ -108,6 +108,8 @@ public class CoreConfiguration implements Configuration {
 
     private final Map<Class<?>, Object> customDefaultValueMap = new HashMap<>();
 
+    private ExecutionPlan<?, ?> executionPlan;
+
     @Override
     public List<String> getDownsizeTarget() {
         return Collections.emptyList();
@@ -474,11 +476,12 @@ public class CoreConfiguration implements Configuration {
 
     @Override
     public <S, T> ExecutionPlan<S, T> getExecutionPlan() {
-        return null;
+        return (ExecutionPlan<S, T>) this.executionPlan;
     }
 
     @Override
     public <S, T> ExecutionPlan<S, T> setExecutionPlan(ExecutionPlan<S, T> executionPlan) {
-        return null;
+        this.executionPlan = executionPlan;
+        return (ExecutionPlan<S, T>) this.executionPlan;
     }
 }

@@ -9,10 +9,9 @@ import java.util.Map;
 import io.beanmapper.BeanMapper;
 import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.core.converter.BeanConverter;
-import io.beanmapper.utils.Check;
 
 /**
- * Converter between boxed and primitive type. 
+ * Converter between boxed and primitive type.
  *
  * @author Jeroen van Schagen
  * @since Jun 24, 2015
@@ -51,5 +50,4 @@ public class PrimitiveConverter implements BeanConverter {
     public boolean match(Class<?> sourceClass, Class<?> targetClass) {
         return targetClass.equals(MAPPINGS.get(sourceClass));
     }
-
 }

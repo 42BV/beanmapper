@@ -44,6 +44,7 @@ import io.beanmapper.exceptions.BeanNoLogicSecuredCheckSetException;
 import io.beanmapper.exceptions.BeanNoRoleSecuredCheckSetException;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
 import io.beanmapper.exceptions.FieldShadowingException;
+import io.beanmapper.execution_plan.ExecutionPlan;
 import io.beanmapper.shared.ReflectionUtils;
 import io.beanmapper.testmodel.anonymous.Book;
 import io.beanmapper.testmodel.anonymous.BookForm;
@@ -1990,6 +1991,15 @@ class BeanMapperTest {
         WithAbstractMethod enumValue = WithAbstractMethod.class.getEnumConstants()[0];
         ComplexEnumResult result = beanMapper.map(enumValue, ComplexEnumResult.class);
         assertEquals(enumValue.name(), result.name);
+    }
+
+    @Test
+    void testExecutionPlan() throws IllegalAccessException {
+        PersonForm form = createPersonForm();
+        Person person = createPerson();
+        ExecutionPlan<PersonForm, Person> executionPlan = new ExecutionPlan<>(form, person);
+        var result = executionPlan.apply();
+        assertNotNull(result);
     }
 
     private MyEntity createMyEntity() {

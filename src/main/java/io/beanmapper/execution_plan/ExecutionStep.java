@@ -1,9 +1,9 @@
 package io.beanmapper.execution_plan;
 
-import java.util.function.Function;
+public interface ExecutionStep {
 
-public interface ExecutionStep<S, T> extends Function<MappingProperties<S, T>, T> {
+    <S, T> T apply(S source, T target);
 
-    T apply(MappingProperties<S, T> mappingProperties);
+    <S, T> T apply(S source, Class<T> targetClass);
 
 }
