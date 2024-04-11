@@ -21,7 +21,7 @@ public final class BeanConverterStore {
         beanConverterMap.forEach((key, value) -> this.beanConverterMap.put(key, new HashMap<>(value)));
     }
 
-    public BeanConverter get(Class<?> source, Class<?> target) {
+    public synchronized BeanConverter get(Class<?> source, Class<?> target) {
         var cachedConverters = beanConverterMap.get(source);
 
         if (cachedConverters == null) {
@@ -32,7 +32,7 @@ public final class BeanConverterStore {
         return cachedConverters.get(target);
     }
 
-    public void add(Class<?> source, Class<?> target, BeanConverter beanConverter) {
+    public synchronized void add(Class<?> source, Class<?> target, BeanConverter beanConverter) {
         var cachedConverters = beanConverterMap.get(source);
 
         if (cachedConverters == null) {
