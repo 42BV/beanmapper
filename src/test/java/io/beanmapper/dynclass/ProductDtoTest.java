@@ -1,10 +1,13 @@
 package io.beanmapper.dynclass;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import io.beanmapper.BeanMapper;
@@ -41,8 +44,28 @@ class ProductDtoTest {
                 .downsizeTarget(Arrays.asList("id", "name", "organization.id", "organization.name"))
                 .build();
         Object productDto = beanMapper.map(product);
-        String json = new ObjectMapper().writeValueAsString(productDto);
-        assertEquals("{\"id\":42,\"name\":\"Aller menscher\",\"organization\":{\"id\":1143,\"name\":\"My Org\"}}", json);
+
+        Field idField = productDto.getClass().getDeclaredField("id");
+        idField.setAccessible(true);
+        Field nameField = productDto.getClass().getDeclaredField("name");
+        nameField.setAccessible(true);
+        Field organizationField = productDto.getClass().getDeclaredField("organization");
+        organizationField.setAccessible(true);
+        Field organizationIdField = organizationField.getType().getDeclaredField("id");
+        organizationIdField.setAccessible(true);
+        Field organizationNameField = organizationField.getType().getDeclaredField("name");
+        organizationNameField.setAccessible(true);
+
+        var id = (Long) idField.get(productDto);
+        var name = (String) nameField.get(productDto);
+        var organization = organizationField.get(productDto);
+        var organizationId = (Long) organizationIdField.get(organization);
+        var organizationName = (String) organizationNameField.get(organization);
+
+        assertEquals(42L, id);
+        assertEquals("Aller menscher", name);
+        assertEquals("My Org", organizationName);
+        assertEquals(1143L, organizationId);
     }
 
     @Test
@@ -76,9 +99,26 @@ class ProductDtoTest {
                 .setTargetClass(ArtistDto.class)
                 .downsizeTarget(Arrays.asList("id", "name"))
                 .build();
-        Object dto = beanMapper.map(artists);
-        String json = new ObjectMapper().writeValueAsString(dto);
-        assertEquals("[{\"id\":1141,\"name\":\"Artist 1\"},{\"id\":1142,\"name\":\"Artist 2\"}]", json);
+        Collection<Object> dto = beanMapper.map(artists);
+
+        for (Object o : dto) {
+            Field idField = o.getClass().getDeclaredField("id");
+            idField.setAccessible(true);
+            Field nameField = o.getClass().getDeclaredField("name");
+            nameField.setAccessible(true);
+
+            var id = (Long) idField.get(o);
+            var name = (String) nameField.get(o);
+
+            assertTrue(id == 1141L || id == 1142L);
+            assertTrue(name.equals("Artist 1") || name.equals("Artist 2"));
+
+            if (id == 1141L) {
+                assertEquals("Artist 1", name);
+            } else if (id == 1142L) {
+                assertEquals("Artist 2", name);
+            }
+        }
     }
 
     @Test

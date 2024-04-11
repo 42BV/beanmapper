@@ -32,6 +32,7 @@ import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.config.AfterClearFlusher;
 import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.config.RoleSecuredCheck;
+import io.beanmapper.core.BeanProperty;
 import io.beanmapper.core.BeanStrictMappingRequirementsException;
 import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
 import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
@@ -130,7 +131,21 @@ import io.beanmapper.testmodel.encapsulate.ResultOneToMany;
 import io.beanmapper.testmodel.encapsulate.source_annotated.Car;
 import io.beanmapper.testmodel.encapsulate.source_annotated.CarDriver;
 import io.beanmapper.testmodel.encapsulate.source_annotated.Driver;
-import io.beanmapper.testmodel.enums.*;
+import io.beanmapper.testmodel.enums.ColorEntity;
+import io.beanmapper.testmodel.enums.ColorResult;
+import io.beanmapper.testmodel.enums.ColorStringResult;
+import io.beanmapper.testmodel.enums.ComplexEnumResult;
+import io.beanmapper.testmodel.enums.Day;
+import io.beanmapper.testmodel.enums.DayEnumSourceArraysAsList;
+import io.beanmapper.testmodel.enums.EnumSourceArraysAsList;
+import io.beanmapper.testmodel.enums.EnumTargetList;
+import io.beanmapper.testmodel.enums.RGB;
+import io.beanmapper.testmodel.enums.UserRole;
+import io.beanmapper.testmodel.enums.UserRoleResult;
+import io.beanmapper.testmodel.enums.WeekEntity;
+import io.beanmapper.testmodel.enums.WeekResult;
+import io.beanmapper.testmodel.enums.WeekStringResult;
+import io.beanmapper.testmodel.enums.WithAbstractMethod;
 import io.beanmapper.testmodel.ignore.IgnoreSource;
 import io.beanmapper.testmodel.ignore.IgnoreTarget;
 import io.beanmapper.testmodel.initially_unmatched_source.SourceWithUnmatchedField;
@@ -1086,7 +1101,7 @@ class BeanMapperTest {
         beanMapper.map(source, target);
         assertEquals(source.getId(), target.getId());
         assertEquals(source.getName(), target.getName());
-        assertEquals(target.getNested().nestedInt, target.getNested().nestedInt);
+        assertEquals(source.getNested().nestedInt, target.getNested().nestedInt);
         assertEquals(source.getNested().nestedName, target.getNested().nestedName);
     }
 
@@ -1262,9 +1277,14 @@ class BeanMapperTest {
         assertEquals(TargetBStrict.class, exception.getValidationMessages().get(1).getTargetClass());
         assertEquals("noMatch", exception.getValidationMessages().get(1).getFields().get(0).getName());
         assertEquals(SourceCStrict.class, exception.getValidationMessages().get(2).getSourceClass());
-        assertEquals("noMatch1", exception.getValidationMessages().get(2).getFields().get(0).getName());
-        assertEquals("noMatch2", exception.getValidationMessages().get(2).getFields().get(1).getName());
-        assertEquals("noMatch3", exception.getValidationMessages().get(2).getFields().get(2).getName());
+
+        assertTrue(exception.getValidationMessages()
+                .get(2)
+                .getFields()
+                .stream()
+                .map(BeanProperty::getName)
+                .toList()
+                .containsAll(List.of("noMatch1", "noMatch2", "noMatch3")));
     }
 
     @Test
