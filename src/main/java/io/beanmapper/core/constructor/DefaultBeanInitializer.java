@@ -27,7 +27,7 @@ public class DefaultBeanInitializer implements BeanInitializer {
      */
     @Override
     public <T> T instantiate(Class<T> beanClass, ConstructorArguments arguments) {
-        BeanMapperTraceLogger.log("Creating a new instance of type %s, using reflection.".formatted(beanClass));
+        BeanMapperTraceLogger.log("Creating a new instance of type {}, using reflection.", beanClass);
         try {
             if (arguments == null) {
                 return beanClass.getConstructor().newInstance();
