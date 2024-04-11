@@ -5,7 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [4.1.5]
+
+### Fixed
+
+- Issue [#203](https://github.com/42BV/beanmapper/issues/203) **Expand caching to include other expensive, unchanging operations**; Added the BeanConverterStore and the CanonicalClassNameStore, to reduce reflective calls.
+
+### Added
+
+- Caching for BeanConverter-selection.
+- Caching for canonical class names.
+
+## [4.1.4]
 
 ### Fixed
 
