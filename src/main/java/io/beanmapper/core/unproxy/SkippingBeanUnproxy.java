@@ -33,7 +33,7 @@ public class SkippingBeanUnproxy implements BeanUnproxy {
      */
     @Override
     public Class<?> unproxy(Class<?> beanClass) {
-        BeanMapperTraceLogger.log("Unproxying class %s.".formatted(beanClass != null ? beanClass.getCanonicalName() : "null"));
+        BeanMapperTraceLogger.log("Unproxying {}.", beanClass != null ? beanClass : "null");
         if (isSkippedProxyClass(beanClass)) {
             return beanClass;
         }
