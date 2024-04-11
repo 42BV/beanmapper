@@ -1,17 +1,16 @@
 package io.beanmapper.dynclass;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import io.beanmapper.config.StrictMappingProperties;
 import io.beanmapper.exceptions.BeanDynamicClassGenerationException;
 
 public class ClassStore {
 
-    private static final Map<String, Map<String, Class<?>>> CACHE
-            = Collections.synchronizedMap(new TreeMap<>());
+    private static final Map<String, Map<String, Class<?>>> CACHE = new ConcurrentHashMap<>();
     private final ClassGenerator classGenerator;
 
     public ClassStore() {
@@ -30,7 +29,7 @@ public class ClassStore {
         Map<String, Class<?>> generatedClassesForClass;
 
         synchronized (CACHE) {
-            generatedClassesForClass = CACHE.computeIfAbsent(baseClassName, k -> Collections.synchronizedMap(new TreeMap<>()));
+            generatedClassesForClass = CACHE.computeIfAbsent(baseClassName, k -> new HashMap<>());
         }
 
         synchronized (generatedClassesForClass) {
