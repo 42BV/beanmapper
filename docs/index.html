@@ -245,15 +245,14 @@ Target target = new BeanMapperBuilder().build()
 assertEquals("Henk", target.name);
 assertEquals(42, target.age, 0);</code>
           <h4 id="map-to-collection">Map to a collection</h4>
-          <p>Use this method when you want to map a collection of items to a collection of items of an other type. Of course you can do this for yourself by creating a loop and call map inside each loop. This method is just to make it easy for you.
-          You can also pass a third optional argument to convert the list to. In this case we choose an ArrayList.class.</p>
+          <p>Use this method when you want to map a collection of items to a collection of items of an other type. Of course you can do this for yourself by creating a loop and call map inside each loop. This method is just to make it easy for you.</p>
           <code>List&lt;Source> sources = new ArrayList&lt;Source>();
 sources.add(new Source(1L, "Henk", 42));
 sources.add(new Source(2L, "Piet", 50));
 sources.add(new Source(3L, "Kees", 3));
 
-ArrayList&lt;Target> targets = (ArrayList&lt;Target>) new BeanMapperBuilder().build()
-    .map(sources, Target.class, ArrayList.class);
+List&lt;Target> targets = new BeanMapperBuilder().build()
+    .map(sources, Target.class);
 
 assertEquals(3, targets.size(), 0);
 assertEquals("Henk", targets.get(0).name);
