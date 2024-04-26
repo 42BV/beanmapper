@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.annotations.LogicSecuredCheck;
@@ -17,8 +18,11 @@ import io.beanmapper.dynclass.ClassStore;
 import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
 import io.beanmapper.utils.DefaultValues;
 import io.beanmapper.utils.Trinary;
+import io.beanmapper.utils.diagnostics.DiagnosticsDetailLevel;
+import io.beanmapper.utils.diagnostics.logging.DiagnosticsLogger;
+import io.beanmapper.utils.diagnostics.tree.DiagnosticsNode;
 
-public class OverrideConfiguration implements Configuration {
+public class OverrideConfiguration implements DiagnosticsConfiguration {
 
     private final Configuration parentConfiguration;
 
@@ -53,6 +57,8 @@ public class OverrideConfiguration implements Configuration {
     private final RoleSecuredCheck roleSecuredCheck;
 
     private final StrictMappingProperties strictMappingProperties;
+
+    private DiagnosticsNode<?, ?> diagnostics;
 
     private Class<?> targetClass;
 
@@ -110,6 +116,27 @@ public class OverrideConfiguration implements Configuration {
         this.collectionFlusher = parentConfiguration.getCollectionFlusher();
         this.roleSecuredCheck = parentConfiguration.getRoleSecuredCheck();
         this.preferredCollectionClass = parentConfiguration.getPreferredCollectionClass();
+    }
+
+    public Optional<Configuration> getParentConfiguration() {
+        return Optional.of(parentConfiguration);
+    }
+
+    @Override
+    public <S, T> Optional<DiagnosticsNode<S, T>> getBeanMapperDiagnostics() {
+        if (isInDiagnosticsMode()) {
+            if (this.diagnostics == null) {
+                return ((DiagnosticsConfiguration) parentConfiguration).getBeanMapperDiagnostics();
+            }
+            return Optional.of((DiagnosticsNode<S, T>) diagnostics);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public <S, T> void setBeanMapperDiagnostics(DiagnosticsNode<S, T> diagnostics) {
+        this.diagnostics = diagnostics;
+        diagnostics.setDepth(this.getMappingDepth());
     }
 
     @Override
@@ -480,5 +507,28 @@ public class OverrideConfiguration implements Configuration {
     @Override
     public <S, T> BeanConverter getBeanConverter(Class<S> source, Class<T> target) {
         return beanConverterStore.get(source, target);
+    }
+
+    @Override
+    public boolean isInDiagnosticsMode() {
+        return parentConfiguration instanceof DiagnosticsConfiguration dc && dc.isInDiagnosticsMode();
+    }
+
+    @Override
+    public int getMappingDepth() {
+        return parentConfiguration instanceof CoreConfiguration ? 1 : ((DiagnosticsConfiguration) parentConfiguration).getMappingDepth() + 1;
+    }
+
+    @Override
+    public DiagnosticsDetailLevel getDiagnosticsDetailLevel() {
+        return parentConfiguration instanceof DiagnosticsConfiguration dc ? dc.getDiagnosticsDetailLevel() : DiagnosticsDetailLevel.DISABLED;
+    }
+
+    @Override
+    public Optional<DiagnosticsLogger> getDiagnosticsLogger() {
+        if (this.isInDiagnosticsMode()) {
+            return ((DiagnosticsConfiguration) parentConfiguration).getDiagnosticsLogger();
+        }
+        return Optional.empty();
     }
 }

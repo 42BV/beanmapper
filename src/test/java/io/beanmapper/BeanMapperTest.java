@@ -1,5 +1,6 @@
 package io.beanmapper;
 
+import static io.beanmapper.utils.diagnostics.DiagnosticsDetailLevel.TREE_COMPLETE;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,6 +32,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.config.AfterClearFlusher;
 import io.beanmapper.config.BeanMapperBuilder;
+import io.beanmapper.config.DiagnosticsConfiguration;
 import io.beanmapper.config.RoleSecuredCheck;
 import io.beanmapper.core.BeanProperty;
 import io.beanmapper.core.BeanStrictMappingRequirementsException;
@@ -226,6 +228,7 @@ import io.beanmapper.testmodel.strict_convention.SCTargetC;
 import io.beanmapper.testmodel.tostring.SourceWithNonString;
 import io.beanmapper.testmodel.tostring.TargetWithString;
 import io.beanmapper.utils.Trinary;
+import io.beanmapper.utils.diagnostics.tree.DiagnosticsNode;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -1947,6 +1950,26 @@ class BeanMapperTest {
     }
 
     @Test
+    void testDiagnosticsCreatesExpectedTree() {
+        beanMapper = beanMapper.wrap(TREE_COMPLETE).build();
+        beanMapper.map(createMyEntity(), MyEntityResult.class);
+        DiagnosticsConfiguration dc = (DiagnosticsConfiguration) beanMapper.getConfiguration();
+        DiagnosticsNode<?, ?> root = dc.getBeanMapperDiagnostics().orElse(null);
+        assertNotNull(root);
+        assertEquals(0, root.getDepth());
+        assertEquals(1, root.getDiagnostics().size());
+    }
+
+    @Test
+    void testRootDiagnosticsNodeHasExactlyOneChild() {
+        beanMapper = beanMapper.wrap(TREE_COMPLETE).build();
+        beanMapper.map(createMyEntity(), MyEntityResult.class);
+        beanMapper.map(createPerson(), PersonResult.class);
+        DiagnosticsConfiguration dc = (DiagnosticsConfiguration) beanMapper.getConfiguration();
+        assertEquals(1, dc.getBeanMapperDiagnostics().orElse(null).getDiagnostics().size());
+    }
+
+    @Test
     void testMapEntityWithoutOptionalToEntityWithOptional() {
         var child = new EntityWithoutOptional();
         child.value = "Piet";
@@ -1962,6 +1985,7 @@ class BeanMapperTest {
 
     @Test
     void testMapEntityWithMapToEntityResultWithMap() {
+        beanMapper = beanMapper.wrap(TREE_COMPLETE).build();
         EntityWithMap child1 = new EntityWithMap();
         child1.value = "Piet";
 

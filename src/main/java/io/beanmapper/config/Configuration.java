@@ -2,6 +2,7 @@ package io.beanmapper.config;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.annotations.LogicSecuredCheck;
@@ -467,4 +468,8 @@ public interface Configuration {
     BeanConverterStore getBeanConverterStore();
 
     <S, T> BeanConverter getBeanConverter(Class<S> source, Class<T> target);
+
+    default Optional<Configuration> getParentConfiguration() {
+        return Optional.empty();
+    }
 }

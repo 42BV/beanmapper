@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.beanmapper</groupId>
@@ -52,21 +53,21 @@
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <javassist.version>3.29.2-GA</javassist.version>
-        <slf4j.version>2.0.3</slf4j.version>
+        <javassist.version>3.30.0-GA</javassist.version>
+        <slf4j.version>2.0.13</slf4j.version>
 
-        <jackson-databind.version>2.13.4.2</jackson-databind.version>
-        <junit.version>5.9.0</junit.version>
+        <jackson-databind.version>2.17.0</jackson-databind.version>
+        <junit.version>5.10.2</junit.version>
 
-        <maven.compiler.plugin.version>3.10.1</maven.compiler.plugin.version>
-        <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
-        <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
+        <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
+        <maven.surefire.plugin.version>3.2.5</maven.surefire.plugin.version>
+        <maven.release.plugin.version>3.0.1</maven.release.plugin.version>
         <nexus.staging.plugin.version>1.6.13</nexus.staging.plugin.version>
-        <jacoco.maven.plugin.version>0.8.8</jacoco.maven.plugin.version>
-        <owasp.dependency.check.version>7.2.1</owasp.dependency.check.version>
-        <maven.javadoc.plugin.version>3.4.1</maven.javadoc.plugin.version>
-        <maven.source.plugin.version>3.2.1</maven.source.plugin.version>
-        <maven.gpg.plugin.version>3.0.1</maven.gpg.plugin.version>
+        <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
+        <owasp.dependency.check.version>9.1.0</owasp.dependency.check.version>
+        <maven.javadoc.plugin.version>3.6.3</maven.javadoc.plugin.version>
+        <maven.source.plugin.version>3.3.1</maven.source.plugin.version>
+        <maven.gpg.plugin.version>3.2.3</maven.gpg.plugin.version>
     </properties>
 
     <dependencies>

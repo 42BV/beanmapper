@@ -14,4 +14,8 @@ public class BeanMapperTraceLogger {
     public static void log(String message, Object... args) {
         log.trace(message, args);
     }
+
+    public static boolean isTraceEnabled() {
+        return log.isTraceEnabled();
+    }
 }

@@ -1,5 +1,9 @@
 package io.beanmapper.strategy;
 
+import java.lang.reflect.ParameterizedType;
+import java.util.Collection;
+import java.util.Map;
+
 import io.beanmapper.BeanMapper;
 import io.beanmapper.annotations.BeanConstruct;
 import io.beanmapper.annotations.BeanDefault;
@@ -7,6 +11,7 @@ import io.beanmapper.annotations.BeanMappableEnum;
 import io.beanmapper.annotations.BeanParent;
 import io.beanmapper.annotations.BeanProperty;
 import io.beanmapper.config.Configuration;
+import io.beanmapper.config.DiagnosticsConfiguration;
 import io.beanmapper.core.BeanMatch;
 import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.core.converter.BeanConverter;
@@ -16,6 +21,10 @@ import io.beanmapper.exceptions.BeanConversionException;
 import io.beanmapper.exceptions.BeanPropertyNoMatchException;
 import io.beanmapper.utils.BeanMapperTraceLogger;
 import io.beanmapper.utils.Records;
+import io.beanmapper.utils.diagnostics.tree.CollectionConversionDiagnosticNode;
+import io.beanmapper.utils.diagnostics.tree.ConversionDiagnosticsNode;
+import io.beanmapper.utils.diagnostics.tree.DiagnosticsNode;
+import io.beanmapper.utils.diagnostics.tree.MapConversionDiagnosticNode;
 
 public abstract class AbstractMapStrategy implements MapStrategy {
 
@@ -49,18 +58,18 @@ public abstract class AbstractMapStrategy implements MapStrategy {
      * RecordComponent-objects associated with the target-class, and returns an array of their names.</p><p>Lastly, if the values-array is null, null will
      * be returned. Otherwise, a new ConstructorArguments-object will be returned, using the source-object, the BeanMatch, and the values-array.</p>
      *
-     * @param source The source-object that will be mapped to the target.
+     * @param source    The source-object that will be mapped to the target.
      * @param beanMatch The BeanMatch that will be used to map the source to the target.
+     * @param <S>       The type of the source-object.
      * @return ConstructorArguments-object constructed from the source, beanMatch and values taken from either the BeanConstruct-annotation, or
-     *         RecordComponents.
-     * @param <S> The type of the source-object.
+     * RecordComponents.
      */
     public <S> ConstructorArguments getConstructorArguments(S source, BeanMatch beanMatch) {
         final Class<?> targetClass = beanMatch.getTargetClass();
 
-        BeanConstruct beanConstruct = targetClass.isAnnotationPresent(BeanConstruct.class)
-                ? targetClass.getAnnotation(BeanConstruct.class)
-                : beanMatch.getSourceClass().getAnnotation(BeanConstruct.class);
+        BeanConstruct beanConstruct = targetClass.isAnnotationPresent(BeanConstruct.class) ?
+                targetClass.getAnnotation(BeanConstruct.class) :
+                beanMatch.getSourceClass().getAnnotation(BeanConstruct.class);
 
         // If no BeanConstruct exists, assume a no-arg constructor must be used
         return beanConstruct == null ? null : new ConstructorArguments(source, beanMatch, beanConstruct.value());
@@ -70,14 +79,13 @@ public abstract class AbstractMapStrategy implements MapStrategy {
         BeanUnproxy unproxy = getConfiguration().getBeanUnproxy();
         Class<?> sourceClass = UnproxyResultStore.getInstance().getOrComputeUnproxyResult(sourceClazz, unproxy);
         Class<?> targetClass = UnproxyResultStore.getInstance().getOrComputeUnproxyResult(targetClazz, unproxy);
-        return getConfiguration().getBeanMatchStore().getBeanMatch(
-                configuration.getStrictMappingProperties().createBeanPair(sourceClass, targetClass)
-        );
+        return getConfiguration().getBeanMatchStore().getBeanMatch(configuration.getStrictMappingProperties().createBeanPair(sourceClass, targetClass));
     }
 
     /**
      * The copy action puts the source's value to the target. When @BeanDefault has been set and the
      * value to copy is empty, it will use the default.
+     *
      * @param beanPropertyMatch contains the fields belonging to the source/target field match
      */
     private void copySourceToTarget(BeanPropertyMatch beanPropertyMatch) {
@@ -104,6 +112,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
     /**
      * If the field is a class which can itself be mapped to another class, it must be treated
      * as such. The matching process is called recursively to deal with this pair.
+     *
      * @param beanPropertyMatch contains the fields belonging to the source/target field match
      */
     private void dealWithMappableNestedClass(BeanPropertyMatch beanPropertyMatch) {
@@ -111,10 +120,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
         Object target;
         if (encapsulatedSource != null) {
             BeanMapperTraceLogger.log("    {");
-            BeanMapper localBeanMapper = getBeanMapper()
-                    .wrap()
-                    .setParent(beanPropertyMatch.getTarget())
-                    .build();
+            BeanMapper localBeanMapper = getBeanMapper().wrap().setParent(beanPropertyMatch.getTarget()).build();
             if (beanPropertyMatch.getTargetObject() == null) {
                 target = localBeanMapper.map(encapsulatedSource, beanPropertyMatch.getTargetClass());
             } else {
@@ -125,25 +131,57 @@ public abstract class AbstractMapStrategy implements MapStrategy {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private <S, P> Class<P> getParameterType(BeanPropertyMatch beanPropertyMatch, Class<S> valueClass) {
+        try {
+            return (Class<P>) ((ParameterizedType) beanPropertyMatch.getTarget().getClass().getDeclaredField(beanPropertyMatch.getTargetFieldName())
+                    .getGenericType()).getActualTypeArguments()[Collection.class.isAssignableFrom(valueClass) ? 0 : 1];
+        } catch (NoSuchFieldException e) {
+            BeanMapperTraceLogger.log("Could not get target-field. Setting parameter-type to Void.class");
+            return (Class<P>) Void.class;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <S, T, C extends BeanConverter> void createConversionNode(S value, Class<S> valueClass, BeanPropertyMatch beanPropertyMatch,
+            Class<T> targetClass, Class<C> converterClass) {
+        if (configuration instanceof DiagnosticsConfiguration dc && dc.isInDiagnosticsMode()) {
+            DiagnosticsNode<?, ?> node;
+            if (Collection.class.isAssignableFrom(valueClass) || Map.class.isAssignableFrom(valueClass)) {
+                Class<?> parameterType = getParameterType(beanPropertyMatch, valueClass);
+                if (Collection.class.isAssignableFrom(valueClass)) {
+                    node = new CollectionConversionDiagnosticNode<>(value, valueClass, targetClass, parameterType,
+                            converterClass);
+                } else {
+                    node = MapConversionDiagnosticNode.of((Map<?, ?>) value, (Class<Map<?, ?>>) valueClass, (Class<Map<?, ?>>) targetClass, parameterType,
+                            converterClass);
+                }
+            } else {
+                node = new ConversionDiagnosticsNode<>(valueClass, targetClass, converterClass);
+            }
+            dc.getBeanMapperDiagnostics().ifPresent(bd -> bd.add(node));
+        }
+    }
+
     /**
      * Converts a value into the target class.
-     * @param value the value to convert
-     * @param targetClass the target class
+     *
+     * @param value             the value to convert
+     * @param targetClass       the target class
      * @param beanPropertyMatch contains the fields belonging to the source/target field match
      * @return the converted value
      */
-    public Object convert(Object value, Class<?> targetClass, BeanPropertyMatch beanPropertyMatch) {
+    @SuppressWarnings("unchecked")
+    public <S, T> Object convert(S value, Class<T> targetClass, BeanPropertyMatch beanPropertyMatch) {
 
         BeanUnproxy unproxy = getConfiguration().getBeanUnproxy();
         Class<?> valueClass = UnproxyResultStore.getInstance().getOrComputeUnproxyResult(beanPropertyMatch.getSourceClass(), unproxy);
         BeanConverter converter = getConverterOptional(valueClass, targetClass);
 
         if (converter != null) {
+            createConversionNode(value, (Class<S>) valueClass, beanPropertyMatch, targetClass, converter.getClass());
             BeanMapperTraceLogger.log("{}{}{}", INDENT, converter.getClass().getSimpleName(), ARROW);
-            BeanMapper wrappedBeanMapper = beanMapper
-                    .wrap()
-                    .setParent(beanPropertyMatch.getTarget())
-                    .build();
+            BeanMapper wrappedBeanMapper = beanMapper.wrap().setParent(beanPropertyMatch.getTarget()).build();
             return converter.convert(wrappedBeanMapper, value, targetClass, beanPropertyMatch);
         }
 
@@ -164,21 +202,16 @@ public abstract class AbstractMapStrategy implements MapStrategy {
      * Second match the fields and handle encapsulated classes.
      * Finally copy the data from the source to the target.
      *
-     * @param source The source from which the values get copied.
-     * @param target The target to which the values get copied.
-     * @param <S>    The source type
-     * @param <T>    The target type
+     * @param source    The source from which the values get copied.
+     * @param target    The target to which the values get copied.
+     * @param <S>       The source type
+     * @param <T>       The target type
      * @param beanMatch the matchup of source and target
      * @return A filled target object.
      */
     public <S, T> T processProperties(S source, T target, BeanMatch beanMatch) {
         for (String fieldName : beanMatch.getTargetNodes().keySet()) {
-            processProperty(new BeanPropertyMatch(
-                    source,
-                    target,
-                    beanMatch.findBeanPairField(fieldName),
-                    fieldName,
-                    beanMatch));
+            processProperty(new BeanPropertyMatch(source, target, beanMatch.findBeanPairField(fieldName), fieldName, beanMatch));
         }
         beanMatch.checkForMandatoryUnmatchedNodes();
         return target;
@@ -186,6 +219,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
 
     /**
      * Process a single combination of a source and a target field.
+     *
      * @param beanPropertyMatch contains the fields belonging to the source/target field match
      */
     private void processProperty(BeanPropertyMatch beanPropertyMatch) {
@@ -194,18 +228,13 @@ public abstract class AbstractMapStrategy implements MapStrategy {
             return;
         }
 
-        if (!beanPropertyMatch.hasAccess(
-                configuration.getRoleSecuredCheck(),
-                configuration.getLogicSecuredChecks(),
+        if (!beanPropertyMatch.hasAccess(configuration.getRoleSecuredCheck(), configuration.getLogicSecuredChecks(),
                 configuration.getEnforceSecuredProperties())) {
             return;
         }
 
-        if (noConverterAvailable(beanPropertyMatch) &&
-                dissimilarOrSimilarWithExistingTarget(beanPropertyMatch) &&
-                neitherSourceNorTargetIsEnum(beanPropertyMatch) &&
-                beanMapperMayDeepMapClass(beanPropertyMatch) &&
-                thereIsASourceClassToMap(beanPropertyMatch)) {
+        if (noConverterAvailable(beanPropertyMatch) && dissimilarOrSimilarWithExistingTarget(beanPropertyMatch) && neitherSourceNorTargetIsEnum(
+                beanPropertyMatch) && beanMapperMayDeepMapClass(beanPropertyMatch) && thereIsASourceClassToMap(beanPropertyMatch)) {
 
             dealWithMappableNestedClass(beanPropertyMatch);
             return;
@@ -218,19 +247,16 @@ public abstract class AbstractMapStrategy implements MapStrategy {
     }
 
     private boolean noConverterAvailable(BeanPropertyMatch beanPropertyMatch) {
-        return !isConverterFor(
-                beanPropertyMatch.getSourceClass(),
-                beanPropertyMatch.getTargetClass());
+        return !isConverterFor(beanPropertyMatch.getSourceClass(), beanPropertyMatch.getTargetClass());
     }
 
     private boolean dissimilarOrSimilarWithExistingTarget(BeanPropertyMatch beanPropertyMatch) {
-        return !beanPropertyMatch.hasSimilarClasses() ||
-                (beanPropertyMatch.hasSimilarClasses() && beanPropertyMatch.getTargetObject() != null);
+        return !beanPropertyMatch.hasSimilarClasses() || (beanPropertyMatch.hasSimilarClasses() && beanPropertyMatch.getTargetObject() != null);
     }
 
     private boolean neitherSourceNorTargetIsEnum(BeanPropertyMatch beanPropertyMatch) {
-        return !((beanPropertyMatch.getSourceClass().isEnum() && !beanPropertyMatch.getSourceClass().isAnnotationPresent(BeanMappableEnum.class)) ||
-                beanPropertyMatch.getTargetClass().isEnum());
+        return !((beanPropertyMatch.getSourceClass().isEnum() && !beanPropertyMatch.getSourceClass().isAnnotationPresent(BeanMappableEnum.class))
+                || beanPropertyMatch.getTargetClass().isEnum());
     }
 
     private boolean beanMapperMayDeepMapClass(BeanPropertyMatch beanPropertyMatch) {
@@ -244,6 +270,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
     /**
      * This method is run when there is no matching source field for a target field. The result
      * could be that a default is set, or an exception is thrown when a BeanProperty has been set.
+     *
      * @param beanPropertyMatch contains the fields belonging to the source/target field match
      */
     private void dealWithNonMatchingNode(BeanPropertyMatch beanPropertyMatch) {
@@ -258,6 +285,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
      * Verifies whether the class is part of the beans which may be mapped by the BeanMapper. This logic is
      * used when nested classes are encountered which need to be treated in a similar way as the main source/
      * target classes.
+     *
      * @param clazz the class to be verified against the allowed packages
      * @return true if the class may be mapped, false if it may not
      */
@@ -269,6 +297,7 @@ public abstract class AbstractMapStrategy implements MapStrategy {
      * Verifies whether the package is part of the beans which may be mapped by the bean mapper. This logic is
      * used when nested classes are encountered which need to be treated in a similar way as the main source/
      * target classes.
+     *
      * @param packageName the package
      * @return true if the class may be mapped, false if it may not
      */

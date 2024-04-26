@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Added
+
+- Added diagnostics, allowing users to check what mappings and conversion are performed as part of a given mapping.
+
+### NB
+
+Diagnostics are only collected when enabled. Diagnostics can be enabled by using the `BeanMapper.wrap(DiagnosticsDetailLevel)`-method.
+
+Each DiagnosticsDetailLevel comes with a different logging strategy.
+* `DiagnosticsDetailLevel.COUNT_TOTAL`: Logs the total number of mappings and conversion performed as part of the top-level mapping, in the format: `[Mapping   ] SourceClass -> TargetClass {total mappings: 38, total conversions: 70, max depth: 7}`
+* `DiagnosticsDetailLevel.COUNT_PER_PAIR`: Logs the total number of mappings and conversion per type pair.
+* `DiagnosticsDetailLevel.TREE_COMPLETE`: Logs the entire mapping and conversion tree.
+
+
 ## [4.1.5]
 
 ### Fixed

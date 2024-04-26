@@ -27,7 +27,9 @@ import io.beanmapper.core.converter.impl.StringToBooleanConverter;
 import io.beanmapper.core.converter.impl.StringToIntegerConverter;
 import io.beanmapper.core.converter.impl.StringToLongConverter;
 import io.beanmapper.core.unproxy.BeanUnproxy;
+import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
 import io.beanmapper.utils.Trinary;
+import io.beanmapper.utils.diagnostics.DiagnosticsDetailLevel;
 
 public class BeanMapperBuilder {
 
@@ -50,7 +52,21 @@ public class BeanMapperBuilder {
     }
 
     public BeanMapperBuilder(Configuration configuration) {
-        this.configuration = new OverrideConfiguration(configuration);
+        this(configuration, DiagnosticsDetailLevel.DISABLED);
+    }
+
+    public BeanMapperBuilder(Configuration configuration, DiagnosticsDetailLevel detailLevel) {
+        if (!detailLevel.isEnabled()) {
+            this.configuration = new OverrideConfiguration(configuration);
+            return;
+        }
+        if (detailLevel != DiagnosticsDetailLevel.DISABLED && configuration instanceof DiagnosticsConfigurationImpl) {
+            throw new BeanConfigurationOperationNotAllowedException(
+                    "Cannot set detail-level for diagnostics when the detail-level is already set. Please make sure you did not set a detail-level in your application settings.");
+        }
+        this.configuration = !(configuration instanceof DiagnosticsConfiguration dc) || (!dc.isInDiagnosticsMode())
+                ? new DiagnosticsConfigurationImpl(configuration, detailLevel)
+                : new OverrideConfiguration(configuration);
     }
 
     public BeanMapperBuilder withoutDefaultConverters() {
@@ -204,10 +220,10 @@ public class BeanMapperBuilder {
      * Adds a mapping for a default value to the configuration.
      *
      * @param targetClass The class that the value is the default for.
-     * @param value The value that will serve as the default for the target-class.
+     * @param value       The value that will serve as the default for the target-class.
+     * @param <T>         The type op the targetClass.
+     * @param <V>         The type of the value.
      * @return This instance.
-     * @param <T> The type op the targetClass.
-     * @param <V> The type of the value.
      */
     public <T, V> BeanMapperBuilder addCustomDefaultValue(Class<T> targetClass, V value) {
         this.configuration.addCustomDefaultValueForClass(targetClass, value);
@@ -216,6 +232,7 @@ public class BeanMapperBuilder {
 
     public BeanMapper build() {
         BeanMapper beanMapper = new BeanMapper(configuration);
+
         // Custom collection handlers must be registered before default ones
         addCollectionHandlers(customCollectionHandlers);
         if (this.configuration instanceof CoreConfiguration)
@@ -255,7 +272,7 @@ public class BeanMapperBuilder {
         attachConverter(new RecordToAnyConverter());
         attachConverter(new ObjectToOptionalConverter());
 
-        for (CollectionHandler collectionHandler : configuration.getCollectionHandlers()) {
+        for (CollectionHandler<?> collectionHandler : configuration.getCollectionHandlers()) {
             attachConverter(new CollectionConverter(collectionHandler));
         }
     }
