@@ -1,7 +1,8 @@
 package io.beanmapper.core.converter.impl;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,11 +47,15 @@ public class RecordToAnyConverter implements BeanConverter {
      * @param <T> The type of the intermediary class.
      */
     private <R extends Record, T> T copyRecordComponentsToIntermediary(R recordClass, T intermediary)
-            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+            throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException {
         Map<String, Object> fieldMap = new HashMap<>();
         for (var field : intermediary.getClass().getDeclaredFields()) {
-            Method getter = recordClass.getClass().getDeclaredMethod(field.getName());
-            fieldMap.put(field.getName(), getter.invoke(recordClass));
+            MethodHandle methodHandle = MethodHandles.lookup().unreflect(recordClass.getClass().getDeclaredMethod(field.getName()));
+            try {
+                fieldMap.put(field.getName(), methodHandle.invoke(recordClass));
+            } catch (Throwable t) {
+                throw new RecordMappingToIntermediaryException(intermediary.getClass(), t);
+            }
         }
         return copyFieldsToIntermediary(intermediary, fieldMap);
     }

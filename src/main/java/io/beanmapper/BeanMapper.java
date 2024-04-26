@@ -12,7 +12,15 @@ import java.util.Set;
 
 import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.config.Configuration;
+import io.beanmapper.config.DiagnosticsConfiguration;
+import io.beanmapper.config.DiagnosticsConfigurationImpl;
+import io.beanmapper.config.OverrideConfiguration;
 import io.beanmapper.strategy.MapStrategyType;
+import io.beanmapper.utils.diagnostics.DiagnosticsDetailLevel;
+import io.beanmapper.utils.diagnostics.tree.CollectionMappingDiagnosticNode;
+import io.beanmapper.utils.diagnostics.tree.DiagnosticsNode;
+import io.beanmapper.utils.diagnostics.tree.MapMappingDiagnosticsNode;
+import io.beanmapper.utils.diagnostics.tree.MappingDiagnosticsNode;
 
 /**
  * Class that is responsible first for understanding the semantics of the source and target
@@ -23,26 +31,58 @@ public final class BeanMapper {
 
     private final Configuration configuration;
 
-    /**
-     */
     public BeanMapper(Configuration configuration) {
         this.configuration = configuration;
     }
 
+    private <S> void addDiagnosticsNode(S source) {
+        if (configuration instanceof DiagnosticsConfiguration dc && dc.isInDiagnosticsMode()) {
+            if (dc.getParentConfiguration().orElse(null) instanceof DiagnosticsConfigurationImpl dci) {
+                dci.getBeanMapperDiagnostics().ifPresent(bd -> bd.getDiagnostics().clear());
+            }
+            Class<S> sourceClass = source != null ? (Class<S>) configuration.getBeanUnproxy().unproxy(source.getClass()) : (Class<S>) Void.class;
+            DiagnosticsNode<?, ?> node = getsDiagnosticsNode(source, sourceClass);
+            dc.setBeanMapperDiagnostics(node);
+            if (configuration instanceof OverrideConfiguration) {
+                dc.getParentConfiguration()
+                        .map(DiagnosticsConfiguration.class::cast)
+                        .orElseThrow()
+                        .getBeanMapperDiagnostics().ifPresent(bd -> bd.add(node));
+            }
+        }
+    }
+
+    private <S> DiagnosticsNode<?, ?> getsDiagnosticsNode(S source, Class<S> sourceClass) {
+        DiagnosticsNode<?, ?> node = new MappingDiagnosticsNode<S, Object>(sourceClass, configuration.getTargetClass());
+        if (source instanceof Collection<?>) {
+            node = new CollectionMappingDiagnosticNode<>(source, sourceClass, configuration.getPreferredCollectionClass(), configuration.getTargetClass());
+        }
+        if (source instanceof Map<?, ?>) {
+            node = new MapMappingDiagnosticsNode<>((Map) source, (Class<Map>) sourceClass, configuration.getPreferredCollectionClass(), configuration.getTargetClass());
+        }
+        return node;
+    }
+
     public <S, T> T map(S source) {
+        addDiagnosticsNode(source);
         if (source == null && !configuration.getUseNullValue()) {
             // noinspection unchecked
             return (T) this.getConfiguration().getDefaultValueForClass(this.getConfiguration().getTargetClass());
         }
-        return MapStrategyType.getStrategy(this, configuration).map(source);
+        T result = MapStrategyType.getStrategy(this, configuration).map(source);
+        if (this.configuration.getParentConfiguration().orElseThrow() instanceof DiagnosticsConfigurationImpl dc) {
+            dc.getDiagnosticsLogger().ifPresent(dl -> dl.log(((DiagnosticsConfiguration) configuration).getBeanMapperDiagnostics().orElse(null)));
+        }
+        return result;
     }
 
     /**
      * Copies the values from the source object to an existing target instance
+     *
      * @param source source instance of the properties
      * @param target target instance for the properties
-     * @param <S> the instance from which the properties get copied.
-     * @param <T> the instance to which the properties get copied
+     * @param <S>    the instance from which the properties get copied.
+     * @param <T>    the instance to which the properties get copied
      * @return the original target instance containing all applicable properties
      */
     public <S, T> T map(S source, T target) {
@@ -54,10 +94,11 @@ public final class BeanMapper {
 
     /**
      * Copies the values from the optional source object to a newly constructed target instance
-     * @param source optional source instance of the properties
+     *
+     * @param source      optional source instance of the properties
      * @param targetClass class of the target, needs to be constructed as the target instance
-     * @param <S> the instance from which the properties get copied
-     * @param <T> the instance to which the properties get copied
+     * @param <S>         the instance from which the properties get copied
+     * @param <T>         the instance to which the properties get copied
      * @return the optional target instance containing all applicable properties
      */
     public <S, T> Optional<T> map(Optional<S> source, Class<T> targetClass) {
@@ -76,9 +117,9 @@ public final class BeanMapper {
      * @param source Source instance of the properties.
      * @param target Implementation of ParameterizedType, which provides the information necessary to map elements to
      *               the correct type.
+     * @param <S>    Type of the source.
+     * @param <P>    Type of the specific implementation of ParameterizedType used as the target.
      * @return The result of the mapping.
-     * @param <S> Type of the source.
-     * @param <P> Type of the specific implementation of ParameterizedType used as the target.
      */
     public <S, P extends ParameterizedType> Object map(S source, P target) {
         if (source instanceof Collection<?> collection) {
@@ -94,10 +135,11 @@ public final class BeanMapper {
 
     /**
      * Copies the values from the source object to a newly constructed target instance
-     * @param source source instance of the properties
+     *
+     * @param source      source instance of the properties
      * @param targetClass class of the target, needs to be constructed as the target instance
-     * @param <S> The instance from which the properties get copied
-     * @param <T> the instance to which the properties get copied
+     * @param <S>         The instance from which the properties get copied
+     * @param <T>         the instance to which the properties get copied
      * @return the target instance containing all applicable properties
      */
     public <S, T> T map(S source, Class<T> targetClass) {
@@ -112,9 +154,9 @@ public final class BeanMapper {
      *
      * @param sourceArray The source array.
      * @param targetClass The class to which the elements from the source array will be converted to.
+     * @param <S>         The type of the elements in the source array.
+     * @param <T>         The type of the elements in the target array.
      * @return A newly constructed array of the type of the target class.
-     * @param <S> The type of the elements in the source array.
-     * @param <T> The type of the elements in the target array.
      */
     public <S, T> T[] map(S[] sourceArray, Class<T> targetClass) {
         return Arrays.stream(sourceArray)
@@ -128,11 +170,11 @@ public final class BeanMapper {
      * <p>The type of the target collection is determined automatically from the actual type of the source collection.
      * If the source </p>
      *
-     * @param collection - The source collection
+     * @param collection               - The source collection
      * @param elementInCollectionClass - The class of each element in the target list.
+     * @param <S>                      The type up the elements in the source collection.
+     * @param <T>                      The type of the target, to which the source elements will be mapped.
      * @return The target collection with mapped source collection elements.
-     * @param <S> The type up the elements in the source collection.
-     * @param <T> The type of the target, to which the source elements will be mapped.
      */
     public <S, T> Collection<T> map(Collection<S> collection, Class<T> elementInCollectionClass) {
         return mapCollection(collection, elementInCollectionClass);
@@ -140,10 +182,11 @@ public final class BeanMapper {
 
     /**
      * Maps the source list of elements to a new target list. Convenience operator
-     * @param list the source list
+     *
+     * @param list               the source list
      * @param elementInListClass the class of each element in the target list
-     * @param <S> the class type of the source list
-     * @param <T> the class type of an element in the target list
+     * @param <S>                the class type of the source list
+     * @param <T>                the class type of an element in the target list
      * @return the target list with mapped source list elements
      */
     public <S, T> List<T> map(List<S> list, Class<T> elementInListClass) {
@@ -152,10 +195,11 @@ public final class BeanMapper {
 
     /**
      * Maps the source set of elements to a new target set. Convenience operator
-     * @param set the source set
+     *
+     * @param set               the source set
      * @param elementInSetClass the class of each element in the target set
-     * @param <S> the class type of the source set
-     * @param <T> the class type of an element in the target set
+     * @param <S>               the class type of the source set
+     * @param <T>               the class type of an element in the target set
      * @return the target set with mapped source set elements
      */
     public <S, T> Set<T> map(Set<S> set, Class<T> elementInSetClass) {
@@ -165,11 +209,11 @@ public final class BeanMapper {
     /**
      * Maps the source queue to a new target queue. Convenience operator.
      *
-     * @param queue The source queue.
+     * @param queue               The source queue.
      * @param elementInQueueClass The class of each element in the target queue.
+     * @param <S>                 The class type of the source queue.
+     * @param <T>                 The class type of the elements in the target queue.
      * @return The target queue with mapped source queue elements.
-     * @param <S> The class type of the source queue.
-     * @param <T> The class type of the elements in the target queue.
      */
     public <S, T> Queue<T> map(Queue<S> queue, Class<T> elementInQueueClass) {
         return mapCollection(queue, elementInQueueClass);
@@ -177,11 +221,12 @@ public final class BeanMapper {
 
     /**
      * Maps the source map of elements to a new target map. Convenience operator
-     * @param map the source map
+     *
+     * @param map           the source map
      * @param mapValueClass the class of each value in the target map
-     * @param <K> the class type of a key in both source and target map
-     * @param <T> the class type of a value in the target map
-     * @param <S> the class type of the source map
+     * @param <K>           the class type of a key in both source and target map
+     * @param <T>           the class type of a value in the target map
+     * @param <S>           the class type of the source map
      * @return the target map with literal source set keys and mapped source set values
      */
     public <K, S, T> Map<K, T> map(Map<K, S> map, Class<T> mapValueClass) {
@@ -197,7 +242,11 @@ public final class BeanMapper {
     }
 
     public BeanMapperBuilder wrap() {
-        return new BeanMapperBuilder(configuration);
+        return wrap(DiagnosticsDetailLevel.DISABLED);
+    }
+
+    public BeanMapperBuilder wrap(DiagnosticsDetailLevel detailLevel) {
+        return new BeanMapperBuilder(configuration, detailLevel);
     }
 
     public Configuration getConfiguration() {
