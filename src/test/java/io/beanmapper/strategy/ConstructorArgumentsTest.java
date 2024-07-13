@@ -1,10 +1,11 @@
 package io.beanmapper.strategy;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.beanmapper.config.BeanPair;
 import io.beanmapper.core.BeanMatch;
 import io.beanmapper.core.BeanMatchStore;
+import io.beanmapper.core.inspector.BeanPropertySelector;
 import io.beanmapper.testmodel.person.PersonForm;
 import io.beanmapper.testmodel.person.PersonResult;
 
@@ -21,7 +22,7 @@ class ConstructorArgumentsTest {
     @BeforeEach
     void setUp() {
         this.beanPair = new BeanPair(PersonForm.class, PersonResult.class);
-        this.beanMatchStore = new BeanMatchStore(null, null);
+        this.beanMatchStore = new BeanMatchStore(null, null, new BeanPropertySelector());
         this.beanMatch = this.beanMatchStore.getBeanMatch(this.beanPair);
         this.personForm = new PersonForm();
         this.personForm.setName("Henk");

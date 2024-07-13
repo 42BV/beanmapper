@@ -23,5 +23,4 @@ class SetCollectionHandlerTest {
         Set set = collectionHandler.create(ComparableClass.class);
         assertEquals(TreeSet.class, set.getClass());
     }
-
 }

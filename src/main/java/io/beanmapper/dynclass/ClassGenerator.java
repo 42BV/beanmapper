@@ -9,6 +9,7 @@ import io.beanmapper.config.StrictMappingProperties;
 import io.beanmapper.core.BeanMatchStore;
 import io.beanmapper.core.BeanProperty;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
+import io.beanmapper.core.inspector.BeanPropertySelector;
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassMap;
@@ -34,7 +35,7 @@ public class ClassGenerator {
     }
 
     public ClassGenerator(ClassPool classPool) {
-        this.beanMatchStore = new BeanMatchStore(null, null);
+        this.beanMatchStore = new BeanMatchStore(null, null, new BeanPropertySelector());
         this.classPool = classPool;
     }
 
