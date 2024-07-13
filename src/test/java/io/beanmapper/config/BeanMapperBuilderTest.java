@@ -140,12 +140,7 @@ class BeanMapperBuilderTest {
     @Test
     @Disabled("BeanUnproxy should not be used as a Converter.")
     void setBeanUnproxy() {
-        final BeanUnproxy expectedBeanUnproxy = new BeanUnproxy() {
-            @Override
-            public Class<?> unproxy(Class<?> beanClass) {
-                return Long.class;
-            }
-        };
+        final BeanUnproxy expectedBeanUnproxy = beanClass -> Long.class;
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .setBeanUnproxy(expectedBeanUnproxy)
                 .build();

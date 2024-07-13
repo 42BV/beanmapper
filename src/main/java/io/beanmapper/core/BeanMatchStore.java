@@ -5,12 +5,7 @@ import static io.beanmapper.core.converter.collections.CollectionElementType.EMP
 import static io.beanmapper.core.converter.collections.CollectionElementType.derived;
 import static io.beanmapper.core.converter.collections.CollectionElementType.set;
 
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,13 +23,12 @@ import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.converter.collections.AnnotationClass;
 import io.beanmapper.core.converter.collections.BeanCollectionInstructions;
 import io.beanmapper.core.converter.collections.CollectionElementType;
+import io.beanmapper.core.inspector.BeanPropertySelector;
 import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessors;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.exceptions.BeanMissingPathException;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
-import io.beanmapper.exceptions.FieldShadowingException;
-import io.beanmapper.utils.BeanMapperTraceLogger;
 import io.beanmapper.utils.Trinary;
 
 public class BeanMatchStore {
@@ -45,9 +39,12 @@ public class BeanMatchStore {
 
     private final Map<Class<?>, Map<Class<?>, BeanMatch>> store = new HashMap<>();
 
-    public BeanMatchStore(CollectionHandlerStore collectionHandlerStore, BeanUnproxy beanUnproxy) {
+    private final BeanPropertySelector beanPropertySelector;
+
+    public BeanMatchStore(CollectionHandlerStore collectionHandlerStore, BeanUnproxy beanUnproxy, BeanPropertySelector beanPropertySelector) {
         this.collectionHandlerStore = collectionHandlerStore;
         this.beanUnproxy = beanUnproxy;
+        this.beanPropertySelector = beanPropertySelector;
     }
 
     public void validateStrictBeanPairs(List<BeanPair> beanPairs) {
@@ -82,11 +79,7 @@ public class BeanMatchStore {
     }
 
     public BeanMatch addBeanMatch(BeanMatch beanMatch) {
-        Map<Class<?>, BeanMatch> targetsForSource = store.get(beanMatch.getSourceClass());
-        if (targetsForSource == null) {
-            targetsForSource = new HashMap<>();
-            store.put(beanMatch.getSourceClass(), targetsForSource);
-        }
+        Map<Class<?>, BeanMatch> targetsForSource = store.computeIfAbsent(beanMatch.getSourceClass(), k -> new HashMap<>());
         targetsForSource.put(beanMatch.getTargetClass(), beanMatch);
         return beanMatch;
     }
@@ -94,7 +87,7 @@ public class BeanMatchStore {
     private BeanMatch determineBeanMatch(BeanPair beanPair) {
 
         Map<String, BeanProperty> sourceNode = new HashMap<>();
-        Map<String, BeanProperty>targetNode = new HashMap<>();
+        Map<String, BeanProperty> targetNode = new HashMap<>();
         Map<String, BeanProperty> aliases = new HashMap<>();
 
         return new BeanMatch(
@@ -106,7 +99,9 @@ public class BeanMatchStore {
                         beanPair.getSourceClass(),
                         beanPair.getTargetClass(),
                         null,
-                        BeanPropertyMatchupDirection.SOURCE_TO_TARGET),
+
+                        BeanPropertyMatchupDirection.SOURCE_TO_TARGET
+                            ),
                 getAllFields(
                         targetNode,
                         sourceNode,
@@ -114,8 +109,11 @@ public class BeanMatchStore {
                         beanPair.getTargetClass(),
                         beanPair.getSourceClass(),
                         null,
-                        BeanPropertyMatchupDirection.TARGET_TO_SOURCE),
-                aliases);
+
+                        BeanPropertyMatchupDirection.TARGET_TO_SOURCE
+                            ),
+                aliases
+        );
     }
 
     private Map<String, BeanProperty> getAllFields(Map<String, BeanProperty> ourNodes, Map<String, BeanProperty> otherNodes, Map<String, BeanProperty> aliases,
@@ -126,46 +124,28 @@ public class BeanMatchStore {
         for (PropertyAccessor accessor : accessors) {
 
             BeanPropertyAccessType accessType = matchupDirection.accessType(accessor);
-            if (accessType == BeanPropertyAccessType.NO_ACCESS) {
-                continue;
-            }
-
-            // Ignore fields
-            if (accessor.isAnnotationPresent(BeanIgnore.class)) {
+            if (accessType == BeanPropertyAccessType.NO_ACCESS || accessor.isAnnotationPresent(BeanIgnore.class)) {
                 continue;
             }
 
             // BeanProperty allows the field to match with a field from the other side with a different name
             // and even a different nesting level.
-            BeanPropertyWrapper beanPropertyWrapper;
-            try {
-                beanPropertyWrapper = dealWithBeanProperty(matchupDirection, otherNodes, otherType, accessor);
-            } catch (IntrospectionException e) {
-                throw new RuntimeException(e);
-            }
+            BeanPropertyWrapper beanPropertyWrapper = beanPropertySelector.dealWithBeanProperty(matchupDirection, otherNodes, otherType, accessor);
 
             // Unwrap the fields which exist in the unwrap class
             BeanProperty currentBeanProperty;
             try {
-                currentBeanProperty = new BeanPropertyCreator(
-                        matchupDirection, ourType, accessor.getName()).determineNodesForPath(precedingBeanProperty);
+                currentBeanProperty = new BeanPropertyCreator(matchupDirection, ourType, accessor.getName()).determineNodesForPath(precedingBeanProperty);
                 currentBeanProperty.setMustMatch(beanPropertyWrapper.isMustMatch());
             } catch (BeanNoSuchPropertyException e) {
                 throw new BeanMissingPathException(ourType, accessor.getName(), e);
             }
 
-            handleBeanCollectionAnnotation(
-                    accessor.findAnnotation(BeanCollection.class),
-                    currentBeanProperty,
-                    matchupDirection);
+            handleBeanCollectionAnnotation(accessor.findAnnotation(BeanCollection.class), currentBeanProperty, matchupDirection);
 
-            handleBeanRoleSecuredAnnotation(
-                    currentBeanProperty,
-                    accessor.findAnnotation(BeanRoleSecured.class));
+            handleBeanRoleSecuredAnnotation(currentBeanProperty, accessor.findAnnotation(BeanRoleSecured.class));
 
-            handleBeanLogicSecuredAnnotation(
-                    currentBeanProperty,
-                    accessor.findAnnotation(BeanLogicSecured.class));
+            handleBeanLogicSecuredAnnotation(currentBeanProperty, accessor.findAnnotation(BeanLogicSecured.class));
 
             if (accessor.isAnnotationPresent(BeanAlias.class)) {
                 BeanAlias beanAlias = accessor.findAnnotation(BeanAlias.class);
@@ -176,14 +156,7 @@ public class BeanMatchStore {
             }
 
             if (accessor.isAnnotationPresent(BeanUnwrap.class)) {
-                ourCurrentNodes = getAllFields(
-                        ourCurrentNodes,
-                        otherNodes,
-                        aliases,
-                        accessor.getType(),
-                        otherType,
-                        currentBeanProperty,
-                        matchupDirection);
+                ourCurrentNodes = getAllFields(ourCurrentNodes, otherNodes, aliases, accessor.getType(), otherType, currentBeanProperty, matchupDirection);
             } else {
                 ourCurrentNodes.put(beanPropertyWrapper.getName(), currentBeanProperty);
             }
@@ -205,10 +178,7 @@ public class BeanMatchStore {
         beanProperty.setRequiredRoles(beanRoleSecured.value());
     }
 
-    private void handleBeanCollectionAnnotation(
-            BeanCollection beanCollection,
-            BeanProperty beanProperty,
-            BeanPropertyMatchupDirection matchupDirection) {
+    private void handleBeanCollectionAnnotation(BeanCollection beanCollection, BeanProperty beanProperty, BeanPropertyMatchupDirection matchupDirection) {
 
         CollectionElementType elementType = EMPTY_COLLECTION_ELEMENT_TYPE;
         BeanCollectionUsage beanCollectionUsage = null;
@@ -238,8 +208,7 @@ public class BeanMatchStore {
             if (collectionHandler == null) {
                 collectionHandler = getCollectionHandlerFor(beanProperty);
             }
-            Class<?> genericClassOfField =
-                    beanProperty.getGenericClassOfField(collectionHandler.getGenericParameterIndex());
+            Class<?> genericClassOfField = beanProperty.getGenericClassOfField(collectionHandler.getGenericParameterIndex());
             if (genericClassOfField != null) {
                 elementType = derived(genericClassOfField);
             }
@@ -256,93 +225,4 @@ public class BeanMatchStore {
     private CollectionHandler getCollectionHandlerFor(BeanProperty beanProperty) {
         return collectionHandlerStore.getCollectionHandlerFor(beanProperty.getAccessor().getType(), beanUnproxy);
     }
-
-    private BeanPropertyWrapper dealWithBeanProperty(BeanPropertyMatchupDirection matchupDirection, Map<String, BeanProperty> otherNodes, Class<?> otherType,
-            PropertyAccessor accessor) throws IntrospectionException {
-        BeanPropertyWrapper wrapper = new BeanPropertyWrapper(accessor.getName());
-        if (accessor.isAnnotationPresent(io.beanmapper.annotations.BeanProperty.class)) {
-            io.beanmapper.annotations.BeanProperty beanProperty = accessor.findAnnotation(io.beanmapper.annotations.BeanProperty.class);
-
-            detectBeanPropertyFieldShadowing(accessor, beanProperty);
-
-            wrapper.setMustMatch();
-            wrapper.setName(getBeanPropertyName(beanProperty));
-            // Get the other field from the location that is specified in the beanProperty annotation.
-            // If the field is referred to by a path, store the custom field in the other map
-            try {
-                otherNodes.put(
-                        wrapper.getName(),
-                        new BeanPropertyCreator(matchupDirection.getInverse(), otherType, wrapper.getName())
-                                .determineNodesForPath());
-            } catch (BeanNoSuchPropertyException err) {
-                    BeanMapperTraceLogger.log("""
-                            BeanNoSuchPropertyException thrown by BeanMatchStore#dealWithBeanProperty(BeanPropertyMatchupDirection, Map<String, BeanProperty>, Class, PropertyAccessor), for {}.
-                            {}""", wrapper.getName(), err.getMessage());
-            }
-        }
-        return wrapper;
-    }
-
-    private String getBeanPropertyName(io.beanmapper.annotations.BeanProperty annotation) {
-        return annotation.value().isBlank() ? annotation.name() : annotation.value();
-    }
-
-    /**
-     * Detects whether a field annotated with the BeanProperty-annotation shadows an existing, accessible field.
-     *
-     * In this context, an accessible field is any field which is either public, or exposes a public
-     * accessor-method.
-     *
-     * @param accessor The accessor that can be used to access to the value within the field.
-     * @param beanProperty The BeanProperty-annotation annotating the relevant field.
-     * @throws IntrospectionException May be thrown whenever an Exception occurs during the introspection of the
-     *                                relevant bean.
-     */
-    private void detectBeanPropertyFieldShadowing(final PropertyAccessor accessor, final io.beanmapper.annotations.BeanProperty beanProperty)
-            throws IntrospectionException {
-        var beanPropertyName = getBeanPropertyName(beanProperty);
-
-        var fields = accessor.getDeclaringClass().getDeclaredFields();
-        for (var field : fields) {
-            var fieldName = field.getName();
-            if (!fieldName.equals(accessor.getName())
-                    && !field.isAnnotationPresent(BeanIgnore.class)
-                    && fieldName.equals(beanPropertyName)
-                    && (Modifier.isPublic(field.getModifiers())
-                    || hasAccessibleWriteMethod(field))) {
-                if (field.isAnnotationPresent(io.beanmapper.annotations.BeanProperty.class)) {
-                    var fieldBeanProperty = field.getAnnotation(io.beanmapper.annotations.BeanProperty.class);
-                    if (getBeanPropertyName(fieldBeanProperty).equals(beanPropertyName))
-                        throw new FieldShadowingException(
-                                String.format("%s %s.%s shadows %s.%s.", beanProperty, accessor.getDeclaringClass().getName(), accessor.getName(),
-                                        field.getDeclaringClass().getName(), fieldName));
-                } else {
-                    throw new FieldShadowingException(
-                            String.format("%s %s.%s shadows %s.%s.", beanProperty, accessor.getDeclaringClass().getName(), accessor.getName(),
-                                    field.getDeclaringClass().getName(), fieldName));
-                }
-            }
-        }
-    }
-
-    /**
-     * Determines whether a field exposes an accessible mutator-method.
-     *
-     * <p>This method first retrieves the array of PropertyDescriptors, and turns it into a Stream. If any of the
-     * PropertyDescriptor-objects have the same name as the field, this method returns true. If not, this method returns
-     * false.</p>
-     *
-     * In this context, an accessible mutator-method is any method which is public and adheres to the Java
-     *          Beans definition of a mutator.
-     *
-     * @param field The Field of which the method attempts to find a mutator-method.
-     * @return True, if the field exposes an accessible mutator, false otherwise.
-     * @throws IntrospectionException May be thrown whenever an Exception occurs during the introspection of the
-     *                                relevant bean.
-     */
-    private boolean hasAccessibleWriteMethod(final Field field) throws IntrospectionException {
-        return Arrays.stream(Introspector.getBeanInfo(field.getDeclaringClass()).getPropertyDescriptors())
-                .anyMatch(propertyDescriptor -> propertyDescriptor.getName().equals(field.getName()));
-    }
-
 }

@@ -14,6 +14,7 @@ import io.beanmapper.core.constructor.BeanInitializer;
 import io.beanmapper.core.constructor.DefaultBeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.converter.BeanConverterStore;
+import io.beanmapper.core.inspector.BeanPropertySelector;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
 import io.beanmapper.core.unproxy.SkippingBeanUnproxy;
@@ -44,7 +45,7 @@ public class CoreConfiguration implements Configuration {
      * Contains a store of matches for source and target class pairs. A pair is created only
      * once and reused every time thereafter.
      */
-    private final BeanMatchStore beanMatchStore = new BeanMatchStore(collectionHandlerStore, beanUnproxy);
+    private final BeanMatchStore beanMatchStore = new BeanMatchStore(collectionHandlerStore, beanUnproxy, new BeanPropertySelector());
 
     private final BeanConverterStore beanConverterStore = new BeanConverterStore();
 
