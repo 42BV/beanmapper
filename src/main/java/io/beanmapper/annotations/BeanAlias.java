@@ -10,12 +10,17 @@ import java.lang.annotation.Target;
  * mapped to.
  *
  * <p>The BeanAlias-annotation works well in concert with the {@link BeanProperty}-annotation.</p>
- *
+ * <p>
  * While a target-class may contain field annotated with the BeanAlias-annotation, during mapping, those
  * annotations will be ignored. For equivalent functionality on the target-side, use the
  * BeanProperty-annotation on the relevant fields.
+ *
  * @see BeanProperty
+ * @deprecated BeanAlias is essentially a weaker version of the BeanProperty. It does not provide functionality that is
+ *             not already covered by the BeanProperty-annotation. As such, BeanAlias will be removed in the foreseeable
+ *             future.
  */
+@Deprecated(forRemoval = true)
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.RECORD_COMPONENT })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BeanAlias {

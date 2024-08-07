@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Issue [#188](https://github.com/42BV/beanmapper/issues/188) Made BeanProperty-annotation repeatable. Added targets-property to BeanProperty-annotation, allowing the user to specify which mappings a BeanProperty should apply to.
 
+### Deprecated
+
+- Deprecated the BeanAlias-annotation, as it does not offer any unique functionality, compared to the BeanProperty-annotation.
+
 ## [4.1.6]
 
 ### Fixed
