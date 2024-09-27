@@ -1,17 +1,16 @@
 package io.beanmapper.core.converter.impl;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Optional;
-
 import io.beanmapper.BeanMapper;
 import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.exceptions.BeanNoSuchPropertyException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Optional;
 
 /**
  * This converter facilitates the conversion of an object to an Optional wrapping another object. This converter does
@@ -41,6 +40,8 @@ public class ObjectToOptionalConverter implements BeanConverter {
 
         if (targetType instanceof ParameterizedType parameterizedType) {
             return targetClass.cast(Optional.of(beanMapper.map(source, (Class<?>) parameterizedType.getActualTypeArguments()[0])));
+        } else if (targetType instanceof Class<?> type && Enum.class.isAssignableFrom(type) && source.getClass() == type) {
+            return (T) source;
         }
         return targetClass.cast(Optional.of(beanMapper.map(source, (Class<?>) targetType)));
     }

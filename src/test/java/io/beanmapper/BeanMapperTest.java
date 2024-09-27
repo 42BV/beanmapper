@@ -1,34 +1,5 @@
 package io.beanmapper;
 
-import static io.beanmapper.utils.diagnostics.DiagnosticsDetailLevel.TREE_COMPLETE;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.concurrent.ArrayBlockingQueue;
-
 import io.beanmapper.annotations.BeanCollectionUsage;
 import io.beanmapper.config.AfterClearFlusher;
 import io.beanmapper.config.BeanMapperBuilder;
@@ -40,72 +11,18 @@ import io.beanmapper.core.converter.impl.LocalDateTimeToLocalDate;
 import io.beanmapper.core.converter.impl.LocalDateToLocalDateTime;
 import io.beanmapper.core.converter.impl.NestedSourceClassToNestedTargetClassConverter;
 import io.beanmapper.core.converter.impl.ObjectToStringConverter;
-import io.beanmapper.exceptions.BeanConversionException;
-import io.beanmapper.exceptions.BeanMappingException;
-import io.beanmapper.exceptions.BeanNoLogicSecuredCheckSetException;
-import io.beanmapper.exceptions.BeanNoRoleSecuredCheckSetException;
-import io.beanmapper.exceptions.BeanNoSuchPropertyException;
-import io.beanmapper.exceptions.FieldShadowingException;
+import io.beanmapper.exceptions.*;
 import io.beanmapper.shared.ReflectionUtils;
 import io.beanmapper.testmodel.anonymous.Book;
 import io.beanmapper.testmodel.anonymous.BookForm;
 import io.beanmapper.testmodel.beanalias.NestedSourceWithAlias;
 import io.beanmapper.testmodel.beanalias.SourceWithAlias;
 import io.beanmapper.testmodel.beanalias.TargetWithAlias;
-import io.beanmapper.testmodel.beanproperty.SourceBeanProperty;
-import io.beanmapper.testmodel.beanproperty.SourceBeanPropertyWithShadowing;
-import io.beanmapper.testmodel.beanproperty.SourceNestedBeanProperty;
-import io.beanmapper.testmodel.beanproperty.TargetBeanProperty;
-import io.beanmapper.testmodel.beanproperty.TargetBeanPropertyWithShadowing;
-import io.beanmapper.testmodel.beanproperty.TargetBeanPropertyWithShadowingNonPublicFieldWithoutSetter;
-import io.beanmapper.testmodel.beanproperty.TargetNestedBeanProperty;
-import io.beanmapper.testmodel.beansecuredfield.CheckSameNameLogicCheck;
-import io.beanmapper.testmodel.beansecuredfield.NeverReturnTrueCheck;
-import io.beanmapper.testmodel.beansecuredfield.SFSourceAWithSecuredField;
-import io.beanmapper.testmodel.beansecuredfield.SFSourceB;
-import io.beanmapper.testmodel.beansecuredfield.SFSourceCWithSecuredMethod;
-import io.beanmapper.testmodel.beansecuredfield.SFSourceDLogicSecured;
-import io.beanmapper.testmodel.beansecuredfield.SFSourceELogicSecured;
-import io.beanmapper.testmodel.beansecuredfield.SFTargetA;
-import io.beanmapper.testmodel.beansecuredfield.SFTargetBWithSecuredField;
-import io.beanmapper.testmodel.collections.CollSourceClear;
-import io.beanmapper.testmodel.collections.CollSourceClearFlush;
-import io.beanmapper.testmodel.collections.CollSourceConstruct;
-import io.beanmapper.testmodel.collections.CollSourceListIncompleteAnnotation;
-import io.beanmapper.testmodel.collections.CollSourceListNotAnnotated;
-import io.beanmapper.testmodel.collections.CollSourceMapNotAnnotated;
-import io.beanmapper.testmodel.collections.CollSourceNoGenerics;
-import io.beanmapper.testmodel.collections.CollSourceReuse;
-import io.beanmapper.testmodel.collections.CollSubTargetList;
-import io.beanmapper.testmodel.collections.CollTarget;
-import io.beanmapper.testmodel.collections.CollTargetEmptyList;
-import io.beanmapper.testmodel.collections.CollTargetListNotAnnotated;
-import io.beanmapper.testmodel.collections.CollTargetListNotAnnotatedUseSetter;
-import io.beanmapper.testmodel.collections.CollTargetMapNotAnnotated;
-import io.beanmapper.testmodel.collections.CollTargetNoGenerics;
-import io.beanmapper.testmodel.collections.CollectionListSource;
-import io.beanmapper.testmodel.collections.CollectionListTarget;
-import io.beanmapper.testmodel.collections.CollectionListTargetClear;
-import io.beanmapper.testmodel.collections.CollectionMapSource;
-import io.beanmapper.testmodel.collections.CollectionMapTarget;
-import io.beanmapper.testmodel.collections.CollectionPriorityQueueTarget;
-import io.beanmapper.testmodel.collections.CollectionQueueSource;
-import io.beanmapper.testmodel.collections.CollectionSetSource;
-import io.beanmapper.testmodel.collections.CollectionSetTarget;
-import io.beanmapper.testmodel.collections.CollectionSetTargetIncorrectSubtype;
-import io.beanmapper.testmodel.collections.CollectionSetTargetSpecificSubtype;
-import io.beanmapper.testmodel.collections.SourceWithListGetter;
-import io.beanmapper.testmodel.collections.TargetWithListPublicField;
-import io.beanmapper.testmodel.collections.target_is_wrapped.SourceWithUnwrappedItems;
-import io.beanmapper.testmodel.collections.target_is_wrapped.TargetWithWrappedItems;
-import io.beanmapper.testmodel.collections.target_is_wrapped.UnwrappedSource;
-import io.beanmapper.testmodel.collections.target_is_wrapped.UnwrappedToWrappedBeanConverter;
-import io.beanmapper.testmodel.collections.target_is_wrapped.WrappedTarget;
-import io.beanmapper.testmodel.construct.NestedSourceWithoutConstruct;
-import io.beanmapper.testmodel.construct.SourceBeanConstructWithList;
-import io.beanmapper.testmodel.construct.SourceWithConstruct;
-import io.beanmapper.testmodel.construct.TargetBeanConstructWithList;
-import io.beanmapper.testmodel.construct.TargetWithoutConstruct;
+import io.beanmapper.testmodel.beanproperty.*;
+import io.beanmapper.testmodel.beansecuredfield.*;
+import io.beanmapper.testmodel.collections.*;
+import io.beanmapper.testmodel.collections.target_is_wrapped.*;
+import io.beanmapper.testmodel.construct.*;
 import io.beanmapper.testmodel.construct_not_matching.BigConstructTarget;
 import io.beanmapper.testmodel.construct_not_matching.BigConstructTarget2;
 import io.beanmapper.testmodel.construct_not_matching.FlatConstructSource;
@@ -123,31 +40,11 @@ import io.beanmapper.testmodel.defaults.TargetWithDefaults;
 import io.beanmapper.testmodel.emptyobject.EmptySource;
 import io.beanmapper.testmodel.emptyobject.EmptyTarget;
 import io.beanmapper.testmodel.emptyobject.NestedEmptyTarget;
-import io.beanmapper.testmodel.encapsulate.Address;
-import io.beanmapper.testmodel.encapsulate.Country;
-import io.beanmapper.testmodel.encapsulate.House;
-import io.beanmapper.testmodel.encapsulate.ResultAddress;
-import io.beanmapper.testmodel.encapsulate.ResultManyToMany;
-import io.beanmapper.testmodel.encapsulate.ResultManyToOne;
-import io.beanmapper.testmodel.encapsulate.ResultOneToMany;
+import io.beanmapper.testmodel.encapsulate.*;
 import io.beanmapper.testmodel.encapsulate.source_annotated.Car;
 import io.beanmapper.testmodel.encapsulate.source_annotated.CarDriver;
 import io.beanmapper.testmodel.encapsulate.source_annotated.Driver;
-import io.beanmapper.testmodel.enums.ColorEntity;
-import io.beanmapper.testmodel.enums.ColorResult;
-import io.beanmapper.testmodel.enums.ColorStringResult;
-import io.beanmapper.testmodel.enums.ComplexEnumResult;
-import io.beanmapper.testmodel.enums.Day;
-import io.beanmapper.testmodel.enums.DayEnumSourceArraysAsList;
-import io.beanmapper.testmodel.enums.EnumSourceArraysAsList;
-import io.beanmapper.testmodel.enums.EnumTargetList;
-import io.beanmapper.testmodel.enums.RGB;
-import io.beanmapper.testmodel.enums.UserRole;
-import io.beanmapper.testmodel.enums.UserRoleResult;
-import io.beanmapper.testmodel.enums.WeekEntity;
-import io.beanmapper.testmodel.enums.WeekResult;
-import io.beanmapper.testmodel.enums.WeekStringResult;
-import io.beanmapper.testmodel.enums.WithAbstractMethod;
+import io.beanmapper.testmodel.enums.*;
 import io.beanmapper.testmodel.ignore.IgnoreSource;
 import io.beanmapper.testmodel.ignore.IgnoreTarget;
 import io.beanmapper.testmodel.initially_unmatched_source.SourceWithUnmatchedField;
@@ -174,14 +71,7 @@ import io.beanmapper.testmodel.numbers.ClassWithInteger;
 import io.beanmapper.testmodel.numbers.ClassWithLong;
 import io.beanmapper.testmodel.numbers.SourceWithDouble;
 import io.beanmapper.testmodel.numbers.TargetWithDouble;
-import io.beanmapper.testmodel.optional_getter.EntityResultWithMap;
-import io.beanmapper.testmodel.optional_getter.EntityWithMap;
-import io.beanmapper.testmodel.optional_getter.EntityWithOptional;
-import io.beanmapper.testmodel.optional_getter.EntityWithoutOptional;
-import io.beanmapper.testmodel.optional_getter.MyEntity;
-import io.beanmapper.testmodel.optional_getter.MyEntityResult;
-import io.beanmapper.testmodel.optional_getter.MyEntityResultWithNestedOptionalField;
-import io.beanmapper.testmodel.optional_getter.MyEntityResultWithOptionalField;
+import io.beanmapper.testmodel.optional_getter.*;
 import io.beanmapper.testmodel.othername.SourceWithOtherName;
 import io.beanmapper.testmodel.othername.TargetWithOtherName;
 import io.beanmapper.testmodel.parent.Player;
@@ -207,31 +97,23 @@ import io.beanmapper.testmodel.same_source_diff_results.ResultTwo;
 import io.beanmapper.testmodel.similar_subclasses.DifferentSource;
 import io.beanmapper.testmodel.similar_subclasses.DifferentTarget;
 import io.beanmapper.testmodel.similar_subclasses.SimilarSubclass;
-import io.beanmapper.testmodel.strict.SourceAStrict;
-import io.beanmapper.testmodel.strict.SourceBNonStrict;
-import io.beanmapper.testmodel.strict.SourceCStrict;
-import io.beanmapper.testmodel.strict.SourceDStrict;
-import io.beanmapper.testmodel.strict.SourceEForm;
-import io.beanmapper.testmodel.strict.SourceF;
-import io.beanmapper.testmodel.strict.TargetANonStrict;
-import io.beanmapper.testmodel.strict.TargetBStrict;
-import io.beanmapper.testmodel.strict.TargetCNonStrict;
-import io.beanmapper.testmodel.strict.TargetDNonStrict;
-import io.beanmapper.testmodel.strict.TargetE;
-import io.beanmapper.testmodel.strict.TargetFResult;
-import io.beanmapper.testmodel.strict_convention.SCSourceAForm;
-import io.beanmapper.testmodel.strict_convention.SCSourceB;
-import io.beanmapper.testmodel.strict_convention.SCSourceCForm;
-import io.beanmapper.testmodel.strict_convention.SCTargetA;
-import io.beanmapper.testmodel.strict_convention.SCTargetBResult;
-import io.beanmapper.testmodel.strict_convention.SCTargetC;
+import io.beanmapper.testmodel.strict.*;
+import io.beanmapper.testmodel.strict_convention.*;
 import io.beanmapper.testmodel.tostring.SourceWithNonString;
 import io.beanmapper.testmodel.tostring.TargetWithString;
 import io.beanmapper.utils.Trinary;
 import io.beanmapper.utils.diagnostics.tree.DiagnosticsNode;
-
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+
+import static io.beanmapper.utils.diagnostics.DiagnosticsDetailLevel.TREE_COMPLETE;
+import static org.junit.jupiter.api.Assertions.*;
 
 class BeanMapperTest {
 
@@ -1917,36 +1799,46 @@ class BeanMapperTest {
         assertNull(ReflectionUtils.getValueOfField(result, ReflectionUtils.getFieldWithName(result.getClass(), "age")));
     }
 
-    @Test
-    void mapOptionalContainingOptionalToOptionalContainingDifferentType() {
-        Optional<Optional<Person>> personOptional = Optional.of(Optional.of(createPerson()));
-        Optional<PersonView> obj = this.beanMapper.map(personOptional, PersonView.class);
+    @Nested
+    class Optionals {
+        @Test
+        void mapOptionalContainingOptionalToOptionalContainingDifferentType() {
+            Optional<Optional<Person>> personOptional = Optional.of(Optional.of(createPerson()));
+            Optional<PersonView> obj = beanMapper.map(personOptional, PersonView.class);
 
-        assertTrue(obj.isPresent());
-        var personView = obj.get();
-        assertEquals("Henk", personView.name);
-        assertEquals("Zoetermeer", personView.place);
-    }
+            assertTrue(obj.isPresent());
+            var personView = obj.get();
+            assertEquals("Henk", personView.name);
+            assertEquals("Zoetermeer", personView.place);
+        }
 
-    @Test
-    void mapOptionalContainingOptionalContainingOptionalToOptional() {
-        Optional<Optional<Optional<Person>>> personOptional = Optional.of(Optional.of(Optional.of(createPerson())));
-        Optional<PersonView> obj = this.beanMapper.map(personOptional, PersonView.class);
+        @Test
+        void mapOptionalContainingOptionalContainingOptionalToOptional() {
+            Optional<Optional<Optional<Person>>> personOptional = Optional.of(Optional.of(Optional.of(createPerson())));
+            Optional<PersonView> obj = beanMapper.map(personOptional, PersonView.class);
 
-        assertTrue(obj.isPresent());
-        var personView = obj.get();
-        assertEquals("Henk", personView.name);
-        assertEquals("Zoetermeer", personView.place);
-    }
+            assertTrue(obj.isPresent());
+            var personView = obj.get();
+            assertEquals("Henk", personView.name);
+            assertEquals("Zoetermeer", personView.place);
+        }
 
-    @Test
-    void testMapOptionalOfListOfOptionalsToListOfOptionalsOfDifferentType() {
-        Optional<List<Optional<Person>>> optional = Optional.of(List.of(Optional.of(createPerson("Henk")), Optional.of(createPerson("Kees"))));
-        List<PersonView> personView = this.beanMapper.map(optional.get(), PersonView.class);
-        assertNotNull(personView);
-        assertEquals(optional.get().size(), personView.size());
-        assertEquals("Henk", personView.get(0).name);
-        assertEquals("Kees", personView.get(1).name);
+        @Test
+        void testMapOptionalOfListOfOptionalsToListOfOptionalsOfDifferentType() {
+            Optional<List<Optional<Person>>> optional = Optional.of(List.of(Optional.of(createPerson("Henk")), Optional.of(createPerson("Kees"))));
+            List<PersonView> personView = beanMapper.map(optional.get(), PersonView.class);
+            assertNotNull(personView);
+            assertEquals(optional.get().size(), personView.size());
+            assertEquals("Henk", personView.get(0).name);
+            assertEquals("Kees", personView.get(1).name);
+        }
+
+        @Test
+        void testMapObjectContainingOptionalOfEnumToObjectContainingOptionalOfTheSameEnum() {
+            OptionalEnumModel model = new OptionalEnumModel(Day.MONDAY);
+            OptionalEnumResult result = assertDoesNotThrow(() -> beanMapper.map(model, OptionalEnumResult.class));
+            assertEquals(model.getDay(), result.day);
+        }
     }
 
     @Test
