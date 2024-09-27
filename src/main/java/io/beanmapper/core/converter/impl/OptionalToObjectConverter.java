@@ -1,19 +1,14 @@
 package io.beanmapper.core.converter.impl;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
 import io.beanmapper.BeanMapper;
 import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.utils.BeanMapperTraceLogger;
 import io.beanmapper.utils.Classes;
+
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.*;
 
 /**
  * This converter facilitates the conversion of an arbitrary amount of Optional wrappers, however, support for complex
@@ -65,7 +60,9 @@ public class OptionalToObjectConverter implements BeanConverter {
         return sourceClass.equals(Optional.class);
     }
 
-    private Optional<?> convertToOptional(BeanMapper beanMapper, Optional<?> source, BeanPropertyMatch beanPropertyMatch) {
+    @SuppressWarnings("unchecked")
+    private <S, T> Optional<T> convertToOptional(BeanMapper beanMapper, Optional<S> source,
+                                           BeanPropertyMatch beanPropertyMatch) {
         if (source.isEmpty()) {
             return Optional.empty();
         }
@@ -80,6 +77,12 @@ public class OptionalToObjectConverter implements BeanConverter {
             numberOfWraps++;
         }
 
+        S sourceObject = source.get();
+
+        if (genericType instanceof Class<?> targetType && Enum.class.isAssignableFrom((Class<?>) genericType) && sourceObject.getClass() == targetType) {
+            return (Optional<T>) Optional.ofNullable(sourceObject);
+        }
+
         // Place back in an Optional, as that is the target class
         Optional<?> obj = Optional.ofNullable(beanMapper.map(source.get(), (Class<?>) genericType));
 
@@ -87,7 +90,7 @@ public class OptionalToObjectConverter implements BeanConverter {
         for (int index = 0; index < numberOfWraps; index++) {
             obj = Optional.of(obj);
         }
-        return obj;
+        return (Optional<T>) obj;
     }
 
     private Object convertToCollection(BeanMapper beanMapper, Object source, BeanPropertyMatch beanPropertyMatch) {
