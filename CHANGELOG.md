@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- Issue [#207](https://github.com/42BV/beanmapper/issues/207) Fixed issue where Optionals of an Enum could not be 
+- Issue [#210](https://github.com/42BV/beanmapper/issues/210) Upgraded Java version to 21.
+- Issue [#207](https://github.com/42BV/beanmapper/issues/207) Fixed issue where Optionals of an Enum could not be
   mapped to an Optional of the same Enum, as it would attempt to create a new instance of the enum-class in question.
   Remedied by adding a check to the OptionalToAnyConverter.
 - Issue [#188](https://github.com/42BV/beanmapper/issues/188) Made BeanProperty-annotation repeatable. Added targets-property to BeanProperty-annotation, allowing the user to specify which mappings a BeanProperty should apply to.

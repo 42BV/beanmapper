@@ -13,4 +13,4 @@ jobs:
   call-workflow:
     uses: 42BV/42-github-workflows/.github/workflows/maven-test.yml@main
     with:
-      java-version: 17
+      java-version: 21
