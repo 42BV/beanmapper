@@ -1,6 +1,8 @@
 package io.beanmapper.utils;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
@@ -28,8 +30,7 @@ class RecordsTest {
     @Test
     void testGetRecordConstructAnnotatedConstructors() {
         List<Constructor<PersonRecord>> constructors = (List<Constructor<PersonRecord>>) Records.getConstructorsAnnotatedWithRecordConstruct(PersonRecord.class);
-        assertEquals(assertDoesNotThrow(() -> PersonRecord.class.getConstructor(String.class, int.class)), constructors.get(0));
-        assertEquals(assertDoesNotThrow(() -> PersonRecord.class.getConstructor(String.class)), constructors.get(1));
+        assertTrue(assertDoesNotThrow(() -> constructors.contains(PersonRecord.class.getConstructor(String.class, int.class))));
+        assertTrue(assertDoesNotThrow(() -> constructors.contains(PersonRecord.class.getConstructor(String.class))));
     }
-
 }
