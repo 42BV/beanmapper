@@ -19,7 +19,7 @@ class CountTotalDiagnosticsLoggerTest extends AbstractDiagnosticsLoggerTest {
                 INFO: [Mapping   ] io.beanmapper.testmodel.record.PersonRecord -> io.beanmapper.testmodel.record.PersonResultRecord {total mappings: 2, total conversions: 0, max depth: 2} (CountTotalDiagnosticsLoggerTest.java:18)
                 """;
         beanMapper = beanMapper.wrap(COUNT_TOTAL).build();
-        (((DiagnosticsConfiguration) beanMapper.getConfiguration()).getDiagnosticsLogger().orElseThrow()).getLogger().addHandler(handler);
+        (((DiagnosticsConfiguration) beanMapper.configuration()).getDiagnosticsLogger().orElseThrow()).getLogger().addHandler(handler);
         beanMapper.map(new PersonRecord(1, "Henk"), PersonResultRecord.class);
         handler.flush();
 

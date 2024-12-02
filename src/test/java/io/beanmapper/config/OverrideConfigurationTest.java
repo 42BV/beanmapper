@@ -18,7 +18,7 @@ import io.beanmapper.utils.Trinary;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class OverrideConfigurationTest {
+class OverrideConfigurationTest {
 
     private CoreConfiguration coreConfiguration;
 
@@ -28,7 +28,7 @@ public class OverrideConfigurationTest {
     void setup() {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .build();
-        coreConfiguration = (CoreConfiguration) beanMapper.getConfiguration();
+        coreConfiguration = (CoreConfiguration) beanMapper.configuration();
         overrideConfiguration = new OverrideConfiguration(coreConfiguration);
     }
 

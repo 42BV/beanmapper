@@ -30,7 +30,7 @@ public class CollectionConverter implements BeanConverter {
         return BeanMapperPerformanceLogger.runTimed(() -> beanMapper.wrap()
                 .setCollectionClass(collectionHandler.getType())
                 .setCollectionUsage(beanPropertyMatch.getCollectionInstructions().getBeanCollectionUsage())
-                .setPreferredCollectionClass(beanPropertyMatch.getCollectionInstructions().getPreferredCollectionClass().getAnnotationClass())
+                .setPreferredCollectionClass(beanPropertyMatch.getCollectionInstructions().getPreferredCollectionClass().annotationClass())
                 .setFlushAfterClear(beanPropertyMatch.getCollectionInstructions().getFlushAfterClear())
                 .setTargetClass(beanPropertyMatch.getCollectionInstructions().getCollectionElementType().getType())
                 .setTarget(beanPropertyMatch.getTargetObject())

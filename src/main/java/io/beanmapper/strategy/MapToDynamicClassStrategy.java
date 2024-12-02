@@ -21,7 +21,7 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
         List<String> downsizeTargetFields = getConfiguration().getDownsizeTarget();
 
         // If no collection class is set, but we are dealing with a collection class, make sure it is set
-        Class collectionClass = getConfiguration().getCollectionClass();
+        Class<?> collectionClass = getConfiguration().getCollectionClass();
         if (collectionClass == null && Collection.class.isAssignableFrom(source.getClass())) {
             getConfiguration().setCollectionClass(source.getClass());
         }
@@ -73,7 +73,7 @@ public class MapToDynamicClassStrategy extends AbstractMapStrategy {
                 getConfiguration().determineTargetClass(),
                 downsizeTargetFields,
                 getConfiguration().getStrictMappingProperties());
-        Class<?> collectionClass = getBeanMapper().getConfiguration().getCollectionClass();
+        Class<?> collectionClass = getBeanMapper().configuration().getCollectionClass();
         return BeanMapperPerformanceLogger.runTimed(() -> getBeanMapper()
                 .wrap()
                 .downsizeTarget(null)

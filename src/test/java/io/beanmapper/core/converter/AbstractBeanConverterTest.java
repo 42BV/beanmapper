@@ -40,7 +40,8 @@ class AbstractBeanConverterTest {
 
     @Test
     void testInvalidTarget() {
-        assertThrows(IllegalArgumentException.class, () -> converter.convert(null, LocalDateTime.now(), String.class, null));
+        LocalDateTime time = LocalDateTime.now();
+        assertThrows(IllegalArgumentException.class, () -> converter.convert(null, time, String.class, null));
     }
 
 }

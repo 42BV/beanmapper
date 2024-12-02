@@ -144,7 +144,7 @@ class OptionalToObjectConverterTest {
         assertEquals(list.size(), listOfLong.size());
         assertTrue(unoReversedList.contains(Optional.of(42)));
         assertTrue(unoReversedList.contains(Optional.of(23)));
-        assertTrue(unoReversedList.contains(Optional.<Integer>of(this.beanMapper.getConfiguration().getDefaultValueForClass(Integer.TYPE))));
+        assertTrue(unoReversedList.contains(Optional.<Integer>of(this.beanMapper.configuration().getDefaultValueForClass(Integer.TYPE))));
     }
 
     @Test

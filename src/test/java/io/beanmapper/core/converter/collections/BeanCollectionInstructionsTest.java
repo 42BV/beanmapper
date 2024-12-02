@@ -81,7 +81,7 @@ class BeanCollectionInstructionsTest {
         assertNotNull(merged);
         assertEquals(Long.class, merged.getCollectionElementType().getType());
         assertEquals(BeanCollectionUsage.REUSE, merged.getBeanCollectionUsage());
-        assertEquals(ArrayList.class, merged.getPreferredCollectionClass().getAnnotationClass());
+        assertEquals(ArrayList.class, merged.getPreferredCollectionClass().annotationClass());
         assertEquals(Trinary.DISABLED, merged.getFlushAfterClear());
     }
 
