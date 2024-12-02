@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
  */
 class AbstractBeanConverterTest {
 
-    private LocalDateTimeToLocalDate converter = new LocalDateTimeToLocalDate();
+    private final LocalDateTimeToLocalDate converter = new LocalDateTimeToLocalDate();
 
     @Test
     void testConvert() {
@@ -40,7 +40,8 @@ class AbstractBeanConverterTest {
 
     @Test
     void testInvalidTarget() {
-        assertThrows(IllegalArgumentException.class, () -> converter.convert(null, LocalDateTime.now(), String.class, null));
+        LocalDateTime time = LocalDateTime.now();
+        assertThrows(IllegalArgumentException.class, () -> converter.convert(null, time, String.class, null));
     }
 
 }

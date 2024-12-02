@@ -49,7 +49,7 @@ public abstract class AbstractBeanConverter<S, T> implements BeanConverter {
         this.beanMapper = beanMapper;
         if (source == null) {
             if (beanMapper != null)
-                beanMapper.getConfiguration().getDefaultValueForClass(targetClass);
+                beanMapper.configuration().getDefaultValueForClass(targetClass);
             return null;
         }
         Check.argument(isMatchingSource(source.getClass()), "Unsupported source class.");

@@ -20,7 +20,7 @@ public class RecordToAnyConverter implements BeanConverter {
     @Override
     public <S, T> T convert(BeanMapper beanMapper, S source, Class<T> targetClass, BeanPropertyMatch beanPropertyMatch) {
         try {
-            Class<?> intermediaryClass = beanMapper.getConfiguration().getClassStore().getOrCreateGeneratedClass(source.getClass(),
+            Class<?> intermediaryClass = beanMapper.configuration().getClassStore().getOrCreateGeneratedClass(source.getClass(),
                     List.of(Records.getRecordFieldNames(
                             (Class<? extends Record>) source.getClass())), null);
             Object intermediaryObject = intermediaryClass.cast(
