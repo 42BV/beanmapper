@@ -1,5 +1,6 @@
 package io.beanmapper.config;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -18,6 +19,7 @@ import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.exceptions.BeanConfigurationOperationNotAllowedException;
 import io.beanmapper.strategy.ConstructorArguments;
 import io.beanmapper.utils.Trinary;
+import io.beanmapper.utils.diagnostics.DiagnosticsDetailLevel;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -210,6 +212,54 @@ class BeanMapperBuilderTest {
         assertEquals("Result",
                 currentConfiguration.getStrictMappingProperties().getStrictTargetSuffix());
         assertTrue(currentConfiguration.getStrictMappingProperties().isApplyStrictMappingConvention());
+    }
+
+    @Test
+    void createBeanMapperBuilderWithExistingConfiguration_shouldSucceed() {
+        BeanMapper beanMapper = builder.build();
+        Configuration currentConfiguration = beanMapper.configuration();
+        assertDoesNotThrow(() -> new BeanMapperBuilder(currentConfiguration));
+    }
+
+    @Test
+    void createBeanMapperBuilderWithExistingConfigurationAndDetailLevelDisabled_shouldSucceed() {
+        Configuration currentConfiguration = builder.build().configuration();
+        assertDoesNotThrow(() -> new BeanMapperBuilder(currentConfiguration, DiagnosticsDetailLevel.DISABLED));
+    }
+
+    @Test
+    void createBeanMapperBuilderWithExistingDiagnosticsConfigAndDetailLevelDisabled_shouldSucceed() {
+        Configuration diagnosticsConfiguration = builder.build().wrap(DiagnosticsDetailLevel.TREE_COMPLETE).build().configuration();
+        assertDoesNotThrow(() -> new BeanMapperBuilder(diagnosticsConfiguration, DiagnosticsDetailLevel.DISABLED));
+    }
+
+    @Test
+    void createBeanMapperBuilderWithExistingDiagnosticsConfigAndDetailLevelEnabled_shouldThrow() {
+        Configuration diagnosticsConfiguration = builder.build().wrap(DiagnosticsDetailLevel.TREE_COMPLETE).build().configuration();
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> new BeanMapperBuilder(diagnosticsConfiguration, DiagnosticsDetailLevel.TREE_COMPLETE));
+    }
+
+    @Test
+    void createBeanMapperBuilderWithoutExistingDiagnosticsConfigAndDetailLevelEnabled_shouldThrow() {
+        Configuration diagnosticsConfiguration = builder.build().configuration();
+        assertDoesNotThrow(() -> new BeanMapperBuilder(diagnosticsConfiguration, DiagnosticsDetailLevel.TREE_COMPLETE));
+    }
+
+    @Test
+    void setBeanUnproxy_shouldSucceed() {
+
+        class BeanUnproxyImpl implements BeanUnproxy {
+            @Override
+            public Class<?> unproxy(Class<?> beanClass) {
+                return null;
+            }
+        }
+
+        BeanUnproxyImpl beanUnproxy = new BeanUnproxyImpl();
+
+        assertDoesNotThrow(() -> builder = builder.setBeanUnproxy(beanUnproxy));
+        BeanMapper beanMapper = builder.build();
+        assertEquals(beanUnproxy, beanMapper.configuration().getBeanUnproxy().getDelegate());
     }
 
     @Test
