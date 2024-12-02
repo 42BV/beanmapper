@@ -36,8 +36,9 @@ public final class BeanConverterStore {
         var cachedConverters = beanConverterMap.get(source);
 
         if (cachedConverters == null) {
-            beanConverterMap.put(source, new HashMap<>());
-            cachedConverters = beanConverterMap.get(target);
+            beanConverterMap.putIfAbsent(source, new HashMap<>());
+            cachedConverters = beanConverterMap.get(source);
+            cachedConverters.put(target, beanConverter);
         }
 
         cachedConverters.put(target, beanConverter);

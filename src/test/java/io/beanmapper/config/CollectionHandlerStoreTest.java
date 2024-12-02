@@ -39,7 +39,7 @@ class CollectionHandlerStoreTest {
 
     @Test
     void getCollectionHandlerFor_AnonymousClass() {
-        assertEquals(List.class, configuration.getCollectionHandlerFor(new ArrayList() {{
+        assertEquals(List.class, configuration.getCollectionHandlerFor(new ArrayList<>() {{
             // Empty specifically to make it an anonymous class.
         }}.getClass()).getType());
     }

@@ -18,7 +18,7 @@ import io.beanmapper.core.converter.BeanConverter;
  */
 public class PrimitiveConverter implements BeanConverter {
 
-    private static final Map<Class<?>, Class<?>> MAPPINGS = new HashMap<Class<?>, Class<?>>();
+    private static final Map<Class<?>, Class<?>> MAPPINGS = new HashMap<>();
 
     static {
         register(Byte.class, byte.class);

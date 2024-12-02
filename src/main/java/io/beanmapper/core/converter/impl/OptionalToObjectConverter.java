@@ -84,8 +84,8 @@ public class OptionalToObjectConverter implements BeanConverter {
 
         S sourceObject = source.get();
 
-        if (genericType instanceof Class<?> targetType && Enum.class.isAssignableFrom((Class<?>) genericType) && sourceObject.getClass() == targetType) {
-            return (Optional<T>) Optional.ofNullable(sourceObject);
+        if (genericType instanceof Class<?> targetType && Enum.class.isAssignableFrom(targetType) && sourceObject.getClass() == targetType) {
+            return (Optional<T>) Optional.of(sourceObject);
         }
 
         // Place back in an Optional, as that is the target class

@@ -36,58 +36,42 @@ class BeanMapperBuilderTest {
 
     @Test
     void setTargetClassOnCoreThrowsException() {
-        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
-            builder.setTargetClass(null);
-        });
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> builder.setTargetClass(null));
     }
 
     @Test
     void setCollectionUsage() {
-        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
-            builder.setCollectionUsage(null);
-        });
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> builder.setCollectionUsage(null));
     }
 
     @Test
     void setPreferredCollectionClass() {
-        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
-            builder.setPreferredCollectionClass(null);
-        });
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> builder.setPreferredCollectionClass(null));
     }
 
     @Test
     void setFlushAfterClear() {
-        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
-            builder.setFlushAfterClear(Trinary.ENABLED);
-        });
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> builder.setFlushAfterClear(Trinary.ENABLED));
     }
 
     @Test
     void setTargetOnCoreThrowsException() {
-        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
-            builder.setTarget(null);
-        });
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> builder.setTarget(null));
     }
 
     @Test
     void setDownsizeSourceOnCoreThrowsException() {
-        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
-            builder.downsizeSource(null);
-        });
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> builder.downsizeSource(null));
     }
 
     @Test
     void setDownsizeTargetOnCoreThrowsException() {
-        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
-            builder.downsizeTarget(null);
-        });
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> builder.downsizeTarget(null));
     }
 
     @Test
     void setCollectionClassOnCoreThrowsException() {
-        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> {
-            builder.setCollectionClass(null);
-        });
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> builder.setCollectionClass(null));
     }
 
     @Test

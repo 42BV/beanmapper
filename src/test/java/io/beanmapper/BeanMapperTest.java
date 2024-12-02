@@ -506,7 +506,7 @@ class BeanMapperTest {
         EnumSourceArraysAsList source = new EnumSourceArraysAsList();
         EnumTargetList target = beanMapper.map(source, EnumTargetList.class);
         assertEquals(RGB.values().length, target.items.size());
-        assertEquals("RED", target.items.get(0));
+        assertEquals("RED", target.items.getFirst());
     }
 
     @Test
@@ -974,8 +974,8 @@ class BeanMapperTest {
         source.objects.add(nestedSourceClass);
 
         TargetWithCollection target = beanMapper.map(source, TargetWithCollection.class);
-        assertEquals(source.objects.get(0).name, target.objects.get(0).name);
-        assertEquals("[" + source.objects.get(0).laptopNumber + "]", target.objects.get(0).laptopNumber);
+        assertEquals(source.objects.getFirst().name, target.objects.getFirst().name);
+        assertEquals("[" + source.objects.getFirst().laptopNumber + "]", target.objects.getFirst().laptopNumber);
     }
 
     @Test
@@ -1227,7 +1227,7 @@ class BeanMapperTest {
         numberStrings.add("1");
 
         List<Integer> numbers = localBeanMapper.map(numberStrings, Integer.class);
-        assertEquals((Integer) 1, numbers.get(0));
+        assertEquals((Integer) 1, numbers.getFirst());
     }
 
     @Test
@@ -1279,9 +1279,9 @@ class BeanMapperTest {
                 .addBeanPairWithStrictSource(SourceDStrict.class, TargetDNonStrict.class);
         var exception = assertThrows(BeanStrictMappingRequirementsException.class, builder::build);
         assertEquals(SourceAStrict.class, exception.getValidationMessages().get(0).getSourceClass());
-        assertEquals("noMatch", exception.getValidationMessages().get(0).getFields().get(0).getName());
+        assertEquals("noMatch", exception.getValidationMessages().get(0).getFields().getFirst().getName());
         assertEquals(TargetBStrict.class, exception.getValidationMessages().get(1).getTargetClass());
-        assertEquals("noMatch", exception.getValidationMessages().get(1).getFields().get(0).getName());
+        assertEquals("noMatch", exception.getValidationMessages().get(1).getFields().getFirst().getName());
         assertEquals(SourceCStrict.class, exception.getValidationMessages().get(2).getSourceClass());
 
         assertTrue(exception.getValidationMessages()
@@ -1446,7 +1446,7 @@ class BeanMapperTest {
         target = beanMapper.map(source, target);
         assertEquals(4, target.items.size());
         assertEquals(expectedList, target.items);
-        assertEquals("D", target.items.get(0));
+        assertEquals("D", target.items.getFirst());
     }
 
     @Test
@@ -1491,7 +1491,7 @@ class BeanMapperTest {
         List<Long> numbers = List.of(42L, 57L, 33L);
         List<String> numbersAsText = beanMapper.map(numbers, String.class);
         assertEquals(3, numbersAsText.size());
-        assertEquals("42", numbersAsText.get(0));
+        assertEquals("42", numbersAsText.getFirst());
     }
 
     @Test

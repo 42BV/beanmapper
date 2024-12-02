@@ -42,7 +42,7 @@ class OverrideConfigurationTest {
         assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.withoutDefaultConverters());
         assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.addProxySkipClass(null));
         assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.addPackagePrefix((String) null));
-        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.addPackagePrefix((Class) null));
+        assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.addPackagePrefix((Class<?>) null));
         assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.addAfterClearFlusher(null));
         assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.setBeanUnproxy(null));
         assertThrows(BeanConfigurationOperationNotAllowedException.class, () -> overrideConfiguration.setRoleSecuredCheck(null));
@@ -90,8 +90,8 @@ class OverrideConfigurationTest {
         overrideConfiguration.addBeanPairWithStrictSource(Long.class, String.class);
         List<BeanPair> beanPairs = overrideConfiguration.getBeanPairs();
         assertEquals(1, beanPairs.size());
-        assertTrue(beanPairs.get(0).isSourceStrict());
-        assertFalse(beanPairs.get(0).isTargetStrict());
+        assertTrue(beanPairs.getFirst().isSourceStrict());
+        assertFalse(beanPairs.getFirst().isTargetStrict());
     }
 
     @Test
@@ -99,8 +99,8 @@ class OverrideConfigurationTest {
         overrideConfiguration.addBeanPairWithStrictTarget(Long.class, String.class);
         List<BeanPair> beanPairs = overrideConfiguration.getBeanPairs();
         assertEquals(1, beanPairs.size());
-        assertFalse(beanPairs.get(0).isSourceStrict());
-        assertTrue(beanPairs.get(0).isTargetStrict());
+        assertFalse(beanPairs.getFirst().isSourceStrict());
+        assertTrue(beanPairs.getFirst().isTargetStrict());
     }
 
     @Test

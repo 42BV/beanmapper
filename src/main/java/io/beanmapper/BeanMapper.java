@@ -244,4 +244,8 @@ public record BeanMapper(Configuration configuration) {
     public BeanMapperBuilder wrap(DiagnosticsDetailLevel detailLevel) {
         return new BeanMapperBuilder(configuration, detailLevel);
     }
+
+    public static BeanMapperBuilder builder() {
+        return new BeanMapperBuilder();
+    }
 }

@@ -98,11 +98,11 @@ class BeanCollectionInstructionsTest {
         return instructions;
     }
 
-    public class SourceClassContainingList {
+    public static class SourceClassContainingList {
         public List<String> list;
     }
 
-    public class TargetClassContainingList {
+    public static class TargetClassContainingList {
         public List<String> list;
     }
 
