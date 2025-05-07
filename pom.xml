@@ -29,7 +29,6 @@
         <url>https://github.com/42BV/beanmapper</url>
         <connection>scm:git:git@github.com:42BV/beanmapper.git</connection>
         <developerConnection>scm:git:git@github.com:42BV/beanmapper.git</developerConnection>
-        <tag>beanmapper-6.0.1-RC1</tag>
     </scm>
 
     <developers>
