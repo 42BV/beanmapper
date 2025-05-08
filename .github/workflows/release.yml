@@ -1,0 +1,42 @@
+name: Manual Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # To allow pushing tags and commits
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false # Recommended for security
+
+      - name: Set up Java JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ fromJSON('["21"]') }} # Use the Java version from your pom.xml
+          distribution: 'temurin'
+
+      - name: Set up GPG
+        run: |
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --passphrase-fd 0 --edit-key "${{ secrets.GPG_KEY_ID }}" trust
+          gpg --export-secret-keys -o secring.gpg
+          gpg --export --armor "${{ secrets.GPG_KEY_ID }}" > pubring.gpg
+
+      - name: Build and Release
+        env:
+          MAVEN_GPG_SECRET_KEYRING_FILE: secring.gpg
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          MAVEN_GPG_PUBLIC_KEYRING_FILE: pubring.gpg
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # For pushing tags
+        run: |
+          mvn --batch-mode -DskipTests -Darguments="-Dgpg.executable=gpg -Dgpg.secretKeyringFile=$MAVEN_GPG_SECRET_KEYRING_FILE -Dgpg.passphrase=$MAVEN_GPG_PASSPHRASE -Dgpg.publicKeyringFile=$MAVEN_GPG_PUBLIC_KEYRING_FILE" release:prepare release:perform
+
+      - name: Clean up GPG files
+        if: always()
+        run: |
+          rm -f secring.gpg pubring.gpg
