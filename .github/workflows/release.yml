@@ -17,7 +17,7 @@ jobs:
       - name: Set up Java JDK
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ fromJSON('["21"]') }} # Use the Java version from your pom.xml
+          java-version: '21 # Use the Java version from your pom.xml
           distribution: 'temurin'
 
       - name: Set up GPG
