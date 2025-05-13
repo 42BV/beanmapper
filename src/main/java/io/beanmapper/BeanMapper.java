@@ -27,21 +27,16 @@ import io.beanmapper.utils.diagnostics.tree.MappingDiagnosticsNode;
  * objects. Once that has been determined, the applicable properties will be copied from
  * source to target.
  */
-public final class BeanMapper {
+public record BeanMapper(Configuration configuration) {
 
-    private final Configuration configuration;
-
-    public BeanMapper(Configuration configuration) {
-        this.configuration = configuration;
-    }
-
-    private <S> void addDiagnosticsNode(S source) {
+    @SuppressWarnings("unchecked")
+    private <S, T> void addDiagnosticsNode(S source) {
         if (configuration instanceof DiagnosticsConfiguration dc && dc.isInDiagnosticsMode()) {
             if (dc.getParentConfiguration().orElse(null) instanceof DiagnosticsConfigurationImpl dci) {
                 dci.getBeanMapperDiagnostics().ifPresent(bd -> bd.getDiagnostics().clear());
             }
             Class<S> sourceClass = source != null ? (Class<S>) configuration.getBeanUnproxy().unproxy(source.getClass()) : (Class<S>) Void.class;
-            DiagnosticsNode<?, ?> node = getsDiagnosticsNode(source, sourceClass);
+            DiagnosticsNode<S, T> node = getsDiagnosticsNode(source, sourceClass);
             dc.setBeanMapperDiagnostics(node);
             if (configuration instanceof OverrideConfiguration) {
                 dc.getParentConfiguration()
@@ -52,13 +47,15 @@ public final class BeanMapper {
         }
     }
 
-    private <S> DiagnosticsNode<?, ?> getsDiagnosticsNode(S source, Class<S> sourceClass) {
-        DiagnosticsNode<?, ?> node = new MappingDiagnosticsNode<S, Object>(sourceClass, configuration.getTargetClass());
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private <S, T> DiagnosticsNode<S, T> getsDiagnosticsNode(S source, Class<S> sourceClass) {
+        DiagnosticsNode<S, T> node = new MappingDiagnosticsNode<>(sourceClass, configuration.getTargetClass());
         if (source instanceof Collection<?>) {
             node = new CollectionMappingDiagnosticNode<>(source, sourceClass, configuration.getPreferredCollectionClass(), configuration.getTargetClass());
         }
-        if (source instanceof Map<?, ?>) {
-            node = new MapMappingDiagnosticsNode<>((Map) source, (Class<Map>) sourceClass, configuration.getPreferredCollectionClass(), configuration.getTargetClass());
+        if (source instanceof Map<?, ?> map) {
+            node = new MapMappingDiagnosticsNode<>(map, (Class<Map>) sourceClass, configuration.getPreferredCollectionClass(),
+                    configuration.getTargetClass());
         }
         return node;
     }
@@ -67,7 +64,7 @@ public final class BeanMapper {
         addDiagnosticsNode(source);
         if (source == null && !configuration.getUseNullValue()) {
             // noinspection unchecked
-            return (T) this.getConfiguration().getDefaultValueForClass(this.getConfiguration().getTargetClass());
+            return (T) this.configuration().getDefaultValueForClass(this.configuration().getTargetClass());
         }
         T result = MapStrategyType.getStrategy(this, configuration).map(source);
         if (this.configuration.getParentConfiguration().orElseThrow() instanceof DiagnosticsConfigurationImpl dc) {
@@ -101,6 +98,7 @@ public final class BeanMapper {
      * @param <T>         the instance to which the properties get copied
      * @return the optional target instance containing all applicable properties
      */
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public <S, T> Optional<T> map(Optional<S> source, Class<T> targetClass) {
         if (source.orElse(null) instanceof Optional<?> optional && !targetClass.isInstance(Optional.class)) {
             return this.map(optional, targetClass);
@@ -122,15 +120,12 @@ public final class BeanMapper {
      * @return The result of the mapping.
      */
     public <S, P extends ParameterizedType> Object map(S source, P target) {
-        if (source instanceof Collection<?> collection) {
-            return this.map(collection, (Class<?>) target.getActualTypeArguments()[0]);
-        } else if (source instanceof Map<?, ?> map) {
-            return this.map(map, (Class<?>) target.getActualTypeArguments()[1]);
-        } else if (source instanceof Optional<?> optional) {
-            return this.map(optional, (Class<?>) target.getActualTypeArguments()[0]);
-        } else {
-            return this.map(source, (Class<?>) target.getRawType());
-        }
+        return switch (source) {
+            case Collection<?> collection -> this.map(collection, (Class<?>) target.getActualTypeArguments()[0]);
+            case Map<?, ?> map -> this.map(map, (Class<?>) target.getActualTypeArguments()[1]);
+            case Optional<?> optional -> this.map(optional, (Class<?>) target.getActualTypeArguments()[0]);
+            default -> this.map(source, (Class<?>) target.getRawType());
+        };
     }
 
     /**
@@ -158,6 +153,7 @@ public final class BeanMapper {
      * @param <T>         The type of the elements in the target array.
      * @return A newly constructed array of the type of the target class.
      */
+    @SuppressWarnings("unchecked")
     public <S, T> T[] map(S[] sourceArray, Class<T> targetClass) {
         return Arrays.stream(sourceArray)
                 .map(element -> this.wrap().setConverterChoosable(true).build().map(element, targetClass))
@@ -249,7 +245,7 @@ public final class BeanMapper {
         return new BeanMapperBuilder(configuration, detailLevel);
     }
 
-    public Configuration getConfiguration() {
-        return configuration;
+    public static BeanMapperBuilder builder() {
+        return new BeanMapperBuilder();
     }
 }

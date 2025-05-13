@@ -12,6 +12,10 @@ public class BeanMapperPerformanceLogger {
     private static final Logger log = LoggerFactory.getLogger(BeanMapperPerformanceLogger.class);
     private static final String LOG_TEMPLATE = "Performed operation in {}ms. ({})";
 
+    private BeanMapperPerformanceLogger() {
+        throw new AssertionError("Cannot instantiate utility-class.");
+    }
+
     public static void runTimed(String taskName, Runnable task) {
         Stopwatch stopwatch = Stopwatch.create();
         task.run();

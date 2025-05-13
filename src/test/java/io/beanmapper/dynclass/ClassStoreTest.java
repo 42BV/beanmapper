@@ -24,13 +24,13 @@ class ClassStoreTest extends AbstractConcurrentTest {
 
     @Test
     void shouldCacheThreadSafe() throws InterruptedException {
-        final Set<Class> results = new CopyOnWriteArraySet<>();
+        final Set<Class<?>> results = new CopyOnWriteArraySet<>();
         run(8, () -> results.add(store.getOrCreateGeneratedClass(
                 Person.class,
                 Collections.synchronizedList(Collections.singletonList("name")),
                 new BeanMapperBuilder()
                         .build()
-                        .getConfiguration()
+                        .configuration()
                         .getStrictMappingProperties())));
         assertEquals(1, results.size()); // A thread safe implementation should return one class.
     }

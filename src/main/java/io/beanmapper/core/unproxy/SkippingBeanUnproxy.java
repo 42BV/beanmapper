@@ -83,4 +83,8 @@ public class SkippingBeanUnproxy implements BeanUnproxy {
         this.delegate = delegate;
     }
 
+    @Override
+    public final BeanUnproxy getDelegate() {
+        return delegate;
+    }
 }
