@@ -39,7 +39,7 @@ public class ClassStore {
                     generatedClass = classGenerator.createClass(
                             baseClass,
                             displayNodes,
-                            strictMappingProperties).generatedClass;
+                            strictMappingProperties).generatedClass();
                 } catch (Exception err) {
                     throw new BeanDynamicClassGenerationException(err, baseClass, displayNodes.getKey());
                 }

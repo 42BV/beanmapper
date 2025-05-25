@@ -16,7 +16,7 @@ public class Node {
         for (String field : fields) {
             Route route = new Route(field);
             Node current = root;
-            for (String routePart : route.getRoute()) {
+            for (String routePart : route.route()) {
                 Node newCurrent = current.getNode(routePart);
                 if (newCurrent == null) {
                     newCurrent = current.addNode(routePart);

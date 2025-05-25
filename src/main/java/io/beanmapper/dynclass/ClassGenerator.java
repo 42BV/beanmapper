@@ -63,7 +63,7 @@ public class ClassGenerator {
         Map<String, BeanProperty> baseFields = beanMatchStore.getBeanMatch(
                 strictMappingProperties.createBeanPair(baseClass, Object.class)
         ).getSourceNodes();
-        return new GeneratedClass(createClass(baseClass, baseFields, displayNodes, strictMappingProperties), baseClass);
+        return GeneratedClass.create(createClass(baseClass, baseFields, displayNodes, strictMappingProperties), baseClass);
     }
 
     /**
@@ -88,7 +88,7 @@ public class ClassGenerator {
             copyField.setModifiers(AccessFlag.PUBLIC);
             intermediaryCtClass.addField(copyField);
         }
-        return new GeneratedClass(intermediaryCtClass, clazz);
+        return GeneratedClass.create(intermediaryCtClass, clazz);
     }
 
     private synchronized CtClass createClass(
@@ -133,9 +133,9 @@ public class ClassGenerator {
                                 displayNodes.getNode(entry.getKey()),
                                 strictMappingProperties);
                         if (readMethod != null)
-                            readMethod = changeReadMethod(readMethod, nestedClass.ctClass);
+                            readMethod = changeReadMethod(readMethod, nestedClass.ctClass());
                         if (writeMethod != null)
-                            writeMethod = changeWriteMethod(writeMethod, baseField.getType(), nestedClass.ctClass);
+                            writeMethod = changeWriteMethod(writeMethod, baseField.getType(), nestedClass.ctClass());
                     }
                 }
 
@@ -152,7 +152,7 @@ public class ClassGenerator {
             CtField field, Class<?> type,
             Node displayNodes, StrictMappingProperties strictMappingProperties) throws NotFoundException, CannotCompileException, ClassNotFoundException {
         GeneratedClass nestedClass = createClass(type, displayNodes, strictMappingProperties);
-        field.setType(nestedClass.ctClass);
+        field.setType(nestedClass.ctClass());
         return nestedClass;
     }
 
@@ -164,7 +164,7 @@ public class ClassGenerator {
         ConstPool constPool = field.getDeclaringClass().getClassFile().getConstPool();
         AnnotationsAttribute attr = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
         Annotation annotation = new Annotation(BeanCollection.class.getName(), constPool);
-        annotation.addMemberValue("elementType", new ClassMemberValue(elementClass.generatedClass.getName(), constPool));
+        annotation.addMemberValue("elementType", new ClassMemberValue(elementClass.generatedClass().getName(), constPool));
         attr.addAnnotation(annotation);
         field.getFieldInfo().addAttribute(attr);
     }

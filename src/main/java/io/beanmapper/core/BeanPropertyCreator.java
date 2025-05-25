@@ -70,7 +70,7 @@ public class BeanPropertyCreator {
 
     private void traversePath(Stack<BeanProperty> beanProperties) {
         Class<?> currentBaseClass = baseClass;
-        for (String node : route.getRoute()) {
+        for (String node : route.route()) {
             final PropertyAccessor property = PropertyAccessors.findProperty(currentBaseClass, node);
             if (property == null) {
                 log.error("Property '{}' does not exist in: {}", node, currentBaseClass.getSimpleName());

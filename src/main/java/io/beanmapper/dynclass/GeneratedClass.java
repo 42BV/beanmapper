@@ -6,15 +6,10 @@ package io.beanmapper.dynclass;
 import javassist.CannotCompileException;
 import javassist.CtClass;
 
-public class GeneratedClass {
+public record GeneratedClass(CtClass ctClass, Class<?> generatedClass) {
 
-    public final CtClass ctClass;
-
-    public final Class<?> generatedClass;
-
-    public GeneratedClass(CtClass ctClass, Class<?> baseClass) throws CannotCompileException {
-        this.ctClass = ctClass;
-        this.generatedClass = ctClass.toClass(baseClass);
+    public static GeneratedClass create(CtClass ctClass, Class<?> baseClass) throws CannotCompileException {
+        return new GeneratedClass(ctClass, ctClass.toClass(baseClass));
     }
 
 }
