@@ -13,6 +13,7 @@ import io.beanmapper.core.collections.MapCollectionHandler;
 import io.beanmapper.core.collections.QueueCollectionHandler;
 import io.beanmapper.core.collections.SetCollectionHandler;
 import io.beanmapper.core.constructor.BeanInitializer;
+import io.beanmapper.core.constructor.FactoryMethodAwareBeanInitializer;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.converter.collections.CollectionConverter;
 import io.beanmapper.core.converter.impl.AnyToEnumConverter;
@@ -131,6 +132,19 @@ public class BeanMapperBuilder {
 
     public BeanMapperBuilder setBeanInitializer(BeanInitializer beanInitializer) {
         this.configuration.setBeanInitializer(beanInitializer);
+        return this;
+    }
+
+    /**
+     * Enables factory method support by setting a FactoryMethodAwareBeanInitializer that will
+     * look for static methods annotated with @BeanFactoryMethod and use them for object
+     * instantiation when available. Falls back to the default bean initializer when no
+     * factory method is found.
+     * 
+     * @return the builder for fluent configuration
+     */
+    public BeanMapperBuilder withFactoryMethodSupport() {
+        this.configuration.setBeanInitializer(new FactoryMethodAwareBeanInitializer());
         return this;
     }
 
