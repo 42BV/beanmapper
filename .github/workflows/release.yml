@@ -1,7 +1,14 @@
-name: Manual Release
+name: Maven Release to Central
 
 on:
   workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version (optional - defaults to maven-release-plugin suggestion)'
+        required: false
+      development_version:
+        description: 'Next development version (optional - defaults to maven-release-plugin suggestion)'
+        required: false
 
 jobs:
   release:
@@ -12,31 +19,95 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          persist-credentials: false # Recommended for security
+          token: ${{ secrets.RELEASE_TOKEN }}
+          fetch-depth: 0
 
       - name: Set up Java JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '21' # Use the Java version from your pom.xml
+          java-version: '21'
           distribution: 'temurin'
+          server-id: central
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
 
-      - name: Set up GPG
+      - name: Configure Git
+        run: |
+          git config --global user.name "${{ vars.GIT_USER_NAME }}"
+          git config --global user.email "${{ vars.GIT_USER_EMAIL }}"
+
+      - name: Import GPG key
         run: |
           echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --passphrase-fd 0 --edit-key "${{ secrets.GPG_KEY_ID }}" trust
-          gpg --export-secret-keys -o secring.gpg
-          gpg --export --armor "${{ secrets.GPG_KEY_ID }}" > pubring.gpg
+          gpg --list-secret-keys --keyid-format LONG
 
-      - name: Build and Release
-        env:
-          MAVEN_GPG_SECRET_KEYRING_FILE: secring.gpg
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          MAVEN_GPG_PUBLIC_KEYRING_FILE: pubring.gpg
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # For pushing tags
+      - name: Create Maven settings.xml
         run: |
-          mvn --batch-mode -DskipTests -Darguments="-Dgpg.executable=gpg -Dgpg.secretKeyringFile=$MAVEN_GPG_SECRET_KEYRING_FILE -Dgpg.passphrase=$MAVEN_GPG_PASSPHRASE -Dgpg.publicKeyringFile=$MAVEN_GPG_PUBLIC_KEYRING_FILE" release:prepare release:perform
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml << 'EOF'
+          <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                                        http://maven.apache.org/xsd/settings-1.0.0.xsd">
+            <servers>
+              <server>
+                <id>central</id>
+                <username>${env.MAVEN_USERNAME}</username>
+                <password>${env.MAVEN_PASSWORD}</password>
+              </server>
+            </servers>
+            <profiles>
+              <profile>
+                <id>release</id>
+                <properties>
+                  <gpg.executable>gpg</gpg.executable>
+                  <gpg.keyname>${env.GPG_KEY_ID}</gpg.keyname>
+                  <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
+                </properties>
+              </profile>
+            </profiles>
+          </settings>
+          EOF
 
-      - name: Clean up GPG files
+      - name: Run tests
+        run: mvn clean test
+
+      - name: Prepare release
+        env:
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          RELEASE_ARGS=""
+          if [ -n "${{ github.event.inputs.release_version }}" ]; then
+            RELEASE_ARGS="$RELEASE_ARGS -DreleaseVersion=${{ github.event.inputs.release_version }}"
+          fi
+          if [ -n "${{ github.event.inputs.development_version }}" ]; then
+            RELEASE_ARGS="$RELEASE_ARGS -DdevelopmentVersion=${{ github.event.inputs.development_version }}"
+          fi
+          if [ -n "${{ github.event.inputs.release_version }}" ]; then
+            RELEASE_ARGS="$RELEASE_ARGS -Dtag=v${{ github.event.inputs.release_version }}"
+          fi
+          
+          mvn --batch-mode release:prepare \
+            $RELEASE_ARGS \
+            -DscmCommentPrefix="[maven-release-plugin] " \
+            -Prelease
+
+      - name: Perform release
+        env:
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          mvn --batch-mode release:perform \
+            -Darguments="-Prelease -DskipTests" \
+            -Prelease
+
+      - name: Cleanup
         if: always()
         run: |
-          rm -f secring.gpg pubring.gpg
+          rm -f ~/.m2/settings.xml
+          gpg --delete-secret-keys ${{ secrets.GPG_KEY_ID }} || true
