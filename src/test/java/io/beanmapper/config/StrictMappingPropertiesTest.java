@@ -19,7 +19,7 @@ class StrictMappingPropertiesTest {
     void setup() {
         BeanMapper beanMapper = new BeanMapperBuilder()
                 .build();
-        coreConfiguration = (CoreConfiguration) beanMapper.getConfiguration();
+        coreConfiguration = (CoreConfiguration) beanMapper.configuration();
     }
 
     @Test

@@ -33,7 +33,7 @@ import io.beanmapper.utils.diagnostics.DiagnosticsDetailLevel;
 
 public class BeanMapperBuilder {
 
-    private static final List<CollectionHandler> DEFAULT_COLLECTION_HANDLERS =
+    private static final List<CollectionHandler<?>> DEFAULT_COLLECTION_HANDLERS =
             List.of(
                     new MapCollectionHandler(),
                     new SetCollectionHandler(),
@@ -45,7 +45,7 @@ public class BeanMapperBuilder {
 
     private final List<BeanConverter> customBeanConverters = new ArrayList<>();
 
-    private final List<CollectionHandler> customCollectionHandlers = new ArrayList<>();
+    private final List<CollectionHandler<?>> customCollectionHandlers = new ArrayList<>();
 
     public BeanMapperBuilder() {
         this.configuration = new CoreConfiguration();
@@ -79,7 +79,7 @@ public class BeanMapperBuilder {
         return this;
     }
 
-    public BeanMapperBuilder addCollectionHandler(CollectionHandler handler) {
+    public BeanMapperBuilder addCollectionHandler(CollectionHandler<?> handler) {
         this.customCollectionHandlers.add(handler);
         return this;
     }
@@ -114,7 +114,7 @@ public class BeanMapperBuilder {
         return this;
     }
 
-    public BeanMapperBuilder addLogicSecuredCheck(LogicSecuredCheck logicSecuredCheck) {
+    public BeanMapperBuilder addLogicSecuredCheck(LogicSecuredCheck<?, ?> logicSecuredCheck) {
         this.configuration.addLogicSecuredCheck(logicSecuredCheck);
         return this;
     }
@@ -151,12 +151,12 @@ public class BeanMapperBuilder {
         return this;
     }
 
-    public BeanMapperBuilder setCollectionClass(Class collectionClass) {
+    public BeanMapperBuilder setCollectionClass(Class<?> collectionClass) {
         this.configuration.setCollectionClass(collectionClass);
         return this;
     }
 
-    public BeanMapperBuilder setTargetClass(Class targetClass) {
+    public BeanMapperBuilder setTargetClass(Class<?> targetClass) {
         this.configuration.setTargetClass(targetClass);
         return this;
     }
@@ -247,8 +247,8 @@ public class BeanMapperBuilder {
         return beanMapper;
     }
 
-    private void addCollectionHandlers(List<CollectionHandler> collectionHandlers) {
-        for (CollectionHandler collectionHandler : collectionHandlers) {
+    private void addCollectionHandlers(List<CollectionHandler<?>> collectionHandlers) {
+        for (CollectionHandler<?> collectionHandler : collectionHandlers) {
             attachCollectionHandler(collectionHandler);
         }
     }
@@ -277,7 +277,7 @@ public class BeanMapperBuilder {
         }
     }
 
-    private void attachCollectionHandler(CollectionHandler collectionHandler) {
+    private void attachCollectionHandler(CollectionHandler<?> collectionHandler) {
         configuration.addCollectionHandler(collectionHandler);
     }
 

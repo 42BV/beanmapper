@@ -20,7 +20,7 @@ public @interface BeanCollection {
      * type will be used by BeanMapper to pass the target class type.
      * @return the class type of a target element collection
      */
-    Class elementType() default void.class;
+    Class<?> elementType() default void.class;
 
     /**
      * Determines how BeanMapper must deal with the target collection. The default option
@@ -40,7 +40,7 @@ public @interface BeanCollection {
      * instead of the default one provided by the collection handler
      * @return the class to instantiate instead of the one provided by the collection handler
      */
-    Class preferredCollectionClass() default void.class;
+    Class<?> preferredCollectionClass() default void.class;
 
     /**
      * When usage is CLEAR and the target collection is being managed by, eg, Hibernate's

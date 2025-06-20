@@ -26,7 +26,7 @@ class ClassGeneratorTest extends AbstractConcurrentTest {
                             Node.createTree(Collections.singletonList("name")),
                             new BeanMapperBuilder()
                                     .build()
-                                    .getConfiguration()
+                                    .configuration()
                                     .getStrictMappingProperties());
                     Thread.yield();
                 }
@@ -38,5 +38,31 @@ class ClassGeneratorTest extends AbstractConcurrentTest {
         run(8, r);
 
         assertTrue(results.isEmpty(), "%d".formatted(results.size())); // Class generation should produce zero exceptions.
+    }
+
+    @Test
+    void shouldNotFailConcurrentlyVirtualThreads() throws InterruptedException {
+        final ClassGenerator gen = new ClassGenerator(new ClassPool(true));
+        final List<Throwable> results = Collections.synchronizedList(new ArrayList<>());
+        final Runnable r = () -> {
+            try {
+                for (int t = 0; t < 1000; t++) {
+                    gen.createClass(
+                            Person.class,
+                            Node.createTree(Collections.singletonList("name")),
+                            new BeanMapperBuilder()
+                                    .build()
+                                    .configuration()
+                                    .getStrictMappingProperties());
+                    Thread.yield();
+                }
+            } catch (Throwable ex) {
+                results.add(ex);
+            }
+        };
+
+        runVirtual(8, r);
+
+        assertTrue(results.isEmpty(), "%d".formatted(results.size()));
     }
 }

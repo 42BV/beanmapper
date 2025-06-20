@@ -202,7 +202,7 @@ class MapToRecordStrategyTest {
         var result = this.beanMapper.map(form, ResultRecordWithIdAndName.class);
 
         assertEquals(form.name(), result.name());
-        assertEquals((int) this.beanMapper.getConfiguration().getDefaultValueForClass(int.class), result.id());
+        assertEquals((int) this.beanMapper.configuration().getDefaultValueForClass(int.class), result.id());
     }
 
     @Test

@@ -9,7 +9,6 @@ import java.util.Map;
 import io.beanmapper.BeanMapper;
 import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.core.converter.BeanConverter;
-import io.beanmapper.utils.Check;
 
 /**
  * Converter between boxed and primitive type. 
@@ -19,7 +18,7 @@ import io.beanmapper.utils.Check;
  */
 public class PrimitiveConverter implements BeanConverter {
 
-    private static final Map<Class<?>, Class<?>> MAPPINGS = new HashMap<Class<?>, Class<?>>();
+    private static final Map<Class<?>, Class<?>> MAPPINGS = new HashMap<>();
 
     static {
         register(Byte.class, byte.class);
@@ -41,7 +40,7 @@ public class PrimitiveConverter implements BeanConverter {
      */
     @Override
     public <S, T> T convert(BeanMapper beanMapper, S source, Class<T> targetClass, BeanPropertyMatch beanPropertyMatch) {
-        return source != null ? (T) source : beanMapper.getConfiguration().getDefaultValueForClass(targetClass); // Value will automatically be boxed or unboxed
+        return source != null ? (T) source : beanMapper.configuration().getDefaultValueForClass(targetClass); // Value will automatically be boxed or unboxed
     }
 
     /**
