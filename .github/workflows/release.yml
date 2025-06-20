@@ -33,7 +33,7 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.SONATYPE_KEY }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       - name: Set new version
-        run: mvn versions:set -newVersion=${{ github.event.inputs.next-version }}
+        run: mvn versions:set -DnewVersion=${{ github.event.inputs.next-version }}
       - name: Commit new version
         run: git commit -m "Setting new snapshot version"
       - name: Push changes
