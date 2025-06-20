@@ -34,6 +34,10 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       - name: Set new version
         run: mvn versions:set -DnewVersion=${{ github.event.inputs.next-version }}
+      - name: Set git-email
+        run: git config user.email ${{ secrets.GIT_USER_EMAIL }}
+      - name: Set git-name
+        run: git config user.name ${{ secrets.GIT_USER_NAME }}
       - name: Commit new version
         run: git commit -m "Setting new snapshot version"
       - name: Push changes
