@@ -3,7 +3,9 @@ name: Publish package to the Maven Central Repository
 on:
   workflow_dispatch:
     inputs:
-      version:
+      release-version:
+        required: true
+      next-version:
         required: true
       
 
@@ -30,3 +32,9 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.SONATYPE_KEY }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      - name: Set new version
+        run: mvn versions:set -newVersion=${{ github.event.inputs.next-version }}
+      - name: Commit new version
+        run: git commit -m "Setting new snapshot version"
+      - name: Push changes
+        run: git push
