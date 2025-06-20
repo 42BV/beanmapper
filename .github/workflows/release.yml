@@ -39,7 +39,7 @@ jobs:
       - name: Set git-name
         run: git config user.name ${{ secrets.GIT_USER_NAME }}
       - name: Set remote
-        run: git remote add origin git@github.com:42BV/beanmapper.git
+        run: git remote -v
       - name: Git Add
         run: git add .
       - name: Git Commit
