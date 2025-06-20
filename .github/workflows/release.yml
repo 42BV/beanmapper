@@ -13,6 +13,5 @@ jobs:
     uses: 42BV/42-github-workflows/.github/workflows/maven-release.yml@maven-release-scripts
     secrets: inherit
     with:
-      java-version: 21
       release-version: ${{ github.event.inputs.release-version }}
       next-version: ${{ github.event.inputs.next-version }}
