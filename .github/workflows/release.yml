@@ -10,7 +10,7 @@ on:
       
 jobs:
   call-workflow:
-    uses: 42BV/42-github-workflows/.github/workflows/maven-release.yml@main
+    uses: 42BV/42-github-workflows/.github/workflows/maven-release.yml@maven-release-scripts
     secrets: inherit
     with:
       java-version: 21
