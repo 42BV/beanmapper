@@ -10,37 +10,7 @@ on:
       
 
 jobs:
-  publish:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Maven Central Repository
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-          server-id: central
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: MAVEN_GPG_PASSPHRASE
-      - name: Set version
-        run: mvn versions:set -DnewVersion=${{ github.event.inputs.release-version }}
-      - name: Publish package
-        run: mvn --batch-mode deploy -DskipTests -DdryRun=true
-        env:
-          MAVEN_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.SONATYPE_KEY }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-      - name: Set new version
-        run: mvn versions:set -DnewVersion=${{ github.event.inputs.next-version }}
-      - name: Set git-email
-        run: git config user.email ${{ secrets.GIT_USER_EMAIL }}
-      - name: Set git-name
-        run: git config user.name ${{ secrets.GIT_USER_NAME }}
-      - name: Git Add
-        run: git add .
-      - name: Git Commit
-        run: git commit -m "Release version"
-      - name: Push changes
-        run: git push
+  call-workflow:
+    uses: 42BV/42-github-workflows/.github/workflows/maven-release.yml@maven-release-scripts
+    with:
+      java-version: 21
