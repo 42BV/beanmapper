@@ -1,4 +1,4 @@
-name: Publish Java Library to Maven Central
+name: Publish package to the Maven Central Repository
 
 on:
   workflow_dispatch:
@@ -6,27 +6,23 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up JDK, GPG, and Maven Central Authentication
+      - uses: actions/checkout@v4
+      - name: Set up Maven Central Repository
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
-          # Configure server for Sonatype OSSRH
           server-id: central
-          server-username: SONATYPE_USERNAME # Env var for username
-          server-password: SONATYPE_KEY    # Env var for password/token
-          # Import GPG key for signing
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: GPG_PASSPHRASE # Env var for passphrase
-
-      - name: Publish package to Maven Central
-        run: mvn -X --batch-mode -P release deploy
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+      - name: Set version
+        run: mvn versions:set -DnewVersion=${{ github.event.release.tag_name }}
+      - name: Publish package
+        run: mvn -P release --batch-mode deploy -DskipTests
         env:
-          SONATYPE_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          SONATYPE_KEY: ${{ secrets.OSSRH_TOKEN }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          MAVEN_USERNAME: ${{ secrets.DONATYPE_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.SONATYPE_KEY }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
