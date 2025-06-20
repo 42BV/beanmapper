@@ -38,5 +38,11 @@ jobs:
         run: git config user.email ${{ secrets.GIT_USER_EMAIL }}
       - name: Set git-name
         run: git config user.name ${{ secrets.GIT_USER_NAME }}
+      - name: Set remote
+        run: git add remote origin git@github.com:42BV/beanmapper.git
+      - name: Git Add
+        run: git add .
+      - name: Git Commit
+        run: git commit -m "Release version"
       - name: Push changes
         run: git push
