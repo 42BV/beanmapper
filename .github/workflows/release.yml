@@ -25,7 +25,7 @@ jobs:
           gpg-passphrase: GPG_PASSPHRASE # Env var for passphrase
 
       - name: Publish package to Maven Central
-        run: mvn --batch-mode -P -X release deploy
+        run: mvn -X --batch-mode -P release deploy
         env:
           SONATYPE_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           SONATYPE_KEY: ${{ secrets.OSSRH_TOKEN }}
