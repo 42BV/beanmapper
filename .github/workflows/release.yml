@@ -2,6 +2,10 @@ name: Publish package to the Maven Central Repository
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        required: true
+      
 
 jobs:
   publish:
@@ -19,7 +23,7 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Set version
-        run: mvn versions:set -DnewVersion=${{ github.event.release.tag_name }}
+        run: mvn versions:set -DnewVersion=${{ github.event.inputs.version }}
       - name: Publish package
         run: mvn -P release --batch-mode deploy -DskipTests
         env:
