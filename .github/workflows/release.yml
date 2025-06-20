@@ -10,7 +10,14 @@ on:
       
 jobs:
   call-workflow:
-    uses: 42BV/42-github-workflows/.github/workflows/maven-release.yml@maven-release-scripts
+    uses: 42BV/42-github-workflows/.github/workflows/maven-test.yml@main
+    secrets:
+      gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+      gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+      maven-user: ${{ secrets.SONATYPE_USERNAME }}
+      maven-token: ${{ secrets.SONATYPE_TOKEN }}
+      git-email: ${{ secrets.GIT_USER_EMAIL }}
+      git-name: ${{ GIT_USER_NAME }}
     with:
       release-version: ${{ github.event.inputs.release-version }}
       next-version: ${{ github.event.inputs.next-version }}
