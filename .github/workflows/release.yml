@@ -21,3 +21,4 @@ jobs:
     with:
       release-version: ${{ github.event.inputs.release-version }}
       next-version: ${{ github.event.inputs.next-version }}
+      java-version: ${{ github.event.inputs.java-version }}
