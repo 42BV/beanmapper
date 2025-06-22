@@ -4,10 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       release-version:
-        required: true
+        required: false
+        description: Release-version (not required)
       next-version:
+        required: false
+        description: Next development-version. (not required)
+      java-version:
         required: true
-      
+        default: '21'
+        description: Java-version to use for the deployment.
+
 jobs:
   call-workflow:
     uses: 42BV/42-github-workflows/.github/workflows/maven-release.yml@maven-release-scripts
