@@ -12,21 +12,21 @@ class AnnotationClassTest {
     @Test
     void nullClass() {
         AnnotationClass annotationClass = new AnnotationClass(null);
-        assertNull(annotationClass.getAnnotationClass());
+        assertNull(annotationClass.annotationClass());
         assertTrue(annotationClass.isEmpty());
     }
 
     @Test
     void voidClass() {
         AnnotationClass annotationClass = new AnnotationClass(void.class);
-        assertNull(annotationClass.getAnnotationClass());
+        assertNull(annotationClass.annotationClass());
         assertTrue(annotationClass.isEmpty());
     }
 
     @Test
     void normalClass() {
         AnnotationClass annotationClass = new AnnotationClass(String.class);
-        assertEquals(String.class, annotationClass.getAnnotationClass());
+        assertEquals(String.class, annotationClass.annotationClass());
         assertFalse(annotationClass.isEmpty());
     }
 

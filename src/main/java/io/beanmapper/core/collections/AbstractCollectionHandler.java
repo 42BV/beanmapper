@@ -15,6 +15,7 @@ public abstract class AbstractCollectionHandler<C> implements CollectionHandler<
     private final Class<C> type;
     private final DefaultBeanInitializer beanInitializer = new DefaultBeanInitializer();
 
+    @SuppressWarnings("unchecked")
     protected AbstractCollectionHandler() {
         this.type = (Class<C>) Classes.getParameteredTypes(getClass())[0];
     }

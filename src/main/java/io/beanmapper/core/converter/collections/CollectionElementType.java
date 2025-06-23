@@ -5,12 +5,12 @@ public class CollectionElementType {
     public static final CollectionElementType EMPTY_COLLECTION_ELEMENT_TYPE =
             new CollectionElementType(null, true);
 
-    private final AnnotationClass collectionElementType;
+    private final AnnotationClass classOfCollectionElement;
 
     private final boolean derived;
 
-    private CollectionElementType(Class<?> collectionElementType, boolean derived) {
-        this.collectionElementType = new AnnotationClass(collectionElementType);
+    private CollectionElementType(Class<?> classOfCollectionElement, boolean derived) {
+        this.classOfCollectionElement = new AnnotationClass(classOfCollectionElement);
         this.derived = derived;
     }
 
@@ -27,11 +27,11 @@ public class CollectionElementType {
     }
 
     public Class<?> getType() {
-        return collectionElementType.getAnnotationClass();
+        return classOfCollectionElement.annotationClass();
     }
 
     public boolean isEmpty() {
-        return collectionElementType.isEmpty();
+        return classOfCollectionElement.isEmpty();
     }
 
 }

@@ -33,6 +33,21 @@ public class DefaultValues {
 
     @SuppressWarnings("unchecked")
     public static <T, V> V defaultValueFor(Class<T> clazz) {
-        return (V) defaultValues.get(clazz);
+        var result = (V) defaultValues.get(clazz);
+
+        if (result == null && clazz.getSuperclass() != null) {
+            result = defaultValueFor(clazz.getSuperclass());
+        }
+
+        if (result == null) {
+            for (Class<?> iface : clazz.getInterfaces()) {
+                result = defaultValueFor(iface);
+                if (result != null) {
+                    break;
+                }
+            }
+        }
+
+        return result;
     }
 }

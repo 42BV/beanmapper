@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class BeanInstantiationExceptionTest {
 
     @Test
-    void throwException() throws NoSuchFieldException {
+    void throwException() {
         try {
             throw new BeanInstantiationException(SourceWithDefaults.class, null);
         } catch (BeanMappingException e) {
