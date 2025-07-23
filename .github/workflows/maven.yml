@@ -14,3 +14,4 @@ jobs:
     uses: 42BV/42-github-workflows/.github/workflows/maven-test.yml@main
     with:
       java-version: 21
+    secrets: inherit
