@@ -16,7 +16,7 @@ on:
 
 jobs:
   call-workflow:
-    uses: 42BV/42-github-workflows/.github/workflows/maven-release.yml@master
+    uses: 42BV/42-github-workflows/.github/workflows/maven-release.yml@main
     secrets: inherit
     with:
       release-version: ${{ github.event.inputs.release-version }}
