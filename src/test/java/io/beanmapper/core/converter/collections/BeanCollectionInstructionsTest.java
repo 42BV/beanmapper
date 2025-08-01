@@ -81,7 +81,7 @@ class BeanCollectionInstructionsTest {
         assertNotNull(merged);
         assertEquals(Long.class, merged.getCollectionElementType().getType());
         assertEquals(BeanCollectionUsage.REUSE, merged.getBeanCollectionUsage());
-        assertEquals(ArrayList.class, merged.getPreferredCollectionClass().getAnnotationClass());
+        assertEquals(ArrayList.class, merged.getPreferredCollectionClass().annotationClass());
         assertEquals(Trinary.DISABLED, merged.getFlushAfterClear());
     }
 
@@ -98,11 +98,11 @@ class BeanCollectionInstructionsTest {
         return instructions;
     }
 
-    public class SourceClassContainingList {
+    public static class SourceClassContainingList {
         public List<String> list;
     }
 
-    public class TargetClassContainingList {
+    public static class TargetClassContainingList {
         public List<String> list;
     }
 
