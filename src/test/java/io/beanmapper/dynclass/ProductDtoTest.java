@@ -1,29 +1,21 @@
 package io.beanmapper.dynclass;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import io.beanmapper.BeanMapper;
+import io.beanmapper.config.BeanMapperBuilder;
+import io.beanmapper.dynclass.model.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import io.beanmapper.BeanMapper;
-import io.beanmapper.config.BeanMapperBuilder;
-import io.beanmapper.dynclass.model.Artist;
-import io.beanmapper.dynclass.model.ArtistDto;
-import io.beanmapper.dynclass.model.Asset;
-import io.beanmapper.dynclass.model.Organization;
-import io.beanmapper.dynclass.model.Product;
-import io.beanmapper.dynclass.model.ProductDto;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProductDtoTest {
 
@@ -196,7 +188,7 @@ class ProductDtoTest {
         }};
     }
 
-    private void compareJson(Object object, String expectedJson) throws IOException {
+    private void compareJson(Object object, String expectedJson) {
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(object);
 
