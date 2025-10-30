@@ -45,7 +45,7 @@
     </developers>
 
     <properties>
-        <java.version>25</java.version>
+        <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <javassist.version>3.30.2-GA</javassist.version>
