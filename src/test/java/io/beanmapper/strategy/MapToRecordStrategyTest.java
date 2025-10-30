@@ -1,18 +1,5 @@
 package io.beanmapper.strategy;
 
-import static io.beanmapper.shared.AssertionUtils.assertFieldWithNameHasValue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import io.beanmapper.BeanMapper;
 import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.exceptions.RecordConstructorConflictException;
@@ -48,10 +35,25 @@ import io.beanmapper.strategy.record.model.collection.result.ResultRecordWithQue
 import io.beanmapper.strategy.record.model.collection.result.ResultRecordWithSet;
 import io.beanmapper.strategy.record.model.inheritance.Layer3;
 import io.beanmapper.testmodel.person.Person;
+import io.beanmapper.testmodel.record.ResultRecord;
+import io.beanmapper.testmodel.record.SourceClassPrivate;
 import io.beanmapper.utils.DefaultValues;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static io.beanmapper.shared.AssertionUtils.assertFieldWithNameHasValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MapToRecordStrategyTest {
 
@@ -422,5 +424,20 @@ class MapToRecordStrategyTest {
         var result = this.beanMapper.map(source, TargetWithNested.class);
         assertEquals(source.name(), result.name());
         assertEquals(source.nested().name(), result.nested().name());
+    }
+
+    @Test
+    void testInaccessibleFieldsShouldNotBeMappedToRecord() {
+        Integer i = 123;
+        String s = "123";
+        LocalDate d = LocalDate.of(2001, 2, 23);
+
+        SourceClassPrivate sourceClassPrivate = new SourceClassPrivate(i, s, d);
+
+        // !!! private -> public | Maps values !!!
+        ResultRecord resultRecord = beanMapper.map(sourceClassPrivate, ResultRecord.class);
+        assertNull(resultRecord.i());
+        assertNull(resultRecord.s());
+        assertNull(resultRecord.d());
     }
 }
