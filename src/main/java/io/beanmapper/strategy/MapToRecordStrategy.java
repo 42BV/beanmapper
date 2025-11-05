@@ -1,5 +1,19 @@
 package io.beanmapper.strategy;
 
+import io.beanmapper.BeanMapper;
+import io.beanmapper.annotations.BeanAlias;
+import io.beanmapper.annotations.BeanRecordConstruct;
+import io.beanmapper.annotations.BeanRecordConstructMode;
+import io.beanmapper.config.Configuration;
+import io.beanmapper.core.converter.BeanConverter;
+import io.beanmapper.core.inspector.PropertyAccessor;
+import io.beanmapper.core.inspector.PropertyAccessors;
+import io.beanmapper.exceptions.BeanInstantiationException;
+import io.beanmapper.exceptions.RecordConstructorConflictException;
+import io.beanmapper.exceptions.RecordNoAvailableConstructorsExceptions;
+import io.beanmapper.utils.BeanMapperTraceLogger;
+import io.beanmapper.utils.Records;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -15,19 +29,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import io.beanmapper.BeanMapper;
-import io.beanmapper.annotations.BeanAlias;
-import io.beanmapper.annotations.BeanRecordConstruct;
-import io.beanmapper.annotations.BeanRecordConstructMode;
-import io.beanmapper.config.Configuration;
-import io.beanmapper.core.converter.BeanConverter;
-import io.beanmapper.exceptions.BeanInstantiationException;
-import io.beanmapper.exceptions.RecordConstructorConflictException;
-import io.beanmapper.exceptions.RecordNoAvailableConstructorsExceptions;
-import io.beanmapper.exceptions.SourceFieldAccessException;
-import io.beanmapper.utils.BeanMapperTraceLogger;
-import io.beanmapper.utils.Records;
 
 /**
  * MapToRecordStrategy offers a comprehensive implementation of the MapToClassStrategy, targeted towards mapping a class
@@ -49,8 +50,9 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
 
         Class<T> targetClass = this.getConfiguration().getTargetClass();
 
-        if (source.getClass().equals(targetClass))
+        if (source.getClass() == targetClass) {
             return targetClass.cast(source);
+        }
 
         // We use the RecordToAny-converter in case the source is also a Record. Furthermore, allowing the use of custom
         // converters increases flexibility of the library.
@@ -64,9 +66,12 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
         }
 
         Map<String, Field> sourceFields = getSourceFields(source);
+        Map<String, PropertyAccessor> sourcePropertyAccessors = sourceFields.entrySet().stream()
+                .map(entry -> Map.entry(entry.getKey(), PropertyAccessors.findProperty(source.getClass(), entry.getValue().getName())))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         Constructor<T> constructor = (Constructor<T>) getSuitableConstructor(sourceFields, targetClass);
         String[] fieldNamesForConstructor = getNamesOfConstructorParameters(targetClass, constructor);
-        List<Object> values = getValuesOfFields(source, sourceFields, sourceFields, Arrays.stream(fieldNamesForConstructor));
+        List<Object> values = getValuesOfFields(source, sourcePropertyAccessors, Arrays.stream(fieldNamesForConstructor));
 
         return targetClass.cast(constructTargetObject(constructor, values));
     }
@@ -76,8 +81,8 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
      * present.
      *
      * @param sourceClass The class of the source-object.
+     * @param <S>         The type of the sourceClass.
      * @return A Map containing the fields of the source-class, mapped by the name of the field, or the value of an available BeanAlias.
-     * @param <S> The type of the sourceClass.
      */
     private <S> Map<String, Field> getFieldsOfClass(final Class<S> sourceClass) {
         return Arrays.stream(sourceClass.getDeclaredFields())
@@ -156,15 +161,10 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
         return getNamesOfRecordComponents(targetClass);
     }
 
-    private <S> List<Object> getValuesOfFields(final S source, final Map<String, Field> sourceFields, final Map<String, Field> fieldMap,
-            final Stream<String> fieldNamesForConstructor) {
-        return fieldNamesForConstructor.map(fieldName -> {
-                    Field field = fieldMap.get(fieldName);
-                    if (field != null) {
-                        return field;
-                    }
-                    return sourceFields.get(fieldName);
-                }).map(field -> getValueFromField(source, field))
+    private <S> List<Object> getValuesOfFields(final S source, final Map<String, PropertyAccessor> accessors,
+                                               final Stream<String> fieldNamesForConstructor) {
+        return fieldNamesForConstructor.map(accessors::get)
+                .map(accessor -> getValueFromField(source, accessor))
                 .toList();
     }
 
@@ -196,17 +196,11 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
         }
     }
 
-    private <S> Object getValueFromField(final S source, final Field field) {
-        if (field == null) {
+    private <S> Object getValueFromField(final S source, PropertyAccessor accessor) {
+        if (accessor == null || !accessor.isReadable()) {
             return null;
         }
-        try {
-            if (!field.canAccess(source))
-                field.setAccessible(true);
-            return field.get(source);
-        } catch (IllegalAccessException ex) {
-            throw new SourceFieldAccessException(this.getConfiguration().getTargetClass(), source.getClass(), "Could not access field " + field.getName(), ex);
-        }
+        return accessor.getValue(source);
     }
 
     private <T> Constructor<?> getSuitableConstructor(final Map<String, Field> sourceFields, final Class<T> targetClass) {
@@ -239,7 +233,7 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
     }
 
     private <T> Optional<Constructor<T>> getConstructorWithMostMatchingParameters(final List<Constructor<T>> constructors,
-            final Map<String, Field> sourceFields) {
+                                                                                  final Map<String, Field> sourceFields) {
         for (var constructor : constructors) {
             BeanRecordConstruct recordConstruct = constructor.getAnnotation(BeanRecordConstruct.class);
             List<Field> relevantFields = Arrays.stream(recordConstruct.value())

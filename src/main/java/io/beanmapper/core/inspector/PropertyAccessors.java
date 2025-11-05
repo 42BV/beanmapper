@@ -131,7 +131,9 @@ public class PropertyAccessors {
     }
 
     private static PropertyDescriptor findPropertyDescriptor(Class<?> beanClass, String propertyName) {
-        Map<String, PropertyDescriptor> descriptors = findPropertyDescriptors(beanClass);
+        Map<String, PropertyDescriptor> descriptors = beanClass.isRecord()
+                ? findPropertyDescriptorsForRecord((Class<? extends Record>) beanClass)
+                : findPropertyDescriptors(beanClass);
         return descriptors.get(propertyName);
     }
 
