@@ -14,6 +14,10 @@ import io.beanmapper.exceptions.RecordNoAvailableConstructorsExceptions;
 import io.beanmapper.utils.BeanMapperTraceLogger;
 import io.beanmapper.utils.Records;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -24,8 +28,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -65,10 +71,17 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
             }
         }
 
-        Map<String, Field> sourceFields = getSourceFields(source);
-        Map<String, PropertyAccessor> sourcePropertyAccessors = sourceFields.entrySet().stream()
-                .map(entry -> Map.entry(entry.getKey(), PropertyAccessors.findProperty(source.getClass(), entry.getValue().getName())))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map<String, Object> sourceFields = getSourceFields(source);
+        Map<String, PropertyAccessor> sourcePropertyAccessors = new HashMap<>();
+        for (Map.Entry<String, Object> entry : sourceFields.entrySet()) {
+            String aliasOrName = entry.getKey();
+            Object value = entry.getValue();
+            String propertyName = (value instanceof Field field) ? field.getName() : aliasOrName;
+            PropertyAccessor accessor = PropertyAccessors.findProperty(source.getClass(), propertyName);
+            if (accessor != null) {
+                sourcePropertyAccessors.put(aliasOrName, accessor);
+            }
+        }
         Constructor<T> constructor = (Constructor<T>) getSuitableConstructor(sourceFields, targetClass);
         String[] fieldNamesForConstructor = getNamesOfConstructorParameters(targetClass, constructor);
         List<Object> values = getValuesOfFields(source, sourcePropertyAccessors, Arrays.stream(fieldNamesForConstructor));
@@ -95,21 +108,45 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    private <S> Set<String> getReadablePropertyNames(final Class<S> sourceClass) {
+        Set<String> result = new HashSet<>();
+        try {
+            BeanInfo beanInfo = Introspector.getBeanInfo(sourceClass, Object.class);
+            for (PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
+                if (pd.getReadMethod() != null) {
+                    result.add(pd.getName());
+                }
+            }
+        } catch (IntrospectionException e) {}
+        return result;
+    }
+
     /**
      * Gets the fields in the source-object, mapped to their name, or, if present, the value of the
-     * BeanAlias-annotation.
+     * BeanAlias-annotation. Also includes getter-only properties (computed getters).
      *
      * @param source The source-object, of which the fields will be mapped.
      * @param <S>
-     * @return The fields of the source-object, mapped to the
+     * @return The fields of the source-object, mapped to the property name. Values are either Field objects
+     *         for fields, or String (property name) for getter-only properties.
      */
-    private <S> Map<String, Field> getSourceFields(final S source) {
-        Map<String, Field> sourceFields = new HashMap<>();
+    private <S> Map<String, Object> getSourceFields(final S source) {
+        Map<String, Object> sourceFields = new HashMap<>();
         Class<? super S> sourceClass = (Class<? super S>) source.getClass();
+
+        // Collect fields
         while (!sourceClass.equals(Object.class)) {
             sourceFields.putAll(getFieldsOfClass(sourceClass));
             sourceClass = sourceClass.getSuperclass();
         }
+
+        // Add getter-only properties (computed getters)
+        for (String propertyName : getReadablePropertyNames(source.getClass())) {
+            if (!sourceFields.containsKey(propertyName)) {
+                sourceFields.put(propertyName, propertyName); // Marker for getter-only
+            }
+        }
+
         return sourceFields;
     }
 
@@ -203,7 +240,7 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
         return accessor.getValue(source);
     }
 
-    private <T> Constructor<?> getSuitableConstructor(final Map<String, Field> sourceFields, final Class<T> targetClass) {
+    private <T> Constructor<?> getSuitableConstructor(final Map<String, Object> sourceFields, final Class<T> targetClass) {
         List<Constructor<T>> constructors = new ArrayList<>(Records.getConstructorsAnnotatedWithRecordConstruct(targetClass));
         List<Constructor<T>> mandatoryConstructor = constructors.stream()
                 .filter(constructor -> constructor.getAnnotation(BeanRecordConstruct.class).constructMode() == BeanRecordConstructMode.FORCE)
@@ -233,10 +270,10 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
     }
 
     private <T> Optional<Constructor<T>> getConstructorWithMostMatchingParameters(final List<Constructor<T>> constructors,
-                                                                                  final Map<String, Field> sourceFields) {
+                                                                                  final Map<String, Object> sourceFields) {
         for (var constructor : constructors) {
             BeanRecordConstruct recordConstruct = constructor.getAnnotation(BeanRecordConstruct.class);
-            List<Field> relevantFields = Arrays.stream(recordConstruct.value())
+            List<Object> relevantFields = Arrays.stream(recordConstruct.value())
                     .map(sourceFields::get)
                     .toList();
             if (!relevantFields.contains(null) || recordConstruct.allowNull())
