@@ -7,6 +7,9 @@ import io.beanmapper.exceptions.RecordNoAvailableConstructorsExceptions;
 import io.beanmapper.shared.AssertionUtils;
 import io.beanmapper.shared.ReflectionUtils;
 import io.beanmapper.strategy.record.model.AlternativeResultRecordWithIdAndName;
+import io.beanmapper.strategy.record.model.computed_getter.SourceWithComputedUrl;
+import io.beanmapper.strategy.record.model.computed_getter.TargetClassWithUrl;
+import io.beanmapper.strategy.record.model.computed_getter.TargetRecordWithUrl;
 import io.beanmapper.strategy.record.model.FormRecordWithId_Name_Place_BankAccount;
 import io.beanmapper.strategy.record.model.FormWithIdAndName;
 import io.beanmapper.strategy.record.model.FormWithId_Name_Place_BankAccount;
@@ -439,5 +442,50 @@ class MapToRecordStrategyTest {
         assertNull(resultRecord.i());
         assertNull(resultRecord.s());
         assertNull(resultRecord.d());
+    }
+
+    /**
+     * This test demonstrates that BeanMapper CAN map computed getters to a CLASS.
+     * A computed getter is a getter method without a backing field.
+     */
+    @Test
+    void testComputedGetterShouldBeMappedToClass() {
+        var source = new SourceWithComputedUrl(42L, "Test");
+
+        // Verify the source getter works
+        assertEquals("/api/items/42", source.getUrl());
+
+        // Map to CLASS - this SHOULD work
+        var result = this.beanMapper.map(source, TargetClassWithUrl.class);
+
+        assertEquals(42L, result.id);
+        assertEquals("Test", result.name);
+        // Computed getter IS mapped to class
+        assertEquals("/api/items/42", result.url);
+    }
+
+    /**
+     * This test demonstrates that BeanMapper CANNOT map computed getters to a RECORD.
+     * A computed getter is a getter method without a backing field.
+     *
+     * Expected behavior: url should be "/api/items/42"
+     * Actual behavior: url is null
+     *
+     * This is a known limitation when mapping to records.
+     */
+    @Test
+    void testComputedGetterShouldBeMappedToRecord() {
+        var source = new SourceWithComputedUrl(42L, "Test");
+
+        // Verify the source getter works
+        assertEquals("/api/items/42", source.getUrl());
+
+        // Map to RECORD - this FAILS (url becomes null)
+        var result = this.beanMapper.map(source, TargetRecordWithUrl.class);
+
+        assertEquals(42L, result.id());
+        assertEquals("Test", result.name());
+        // BUG: Computed getter is NOT mapped to record - this assertion will FAIL
+        assertEquals("/api/items/42", result.url(), "Computed getter getUrl() should be mapped to record field 'url'");
     }
 }
