@@ -1,7 +1,7 @@
 [![Build Status](https://github.com/42BV/beanmapper/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/42BV/beanmapper/actions?query=workflow%3A%22Java+CI+with+Maven%22)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/663f3d7da8b849bb978c8860d1a0145d)](https://www.codacy.com/gh/42BV/beanmapper/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=42BV/beanmapper&amp;utm_campaign=Badge_Grade)
 [![codecov](https://codecov.io/gh/42BV/beanmapper/branch/master/graph/badge.svg)](https://codecov.io/gh/42BV/beanmapper)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper)
+[![Maven Central](https://img.shields.io/maven-central/v/io.beanmapper/beanmapper.svg?color=green)](https://central.sonatype.com/artifact/io.beanmapper/beanmapper)
 [![Javadocs](https://www.javadoc.io/badge/io.beanmapper/beanmapper.svg)](https://www.javadoc.io/doc/io.beanmapper/beanmapper)
 [![Apache 2](http://img.shields.io/badge/license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
