@@ -15,7 +15,6 @@ import io.beanmapper.utils.BeanMapperTraceLogger;
 import io.beanmapper.utils.Records;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
@@ -27,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -65,11 +63,8 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
             }
         }
 
-        Map<String, Field> sourceFields = getSourceFields(source);
-        Map<String, PropertyAccessor> sourcePropertyAccessors = sourceFields.entrySet().stream()
-                .map(entry -> Map.entry(entry.getKey(), PropertyAccessors.findProperty(source.getClass(), entry.getValue().getName())))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        Constructor<T> constructor = (Constructor<T>) getSuitableConstructor(sourceFields, targetClass);
+        Map<String, PropertyAccessor> sourcePropertyAccessors = getSourcePropertyAccessors(source);
+        Constructor<T> constructor = (Constructor<T>) getSuitableConstructor(sourcePropertyAccessors, targetClass);
         String[] fieldNamesForConstructor = getNamesOfConstructorParameters(targetClass, constructor);
         List<Object> values = getValuesOfFields(source, sourcePropertyAccessors, Arrays.stream(fieldNamesForConstructor));
 
@@ -77,40 +72,24 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
     }
 
     /**
-     * Gets a Map&lt;String, Field&gt;, containing the fields of the class, mapped by the name of the field, or the value of the BeanAlias-annotation if it is
-     * present.
+     * Gets all readable property accessors from the source object, mapped by their name or BeanAlias value.
      *
-     * @param sourceClass The class of the source-object.
-     * @param <S>         The type of the sourceClass.
-     * @return A Map containing the fields of the source-class, mapped by the name of the field, or the value of an available BeanAlias.
+     * @param source The source-object to get property accessors from.
+     * @param <S>    The type of the source object.
+     * @return A Map containing readable PropertyAccessors, keyed by property name or BeanAlias value.
      */
-    private <S> Map<String, Field> getFieldsOfClass(final Class<S> sourceClass) {
-        return Arrays.stream(sourceClass.getDeclaredFields())
-                .map(field -> {
-                    if (field.isAnnotationPresent(BeanAlias.class)) {
-                        return Map.entry(field.getAnnotation(BeanAlias.class).value(), field);
-                    }
-                    return Map.entry(field.getName(), field);
-                })
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
-    /**
-     * Gets the fields in the source-object, mapped to their name, or, if present, the value of the
-     * BeanAlias-annotation.
-     *
-     * @param source The source-object, of which the fields will be mapped.
-     * @param <S>
-     * @return The fields of the source-object, mapped to the
-     */
-    private <S> Map<String, Field> getSourceFields(final S source) {
-        Map<String, Field> sourceFields = new HashMap<>();
-        Class<? super S> sourceClass = (Class<? super S>) source.getClass();
-        while (!sourceClass.equals(Object.class)) {
-            sourceFields.putAll(getFieldsOfClass(sourceClass));
-            sourceClass = sourceClass.getSuperclass();
+    private <S> Map<String, PropertyAccessor> getSourcePropertyAccessors(final S source) {
+        Map<String, PropertyAccessor> result = new HashMap<>();
+        for (PropertyAccessor accessor : PropertyAccessors.getAll(source.getClass())) {
+            if (accessor.isReadable()) {
+                String name = accessor.getName();
+                if (accessor.isAnnotationPresent(BeanAlias.class)) {
+                    name = accessor.findAnnotation(BeanAlias.class).value();
+                }
+                result.put(name, accessor);
+            }
         }
-        return sourceFields;
+        return result;
     }
 
     /**
@@ -203,7 +182,7 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
         return accessor.getValue(source);
     }
 
-    private <T> Constructor<?> getSuitableConstructor(final Map<String, Field> sourceFields, final Class<T> targetClass) {
+    private <T> Constructor<?> getSuitableConstructor(final Map<String, PropertyAccessor> sourceAccessors, final Class<T> targetClass) {
         List<Constructor<T>> constructors = new ArrayList<>(Records.getConstructorsAnnotatedWithRecordConstruct(targetClass));
         List<Constructor<T>> mandatoryConstructor = constructors.stream()
                 .filter(constructor -> constructor.getAnnotation(BeanRecordConstruct.class).constructMode() == BeanRecordConstructMode.FORCE)
@@ -219,7 +198,7 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
             // RecordConstructMode.ON_DEMAND-option.
             // Sorts the list in reverse, to make constructor with the most arguments the first to be considered.
             constructors.sort((arg0, arg1) -> Integer.compare(arg1.getParameterCount(), arg0.getParameterCount()));
-            return getConstructorWithMostMatchingParameters(constructors, sourceFields).orElse(Records.getCanonicalConstructorOfRecord((Class) targetClass));
+            return getConstructorWithMostMatchingParameters(constructors, sourceAccessors).orElse(Records.getCanonicalConstructorOfRecord((Class) targetClass));
         }
         var canonicalConstructor = Records.getCanonicalConstructorOfRecord((Class) targetClass);
         if (canonicalConstructor.isAnnotationPresent(BeanRecordConstruct.class)) {
@@ -233,13 +212,13 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
     }
 
     private <T> Optional<Constructor<T>> getConstructorWithMostMatchingParameters(final List<Constructor<T>> constructors,
-                                                                                  final Map<String, Field> sourceFields) {
+                                                                                  final Map<String, PropertyAccessor> sourceAccessors) {
         for (var constructor : constructors) {
             BeanRecordConstruct recordConstruct = constructor.getAnnotation(BeanRecordConstruct.class);
-            List<Field> relevantFields = Arrays.stream(recordConstruct.value())
-                    .map(sourceFields::get)
+            List<PropertyAccessor> relevantAccessors = Arrays.stream(recordConstruct.value())
+                    .map(sourceAccessors::get)
                     .toList();
-            if (!relevantFields.contains(null) || recordConstruct.allowNull())
+            if (!relevantAccessors.contains(null) || recordConstruct.allowNull())
                 return Optional.of(constructor);
         }
         return Optional.empty();
