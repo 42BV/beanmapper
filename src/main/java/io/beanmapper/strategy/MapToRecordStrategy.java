@@ -5,10 +5,14 @@ import io.beanmapper.annotations.BeanAlias;
 import io.beanmapper.annotations.BeanRecordConstruct;
 import io.beanmapper.annotations.BeanRecordConstructMode;
 import io.beanmapper.config.Configuration;
+import io.beanmapper.core.BeanProperty;
+import io.beanmapper.core.BeanPropertyCreator;
+import io.beanmapper.core.BeanPropertyMatchupDirection;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.inspector.PropertyAccessor;
 import io.beanmapper.core.inspector.PropertyAccessors;
 import io.beanmapper.exceptions.BeanInstantiationException;
+import io.beanmapper.exceptions.BeanNoSuchPropertyException;
 import io.beanmapper.exceptions.RecordConstructorConflictException;
 import io.beanmapper.exceptions.RecordNoAvailableConstructorsExceptions;
 import io.beanmapper.utils.BeanMapperTraceLogger;
@@ -65,8 +69,9 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
 
         Map<String, PropertyAccessor> sourcePropertyAccessors = getSourcePropertyAccessors(source);
         Constructor<T> constructor = (Constructor<T>) getSuitableConstructor(sourcePropertyAccessors, targetClass);
-        String[] fieldNamesForConstructor = getNamesOfConstructorParameters(targetClass, constructor);
-        List<Object> values = getValuesOfFields(source, sourcePropertyAccessors, Arrays.stream(fieldNamesForConstructor));
+        String[] parameterNames = getParameterNames(constructor);
+        String[] beanPropertyPaths = getNamesOfRecordComponents(targetClass);
+        List<Object> values = getValuesOfFieldsWithNestedPathSupport(source, sourcePropertyAccessors, parameterNames, beanPropertyPaths);
 
         return targetClass.cast(constructTargetObject(constructor, values));
     }
@@ -98,6 +103,9 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
      * <p>The names of the RecordComponents are retrieved either from the {@link RecordComponent#getName()}-method, or
      * from an available {@link io.beanmapper.annotations.BeanProperty BeanProperty}-annotation.</p>
      *
+     * <p>Note: Since @BeanProperty does not have @Target(ElementType.RECORD_COMPONENT), we need to read
+     * the annotation from the accessor method where Java propagates it.</p>
+     *
      * @param targetClass The class of the target record.
      * @param <T>         The type of the target record.
      * @return The names of the RecordComponents as a String-array.
@@ -105,8 +113,12 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
     private <T> String[] getNamesOfRecordComponents(final Class<T> targetClass) {
         return Arrays.stream(targetClass.getRecordComponents())
                 .map(recordComponent -> {
-                    if (recordComponent.isAnnotationPresent(io.beanmapper.annotations.BeanProperty.class)) {
-                        return recordComponent.getAnnotation(io.beanmapper.annotations.BeanProperty.class).value();
+                    // Read @BeanProperty from accessor method where Java propagates it
+                    // (RecordComponent.isAnnotationPresent only works for @Target(RECORD_COMPONENT))
+                    io.beanmapper.annotations.BeanProperty beanProperty =
+                            recordComponent.getAccessor().getAnnotation(io.beanmapper.annotations.BeanProperty.class);
+                    if (beanProperty != null && !beanProperty.value().isEmpty()) {
+                        return beanProperty.value();
                     }
                     return recordComponent.getName();
                 })
@@ -114,30 +126,35 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
     }
 
     /**
-     * Gets the names of constructor parameters.
+     * Gets the parameter names from the constructor.
      *
-     * <p>Prefers to use the RecordConstruct-annotation, if it is present. Otherwise, it will use the RecordComponents of the record, to determine the names and
-     * order of the parameters.</p>
-     *
-     * @param targetClass The target record.
-     * @param constructor The target constructor.
+     * @param constructor The constructor to get parameter names from.
      * @param <T>         The type of the target class.
      * @return The String-array containing the names of the constructor-parameters.
      */
-    private <T> String[] getNamesOfConstructorParameters(final Class<T> targetClass, final Constructor<T> constructor) {
+    private <T> String[] getParameterNames(final Constructor<T> constructor) {
         if (constructor.isAnnotationPresent(BeanRecordConstruct.class)) {
             return constructor.getAnnotation(BeanRecordConstruct.class).value();
         }
 
-        // We can only use this in cases where the compiler added the parameter-name to the classfile. If the name is
-        // present, we use the parameter-names, otherwise we use the names as set in the record-components.
         var parameters = constructor.getParameters();
-        if (constructor.getParameters()[0].isNamePresent()) {
+        if (parameters.length > 0 && parameters[0].isNamePresent()) {
             return Arrays.stream(parameters)
                     .map(Parameter::getName)
                     .toArray(String[]::new);
         }
-        return getNamesOfRecordComponents(targetClass);
+
+        // Fallback: use record component names
+        Class<?> declaringClass = constructor.getDeclaringClass();
+        if (declaringClass.isRecord()) {
+            return Arrays.stream(declaringClass.getRecordComponents())
+                    .map(RecordComponent::getName)
+                    .toArray(String[]::new);
+        }
+
+        return Arrays.stream(parameters)
+                .map(Parameter::getName)
+                .toArray(String[]::new);
     }
 
     private <S> List<Object> getValuesOfFields(final S source, final Map<String, PropertyAccessor> accessors,
@@ -145,6 +162,60 @@ public final class MapToRecordStrategy extends MapToClassStrategy {
         return fieldNamesForConstructor.map(accessors::get)
                 .map(accessor -> getValueFromField(source, accessor))
                 .toList();
+    }
+
+    private <S> List<Object> getValuesOfFieldsWithNestedPathSupport(S source,
+                                                                     Map<String, PropertyAccessor> sourcePropertyAccessors,
+                                                                     String[] parameterNames,
+                                                                     String[] beanPropertyPaths) {
+        List<Object> values = new ArrayList<>();
+        for (int i = 0; i < parameterNames.length; i++) {
+            String parameterName = parameterNames[i];
+            String beanPropertyPath = beanPropertyPaths[i];
+            values.add(resolveSourceValue(source, parameterName, beanPropertyPath, sourcePropertyAccessors));
+        }
+        return values;
+    }
+
+    private <S> Object resolveSourceValue(S source, String parameterName, String beanPropertyPath,
+                                          Map<String, PropertyAccessor> sourcePropertyAccessors) {
+        // If @BeanProperty specifies a nested path (contains a dot), use path resolution
+        if (beanPropertyPath.contains(".")) {
+            return resolveNestedPath(source, beanPropertyPath);
+        }
+
+        // Try parameter name first (supports @BeanAlias on source side)
+        PropertyAccessor accessor = sourcePropertyAccessors.get(parameterName);
+        if (accessor != null) {
+            return getValueFromField(source, accessor);
+        }
+
+        // If @BeanProperty specifies a different name, try that in sourcePropertyAccessors
+        if (!beanPropertyPath.equals(parameterName)) {
+            accessor = sourcePropertyAccessors.get(beanPropertyPath);
+            if (accessor != null) {
+                return getValueFromField(source, accessor);
+            }
+            // As last resort, try direct property access via BeanPropertyCreator
+            return resolveNestedPath(source, beanPropertyPath);
+        }
+
+        return null;
+    }
+
+    private <S> Object resolveNestedPath(S source, String fieldName) {
+        try {
+            BeanProperty beanProperty = new BeanPropertyCreator(
+                    BeanPropertyMatchupDirection.SOURCE_TO_TARGET,
+                    source.getClass(),
+                    fieldName
+            ).determineNodesForPath();
+
+            return beanProperty.getObject(source);
+        } catch (BeanNoSuchPropertyException e) {
+            // Path doesn't exist in source - return null
+            return null;
+        }
     }
 
     private Object[] getConstructorArgumentsMappedToCorrectTargetType(final Parameter[] parameters, final List<Object> values) {
