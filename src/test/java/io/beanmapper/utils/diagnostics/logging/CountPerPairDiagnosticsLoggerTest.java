@@ -29,7 +29,7 @@ class CountPerPairDiagnosticsLoggerTest extends AbstractDiagnosticsLoggerTest {
                 """;
 
         beanMapper = beanMapper.wrap(DiagnosticsDetailLevel.COUNT_PER_PAIR).build();
-        (((DiagnosticsConfiguration) beanMapper.getConfiguration()).getDiagnosticsLogger().orElseThrow()).getLogger().addHandler(handler);
+        (((DiagnosticsConfiguration) beanMapper.configuration()).getDiagnosticsLogger().orElseThrow()).getLogger().addHandler(handler);
         beanMapper.map(new PersonRecord(1, "Henk"), PersonResultRecord.class);
         handler.flush();
         String output = outputStreamMock.toString();
@@ -55,7 +55,7 @@ class CountPerPairDiagnosticsLoggerTest extends AbstractDiagnosticsLoggerTest {
                 """;
 
         beanMapper = beanMapper.wrap(DiagnosticsDetailLevel.COUNT_PER_PAIR).build();
-        (((DiagnosticsConfiguration) beanMapper.getConfiguration()).getDiagnosticsLogger().orElseThrow()).getLogger().addHandler(handler);
+        (((DiagnosticsConfiguration) beanMapper.configuration()).getDiagnosticsLogger().orElseThrow()).getLogger().addHandler(handler);
         beanMapper.map(new ArrayList<>(List.of(new PersonRecord(1, "Henk"))), PersonResultRecord.class);
         handler.flush();
         String output = outputStreamMock.toString();
@@ -86,7 +86,7 @@ class CountPerPairDiagnosticsLoggerTest extends AbstractDiagnosticsLoggerTest {
                 """;
 
         beanMapper = beanMapper.wrap(DiagnosticsDetailLevel.COUNT_PER_PAIR).build();
-        (((DiagnosticsConfiguration) beanMapper.getConfiguration()).getDiagnosticsLogger().orElseThrow()).getLogger().addHandler(handler);
+        (((DiagnosticsConfiguration) beanMapper.configuration()).getDiagnosticsLogger().orElseThrow()).getLogger().addHandler(handler);
         beanMapper.map(
                 new ArrayList<>(List.of(new CollectionListSource() {{items.add(new Person());}}, new CollectionListSource() {{items.add(new Person());}})),
                 CollectionListTarget.class);

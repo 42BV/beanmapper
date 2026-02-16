@@ -18,4 +18,7 @@ public interface BeanUnproxy {
      */
     Class<?> unproxy(Class<?> beanClass);
 
+    default BeanUnproxy getDelegate() {
+        return null;
+    }
 }

@@ -35,7 +35,7 @@ class TreeCompleteDiagnosticsLoggerTest extends AbstractDiagnosticsLoggerTest {
                 """;
 
         beanMapper = beanMapper.wrap(TREE_COMPLETE).build();
-        ((DiagnosticsConfiguration) beanMapper.getConfiguration()).getDiagnosticsLogger().orElseThrow().getLogger().addHandler(handler);
+        ((DiagnosticsConfiguration) beanMapper.configuration()).getDiagnosticsLogger().orElseThrow().getLogger().addHandler(handler);
         beanMapper.map(Layer1.createNestedClassObject(), Layer1Result.class);
         handler.flush();
 
@@ -65,12 +65,11 @@ class TreeCompleteDiagnosticsLoggerTest extends AbstractDiagnosticsLoggerTest {
                 """;
 
         beanMapper = beanMapper.wrap(TREE_COMPLETE).build();
-        ((DiagnosticsConfiguration) beanMapper.getConfiguration()).getDiagnosticsLogger().orElseThrow().getLogger().addHandler(handler);
+        ((DiagnosticsConfiguration) beanMapper.configuration()).getDiagnosticsLogger().orElseThrow().getLogger().addHandler(handler);
         beanMapper.map(new CollectionMapSource() {{items.put("henk", new Person());}}, CollectionMapTarget.class);
         handler.flush();
 
         String output = outputStreamMock.toString();
-//        String[] outputLines = output.lines().toArray(String[]::new);
         assertEquals(12, output.split("\n").length);
         for (String s : outputTemplate.split("\n")) {
             assertTrue(output.contains(s));

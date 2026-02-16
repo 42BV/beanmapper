@@ -1,10 +1,8 @@
 package io.beanmapper.core.converter.collections;
 
-public class AnnotationClass {
+public record AnnotationClass(Class<?> annotationClass) {
 
     public static final AnnotationClass EMPTY_ANNOTATION_CLASS = new AnnotationClass(null);
-
-    private final Class<?> annotationClass;
 
     public AnnotationClass(Class<?> annotationClass) {
         this.annotationClass = determineClass(annotationClass);
@@ -14,10 +12,6 @@ public class AnnotationClass {
         return collectionElementType == null || collectionElementType.equals(void.class) ?
                 null :
                 collectionElementType;
-    }
-
-    public Class<?> getAnnotationClass() {
-        return this.annotationClass;
     }
 
     public boolean isEmpty() {
