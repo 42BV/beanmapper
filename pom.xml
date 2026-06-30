@@ -51,7 +51,7 @@
         <javassist.version>3.30.2-GA</javassist.version>
         <slf4j.version>2.0.17</slf4j.version>
 
-        <jackson-databind.version>3.0.4</jackson-databind.version>
+        <jackson-databind.version>3.1.4</jackson-databind.version>
         <junit.version>5.11.3</junit.version>
         <mockito-junit.version>5.21.0</mockito-junit.version>
 
