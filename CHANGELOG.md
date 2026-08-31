@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+
+- Issue [#223](https://github.com/42BV/beanmapper/issues/223) **BeanMatchStore is not thread-safe**; concurrent
+  mappings could throw ConcurrentModificationException from HashMap.computeIfAbsent. The match cache now uses
+  ConcurrentHashMap.
+
 ### Added
 
 - Issue [#210](https://github.com/42BV/beanmapper/issues/210) Upgraded Java version to 21.

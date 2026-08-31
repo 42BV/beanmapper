@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import io.beanmapper.annotations.BeanAlias;
 import io.beanmapper.annotations.BeanCollection;
@@ -37,7 +38,7 @@ public class BeanMatchStore {
 
     private final BeanUnproxy beanUnproxy;
 
-    private final Map<Class<?>, Map<Class<?>, BeanMatch>> store = new HashMap<>();
+    private final Map<Class<?>, Map<Class<?>, BeanMatch>> store = new ConcurrentHashMap<>();
 
     private final BeanPropertySelector beanPropertySelector;
 
@@ -64,24 +65,20 @@ public class BeanMatchStore {
 
     public BeanMatch getBeanMatch(BeanPair beanPair) {
         Map<Class<?>, BeanMatch> targetsForSource = store.get(beanPair.getSourceClass());
-
-        if (targetsForSource == null) {
-            return addBeanMatch(determineBeanMatch(beanPair));
+        if (targetsForSource != null) {
+            BeanMatch beanMatch = targetsForSource.get(beanPair.getTargetClass());
+            if (beanMatch != null) {
+                return beanMatch;
+            }
         }
-
-        var beanMatch = targetsForSource.get(beanPair.getTargetClass());
-
-        if (beanMatch == null) {
-            return addBeanMatch(determineBeanMatch(beanPair));
-        }
-
-        return beanMatch;
+        return addBeanMatch(determineBeanMatch(beanPair));
     }
 
     public BeanMatch addBeanMatch(BeanMatch beanMatch) {
-        Map<Class<?>, BeanMatch> targetsForSource = store.computeIfAbsent(beanMatch.getSourceClass(), k -> new HashMap<>());
-        targetsForSource.put(beanMatch.getTargetClass(), beanMatch);
-        return beanMatch;
+        Map<Class<?>, BeanMatch> targetsForSource =
+                store.computeIfAbsent(beanMatch.getSourceClass(), key -> new ConcurrentHashMap<>());
+        BeanMatch existing = targetsForSource.putIfAbsent(beanMatch.getTargetClass(), beanMatch);
+        return existing != null ? existing : beanMatch;
     }
 
     private BeanMatch determineBeanMatch(BeanPair beanPair) {
