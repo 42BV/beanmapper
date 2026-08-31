@@ -7,12 +7,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
-### Fixed
-
-- Issue [#223](https://github.com/42BV/beanmapper/issues/223) **BeanMatchStore is not thread-safe**; concurrent
-  mappings could throw ConcurrentModificationException from HashMap.computeIfAbsent. The match cache now uses
-  ConcurrentHashMap.
-
 ### Added
 
 - Issue [#210](https://github.com/42BV/beanmapper/issues/210) Upgraded Java version to 21.
@@ -20,6 +14,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   mapped to an Optional of the same Enum, as it would attempt to create a new instance of the enum-class in question.
   Remedied by adding a check to the OptionalToAnyConverter.
 - Issue [#188](https://github.com/42BV/beanmapper/issues/188) Made BeanProperty-annotation repeatable. Added targets-property to BeanProperty-annotation, allowing the user to specify which mappings a BeanProperty should apply to.
+
+## [6.0.3] - 2026-08-31
+
+### Fixed
+
+- Issue [#223](https://github.com/42BV/beanmapper/issues/223) **BeanMatchStore is not thread-safe**; concurrent
+  mappings could throw ConcurrentModificationException from HashMap.computeIfAbsent. The match cache now uses
+  ConcurrentHashMap.
 
 ## [4.1.6]
 
