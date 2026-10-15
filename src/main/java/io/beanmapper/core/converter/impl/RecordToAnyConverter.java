@@ -2,7 +2,11 @@ package io.beanmapper.core.converter.impl;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.RecordComponent;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +30,7 @@ public class RecordToAnyConverter implements BeanConverter {
             Object intermediaryObject = intermediaryClass.cast(
                     this.copyRecordComponentsToIntermediary((Record) source, intermediaryClass.getConstructors()[0].newInstance()));
             return beanMapper.map(intermediaryObject, targetClass);
-        } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchFieldException | NoSuchMethodException e) {
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchFieldException e) {
             throw new RecordMappingToIntermediaryException(source.getClass(), e);
         }
     }
@@ -40,6 +44,9 @@ public class RecordToAnyConverter implements BeanConverter {
      * Compiles a map of fields, using the field-names as the key, and calls {@link RecordToAnyConverter#copyFieldsToIntermediary(Object, Map)} in order to map
      * the copy the values of the fields in the recordClass to the intermediary.
      *
+     * <p>Only the RecordComponents of the record are copied, and only to non-static, non-synthetic fields of the intermediary with the same
+     * name. Other fields of the intermediary (for example fields added by bytecode instrumentation) are ignored.</p>
+     *
      * @param recordClass Record from which the RecordComponents will be copied to the intermediary object.
      * @param intermediary Intermediary object to which the RecordComponents will be mapped.
      * @return The intermediary object to which the RecordComponents have been copied.
@@ -47,17 +54,30 @@ public class RecordToAnyConverter implements BeanConverter {
      * @param <T> The type of the intermediary class.
      */
     private <R extends Record, T> T copyRecordComponentsToIntermediary(R recordClass, T intermediary)
-            throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException {
+            throws NoSuchFieldException, IllegalAccessException {
         Map<String, Object> fieldMap = new HashMap<>();
-        for (var field : intermediary.getClass().getDeclaredFields()) {
-            MethodHandle methodHandle = MethodHandles.lookup().unreflect(recordClass.getClass().getDeclaredMethod(field.getName()));
+        for (RecordComponent recordComponent : recordClass.getClass().getRecordComponents()) {
+            if (!hasCopyableField(intermediary.getClass(), recordComponent.getName())) {
+                continue;
+            }
+            Method accessor = recordComponent.getAccessor();
+            MethodHandle methodHandle = MethodHandles.lookup().unreflect(accessor);
             try {
-                fieldMap.put(field.getName(), methodHandle.invoke(recordClass));
+                fieldMap.put(recordComponent.getName(), methodHandle.invoke(recordClass));
             } catch (Throwable t) {
                 throw new RecordMappingToIntermediaryException(intermediary.getClass(), t);
             }
         }
         return copyFieldsToIntermediary(intermediary, fieldMap);
+    }
+
+    private boolean hasCopyableField(Class<?> intermediaryClass, String fieldName) {
+        try {
+            Field field = intermediaryClass.getDeclaredField(fieldName);
+            return !Modifier.isStatic(field.getModifiers()) && !field.isSynthetic();
+        } catch (NoSuchFieldException e) {
+            return false;
+        }
     }
 
     /**
